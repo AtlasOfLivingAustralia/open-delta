@@ -51,6 +51,7 @@ public class ItemDescriptionsTest extends TestCase {
 			ConforDirectiveParserObserver observer = new ConforDirectiveParserObserver(_context);
 			parser.registerObserver(observer);
 			parser.parse(new StringReader(directives), _context);
+			fail(String.format("Exception (error %d) expected", expectedError));
 		} catch (DirectiveException ex) {
 			assertEquals(expectedError, ex.getErrorNumber());
 		}
@@ -70,6 +71,11 @@ public class ItemDescriptionsTest extends TestCase {
 	@Test
 	public void test1() throws Exception {
 		confor("test1", 12);
+	}
+	
+	@Test
+	public void test2() throws Exception {
+		confor("test2", 46);
 	}
 
 }

@@ -35,7 +35,6 @@ import au.org.ala.delta.model.DefaultDataSetFactory;
 import au.org.ala.delta.model.IdentificationKeyCharacter;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MutableDeltaDataSet;
-import au.org.ala.delta.model.StateValueMatrix;
 import au.org.ala.delta.model.TypeSettingMark;
 import au.org.ala.delta.model.TypeSettingMark.CharacterNoteMarks;
 import au.org.ala.delta.model.TypeSettingMark.MarkPosition;
@@ -136,7 +135,7 @@ public class DeltaContext extends AbstractDeltaContext {
 
     private String _credits;
 
-    private StateValueMatrix _matrix;
+    // private StateValueMatrix _matrix;
 
     private BigDecimal[] _characterWeights;
 
@@ -227,15 +226,15 @@ public class DeltaContext extends AbstractDeltaContext {
         }
     }
 
-    public void initializeMatrix() {
-        assert getNumberOfCharacters() > 0;
-        assert getMaximumNumberOfItems() > 0;
-        _matrix = new StateValueMatrix(getNumberOfCharacters(), getMaximumNumberOfItems());
-    }
-
-    public StateValueMatrix getMatrix() {
-        return _matrix;
-    }
+//    public void initializeMatrix() {
+//        assert getNumberOfCharacters() > 0;
+//        assert getMaximumNumberOfItems() > 0;
+//        _matrix = new StateValueMatrix(getNumberOfCharacters(), getMaximumNumberOfItems());
+//    }
+//
+//    public StateValueMatrix getMatrix() {
+//        return _matrix;
+//    }
 
     /**
      * Currently used only by units tests.

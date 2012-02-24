@@ -1,0 +1,16 @@
+*SHOW Check the items.
+
+*COMMENT LISTING FILE checki.lst
+
+*MAXIMUM NUMBER OF ITEMS 1
+
+*NUMBER OF CHARACTERS 1
+
+*MAXIMUM NUMBER OF STATES 2
+
+*CHARACTER TYPES
+ 	1,TE
+ 	
+*ITEM DESCRIPTIONS 
+# Blah1/ 1<Some text value> 
+# Blah2/ 1<Some text value>

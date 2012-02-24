@@ -54,7 +54,7 @@ public class DefaultAttributeData implements AttributeData {
 
     @Override
     public void setValueFromString(String value) throws DirectiveException {
-        _value = value;
+        _value = value.replaceAll("\\s+", " ");
         _parsedAttribute.parse(value, false);
     }
 

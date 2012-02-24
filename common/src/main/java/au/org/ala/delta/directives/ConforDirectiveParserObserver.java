@@ -227,18 +227,6 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 
 		int lineNum = (int) pc.getCurrentDirectiveStartLine();
 		
-		System.err.println(StringUtils.join(lines, ""));
-			// Error marker should go below this line
-		StringBuilder bb = new StringBuilder();
-		for (int i = 0; i < offset; i++) {
-			bb.append(' ');
-		}
-
-		bb.append("^");
-		System.err.println(bb.toString());				
-		
-		
-		
 		for (String line : lines) {
 
 			String filename = "<no file>";
@@ -249,9 +237,9 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 			int lineLength = line.length();
 			
 			line = formatWithFileName(line, filename, lineNum);
-			_context.getOutputFileSelector().message(line);
+			fileManager.message(line);
 			
-			if (offset > 0 && offset < lineLength) {
+			if (offset >= 0 && offset < lineLength) {
 				// Error marker should go below this line
 				StringBuilder errorLocation = new StringBuilder();
 				for (int i = 0; i < offset + 16; i++) {
@@ -262,7 +250,7 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 				fileManager.message(errorLocation.toString());				
 			} 
 			
-			offset -= lineLength;
+			offset -= lineLength + 1; // + 1 for the line endings 
 			
 			lineNum++;
 		}

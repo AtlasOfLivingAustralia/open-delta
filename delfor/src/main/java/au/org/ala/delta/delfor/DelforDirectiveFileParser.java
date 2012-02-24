@@ -86,7 +86,7 @@ public class DelforDirectiveFileParser extends DirectiveParser<DeltaContext> {
         instance.registerDirective(new IncludeItems());     
         instance.registerDirective(new InputDeltaFile());
         instance.registerDirective(new InputFile());
-        instance.registerDirective(new ItemDescriptions());
+        instance.registerDirective(new ItemDescriptions(true));
        
         instance.registerDirective(new ListingFile());
         

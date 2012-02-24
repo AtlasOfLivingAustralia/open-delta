@@ -27,7 +27,6 @@ import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
-import au.org.ala.delta.model.StateValue;
 
 /**
  * Parses and processes the ITEM DESCRIPTIONS directive.
@@ -35,13 +34,25 @@ import au.org.ala.delta.model.StateValue;
 public class ItemDescriptions extends AbstractTextDirective {
 
 	public static final String[] CONTROL_WORDS = {"item", "descriptions"};
+	
+	private boolean _normalizeBeforeParsing = false;
 		
 	public ItemDescriptions() {
 		super(CONTROL_WORDS);
 		registerPrerequiste(NumberOfCharacters.class);
 		registerPrerequiste(MaximumNumberOfItems.class);
 		registerPrerequiste(MaximumNumberOfStates.class);
+		_normalizeBeforeParsing = false;
 	}
+	
+	public ItemDescriptions(boolean normalizeBeforeParsing) {
+		super(CONTROL_WORDS);
+		registerPrerequiste(NumberOfCharacters.class);
+		registerPrerequiste(MaximumNumberOfItems.class);
+		registerPrerequiste(MaximumNumberOfStates.class);
+		_normalizeBeforeParsing = normalizeBeforeParsing;
+	}
+	
 	
 	@Override
 	public int getArgType() {
@@ -51,7 +62,7 @@ public class ItemDescriptions extends AbstractTextDirective {
 	@Override
 	public void process(DeltaContext context, DirectiveArguments data) throws Exception {
 		StringReader reader = new StringReader(data.getFirstArgumentText());
-		ItemsParser parser = new ItemsParser(context, reader);
+		ItemsParser parser = new ItemsParser(context, reader, _normalizeBeforeParsing);
 		parser.parse();	
 	}
 	
@@ -66,17 +77,25 @@ class ItemsParser extends AbstractStreamParser {
 	/** The last Item parsed that is not a variant Item */
 	private int _lastMaster;
 	
-	public ItemsParser(DeltaContext context, Reader reader) {
+	private boolean _normalizeBeforeParsing = false;
+	
+	public ItemsParser(DeltaContext context, Reader reader, boolean normalizeBeforeParsing) {
 		super(context, reader);
+		_normalizeBeforeParsing = normalizeBeforeParsing;
 	}
 
 	@Override
 	public void parse() throws ParseException {
 
-		getContext().initializeMatrix();
+		// getContext().initializeMatrix();
 
 		int itemIndex = 1;
 		while (skipTo('#') && _currentInt >= 0) {
+			
+			if (itemIndex > getContext().getMaximumNumberOfItems()) {
+				throw new DirectiveError(DirectiveError.Error.TOO_MANY_ITEMS, _position).asException();				
+			}
+			
 			parseItem(itemIndex);
 			itemIndex++;
 		}
@@ -120,7 +139,7 @@ class ItemsParser extends AbstractStreamParser {
 				}
 			}
 
-			StateValue stateValue = new StateValue(ch, item, strValue);
+//			StateValue stateValue = new StateValue(ch, item, strValue);
 			StringBuilder value = new StringBuilder();
 			if (comment != null) {
 				value.append(comment);
@@ -132,13 +151,17 @@ class ItemsParser extends AbstractStreamParser {
 			Attribute attribute = getContext().getDataSet().addAttribute(item.getItemNumber(), ch.getCharacterId());
 						
 			try {
-				attribute.setValueFromString(cleanWhiteSpace(value.toString().trim()));				
+				String theValue = value.toString();
+				if (_normalizeBeforeParsing) {
+					theValue = cleanWhiteSpace(theValue.trim());
+				}				
+				attribute.setValueFromString(theValue);
 			}
 			catch (DirectiveException e) {
-				e.getError().setPosition(e.getErrorOffset() + oldOffset);
+				e.getError().setPosition(e.getErrorOffset() + oldOffset + 1);
 				getContext().addError(e.getError());
 			}
-			getContext().getMatrix().setValue(charIdx, itemIndex, stateValue);
+			// getContext().getMatrix().setValue(charIdx, itemIndex, stateValue);
 		
 			skipWhitespace();
 		}

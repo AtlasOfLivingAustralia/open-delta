@@ -119,7 +119,9 @@ public class DeltaFormatTranslatorTest extends TranslatorTest {
 				break;
 			}
 		}
-		
+				
 		assertEquals(expectedResults, actualResults);
+		
+		
 	}
 }

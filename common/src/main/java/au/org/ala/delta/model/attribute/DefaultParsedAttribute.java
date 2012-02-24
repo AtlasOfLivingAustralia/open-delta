@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import sun.misc.Cleaner;
+
 import au.org.ala.delta.directives.validation.DirectiveError;
 import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.model.Character;
@@ -99,9 +101,20 @@ public class DefaultParsedAttribute implements ParsedAttribute {
 		boolean inParam = false;
 		BigDecimal prevNumb = new BigDecimal(-Float.MAX_VALUE);
 		char ch;
+		char prevChar = 255;
 
 		for (i = 0; i < text.length(); ++i) {
+			
 			ch = text.charAt(i);
+			
+			if (ch == '\n' || ch == '\r' || ch == '\t') {				
+				ch = ' ';
+			}
+			
+			if (ch == ' ' && prevChar == ' ') {
+				continue;
+			}
+			
 			if (commentLevel == 0) {
 				if (inRTF) {
 					// This is not quite what's needed here, when dealing with
@@ -457,8 +470,10 @@ public class DefaultParsedAttribute implements ParsedAttribute {
 					++start;
 				while (text.charAt(finish) == ' ' && finish >= start)
 					--finish;
-				if (finish >= start)
-					insert(end(), new AttrChunk(substring(text, start, finish - start + 1)));
+				if (finish >= start) {
+					String frag = substring(text, start, finish - start + 1).replaceAll("\\s+", " ");					
+					insert(end(), new AttrChunk(frag));
+				}
 				// insert(end(), TAttrChunk(text.substr(textStart + 1, i -
 				// textStart - 1)));
 			}
@@ -491,6 +506,7 @@ public class DefaultParsedAttribute implements ParsedAttribute {
 				inRTF = true;
 				inParam = false;
 			}
+			prevChar = ch;
 		}
 
 		if (commentLevel > 0)
@@ -557,7 +573,9 @@ public class DefaultParsedAttribute implements ParsedAttribute {
 
 		int endIndex = beginIndex + length;
 		endIndex = Math.min(source.length(), endIndex);
-		return source.substring(beginIndex, endIndex);
+		
+		String result = source.substring(beginIndex, endIndex); 
+		return result;
 	}
 
 	public int getNChunks() {
