@@ -904,8 +904,12 @@ public class Utils {
 
 		return adjustedFontSize;
 	}
-
+	
 	public static String formatIntegersAsListOfRanges(List<Integer> ints) {
+	    return formatIntegersAsListOfRanges(ints, "-");
+	}
+
+	public static String formatIntegersAsListOfRanges(List<Integer> ints, String rangeSeparator) {
 		StringBuilder builder = new StringBuilder();
 
 		int startRange = 0;
@@ -927,7 +931,7 @@ public class Utils {
 						builder.append(startRange);
 
 						if (previousValue != startRange) {
-							builder.append("-");
+							builder.append(rangeSeparator);
 							builder.append(previousValue);
 						}
 
@@ -940,7 +944,7 @@ public class Utils {
 						builder.append(startRange);
 
 						if (val != startRange) {
-							builder.append("-");
+							builder.append(rangeSeparator);
 							builder.append(val);
 						}
 
