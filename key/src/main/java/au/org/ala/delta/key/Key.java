@@ -182,7 +182,7 @@ public class Key implements DirectiveParserObserver {
                 Specimen specimen = new Specimen(_context.getDataSet(), true, false, false, MatchType.OVERLAP);
                 // List<Pair<Item, List<Attribute>>> keyList = new
                 // ArrayList<Pair<Item, List<Attribute>>>();
-                IdentificationKey key = new IdentificationKey();
+                TabularKey key = new TabularKey();
 
                 FilteredDataSet dataset = new FilteredDataSet(_context, new IncludeExcludeDataSetFilter(_context));
 
@@ -227,7 +227,7 @@ public class Key implements DirectiveParserObserver {
         }
     }
 
-    private void doCalculateKey(IdentificationKey key, FilteredDataSet dataset, List<Character> includedCharacters, List<Item> includedItems, Specimen specimen,
+    private void doCalculateKey(TabularKey key, FilteredDataSet dataset, List<Character> includedCharacters, List<Item> includedItems, Specimen specimen,
             Map<Character, List<MultiStateAttribute>> confirmatoryCharacterValues) {
 
         if (confirmatoryCharacterValues == null) {
@@ -248,13 +248,13 @@ public class Key implements DirectiveParserObserver {
             // with the used characters
 
             for (Item taxon : specimenAvailableTaxa) {
-                KeyRow row = new KeyRow();
+                TabularKeyRow row = new TabularKeyRow();
                 row.setItem(taxon);
 
                 for (Character ch : specimen.getUsedCharacters()) {
                     // Add row to key
                     MultiStateAttribute mainCharacterValue = (MultiStateAttribute) specimen.getAttributeForCharacter(ch);
-                    row.addColumnValue(mainCharacterValue, confirmatoryCharacterValues.get(ch));
+                    row.addAttribute(mainCharacterValue, confirmatoryCharacterValues.get(ch));
 
                     // If character has not already been used in key, update its
                     // cost using the REUSE setting to increase the
@@ -369,12 +369,12 @@ public class Key implements DirectiveParserObserver {
         return attr;
     }
 
-    private int getGroupCountForColumn(int columnNumber, IdentificationKey key) {
+    private int getGroupCountForColumn(int columnNumber, TabularKey key) {
         MultiStateAttribute currentAttribute = null;
         int countForCurrentAttribute = 0;
         int groupCount = 0;
-        for (KeyRow row : key.getRows()) {
-            List<MultiStateAttribute> attributes = row.getMainCharacterValues();
+        for (TabularKeyRow row : key.getRows()) {
+            List<MultiStateAttribute> attributes = row.getMainAttributes();
             if (attributes.size() >= columnNumber) {
                 MultiStateAttribute attr = attributes.get(columnNumber - 1);
 
@@ -550,12 +550,12 @@ public class Key implements DirectiveParserObserver {
         return _context;
     }
 
-    private void generateKeyOutput(IdentificationKey key, List<Character> includedCharacters, List<Item> includedItems, boolean outputTabularKey, boolean outputBracketedKey) {
+    private void generateKeyOutput(TabularKey tabularKey, List<Character> includedCharacters, List<Item> includedItems, boolean outputTabularKey, boolean outputBracketedKey) {
         PrintFile printFile = _context.getOutputFileSelector().getOutputFile();
 
         if (outputTabularKey) {
-            generateKeyHeader(printFile, key, includedCharacters, includedItems, outputTabularKey, outputBracketedKey);
-            printTabularKey(key, printFile);
+            generateKeyHeader(printFile, tabularKey, includedCharacters, includedItems, outputTabularKey, outputBracketedKey);
+            printTabularKey(tabularKey, printFile);
             System.out.println("Tabular key completed");
         }
 
@@ -564,14 +564,15 @@ public class Key implements DirectiveParserObserver {
                 printFile.writeBlankLines(2, 0);
             }
 
-            generateKeyHeader(printFile, key, includedCharacters, includedItems, outputTabularKey, outputBracketedKey);
+            generateKeyHeader(printFile, tabularKey, includedCharacters, includedItems, outputTabularKey, outputBracketedKey);
+            BracketedKey bracketedKey = KeyUtils.convertTabularKeyToBracketedKey(tabularKey);
 
-            printBracketedKey(key, _context.getAddCharacterNumbers(), printFile);
+            printBracketedKey(bracketedKey, _context.getAddCharacterNumbers(), printFile);
             System.out.println("Bracketed key completed");
         }
     }
 
-    private void generateKeyHeader(PrintFile printFile, IdentificationKey key, List<Character> includedCharacters, List<Item> includedItems, boolean outputTabularKey, boolean outputBracketedKey) {
+    private void generateKeyHeader(PrintFile printFile, TabularKey key, List<Character> includedCharacters, List<Item> includedItems, boolean outputTabularKey, boolean outputBracketedKey) {
         printFile.outputLine(_context.getHeading(HeadingType.HEADING));
         printFile.outputLine(StringUtils.repeat("*", _context.getOutputFileSelector().getOutputWidth()));
         printFile.writeBlankLines(1, 0);
@@ -584,8 +585,8 @@ public class Key implements DirectiveParserObserver {
         printFile.outputLine(MessageFormat.format("Run at {0} on {1}", _timeFormat.format(currentDate), _dateFormat.format(currentDate)));
         printFile.writeBlankLines(1, 0);
 
-        printFile.outputLine(MessageFormat.format("Characters - {0} in data, {1} included, {2} in key.", _context.getDataSet().getNumberOfCharacters(), includedCharacters.size(),
-                key.getCharactersUsedInKey().size()));
+        printFile.outputLine(MessageFormat.format("Characters - {0} in data, {1} included, {2} in key.", _context.getDataSet().getNumberOfCharacters(), includedCharacters.size(), key
+                .getCharactersUsedInKey().size()));
         printFile.outputLine(MessageFormat.format("Items - {0} in data, {1} included, {2} in key.", _context.getDataSet().getMaximumNumberOfItems(), includedItems.size(), key.getNumberOfRows()));
         printFile.writeBlankLines(1, 0);
         printFile.outputLine(MessageFormat.format("RBASE = {0} ABASE = {1} REUSE = {2} VARYWT = {3}", formatDouble(_context.getRBase()), formatDouble(_context.getABase()),
@@ -611,12 +612,14 @@ public class Key implements DirectiveParserObserver {
         for (Item it : includedItems) {
             includedItemNumbers.add(it.getItemNumber());
         }
-        
-        // printFile.outputLine(MessageFormat.format("Character reliabilities",// "TODO"));
-        
+
+        // printFile.outputLine(MessageFormat.format("Character reliabilities",//
+        // "TODO"));
+
         printFile.outputLine(MessageFormat.format("Items included {0}", Utils.formatIntegersAsListOfRanges(includedItemNumbers)));
-        
-        // printFile.outputLine(MessageFormat.format("Item abundances {0}",// "TODO"));
+
+        // printFile.outputLine(MessageFormat.format("Item abundances {0}",//
+        // "TODO"));
         printFile.writeBlankLines(1, 0);
 
     }
@@ -668,7 +671,7 @@ public class Key implements DirectiveParserObserver {
         _context.getOutputFileManager().getTypesettingFile().outputLine("TODO - IMPLEMENT TYPESETTING OF BRACKETED KEY!");
     }
 
-    private void printTabularKey(IdentificationKey key, PrintFile printFile) {
+    private void printTabularKey(TabularKey key, PrintFile printFile) {
         ItemFormatter itemFormatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false, false);
 
         // Do a first pass of the data structure to get the counts for the
@@ -677,7 +680,7 @@ public class Key implements DirectiveParserObserver {
         Map<Item, Integer> itemOccurrences = new HashMap<Item, Integer>();
         int cellWidth = 0;
 
-        for (KeyRow row : key.getRows()) {
+        for (TabularKeyRow row : key.getRows()) {
             Item it = row.getItem();
 
             if (itemOccurrences.containsKey(it)) {
@@ -689,7 +692,7 @@ public class Key implements DirectiveParserObserver {
 
             // If TRUNCATE TABULAR KEY AT directive has been used, only
             // traverse up to the relevant column.
-            int columnLimit = row.getNumberOfColumnValues();
+            int columnLimit = row.getNumberOfColumns();
             if (_context.getTruncateTabularKeyAtColumnNumber() != -1) {
                 columnLimit = _context.getTruncateTabularKeyAtColumnNumber();
             }
@@ -697,8 +700,8 @@ public class Key implements DirectiveParserObserver {
             for (int i = 0; i < columnLimit; i++) {
                 int columnNumber = i + 1;
 
-                for (MultiStateAttribute characterValue : row.getAllCharacterValuesForColumn(columnNumber)) {
-                    int characterNumber = characterValue.getCharacter().getCharacterId();
+                for (MultiStateAttribute attr : row.getAllAttributesForColumn(columnNumber)) {
+                    int characterNumber = attr.getCharacter().getCharacterId();
                     int numberOfDigits = Integer.toString(characterNumber).length();
 
                     // Cell width needs to be at least as wide as the number of
@@ -715,37 +718,37 @@ public class Key implements DirectiveParserObserver {
 
         // Second pass - output the key
         for (int i = 0; i < key.getNumberOfRows(); i++) {
-            KeyRow row = key.getRowAt(i);
+            TabularKeyRow row = key.getRowAt(i);
             Item it = row.getItem();
 
-            List<MultiStateAttribute> rowCharacterValues;
-            List<MultiStateAttribute> previousRowCharacterValues = null;
+            List<MultiStateAttribute> rowAttributes;
+            List<MultiStateAttribute> previousRowAttributes = null;
 
             // If TRUNCATE TABULAR KEY AT directive has been used, only
             // traverse up to the relevant column.
-            int columnLimit = row.getNumberOfColumnValues();
+            int columnLimit = row.getNumberOfColumns();
 
             if (_context.getTruncateTabularKeyAtColumnNumber() == -1) {
-                rowCharacterValues = row.getAllCharacterValues();
+                rowAttributes = row.getAllAttributes();
                 if (i > 0) {
-                    previousRowCharacterValues = key.getRowAt(i - 1).getAllCharacterValues();
+                    previousRowAttributes = key.getRowAt(i - 1).getAllAttributes();
                 }
             } else {
                 columnLimit = _context.getTruncateTabularKeyAtColumnNumber();
-                rowCharacterValues = row.getAllCharacterValuesUpToColumn(columnLimit);
+                rowAttributes = row.getAllCharacterValuesUpToColumn(columnLimit);
                 if (i > 0) {
-                    previousRowCharacterValues = key.getRowAt(i - 1).getAllCharacterValuesUpToColumn(columnLimit);
+                    previousRowAttributes = key.getRowAt(i - 1).getAllCharacterValuesUpToColumn(columnLimit);
                 }
             }
 
             // Output the dividing line between the previous row and the current
             // row
             builder.append("+---------------------------+");
-            for (int j = 0; j < rowCharacterValues.size(); j++) {
-                Attribute currentRowAttribute = rowCharacterValues.get(j);
+            for (int j = 0; j < rowAttributes.size(); j++) {
+                Attribute currentRowAttribute = rowAttributes.get(j);
 
-                if (previousRowCharacterValues != null && previousRowCharacterValues.size() >= j + 1) {
-                    Attribute previousRowAttribute = previousRowCharacterValues.get(j);
+                if (previousRowAttributes != null && previousRowAttributes.size() >= j + 1) {
+                    Attribute previousRowAttribute = previousRowAttributes.get(j);
                     if (currentRowAttribute.equals(previousRowAttribute)) {
                         builder.append(StringUtils.repeat(" ", cellWidth));
                         builder.append("|");
@@ -760,8 +763,8 @@ public class Key implements DirectiveParserObserver {
                 }
             }
 
-            if (previousRowCharacterValues != null) {
-                int diffPrevRowAttributes = previousRowCharacterValues.size() - rowCharacterValues.size();
+            if (previousRowAttributes != null) {
+                int diffPrevRowAttributes = previousRowAttributes.size() - rowAttributes.size();
                 for (int k = 0; k < diffPrevRowAttributes; k++) {
                     builder.append(StringUtils.repeat("-", cellWidth));
                     builder.append("+");
@@ -791,7 +794,7 @@ public class Key implements DirectiveParserObserver {
             // for confirmatory characters if they are present
             for (int j = 0; j < columnLimit; j++) {
                 int columnNumber = j + 1;
-                List<MultiStateAttribute> cellCharacterValues = row.getAllCharacterValuesForColumn(columnNumber);
+                List<MultiStateAttribute> cellCharacterValues = row.getAllAttributesForColumn(columnNumber);
                 for (int k = 0; k < cellCharacterValues.size(); k++) {
                     MultiStateAttribute cellCharacterValue = cellCharacterValues.get(k);
                     int characterId = cellCharacterValue.getCharacter().getCharacterId();
@@ -825,7 +828,7 @@ public class Key implements DirectiveParserObserver {
             // table
             if (i == key.getNumberOfRows() - 1) {
                 builder.append("+---------------------------+");
-                for (int l = 0; l < rowCharacterValues.size(); l++) {
+                for (int l = 0; l < rowAttributes.size(); l++) {
                     builder.append(StringUtils.repeat("-", cellWidth));
                     builder.append("+");
                 }
@@ -835,13 +838,9 @@ public class Key implements DirectiveParserObserver {
         printFile.outputLine(builder.toString());
     }
 
-    private void printBracketedKey(IdentificationKey key, boolean displayCharacterNumbers, PrintFile printFile) {
-        List<Map<List<MultiStateAttribute>, Object>> indexInfoMaps = new ArrayList<Map<List<MultiStateAttribute>, Object>>();
-        Map<Integer, Integer> indexBackReferences = new HashMap<Integer, Integer>();
+    private void printBracketedKey(BracketedKey bracketedKey, boolean displayCharacterNumbers, PrintFile printFile) {
 
-        generateBracketedKeyData(key, indexInfoMaps, indexBackReferences);
-
-        int numberOfIndicies = indexInfoMaps.size();
+        int numberOfIndicies = bracketedKey.getNumberOfNodes();
         // Amount that lines in the bracketed key need to be indented so that
         // all lines for an indent line up, given the amount that the
         // first line is pushed out due to the index number and back reference.
@@ -868,57 +867,29 @@ public class Key implements DirectiveParserObserver {
         printFile.setIndentOnLineWrap(true);
         printFile.setTrimInput(false, false);
 
-        for (int i = 0; i < indexInfoMaps.size(); i++) {
-            Map<List<MultiStateAttribute>, Object> indexInfoMap = indexInfoMaps.get(i);
-
-            int backReference;
-            if (i == 0) {
-                backReference = 0;
-            } else {
-                backReference = indexBackReferences.get(i) + 1;
-            }
-
-            outputBrackedKeyIndex(printFile, i + 1, backReference, indexInfoMap, displayCharacterNumbers, indexNumberIndent, indexLineWrapIndent);
+        for (BracketedKeyNode node : bracketedKey) {
+            outputBrackedKeyNode(printFile, node, displayCharacterNumbers, indexNumberIndent, indexLineWrapIndent);
             printFile.writeBlankLines(1, 0);
         }
+
     }
 
-    private void outputBrackedKeyIndex(PrintFile printFile, int indexNumber, int backReference, Map<List<MultiStateAttribute>, Object> attributeLinks, boolean displayCharacterNumbers,
-            int indexNumberIndent, int indexLineWrapIndent) {
+    private void outputBrackedKeyNode(PrintFile printFile, BracketedKeyNode node, boolean displayCharacterNumbers, int indexNumberIndent, int indexLineWrapIndent) {
         int outputWidth = _context.getOutputFileManager().getOutputWidth();
 
-        // Sort attribute lists by the first state values of the first attribute
-        // - any other attributes in the list are for
-        // confirmatory characters, these will not effect the sort order.
-        List<List<MultiStateAttribute>> sortedAttributeLists = new ArrayList<List<MultiStateAttribute>>(attributeLinks.keySet());
-        Collections.sort(sortedAttributeLists, new Comparator<List<MultiStateAttribute>>() {
-
-            @Override
-            public int compare(List<MultiStateAttribute> l1, List<MultiStateAttribute> l2) {
-                MultiStateAttribute l1FirstAttr = l1.get(0);
-                MultiStateAttribute l2FirstAttr = l2.get(0);
-
-                int l1FirstAttrStateNumber = l1FirstAttr.getPresentStates().iterator().next();
-                int l2FirstAttrStateNumber = l2FirstAttr.getPresentStates().iterator().next();
-
-                return Integer.valueOf(l1FirstAttrStateNumber).compareTo(l2FirstAttrStateNumber);
-            }
-
-        });
-
         // An index contains an "entry" for each group of attributes
-        for (int i = 0; i < sortedAttributeLists.size(); i++) {
+        for (int i = 0; i < node.getNumberOfLines(); i++) {
             StringBuilder entryBuilder = new StringBuilder();
 
             if (i == 0) {
-                entryBuilder.append(indexNumber);
-                entryBuilder.append("(").append(backReference).append(")").append(".");
+                entryBuilder.append(node.getNodeNumber());
+                entryBuilder.append("(").append(node.getBackReference()).append(")").append(".");
                 entryBuilder.append(" ");
             } else {
                 entryBuilder.append(StringUtils.repeat(" ", indexNumberIndent));
             }
 
-            List<MultiStateAttribute> attrs = sortedAttributeLists.get(i);
+            List<MultiStateAttribute> attrs = node.getAttributesForLine(i);
 
             for (int j = 0; j < attrs.size(); j++) {
                 MultiStateAttribute attr = attrs.get(j);
@@ -938,7 +909,7 @@ public class Key implements DirectiveParserObserver {
                 }
             }
 
-            Object itemListOrIndexNumber = attributeLinks.get(attrs);
+            Object itemListOrIndexNumber = node.getDestinationForLine(i);
 
             if (itemListOrIndexNumber instanceof List<?>) {
                 // Index references one or more taxa
@@ -967,158 +938,59 @@ public class Key implements DirectiveParserObserver {
         }
     }
 
-    private void generateBracketedKeyData(IdentificationKey key, List<Map<List<MultiStateAttribute>, Object>> indexInfoMaps, Map<Integer, Integer> indexBackReferences) {
-        Map<List<MultiStateCharacter>, Integer> latestIndexForCharacterGroupMap = new HashMap<List<MultiStateCharacter>, Integer>();
-        
-        for (int i = 0; i < key.getNumberOfRows(); i++) {
-            KeyRow row = key.getRowAt(i);
-            for (int j = 0; j < row.getNumberOfColumnValues(); j++) {
-                int columnNumber = j + 1;
-                List<MultiStateAttribute> columnAttrs = row.getAllCharacterValuesForColumn(columnNumber);
-                List<MultiStateCharacter> columnChars = getCharactersFromAttributes(columnAttrs);
+    private void generateTypesetBracketedKey(BracketedKey bracketedKey, List<Character> includedCharacters, List<Item> includedItems, PrintFile typesetFile) {
 
-                KeyRow previousRow = null;
-
-                // If the corresponding column in the previous row has the same
-                // characters, use the latest existing index for that set of
-                // characters.
-                // Otherwise we need to create a new index
-                boolean newIndex = false;
-                if (i > 0) {
-                    previousRow = key.getRowAt(i - 1);
-                    if (previousRow.getNumberOfColumnValues() >= j + 1) {
-                        if (!rowsMatchCharactersAtColumn(row, previousRow, columnNumber)) {
-                            newIndex = true;
-                        }
-                    } else {
-                        newIndex = true;
-                    }
-                }
-
-                int indexForColumn;
-                Map<List<MultiStateAttribute>, Object> indexInfo;
-
-                if (newIndex || !latestIndexForCharacterGroupMap.containsKey(columnChars)) {
-                    indexForColumn = indexInfoMaps.size();
-                    // indexCharacters.add(columnChars);
-                    indexInfo = new HashMap<List<MultiStateAttribute>, Object>();
-                    indexInfoMaps.add(indexInfo);
-                    latestIndexForCharacterGroupMap.put(columnChars, indexForColumn);
-                } else {
-                    indexForColumn = latestIndexForCharacterGroupMap.get(columnChars);
-                    indexInfo = indexInfoMaps.get(indexForColumn);
-                }
-
-                if (j == row.getNumberOfColumnValues() - 1) {
-                    if (indexInfo.containsKey(columnAttrs)) {
-                        List<Item> taxaList = (List<Item>) indexInfo.get(columnAttrs);
-                        taxaList.add(row.getItem());
-                    } else {
-                        List<Item> taxaList = new ArrayList<Item>();
-                        taxaList.add(row.getItem());
-                        indexInfo.put(columnAttrs, taxaList);
-                    }
-                } else {
-                    List<MultiStateAttribute> nextColumnAttrs = row.getAllCharacterValuesForColumn(columnNumber + 1);
-                    List<MultiStateCharacter> nextColumnChars = getCharactersFromAttributes(nextColumnAttrs);
-
-                    // Get the index for the next column. If no index has been
-                    // recorded for the group of characters, or
-                    // the group of characters is different to the corresponding
-                    // column in the previous row, then we
-                    // need to create a new
-                    int indexForNextColumn;
-                    if (latestIndexForCharacterGroupMap.containsKey(nextColumnChars)) {
-                        indexForNextColumn = latestIndexForCharacterGroupMap.get(nextColumnChars);
-
-                        if (i > 0) {
-                            if (previousRow.getNumberOfColumnValues() >= j + 2) {
-                                if (!rowsMatchCharactersAtColumn(row, previousRow, columnNumber + 1)) {
-                                    indexForNextColumn = indexInfoMaps.size();
-                                }
-                            } else {
-                                indexForNextColumn = indexInfoMaps.size();
-                            }
-                        }
-                    } else {
-                        indexForNextColumn = indexInfoMaps.size();
-                    }
-
-                    indexInfo.put(columnAttrs, indexForNextColumn);
-                    indexBackReferences.put(indexForNextColumn, indexForColumn);
-                }
-            }
-        }
-    }
-
-    private void generateTypesetBracketedKey(IdentificationKey key, List<Character> includedCharacters, List<Item> includedItems, boolean displayCharacterNumbers, PrintFile typesetFile) {
-        List<Map<List<MultiStateAttribute>, Object>> indexInfoMaps = new ArrayList<Map<List<MultiStateAttribute>, Object>>();
-        Map<Integer, Integer> indexBackReferences = new HashMap<Integer, Integer>();
-
-        generateBracketedKeyData(key, indexInfoMaps, indexBackReferences);
-        
-        //Output start of file
+        // Output start of file
         TypeSettingMark startFileMark = _context.getTypeSettingMark(MarkPosition.START_OF_FILE);
         typesetFile.outputLine(startFileMark.getMarkText());
-        
-        //Output key parameters
+
+        // Output key parameters
         TypeSettingMark parametersMark = _context.getTypeSettingMark(MarkPosition.PARAMETERS);
         String parametersText = parametersMark.getMarkText();
         parametersText.replaceAll("@nchar", Integer.toString(_context.getDataSet().getNumberOfCharacters()));
         parametersText.replaceAll("@ncincl", Integer.toString(includedCharacters.size()));
-        parametersText.replaceAll("@ncinkey", Integer.toString(key.getCharactersUsedInKey().size()));
-        
+        parametersText.replaceAll("@ncinkey", "TODO - @ncinkey");// Integer.toString(key.getCharactersUsedInKey().size()));
+
         parametersText.replaceAll("@ntaxa", Integer.toString(_context.getDataSet().getMaximumNumberOfItems()));
         parametersText.replaceAll("@ntincl", Integer.toString(includedItems.size()));
-        parametersText.replaceAll("@ntinkey", Integer.toString(key.getNumberOfRows()));
-        
+        parametersText.replaceAll("@ntinkey", "TODO - @ntinkey");// Integer.toString(key.getNumberOfRows()));
+
         parametersText.replaceAll("@rbase", formatDouble(_context.getRBase()));
         parametersText.replaceAll("@abase", formatDouble(_context.getABase()));
         parametersText.replaceAll("@reuse", formatDouble(_context.getReuse()));
         parametersText.replaceAll("@varywt", formatDouble(_context.getVaryWt()));
-        
-        
-        
-        for (int i = 0; i < indexInfoMaps.size(); i++) {
-            Map<List<MultiStateAttribute>, Object> indexInfoMap = indexInfoMaps.get(i);
+        // @nconf - number of confirmatory characters
+        // @avglen = Average length of key.
+        // @avgcost - Average cost of key.
+        // @maxlen - Maximum length of key.
+        // @maxcost - Maximum cost of key.
+        // @cmask - Character mask.
+        // @rel - Character reliabilities.
+        // @tmask - Taxon mask. //@tabund - Item abundances.
+        // @preset - Preset characters.
 
-            int backReference;
-            if (i == 0) {
-                backReference = 0;
-            } else {
-                backReference = indexBackReferences.get(i) + 1;
-            }
-
-            //outputBrackedKeyIndex(printFile, i + 1, backReference, indexInfoMap, displayCharacterNumbers, indexNumberIndent, indexLineWrapIndent);
-            //printFile.writeBlankLines(1, 0);
+        for (BracketedKeyNode node : bracketedKey) {
+            outputTypesetBracketedKeyNode(typesetFile, node);
         }
-        
-        //Output end of key
-        TypeSettingMark endKeyMark = _context.getTypeSettingMark(MarkPosition.END_OF_KEY);
-        typesetFile.outputLine(endKeyMark.getMarkText());
-        
-        //Output end of file
-        TypeSettingMark endFileMark = _context.getTypeSettingMark(MarkPosition.END_OF_FILE);
-        typesetFile.outputLine(endFileMark.getMarkText());
     }
 
-    private List<MultiStateCharacter> getCharactersFromAttributes(List<MultiStateAttribute> attrs) {
-        List<MultiStateCharacter> chars = new ArrayList<MultiStateCharacter>();
-        for (MultiStateAttribute attr : attrs) {
-            chars.add(attr.getCharacter());
+    private void outputTypesetBracketedKeyNode(PrintFile printFile, BracketedKeyNode node) {
+        // @node - Node number.
+        // @from - Previous node.
+        // @to - Next node.
+        // @state - feature/state text.
+        // @nrow - number of "destinations" for the current node.
+
+        TypeSettingMark firstLineMark;
+
+        if (node.getNodeNumber() == 1) {
+            firstLineMark = _context.getTypeSettingMark(MarkPosition.FIRST_LEAD_OF_FIRST_NODE);
+        } else {
+            firstLineMark = _context.getTypeSettingMark(MarkPosition.FIRST_LEAD_OF_NODE);
         }
-
-        return chars;
-    }
-
-    private boolean rowsMatchCharactersAtColumn(KeyRow row1, KeyRow row2, int columnIndex) {
-        List<MultiStateAttribute> row1ColumnAttrs = row1.getAllCharacterValuesForColumn(columnIndex);
-        List<MultiStateCharacter> row1ColumnChars = getCharactersFromAttributes(row1ColumnAttrs);
-
-        List<MultiStateAttribute> row2ColumnAttrs = row2.getAllCharacterValuesForColumn(columnIndex);
-        List<MultiStateCharacter> row2ColumnChars = getCharactersFromAttributes(row2ColumnAttrs);
-
-        return row1ColumnChars.equals(row2ColumnChars);
+        
+        
+       
     }
 
     private String formatDouble(double d) {

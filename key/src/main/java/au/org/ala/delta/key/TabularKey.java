@@ -9,22 +9,22 @@ import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 
-public class IdentificationKey {
+public class TabularKey {
     
-    private List<KeyRow> _rows;
+    private List<TabularKeyRow> _rows;
     
     private Set<au.org.ala.delta.model.Character> _usedCharacters;
     private Set<Item> _usedItems;
     
-    public IdentificationKey() {
-        _rows = new ArrayList<KeyRow>();
+    public TabularKey() {
+        _rows = new ArrayList<TabularKeyRow>();
         _usedCharacters = new HashSet<au.org.ala.delta.model.Character>();
         _usedItems = new HashSet<Item>();
     }
     
-    public void addRow(KeyRow row) {
+    public void addRow(TabularKeyRow row) {
         _rows.add(row);
-        for (Attribute attr: row.getAllCharacterValues()) {
+        for (Attribute attr: row.getAllAttributes()) {
             _usedCharacters.add(attr.getCharacter());
         }
         
@@ -47,11 +47,11 @@ public class IdentificationKey {
         return _rows.size();
     }
     
-    public KeyRow getRowAt(int idx) {
+    public TabularKeyRow getRowAt(int idx) {
         return _rows.get(idx);
     }
     
-    public List<KeyRow> getRows() {
+    public List<TabularKeyRow> getRows() {
         return _rows;
     }
 }
