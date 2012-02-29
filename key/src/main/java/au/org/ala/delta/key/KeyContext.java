@@ -226,10 +226,19 @@ public class KeyContext extends DeltaContext {
         return (KeyOutputFileManager) _outputFileSelector;
     }
 
+    /**
+     * Get text that is to be output at the top of a bracketed key in RTF or HTML format. This value
+     * is set using the PRINT COMMENT directive.
+     */    
     public String getTypeSettingFileHeaderText() {
         return _typeSettingFileHeaderText;
     }
 
+    /**
+     * Set text that is to be output at the top of a bracketed key in RTF or HTML format. This value
+     * is set using the PRINT COMMENT directive
+     * @param typeSettingFileHeaderText
+     */
     public void setTypeSettingFileHeaderText(String typeSettingFileHeaderText) {
         this._typeSettingFileHeaderText = typeSettingFileHeaderText;
     }

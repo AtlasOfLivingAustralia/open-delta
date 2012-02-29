@@ -25,6 +25,7 @@ import au.org.ala.delta.directives.Heading;
 import au.org.ala.delta.directives.IncludeCharacters;
 import au.org.ala.delta.directives.IncludeItems;
 import au.org.ala.delta.directives.ItemAbundances;
+import au.org.ala.delta.directives.OutputFormatHtml;
 import au.org.ala.delta.directives.PrintWidth;
 import au.org.ala.delta.directives.TypeSettingMarks;
 import au.org.ala.delta.key.KeyContext;
@@ -67,7 +68,7 @@ public class KeyDirectiveParser extends DirectiveParser<KeyContext> {
         instance.registerDirective(new NoTabularKeyDirective());
         instance.registerDirective(new NumberOfConfirmatoryCharactersDirective());
         instance.registerDirective(new KeyOutputDirectoryDirective());
-        //TODO outputformathtml
+        instance.registerDirective(new OutputFormatHtml());
         //TODO page length
         
         instance.registerDirective(new PresetCharactersDirective());

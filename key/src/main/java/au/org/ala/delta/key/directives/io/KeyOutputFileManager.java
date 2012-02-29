@@ -70,24 +70,30 @@ public class KeyOutputFileManager extends OutputFileSelector {
         if (outputDir == null) {
             outputDir = createFile(_outputDirectory);
         }
-        
+
         _typesettingFileName = Utils.createFileFromPath(fileName, outputDir).getAbsolutePath();
         PrintStream out = createPrintStream(_typesettingFileName);
         // The file width has no effect on typeset data. Always use the default
         // file width.
-        _typesettingFile = new PrintFile(out, DEFAULT_OUTPUT_FILE_WIDTH);
+        _typesettingFile = new PrintFile(out, 1000);
     }
 
     public PrintFile getTypesettingFile() {
         if (_typesettingFile == null) {
-
+            _typesettingFileName = Utils.createFileFromPath(_defaultBaseFileName + DEFAULT_TYPESETTING_FILE_EXTENSION, _typesettingFileOutputDirectory).getAbsolutePath();
+            try {
+                PrintStream out = createPrintStream(_typesettingFileName);
+                _typesettingFile = new PrintFile(out, 1000);
+            } catch (Exception ex) {
+                throw new RuntimeException(String.format("Error creating default typesetting file %s", _typesettingFileName), ex);
+            }
         }
         return _typesettingFile;
     }
-    
+
     public File getTypesettingFileOutputDirectory() {
         return _typesettingFileOutputDirectory;
-    }    
+    }
 
     public void setTypesettingFileOutputDirectory(File outputDir) {
         _typesettingFileOutputDirectory = outputDir;

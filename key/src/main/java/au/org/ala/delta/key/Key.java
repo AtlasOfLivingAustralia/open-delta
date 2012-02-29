@@ -204,12 +204,7 @@ public class Key implements DirectiveParserObserver {
                 Map<Integer, TypeSettingMark> typesettingMarksMap = _context.getTypeSettingMarks();
                 boolean typsettingMarksSpecified = !(typesettingMarksMap == null || typesettingMarksMap.isEmpty());
 
-                KeyOutputFileManager outputFileManager = _context.getOutputFileManager();
-                generateKeyOutput(key, includedCharacters, includedItems, _context.getDisplayTabularKey(), _context.getDisplayBracketedKey() && !typsettingMarksSpecified);
-
-                if (_context.getDisplayBracketedKey() && typsettingMarksSpecified) {
-                    generateTypesettingOutput();
-                }
+                generateKeyOutput(key, includedCharacters, includedItems, _context.getDisplayTabularKey(), _context.getDisplayBracketedKey(), typsettingMarksSpecified);
 
                 generateListingOutput(includedCharacters, includedItems, true);
             } else {
@@ -550,8 +545,10 @@ public class Key implements DirectiveParserObserver {
         return _context;
     }
 
-    private void generateKeyOutput(TabularKey tabularKey, List<Character> includedCharacters, List<Item> includedItems, boolean outputTabularKey, boolean outputBracketedKey) {
-        PrintFile printFile = _context.getOutputFileSelector().getOutputFile();
+    private void generateKeyOutput(TabularKey tabularKey, List<Character> includedCharacters, List<Item> includedItems, boolean outputTabularKey, boolean outputBracketedKey,
+            boolean typesettingMarksSpecified) {
+        PrintFile printFile = _context.getOutputFileManager().getOutputFile();
+        PrintFile typesetFile = _context.getOutputFileManager().getTypesettingFile();
 
         if (outputTabularKey) {
             generateKeyHeader(printFile, tabularKey, includedCharacters, includedItems, outputTabularKey, outputBracketedKey);
@@ -560,14 +557,18 @@ public class Key implements DirectiveParserObserver {
         }
 
         if (outputBracketedKey) {
-            if (_context.getDisplayTabularKey()) {
-                printFile.writeBlankLines(2, 0);
-            }
-
-            generateKeyHeader(printFile, tabularKey, includedCharacters, includedItems, outputTabularKey, outputBracketedKey);
             BracketedKey bracketedKey = KeyUtils.convertTabularKeyToBracketedKey(tabularKey);
+            if (typesettingMarksSpecified) {
+                generateTypesetBracketedKey(bracketedKey, includedCharacters, includedItems, typesetFile, _context.getAddCharacterNumbers(), _context.getOutputHtml());
+            } else {
+                if (_context.getDisplayTabularKey()) {
+                    printFile.writeBlankLines(2, 0);
+                }
 
-            printBracketedKey(bracketedKey, _context.getAddCharacterNumbers(), printFile);
+                generateKeyHeader(printFile, tabularKey, includedCharacters, includedItems, outputTabularKey, outputBracketedKey);
+
+                printBracketedKey(bracketedKey, _context.getAddCharacterNumbers(), printFile);
+            }
             System.out.println("Bracketed key completed");
         }
     }
@@ -932,33 +933,57 @@ public class Key implements DirectiveParserObserver {
             } else {
                 // Index references another index
                 int forwardReference = (Integer) itemListOrIndexNumber;
-                String forwardReferenceAsString = Integer.toString(forwardReference + 1);
+                String forwardReferenceAsString = Integer.toString(forwardReference);
                 printFile.outputStringPairWithPaddingCharacter(entryBuilder.toString(), " " + forwardReferenceAsString, '.');
             }
         }
     }
 
-    private void generateTypesetBracketedKey(BracketedKey bracketedKey, List<Character> includedCharacters, List<Item> includedItems, PrintFile typesetFile) {
+    private void generateTypesetBracketedKey(BracketedKey bracketedKey, List<Character> includedCharacters, List<Item> includedItems, PrintFile typesetFile, boolean displayCharacterNumbers,
+            boolean outputHtml) {
+        StringBuilder typesetTextBuilder = new StringBuilder();
 
         // Output start of file
         TypeSettingMark startFileMark = _context.getTypeSettingMark(MarkPosition.START_OF_FILE);
-        typesetFile.outputLine(startFileMark.getMarkText());
+        typesetTextBuilder.append(startFileMark.getMarkText());
+
+        // Output any file heading text set using the PRINT COMMENT directive
+        String headerText = _context.getTypeSettingFileHeaderText();
+
+        if (headerText != null) {
+            typesetTextBuilder.append(_context.getTypeSettingFileHeaderText());
+        }
 
         // Output key parameters
         TypeSettingMark parametersMark = _context.getTypeSettingMark(MarkPosition.PARAMETERS);
         String parametersText = parametersMark.getMarkText();
-        parametersText.replaceAll("@nchar", Integer.toString(_context.getDataSet().getNumberOfCharacters()));
-        parametersText.replaceAll("@ncincl", Integer.toString(includedCharacters.size()));
-        parametersText.replaceAll("@ncinkey", "TODO - @ncinkey");// Integer.toString(key.getCharactersUsedInKey().size()));
 
-        parametersText.replaceAll("@ntaxa", Integer.toString(_context.getDataSet().getMaximumNumberOfItems()));
-        parametersText.replaceAll("@ntincl", Integer.toString(includedItems.size()));
-        parametersText.replaceAll("@ntinkey", "TODO - @ntinkey");// Integer.toString(key.getNumberOfRows()));
+        typesetTextBuilder.append(parametersText);
 
-        parametersText.replaceAll("@rbase", formatDouble(_context.getRBase()));
-        parametersText.replaceAll("@abase", formatDouble(_context.getABase()));
-        parametersText.replaceAll("@reuse", formatDouble(_context.getReuse()));
-        parametersText.replaceAll("@varywt", formatDouble(_context.getVaryWt()));
+        for (BracketedKeyNode node : bracketedKey) {
+            typesetTextBuilder.append(generateTypesetTextForBracketedKeyNode(node, outputHtml, displayCharacterNumbers));
+        }
+
+        TypeSettingMark endKeyMark = _context.getTypeSettingMark(MarkPosition.END_OF_KEY);
+        typesetTextBuilder.append(endKeyMark.getMarkText());
+
+        TypeSettingMark endFileMark = _context.getTypeSettingMark(MarkPosition.END_OF_FILE);
+        typesetTextBuilder.append(endFileMark.getMarkText());
+
+        String typesetText = typesetTextBuilder.toString();
+        
+        typesetText = typesetText.replaceAll("@nchar", Integer.toString(_context.getDataSet().getNumberOfCharacters()));
+        typesetText = typesetText.replaceAll("@ncincl", Integer.toString(includedCharacters.size()));
+        typesetText = typesetText.replaceAll("@ncinkey", "TODO - @ncinkey");// Integer.toString(key.getCharactersUsedInKey().size()));
+
+        typesetText = typesetText.replaceAll("@ntaxa", Integer.toString(_context.getDataSet().getMaximumNumberOfItems()));
+        typesetText = typesetText.replaceAll("@ntincl", Integer.toString(includedItems.size()));
+        typesetText = typesetText.replaceAll("@ntinkey", "TODO - @ntinkey");// Integer.toString(key.getNumberOfRows()));
+
+        typesetText = typesetText.replaceAll("@rbase", formatDouble(_context.getRBase()));
+        typesetText = typesetText.replaceAll("@abase", formatDouble(_context.getABase()));
+        typesetText = typesetText.replaceAll("@reuse", formatDouble(_context.getReuse()));
+        typesetText = typesetText.replaceAll("@varywt", formatDouble(_context.getVaryWt()));
         // @nconf - number of confirmatory characters
         // @avglen = Average length of key.
         // @avgcost - Average cost of key.
@@ -969,17 +994,25 @@ public class Key implements DirectiveParserObserver {
         // @tmask - Taxon mask. //@tabund - Item abundances.
         // @preset - Preset characters.
 
-        for (BracketedKeyNode node : bracketedKey) {
-            outputTypesetBracketedKeyNode(typesetFile, node);
-        }
+        typesetFile.outputLine(typesetText);
     }
 
-    private void outputTypesetBracketedKeyNode(PrintFile printFile, BracketedKeyNode node) {
+    private String generateTypesetTextForBracketedKeyNode(BracketedKeyNode node, boolean outputHtml, boolean displayCharacterNumbers) {
         // @node - Node number.
         // @from - Previous node.
         // @to - Next node.
         // @state - feature/state text.
         // @nrow - number of "destinations" for the current node.
+        CharacterFormatter typesetCharFormatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, false, false);
+        typesetCharFormatter.setRtfToHtml(outputHtml);
+        ItemFormatter typesetItemFormatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, false, false, false);
+        typesetItemFormatter.setRtfToHtml(outputHtml);
+
+        // Need to count the number of destinations, as multiple taxa identified
+        // by the one line are counted as distinct destinations.
+        int numDestinations = 0;
+
+        StringBuilder nodeTextBuilder = new StringBuilder();
 
         TypeSettingMark firstLineMark;
 
@@ -988,9 +1021,89 @@ public class Key implements DirectiveParserObserver {
         } else {
             firstLineMark = _context.getTypeSettingMark(MarkPosition.FIRST_LEAD_OF_NODE);
         }
-        
-        
-       
+
+        TypeSettingMark subsequentLineMark = _context.getTypeSettingMark(MarkPosition.SUBSEQUENT_LEAD_OF_NODE);
+
+        TypeSettingMark firstTaxonDestinationMark = _context.getTypeSettingMark(MarkPosition.FIRST_DESTINATION_OF_LEAD);
+        TypeSettingMark subsequentTaxonDestinationMark = _context.getTypeSettingMark(MarkPosition.SUBSEQUENT_DESTINATION_OF_LEAD);
+        TypeSettingMark afterTaxonNamesMark = _context.getTypeSettingMark(MarkPosition.AFTER_TAXON_NAME);
+
+        TypeSettingMark nodeNumberDestinationMark = _context.getTypeSettingMark(MarkPosition.DESTINATION_OF_LEAD_NODE);
+
+        TypeSettingMark afterNodeMark = _context.getTypeSettingMark(MarkPosition.AFTER_NODE);
+
+        for (int i = 0; i < node.getNumberOfLines(); i++) {
+            StringBuilder lineTextBuilder = new StringBuilder();
+            List<MultiStateAttribute> attributesForLine = node.getAttributesForLine(i);
+            Object destinationForLine = node.getDestinationForLine(i);
+
+            StringBuilder attributesTextBuilder = new StringBuilder();
+            for (int j = 0; j < attributesForLine.size(); j++) {
+                MultiStateAttribute attr = attributesForLine.get(j);
+                if (displayCharacterNumbers) {
+                    attributesTextBuilder.append("(");
+                    attributesTextBuilder.append(attr.getCharacter().getCharacterId());
+                    attributesTextBuilder.append(") ");
+                }
+
+                attributesTextBuilder.append(_charFormatter.formatCharacterDescription(attr.getCharacter()));
+                attributesTextBuilder.append(" ");
+                attributesTextBuilder.append(_charFormatter.formatState(attr.getCharacter(), attr.getPresentStates().iterator().next()));
+
+                // Don't put a semicolon/space after the last attribute
+                // description
+                if (j < attributesForLine.size() - 1) {
+                    attributesTextBuilder.append("; ");
+                }
+            }
+
+            if (i == 0) {
+                lineTextBuilder.append(firstLineMark.getMarkText());
+            } else {
+                lineTextBuilder.append(subsequentLineMark.getMarkText());
+            }
+
+            if (destinationForLine instanceof Integer) {
+                int intDestination = (Integer) destinationForLine;
+
+                String destinationText = nodeNumberDestinationMark.getMarkText();
+                destinationText = destinationText.replaceAll("@to", Integer.toString(intDestination));
+                lineTextBuilder.append(destinationText);
+                numDestinations++;
+            } else {
+                List<Item> destinationTaxa = (List<Item>) destinationForLine;
+
+                for (int j = 0; j < destinationTaxa.size(); j++) {
+                    numDestinations++;
+                    Item taxon = destinationTaxa.get(j);
+                    String formattedTaxonDescription = typesetItemFormatter.formatItemDescription(taxon);
+
+                    String destinationText;
+                    if (j == 0) {
+                        destinationText = firstTaxonDestinationMark.getMarkText();
+                    } else {
+                        destinationText = subsequentTaxonDestinationMark.getMarkText();
+                    }
+                    destinationText = destinationText.replaceAll("@to", formattedTaxonDescription);
+
+                    lineTextBuilder.append(destinationText);
+                }
+                lineTextBuilder.append(afterTaxonNamesMark.getMarkText());
+            }
+
+            String lineText = lineTextBuilder.toString();
+            lineText = lineText.replaceAll("@state", attributesTextBuilder.toString());
+            nodeTextBuilder.append(lineText);
+        }
+
+        nodeTextBuilder.append(afterNodeMark.getMarkText());
+
+        String nodeText = nodeTextBuilder.toString();
+        nodeText = nodeText.replaceAll("@node", Integer.toString(node.getNodeNumber()));
+        nodeText = nodeText.replaceAll("@from", Integer.toString(node.getBackReference()));
+        nodeText = nodeText.replaceAll("@nrow", Integer.toString(numDestinations));
+
+        return nodeText;
     }
 
     private String formatDouble(double d) {

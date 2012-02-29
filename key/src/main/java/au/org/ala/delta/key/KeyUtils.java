@@ -179,7 +179,8 @@ public class KeyUtils {
                 Object forwardReferenceOrTaxaList = nodeInfo.get(nodeLineAttributes);
 
                 if (forwardReferenceOrTaxaList instanceof Integer) {
-                    node.addLine(nodeLineAttributes, (Integer) forwardReferenceOrTaxaList);
+                    int forwardReferenceNodeNumber = ((Integer) forwardReferenceOrTaxaList) + 1;
+                    node.addLine(nodeLineAttributes, forwardReferenceNodeNumber);
                 } else {
                     node.addLine(nodeLineAttributes, (List<Item>) forwardReferenceOrTaxaList);
                 }
