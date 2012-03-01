@@ -1,10 +1,12 @@
 package au.org.ala.delta.key;
 
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +19,7 @@ import au.org.ala.delta.model.DeltaDataSet;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.util.Pair;
 
 public class KeyUtils {
 
@@ -208,6 +211,105 @@ public class KeyUtils {
         List<MultiStateCharacter> row2ColumnChars = getCharactersFromAttributes(row2ColumnAttrs);
 
         return row1ColumnChars.equals(row2ColumnChars);
+    }
+    
+    public static String formatPresetCharacters(KeyContext context) {
+        StringBuilder builder = new StringBuilder();
+        
+        LinkedHashMap<Pair<Integer, Integer>, Integer> presetCharactersMap = context.getPresetCharacters();
+        
+        for (Pair<Integer, Integer> columnGroupPair: presetCharactersMap.keySet()) {
+            int columnNumber = columnGroupPair.getFirst();
+            int groupNumber = columnGroupPair.getSecond();
+            int characterNumber = presetCharactersMap.get(columnGroupPair);
+            
+            builder.append(String.format("%s,%s:%s", characterNumber, columnNumber, groupNumber));
+            builder.append(" ");
+        }
+        
+        return builder.toString().trim();
+    }
+    
+    public static String formatCharacterReliabilities(KeyContext context, String valueSeparator, String rangeSeparator) {
+        List<Character> charsList = context.getDataSet().getCharactersAsList(); 
+        List<Integer> charNumbersList = new ArrayList<Integer>();
+        List<Double> charReliabiltiesList = new ArrayList<Double>();
+        
+        for (Character ch: charsList) {
+            charNumbersList.add(ch.getCharacterId());
+            charReliabiltiesList.add((double)ch.getReliability());
+        }
+
+        return formatIndexValuePairs(charNumbersList, charReliabiltiesList, valueSeparator, rangeSeparator);
+    }
+    
+    public static String formatTaxonAbunances(KeyContext context, String valueSeparator, String rangeSeparator) {
+        List<Item> taxaList = context.getDataSet().getItemsAsList();
+        List<Integer> taxaNumbersList = new ArrayList<Integer>();
+        List<Double> taxaAbundancesList = new ArrayList<Double>();
+        
+        for (Item taxon: taxaList) {
+            taxaNumbersList.add(taxon.getItemNumber());
+            taxaAbundancesList.add(context.getItemAbundancy(taxon.getItemNumber()));
+        }
+
+        return formatIndexValuePairs(taxaNumbersList, taxaAbundancesList, valueSeparator, rangeSeparator);
+    }
+    
+    private static String formatIndexValuePairs(List<Integer> indicies, List<Double> values, String valueSeparator, String rangeSeparator) {
+        DecimalFormat formatter = new DecimalFormat("#,##0.#");
+        
+        StringBuilder builder = new StringBuilder();
+        
+        int startRange = 0;
+        int previousIndex = 0;
+        double rangeValue = 0;
+        
+        for (int i=0; i < indicies.size(); i++) {
+            int index = indicies.get(i);
+            double value = values.get(i);
+            
+            if (i == 0) {
+                startRange = index;
+                rangeValue = value;
+            } else {
+                if (previousIndex < index - 1 || value != rangeValue) {
+                    builder.append(" ");
+                    builder.append(startRange);
+                    
+                    if (previousIndex != startRange) {
+                        builder.append(rangeSeparator);
+                        builder.append(previousIndex);
+                    }
+                    
+                    builder.append(valueSeparator);
+                    builder.append(formatter.format(rangeValue));
+                    
+                    startRange = index;
+                    rangeValue = value;
+                }
+                
+                if (i == indicies.size() - 1) {
+                    builder.append(" ");
+                    builder.append(startRange);
+                    
+                    if (index != startRange) {
+                        builder.append(rangeSeparator);
+                        builder.append(index);
+                    }
+                    
+                    builder.append(valueSeparator);
+                    builder.append(formatter.format(rangeValue));
+                    
+                    startRange = index;
+                    rangeValue = value;
+                }
+            }
+            
+            previousIndex = index;
+        }
+        
+        return builder.toString().trim();
     }
 
 }

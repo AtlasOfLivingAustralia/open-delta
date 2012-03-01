@@ -54,4 +54,48 @@ public class TabularKey {
     public List<TabularKeyRow> getRows() {
         return _rows;
     }
+    
+    public double getAverageLength() {
+        double sumLengths = 0;
+        
+        for (TabularKeyRow row: _rows) {
+            sumLengths += row.getNumberOfColumns();
+        }
+        
+        return sumLengths / _rows.size();
+    }
+    
+    public double getMaximumLength() {
+        double maxLength = 0;
+        
+        for (TabularKeyRow row: _rows) {
+            if (row.getNumberOfColumns() > maxLength) {
+                maxLength = row.getNumberOfColumns();
+            }
+        }
+        
+        return maxLength;
+    }
+    
+    public double getAverageCost() {
+        double sumCosts = 0;
+        
+        for (TabularKeyRow row: _rows) {
+            sumCosts += row.getCost();
+        }
+        
+        return sumCosts / _rows.size();
+    }
+    
+    public double getMaximumCost() {
+        double maxCost = 0;
+        
+        for (TabularKeyRow row: _rows) {
+            if (row.getNumberOfColumns() > maxCost) {
+                maxCost = row.getCost();
+            }
+        }
+        
+        return maxCost;
+    }
 }

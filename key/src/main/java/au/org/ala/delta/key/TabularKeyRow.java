@@ -12,10 +12,13 @@ public class TabularKeyRow {
 
     private List<MultiStateAttribute> _mainAttributes;
     private List<List<MultiStateAttribute>> _confirmatoryCharacterAttributeLists;
+    
+    private double _cost;
 
     public TabularKeyRow() {
         _mainAttributes = new ArrayList<MultiStateAttribute>();
         _confirmatoryCharacterAttributeLists = new ArrayList<List<MultiStateAttribute>>();
+        _cost = 0;
     }
 
     public Item getItem() {
@@ -26,18 +29,20 @@ public class TabularKeyRow {
         this._item = item;
     }
 
-    public void addAttribute(MultiStateAttribute mainAttributes, List<MultiStateAttribute> confirmatoryCharacterAttributes) {
-        if (mainAttributes == null) {
+    public void addAttribute(MultiStateAttribute mainAttribute, List<MultiStateAttribute> confirmatoryCharacterAttributes, double cost) {
+        if (mainAttribute == null) {
             throw new IllegalArgumentException("Main character value cannot be null");
         }
 
-        _mainAttributes.add(mainAttributes);
+        _mainAttributes.add(mainAttribute);
 
         // record absence of confirmatory character values as null
         if (confirmatoryCharacterAttributes != null && confirmatoryCharacterAttributes.isEmpty()) {
             confirmatoryCharacterAttributes = null;
         }
         _confirmatoryCharacterAttributeLists.add(confirmatoryCharacterAttributes);
+        
+        _cost += cost;
     }
 
     public int getNumberOfColumns() {
@@ -110,6 +115,13 @@ public class TabularKeyRow {
         }
 
         return allValuesList;
+    }
+    
+    /**
+     * @return The summed cost of using each of the main characters in the row, in order
+     */
+    public double getCost() {
+        return _cost;
     }
 
 }

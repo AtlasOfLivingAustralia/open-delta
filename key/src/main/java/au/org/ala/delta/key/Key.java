@@ -23,7 +23,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,8 +31,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.DeltaContext.HeadingType;
@@ -198,7 +197,7 @@ public class Key implements DirectiveParserObserver {
                     includedItems.add(iterFilteredItems.next().getItem());
                 }
 
-                doCalculateKey(key, dataset, includedCharacters, includedItems, specimen, null);
+                doCalculateKey(key, dataset, includedCharacters, includedItems, specimen, null, null);
                 System.out.println("Key generation completed");
 
                 Map<Integer, TypeSettingMark> typesettingMarksMap = _context.getTypeSettingMarks();
@@ -223,10 +222,14 @@ public class Key implements DirectiveParserObserver {
     }
 
     private void doCalculateKey(TabularKey key, FilteredDataSet dataset, List<Character> includedCharacters, List<Item> includedItems, Specimen specimen,
-            Map<Character, List<MultiStateAttribute>> confirmatoryCharacterValues) {
+            Map<Character, List<MultiStateAttribute>> confirmatoryCharacterValues, Map<Character, Double> usedCharacterCosts) {
 
         if (confirmatoryCharacterValues == null) {
             confirmatoryCharacterValues = new HashMap<Character, List<MultiStateAttribute>>();
+        }
+
+        if (usedCharacterCosts == null) {
+            usedCharacterCosts = new HashMap<Character, Double>();
         }
 
         Set<Item> specimenAvailableTaxa = getSpecimenAvailableTaxa(specimen, includedItems);
@@ -249,7 +252,7 @@ public class Key implements DirectiveParserObserver {
                 for (Character ch : specimen.getUsedCharacters()) {
                     // Add row to key
                     MultiStateAttribute mainCharacterValue = (MultiStateAttribute) specimen.getAttributeForCharacter(ch);
-                    row.addAttribute(mainCharacterValue, confirmatoryCharacterValues.get(ch));
+                    row.addAttribute(mainCharacterValue, confirmatoryCharacterValues.get(ch), usedCharacterCosts.get(ch));
 
                     // If character has not already been used in key, update its
                     // cost using the REUSE setting to increase the
@@ -283,7 +286,9 @@ public class Key implements DirectiveParserObserver {
 
             int presetCharacterNumber = _context.getPresetCharacter(currentColumn, currentGroup);
 
-            LinkedHashMap<Character, Double> bestMap = null;
+            LinkedHashMap<Character, Double> bestMap = KeyBest.orderBest(_context.getDataSet(), _context.getCharacterCostsAsArray(), _context.getCalculatedItemAbundanceValuesAsArray(),
+                    specimenAvailableCharacterNumbers, specimenAvailableTaxaNumbers, _context.getRBase(), _context.getABase(), _context.getReuse(), _context.getVaryWt(),
+                    _context.getAllowImproperSubgroups());
 
             // -1 indicates no preset character for the column/group
             if (presetCharacterNumber > 0) {
@@ -295,14 +300,6 @@ public class Key implements DirectiveParserObserver {
                     throw new RuntimeException(MessageFormat.format("Character {0} is not suitable for use at column {1} group {2}", presetCharacterNumber, currentColumn, currentGroup));
                 }
             } else {
-                bestMap = KeyBest.orderBest(_context.getDataSet(), _context.getCharacterCostsAsArray(), _context.getCalculatedItemAbundanceValuesAsArray(), specimenAvailableCharacterNumbers,
-                        specimenAvailableTaxaNumbers, _context.getRBase(), _context.getABase(), _context.getReuse(), _context.getVaryWt(), _context.getAllowImproperSubgroups());
-                // for (Character ch: specimen.getUsedCharacters()) {
-                // System.out.println(specimen.getAttributeForCharacter(ch));
-                // }
-                // System.out.println("------");
-                // System.out.println(bestMap);
-                // System.out.println("#####");
                 List<Character> bestOrderCharacters = new ArrayList<Character>(bestMap.keySet());
                 if (bestOrderCharacters.isEmpty()) {
                     return;
@@ -312,14 +309,11 @@ public class Key implements DirectiveParserObserver {
                 }
             }
 
+            double bestCharacterCost = _context.getCharacterCost(bestCharacter.getCharacterId());
+
             List<ConfirmatoryCharacter> confirmatoryCharacters = null;
             int numberOfConfirmatoryCharacters = _context.getNumberOfConfirmatoryCharacters();
             if (numberOfConfirmatoryCharacters > 0) {
-                // generated best characters if this has not already been done
-                if (bestMap == null) {
-                    bestMap = KeyBest.orderBest(_context.getDataSet(), _context.getCharacterCostsAsArray(), _context.getCalculatedItemAbundanceValuesAsArray(), specimenAvailableCharacterNumbers,
-                            specimenAvailableTaxaNumbers, _context.getRBase(), _context.getABase(), _context.getReuse(), _context.getVaryWt(), _context.getAllowImproperSubgroups());
-                }
                 List<Character> bestOrderCharacters = new ArrayList<Character>(bestMap.keySet());
                 confirmatoryCharacters = getConfirmatoryCharacters(specimen, includedItems, bestOrderCharacters, bestCharacter, numberOfConfirmatoryCharacters);
             }
@@ -347,10 +341,13 @@ public class Key implements DirectiveParserObserver {
                     confirmatoryCharacterValues.put(bestCharacter, confirmatoryAttributes);
                 }
 
-                doCalculateKey(key, dataset, includedCharacters, includedItems, specimen, confirmatoryCharacterValues);
+                usedCharacterCosts.put(bestCharacter, bestCharacterCost);
+
+                doCalculateKey(key, dataset, includedCharacters, includedItems, specimen, confirmatoryCharacterValues, usedCharacterCosts);
 
                 specimen.removeValueForCharacter(bestCharacter);
                 confirmatoryCharacterValues.remove(bestCharacter);
+                usedCharacterCosts.remove(bestCharacter);
             }
         }
     }
@@ -559,14 +556,15 @@ public class Key implements DirectiveParserObserver {
         if (outputBracketedKey) {
             BracketedKey bracketedKey = KeyUtils.convertTabularKeyToBracketedKey(tabularKey);
             if (typesettingMarksSpecified) {
-                generateTypesetBracketedKey(bracketedKey, includedCharacters, includedItems, typesetFile, _context.getAddCharacterNumbers(), _context.getOutputHtml());
+                generateTypesetBracketedKey(bracketedKey, includedCharacters, includedItems, typesetFile, _context.getAddCharacterNumbers(),
+                        _context.getOutputHtml(), tabularKey.getCharactersUsedInKey().size(), tabularKey.getItemsUsedInKey().size(), tabularKey.getAverageLength(), tabularKey.getAverageCost(), 
+                        tabularKey.getMaximumLength(), tabularKey.getMaximumCost());
             } else {
                 if (_context.getDisplayTabularKey()) {
                     printFile.writeBlankLines(2, 0);
                 }
 
                 generateKeyHeader(printFile, tabularKey, includedCharacters, includedItems, outputTabularKey, outputBracketedKey);
-
                 printBracketedKey(bracketedKey, _context.getAddCharacterNumbers(), printFile);
             }
             System.out.println("Bracketed key completed");
@@ -592,17 +590,18 @@ public class Key implements DirectiveParserObserver {
         printFile.writeBlankLines(1, 0);
         printFile.outputLine(MessageFormat.format("RBASE = {0} ABASE = {1} REUSE = {2} VARYWT = {3}", formatDouble(_context.getRBase()), formatDouble(_context.getABase()),
                 formatDouble(_context.getReuse()), formatDouble(_context.getVaryWt())));
-        // printFile.outputLine(MessageFormat.format("Number of confirmatory characters = {0}",
-        // "TODO"));
+        printFile.outputLine(MessageFormat.format("Number of confirmatory characters = {0}", _context.getNumberOfConfirmatoryCharacters()));
         printFile.writeBlankLines(1, 0);
-        // printFile.outputLine(MessageFormat.format("Average length of key = {0} Average cost of key = {1}",
-        // "TODO", "TODO"));
-        // printFile.outputLine(MessageFormat.format("Maximum length of key = {0} Maximum cost of key = {1}",
-        // "TODO", "TODO"));
+        printFile.outputLine(MessageFormat.format("Average length of key = {0} Average cost of key = {1}", String.format("%.1f", key.getAverageLength()), String.format("%.1f", key.getAverageCost())));
+        printFile.outputLine(MessageFormat.format("Maximum length of key = {0} Maximum cost of key = {1}", String.format("%.1f", key.getMaximumLength()), String.format("%.1f", key.getMaximumCost())));
 
         printFile.writeBlankLines(1, 0);
-        // printFile.outputLine(MessageFormat.format("Preset characters (character,column:group) 666,2:1",
-        // "TODO");
+
+        if (_context.getPresetCharacters().size() > 0) {
+            printFile.outputLine(MessageFormat.format("Preset characters (character,column:group) {0}", KeyUtils.formatPresetCharacters(_context)));
+            printFile.writeBlankLines(1, 0);
+        }
+
         List<Integer> includedCharacterNumbers = new ArrayList<Integer>();
         for (Character ch : includedCharacters) {
             includedCharacterNumbers.add(ch.getCharacterId());
@@ -614,15 +613,13 @@ public class Key implements DirectiveParserObserver {
             includedItemNumbers.add(it.getItemNumber());
         }
 
-        // printFile.outputLine(MessageFormat.format("Character reliabilities",//
-        // "TODO"));
+        printFile.outputLine(MessageFormat.format("Character reliabilities {0}", KeyUtils.formatCharacterReliabilities(_context, ",", "-")));
 
-        printFile.outputLine(MessageFormat.format("Items included {0}", Utils.formatIntegersAsListOfRanges(includedItemNumbers)));
-
-        // printFile.outputLine(MessageFormat.format("Item abundances {0}",//
-        // "TODO"));
         printFile.writeBlankLines(1, 0);
+        printFile.outputLine(MessageFormat.format("Items included {0}", Utils.formatIntegersAsListOfRanges(includedItemNumbers)));
+        printFile.outputLine(MessageFormat.format("Item abundances {0}", KeyUtils.formatTaxonAbunances(_context, ",", "-")));
 
+        printFile.writeBlankLines(1, 0);
     }
 
     // NOTE: In addition to the output lines generated here, any errors and a
@@ -661,15 +658,6 @@ public class Key implements DirectiveParserObserver {
             listingPrintFile.outputLine(MessageFormat.format("{0} items included.", includedItems.size()));
             listingPrintFile.writeBlankLines(1, 0);
         }
-    }
-
-    private void generateTypesettingOutput() {
-        String headerText = _context.getTypeSettingFileHeaderText();
-
-        if (headerText != null) {
-            _context.getOutputFileManager().getTypesettingFile().outputLine(headerText);
-        }
-        _context.getOutputFileManager().getTypesettingFile().outputLine("TODO - IMPLEMENT TYPESETTING OF BRACKETED KEY!");
     }
 
     private void printTabularKey(TabularKey key, PrintFile printFile) {
@@ -745,6 +733,7 @@ public class Key implements DirectiveParserObserver {
             // Output the dividing line between the previous row and the current
             // row
             builder.append("+---------------------------+");
+
             for (int j = 0; j < rowAttributes.size(); j++) {
                 Attribute currentRowAttribute = rowAttributes.get(j);
 
@@ -940,7 +929,7 @@ public class Key implements DirectiveParserObserver {
     }
 
     private void generateTypesetBracketedKey(BracketedKey bracketedKey, List<Character> includedCharacters, List<Item> includedItems, PrintFile typesetFile, boolean displayCharacterNumbers,
-            boolean outputHtml) {
+            boolean outputHtml, int numCharactersUsedInKey, int numTaxaUsedInKey, double avgLenKey, double avgCostKey, double maxLenKey, double maxCostKey) {
         StringBuilder typesetTextBuilder = new StringBuilder();
 
         // Output start of file
@@ -971,27 +960,45 @@ public class Key implements DirectiveParserObserver {
         typesetTextBuilder.append(endFileMark.getMarkText());
 
         String typesetText = typesetTextBuilder.toString();
-        
+
         typesetText = typesetText.replaceAll("@nchar", Integer.toString(_context.getDataSet().getNumberOfCharacters()));
         typesetText = typesetText.replaceAll("@ncincl", Integer.toString(includedCharacters.size()));
-        typesetText = typesetText.replaceAll("@ncinkey", "TODO - @ncinkey");// Integer.toString(key.getCharactersUsedInKey().size()));
+        typesetText = typesetText.replaceAll("@ncinkey", Integer.toString(numCharactersUsedInKey));
 
         typesetText = typesetText.replaceAll("@ntaxa", Integer.toString(_context.getDataSet().getMaximumNumberOfItems()));
         typesetText = typesetText.replaceAll("@ntincl", Integer.toString(includedItems.size()));
-        typesetText = typesetText.replaceAll("@ntinkey", "TODO - @ntinkey");// Integer.toString(key.getNumberOfRows()));
+        typesetText = typesetText.replaceAll("@ntinkey", Integer.toString(numTaxaUsedInKey));
 
         typesetText = typesetText.replaceAll("@rbase", formatDouble(_context.getRBase()));
         typesetText = typesetText.replaceAll("@abase", formatDouble(_context.getABase()));
         typesetText = typesetText.replaceAll("@reuse", formatDouble(_context.getReuse()));
         typesetText = typesetText.replaceAll("@varywt", formatDouble(_context.getVaryWt()));
-        // @nconf - number of confirmatory characters
-        // @avglen = Average length of key.
-        // @avgcost - Average cost of key.
-        // @maxlen - Maximum length of key.
-        // @maxcost - Maximum cost of key.
-        // @cmask - Character mask.
-        // @rel - Character reliabilities.
-        // @tmask - Taxon mask. //@tabund - Item abundances.
+        
+        typesetText = typesetText.replaceAll("@nconf", Integer.toString(_context.getNumberOfConfirmatoryCharacters()));
+        typesetText = typesetText.replaceAll("@avglen", formatDouble(avgLenKey));
+        typesetText = typesetText.replaceAll("@avgcost", formatDouble(avgCostKey));
+        typesetText = typesetText.replaceAll("@maxlen", formatDouble(maxLenKey));
+        typesetText = typesetText.replaceAll("@maxcost", formatDouble(maxCostKey));
+
+        
+        List<Integer> includedCharacterNumbers = new ArrayList<Integer>();
+        for (Character ch : includedCharacters) {
+            includedCharacterNumbers.add(ch.getCharacterId());
+        }
+        List<Integer> includedItemNumbers = new ArrayList<Integer>();
+        for (Item it : includedItems) {
+            includedItemNumbers.add(it.getItemNumber());
+        }
+        
+        // any backslashes that may occur in rangeSymbol need to be escaped otherwise they will be omitted when we do
+        // a String.replaceAll
+        String rangeSymbol = Matcher.quoteReplacement(_context.getTypeSettingMark(MarkPosition.RANGE_SYMBOL).getMarkText());
+        
+        typesetText = typesetText.replaceAll("@cmask", Utils.formatIntegersAsListOfRanges(includedCharacterNumbers, rangeSymbol));
+        typesetText = typesetText.replaceAll("@rel", KeyUtils.formatCharacterReliabilities(_context, ",", rangeSymbol));
+        typesetText = typesetText.replaceAll("@tmask", Utils.formatIntegersAsListOfRanges(includedItemNumbers, rangeSymbol));
+        typesetText = typesetText.replaceAll("@tabund", KeyUtils.formatCharacterReliabilities(_context, ",", rangeSymbol));
+        typesetText = typesetText.replaceAll("@preset", KeyUtils.formatPresetCharacters(_context));
         // @preset - Preset characters.
 
         typesetFile.outputLine(typesetText);
@@ -1078,6 +1085,10 @@ public class Key implements DirectiveParserObserver {
                     Item taxon = destinationTaxa.get(j);
                     String formattedTaxonDescription = typesetItemFormatter.formatItemDescription(taxon);
 
+                    // Any backslashes in taxon description (from RTF formatting) need to be escaped, 
+                    // otherwise they will be omitted when we do a String.replaceAll
+                    formattedTaxonDescription = Matcher.quoteReplacement(formattedTaxonDescription);
+                    
                     String destinationText;
                     if (j == 0) {
                         destinationText = firstTaxonDestinationMark.getMarkText();

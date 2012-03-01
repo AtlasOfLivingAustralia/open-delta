@@ -17,6 +17,7 @@ package au.org.ala.delta.key;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -60,7 +61,8 @@ public class KeyContext extends DeltaContext {
 
     private String _typeSettingFileHeaderText;
 
-    private Map<Pair<Integer, Integer>, Integer> _presetCharacters;
+    // Use linked hash map to maintain order in which preset characters were set.
+    private LinkedHashMap<Pair<Integer, Integer>, Integer> _presetCharacters;
 
     double[] _characterCosts;
     double[] _calculatedItemAbundanceValues;
@@ -111,7 +113,7 @@ public class KeyContext extends DeltaContext {
 
         _treatUnknownAsInapplicable = false;
 
-        _presetCharacters = new HashMap<Pair<Integer, Integer>, Integer>();
+        _presetCharacters = new LinkedHashMap<Pair<Integer, Integer>, Integer>();
         _characterCosts = null;
         _calculatedItemAbundanceValues = null;
 
@@ -265,6 +267,15 @@ public class KeyContext extends DeltaContext {
         } else {
             return -1;
         }
+    }
+    
+    /**
+     * @return A map containing preset character information. A pair (column and group number) 
+     * maps to a character number. A LinkedHashMap is used to maintain the order in which the
+     * preset characters were set.
+     */
+    LinkedHashMap<Pair<Integer, Integer>, Integer> getPresetCharacters() {
+        return _presetCharacters;
     }
 
     public int getNumberOfConfirmatoryCharacters() {
