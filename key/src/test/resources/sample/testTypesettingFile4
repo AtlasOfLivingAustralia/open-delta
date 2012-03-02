@@ -1,0 +1,14 @@
+*COMMENT Default parameter values (set explicitly).
+
+*RBASE 1
+
+*VARYWT 1
+
+*ABASE 1
+
+*REUSE 1
+
+*LISTING FILE mykey.lst
+
+*COMMENT - markhtm includes a call to OUTPUT FILE HTML
+*INPUT FILE markhtm

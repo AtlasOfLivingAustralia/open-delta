@@ -17,8 +17,15 @@ import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.key.directives.KeyDirectiveParser;
 import au.org.ala.delta.util.Utils;
 
+/**
+ * Tests for the OUTPUT DIRECTORY directive
+ * @author ChrisF
+ *
+ */
 public class OutputDirectoryTest extends TestCase {
 
+    // **** Tests for OUPUT DIRECTORY directive **** 
+    
     //Test basic case - directory should be created
     @Test
     public void testCreateOutputDirectory() throws Exception {
@@ -82,7 +89,8 @@ public class OutputDirectoryTest extends TestCase {
         public List<Exception> getExceptions() {
             return exceptions;
         }
-
     }
+    
+    
 
 }

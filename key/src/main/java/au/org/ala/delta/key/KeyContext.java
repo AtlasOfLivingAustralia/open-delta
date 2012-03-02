@@ -47,6 +47,7 @@ public class KeyContext extends DeltaContext {
     private String _keyTypesettingFileName;
 
     private File _directivesFile;
+
     private File _dataDirectory;
 
     private File _typesetFilesOutputDirectory;
@@ -61,7 +62,8 @@ public class KeyContext extends DeltaContext {
 
     private String _typeSettingFileHeaderText;
 
-    // Use linked hash map to maintain order in which preset characters were set.
+    // Use linked hash map to maintain order in which preset characters were
+    // set.
     private LinkedHashMap<Pair<Integer, Integer>, Integer> _presetCharacters;
 
     double[] _characterCosts;
@@ -87,10 +89,11 @@ public class KeyContext extends DeltaContext {
         KeyOutputFileManager outputFileManager = (KeyOutputFileManager) _outputFileSelector;
         try {
             outputFileManager.setOutputDirectory(_dataDirectory.getAbsolutePath());
+            outputFileManager.setTypesettingFileOutputDirectory(_dataDirectory);
         } catch (Exception ex) {
             throw new RuntimeException("Error setting output directory");
         }
-        
+
         outputFileManager.setDefaultBaseFileName(FilenameUtils.getBaseName(directivesFile.getName()));
 
         _typesetFilesOutputDirectory = _dataDirectory;
@@ -229,16 +232,17 @@ public class KeyContext extends DeltaContext {
     }
 
     /**
-     * Get text that is to be output at the top of a bracketed key in RTF or HTML format. This value
-     * is set using the PRINT COMMENT directive.
-     */    
+     * Get text that is to be output at the top of a bracketed key in RTF or
+     * HTML format. This value is set using the PRINT COMMENT directive.
+     */
     public String getTypeSettingFileHeaderText() {
         return _typeSettingFileHeaderText;
     }
 
     /**
-     * Set text that is to be output at the top of a bracketed key in RTF or HTML format. This value
-     * is set using the PRINT COMMENT directive
+     * Set text that is to be output at the top of a bracketed key in RTF or
+     * HTML format. This value is set using the PRINT COMMENT directive
+     * 
      * @param typeSettingFileHeaderText
      */
     public void setTypeSettingFileHeaderText(String typeSettingFileHeaderText) {
@@ -268,11 +272,11 @@ public class KeyContext extends DeltaContext {
             return -1;
         }
     }
-    
+
     /**
-     * @return A map containing preset character information. A pair (column and group number) 
-     * maps to a character number. A LinkedHashMap is used to maintain the order in which the
-     * preset characters were set.
+     * @return A map containing preset character information. A pair (column and
+     *         group number) maps to a character number. A LinkedHashMap is used
+     *         to maintain the order in which the preset characters were set.
      */
     LinkedHashMap<Pair<Integer, Integer>, Integer> getPresetCharacters() {
         return _presetCharacters;
@@ -414,6 +418,16 @@ public class KeyContext extends DeltaContext {
             throw new IllegalArgumentException("Value for TRUNCATE TABULAR KEY AT must be a positive integer");
         }
         this._truncateTabularKeyAtColumnNumber = truncateTabularKeyAtColumnNumber;
+    }
+
+    @Override
+    public void setOutputHtml(boolean b) {
+        super.setOutputHtml(b);
+        ((KeyOutputFileManager) _outputFileSelector).setTypesetOutputHtml(b);
+    }
+
+    public File getDirectivesFile() {
+        return _directivesFile;
     }
 
 }

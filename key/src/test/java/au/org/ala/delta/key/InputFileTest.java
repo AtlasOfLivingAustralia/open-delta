@@ -29,7 +29,7 @@ public class InputFileTest extends TestCase {
         File directivesFile = new File(directivesFileURL.toURI());
 
         Key key = new Key(directivesFile);
-        key.calculateKey(directivesFile);
+        key.calculateKey();
         
         assertEquals(3d, key.getContext().getABase());
         assertEquals(3d, key.getContext().getRBase());

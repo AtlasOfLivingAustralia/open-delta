@@ -70,6 +70,7 @@ public class KeyDirectiveParser extends DirectiveParser<KeyContext> {
         instance.registerDirective(new KeyOutputDirectoryDirective());
         instance.registerDirective(new OutputFormatHtml());
         //TODO page length
+        //TODO pagination of tabular key
         
         instance.registerDirective(new PresetCharactersDirective());
         instance.registerDirective(new KeyPrintCommentDirective());

@@ -98,7 +98,7 @@ public class Key implements DirectiveParserObserver {
             return;
         }
 
-        new Key(f).calculateKey(f);
+        new Key(f).calculateKey();
     }
 
     // The character(s) used for newline is system-dependent, so need to get it
@@ -154,64 +154,74 @@ public class Key implements DirectiveParserObserver {
         return _context.getOutputFileSelector().getOutputFiles();
     }
 
-    public void calculateKey(File directivesFile) {
-        _nestedObserver = new ConforDirectiveParserObserver(_context);
-
-        boolean parseSuccessful = true;
+    public void calculateKey() {
         try {
-            processDirectivesFile(directivesFile, _context);
-        } catch (DirectiveException ex) {
-            // Error message will be output by the _nestedObserver. Simply stop
-            // termination here.
-            parseSuccessful = false;
-        } catch (Exception ex) {
-            throw new RuntimeException("Fatal error occurred while processing directives file", ex);
-        }
+            File directivesFile = _context.getDirectivesFile();
+            _nestedObserver = new ConforDirectiveParserObserver(_context);
 
-        if (parseSuccessful) {
-            readInputFiles();
-
-            boolean displayTabularKey = _context.getDisplayTabularKey();
-            boolean displayBracketedKey = _context.getDisplayBracketedKey();
-
-            if (displayTabularKey || displayBracketedKey) { // Don't bother
-                                                            // calculating the
-                                                            // key if we don't
-                                                            // want one!
-                Specimen specimen = new Specimen(_context.getDataSet(), true, false, false, MatchType.OVERLAP);
-                // List<Pair<Item, List<Attribute>>> keyList = new
-                // ArrayList<Pair<Item, List<Attribute>>>();
-                TabularKey key = new TabularKey();
-
-                FilteredDataSet dataset = new FilteredDataSet(_context, new IncludeExcludeDataSetFilter(_context));
-
-                List<Character> includedCharacters = new ArrayList<Character>();
-                Iterator<FilteredCharacter> iterFilteredCharacters = dataset.filteredCharacters();
-                while (iterFilteredCharacters.hasNext()) {
-                    includedCharacters.add(iterFilteredCharacters.next().getCharacter());
-                }
-
-                List<Item> includedItems = new ArrayList<Item>();
-                Iterator<FilteredItem> iterFilteredItems = dataset.filteredItems();
-                while (iterFilteredItems.hasNext()) {
-                    includedItems.add(iterFilteredItems.next().getItem());
-                }
-
-                doCalculateKey(key, dataset, includedCharacters, includedItems, specimen, null, null);
-                System.out.println("Key generation completed");
-
-                Map<Integer, TypeSettingMark> typesettingMarksMap = _context.getTypeSettingMarks();
-                boolean typsettingMarksSpecified = !(typesettingMarksMap == null || typesettingMarksMap.isEmpty());
-
-                generateKeyOutput(key, includedCharacters, includedItems, _context.getDisplayTabularKey(), _context.getDisplayBracketedKey(), typsettingMarksSpecified);
-
-                generateListingOutput(includedCharacters, includedItems, true);
-            } else {
-                generateListingOutput(null, null, false);
+            boolean parseSuccessful = true;
+            try {
+                processDirectivesFile(directivesFile, _context);
+            } catch (DirectiveException ex) {
+                // Error message will be output by the _nestedObserver. Simply
+                // stop
+                // termination here.
+                parseSuccessful = false;
+            } catch (Exception ex) {
+                throw new RuntimeException("Fatal error occurred while processing directives file", ex);
             }
-        }
 
-        _nestedObserver.finishedProcessing();
+            if (parseSuccessful) {
+                readInputFiles();
+
+                boolean displayTabularKey = _context.getDisplayTabularKey();
+                boolean displayBracketedKey = _context.getDisplayBracketedKey();
+
+                if (displayTabularKey || displayBracketedKey) { // Don't bother
+                                                                // calculating
+                                                                // the
+                                                                // key if we
+                                                                // don't
+                                                                // want one!
+                    Specimen specimen = new Specimen(_context.getDataSet(), true, false, false, MatchType.OVERLAP);
+                    // List<Pair<Item, List<Attribute>>> keyList = new
+                    // ArrayList<Pair<Item, List<Attribute>>>();
+                    TabularKey key = new TabularKey();
+
+                    FilteredDataSet dataset = new FilteredDataSet(_context, new IncludeExcludeDataSetFilter(_context));
+
+                    List<Character> includedCharacters = new ArrayList<Character>();
+                    Iterator<FilteredCharacter> iterFilteredCharacters = dataset.filteredCharacters();
+                    while (iterFilteredCharacters.hasNext()) {
+                        includedCharacters.add(iterFilteredCharacters.next().getCharacter());
+                    }
+
+                    List<Item> includedItems = new ArrayList<Item>();
+                    Iterator<FilteredItem> iterFilteredItems = dataset.filteredItems();
+                    while (iterFilteredItems.hasNext()) {
+                        includedItems.add(iterFilteredItems.next().getItem());
+                    }
+
+                    doCalculateKey(key, dataset, includedCharacters, includedItems, specimen, null, null);
+                    System.out.println("Key generation completed");
+
+                    Map<Integer, TypeSettingMark> typesettingMarksMap = _context.getTypeSettingMarks();
+                    boolean typsettingMarksSpecified = !(typesettingMarksMap == null || typesettingMarksMap.isEmpty());
+
+                    generateKeyOutput(key, includedCharacters, includedItems, _context.getDisplayTabularKey(), _context.getDisplayBracketedKey(), typsettingMarksSpecified);
+
+                    generateListingOutput(includedCharacters, includedItems, true);
+                } else {
+                    generateListingOutput(null, null, false);
+                }
+            }
+
+            _nestedObserver.finishedProcessing();
+        } catch (Exception ex) {
+            System.out.println(MessageFormat.format("FATAL ERROR: {0}", ex.getMessage()));
+            System.out.println("Execution terminated");
+            System.out.println("ABNORMAL TERMINATION");
+        }
     }
 
     private void readInputFiles() {
@@ -556,9 +566,9 @@ public class Key implements DirectiveParserObserver {
         if (outputBracketedKey) {
             BracketedKey bracketedKey = KeyUtils.convertTabularKeyToBracketedKey(tabularKey);
             if (typesettingMarksSpecified) {
-                generateTypesetBracketedKey(bracketedKey, includedCharacters, includedItems, typesetFile, _context.getAddCharacterNumbers(),
-                        _context.getOutputHtml(), tabularKey.getCharactersUsedInKey().size(), tabularKey.getItemsUsedInKey().size(), tabularKey.getAverageLength(), tabularKey.getAverageCost(), 
-                        tabularKey.getMaximumLength(), tabularKey.getMaximumCost());
+                generateTypesetBracketedKey(bracketedKey, includedCharacters, includedItems, typesetFile, _context.getAddCharacterNumbers(), _context.getOutputHtml(), tabularKey
+                        .getCharactersUsedInKey().size(), tabularKey.getItemsUsedInKey().size(), tabularKey.getAverageLength(), tabularKey.getAverageCost(), tabularKey.getMaximumLength(),
+                        tabularKey.getMaximumCost());
             } else {
                 if (_context.getDisplayTabularKey()) {
                     printFile.writeBlankLines(2, 0);
@@ -626,19 +636,7 @@ public class Key implements DirectiveParserObserver {
     // list of output files are also written to the listing file.
     // These pieces of output are inserted by the KeyOutputFileManager.
     private void generateListingOutput(List<Character> includedCharacters, List<Item> includedItems, boolean outputKeyConfiguration) {
-        KeyOutputFileManager outputFileManager = _context.getOutputFileManager();
-        int outputWidth = outputFileManager.getOutputWidth();
-
-        PrintFile listingPrintFile = outputFileManager.getKeyListingFile();
-        if (listingPrintFile == null) {
-            listingPrintFile = new PrintFile(System.out, outputWidth);
-        } else {
-            // Only output the credits when writing to a listing file. They have
-            // already been written to
-            // standard out.
-            listingPrintFile.outputLine(generateCreditsString());
-            listingPrintFile.writeBlankLines(1, 0);
-        }
+        PrintFile listingPrintFile = getListingPrintFile();
 
         if (outputKeyConfiguration) {
             DeltaDataSet dataset = _context.getDataSet();
@@ -658,6 +656,27 @@ public class Key implements DirectiveParserObserver {
             listingPrintFile.outputLine(MessageFormat.format("{0} items included.", includedItems.size()));
             listingPrintFile.writeBlankLines(1, 0);
         }
+    }
+
+    // Get PrintFile for handling listing output. If the LISTING FILE directive
+    // is not used, the PrintFile instance will point to
+    // stdout.
+    private PrintFile getListingPrintFile() {
+        KeyOutputFileManager outputFileManager = _context.getOutputFileManager();
+        int outputWidth = outputFileManager.getOutputWidth();
+
+        PrintFile listingPrintFile = outputFileManager.getKeyListingFile();
+        if (listingPrintFile == null) {
+            listingPrintFile = new PrintFile(System.out, outputWidth);
+        } else {
+            // Only append the credits if we are not outputting to stdout.
+            // The credits are always output to stdout when the application is
+            // started.
+            listingPrintFile.outputLine(generateCreditsString());
+            listingPrintFile.writeBlankLines(1, 0);
+        }
+
+        return listingPrintFile;
     }
 
     private void printTabularKey(TabularKey key, PrintFile printFile) {
@@ -973,14 +992,13 @@ public class Key implements DirectiveParserObserver {
         typesetText = typesetText.replaceAll("@abase", formatDouble(_context.getABase()));
         typesetText = typesetText.replaceAll("@reuse", formatDouble(_context.getReuse()));
         typesetText = typesetText.replaceAll("@varywt", formatDouble(_context.getVaryWt()));
-        
+
         typesetText = typesetText.replaceAll("@nconf", Integer.toString(_context.getNumberOfConfirmatoryCharacters()));
         typesetText = typesetText.replaceAll("@avglen", formatDouble(avgLenKey));
         typesetText = typesetText.replaceAll("@avgcost", formatDouble(avgCostKey));
         typesetText = typesetText.replaceAll("@maxlen", formatDouble(maxLenKey));
         typesetText = typesetText.replaceAll("@maxcost", formatDouble(maxCostKey));
 
-        
         List<Integer> includedCharacterNumbers = new ArrayList<Integer>();
         for (Character ch : includedCharacters) {
             includedCharacterNumbers.add(ch.getCharacterId());
@@ -989,11 +1007,12 @@ public class Key implements DirectiveParserObserver {
         for (Item it : includedItems) {
             includedItemNumbers.add(it.getItemNumber());
         }
-        
-        // any backslashes that may occur in rangeSymbol need to be escaped otherwise they will be omitted when we do
+
+        // any backslashes that may occur in rangeSymbol need to be escaped
+        // otherwise they will be omitted when we do
         // a String.replaceAll
         String rangeSymbol = Matcher.quoteReplacement(_context.getTypeSettingMark(MarkPosition.RANGE_SYMBOL).getMarkText());
-        
+
         typesetText = typesetText.replaceAll("@cmask", Utils.formatIntegersAsListOfRanges(includedCharacterNumbers, rangeSymbol));
         typesetText = typesetText.replaceAll("@rel", KeyUtils.formatCharacterReliabilities(_context, ",", rangeSymbol));
         typesetText = typesetText.replaceAll("@tmask", Utils.formatIntegersAsListOfRanges(includedItemNumbers, rangeSymbol));
@@ -1085,10 +1104,12 @@ public class Key implements DirectiveParserObserver {
                     Item taxon = destinationTaxa.get(j);
                     String formattedTaxonDescription = typesetItemFormatter.formatItemDescription(taxon);
 
-                    // Any backslashes in taxon description (from RTF formatting) need to be escaped, 
-                    // otherwise they will be omitted when we do a String.replaceAll
+                    // Any backslashes in taxon description (from RTF
+                    // formatting) need to be escaped,
+                    // otherwise they will be omitted when we do a
+                    // String.replaceAll
                     formattedTaxonDescription = Matcher.quoteReplacement(formattedTaxonDescription);
-                    
+
                     String destinationText;
                     if (j == 0) {
                         destinationText = firstTaxonDestinationMark.getMarkText();

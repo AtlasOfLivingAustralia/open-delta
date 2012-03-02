@@ -14,7 +14,8 @@ import au.org.ala.delta.util.Utils;
 
 public class KeyOutputFileManager extends OutputFileSelector {
 
-    private static final String DEFAULT_TYPESETTING_FILE_EXTENSION = ".rtf";
+    private static final String RTF_FILE_EXTENSION = ".rtf";
+    private static final String HTML_FILE_EXTENSION = ".html";
     private static final String DEFAULT_OUTPUT_FILE_EXTENSION = ".prt";
     private static final int DEFAULT_OUTPUT_FILE_WIDTH = 80;
 
@@ -27,12 +28,17 @@ public class KeyOutputFileManager extends OutputFileSelector {
 
     private File _typesettingFileOutputDirectory;
 
+    // true if the OUTPUT FORMAT HTML has been used.
+    private boolean _typesetOutputHtml;
+
     public KeyOutputFileManager(MutableDeltaDataSet dataSet) {
         super(dataSet);
         _defaultBaseFileName = "key"; // Set a default here to ensure it is
                                       // never null.
         // default base file name should always be set in the constructor for
         // KeyContext
+
+        _typesetOutputHtml = false;
     }
 
     public void setDefaultBaseFileName(String defaultBaseFileName) {
@@ -80,7 +86,8 @@ public class KeyOutputFileManager extends OutputFileSelector {
 
     public PrintFile getTypesettingFile() {
         if (_typesettingFile == null) {
-            _typesettingFileName = Utils.createFileFromPath(_defaultBaseFileName + DEFAULT_TYPESETTING_FILE_EXTENSION, _typesettingFileOutputDirectory).getAbsolutePath();
+            String fileExtension = _typesetOutputHtml ? HTML_FILE_EXTENSION : RTF_FILE_EXTENSION;
+            _typesettingFileName = Utils.createFileFromPath(_defaultBaseFileName + fileExtension, _typesettingFileOutputDirectory).getAbsolutePath();
             try {
                 PrintStream out = createPrintStream(_typesettingFileName);
                 _typesettingFile = new PrintFile(out, 1000);
@@ -120,6 +127,10 @@ public class KeyOutputFileManager extends OutputFileSelector {
         }
         // Output message to stdout
         System.out.println(line);
+    }
+
+    public void setTypesetOutputHtml(boolean typesetOutputHtml) {
+        this._typesetOutputHtml = typesetOutputHtml;
     }
 
 }

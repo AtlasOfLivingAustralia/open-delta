@@ -39,7 +39,7 @@ public class DatasetLoadTest extends TestCase {
         File directivesFile = new File(directivesFileURL.toURI());
 
         Key key = new Key(directivesFile);
-        key.calculateKey(directivesFile);
+        key.calculateKey();
 
         KeyContext context = key.getContext();
         MutableDeltaDataSet dataset = context.getDataSet();

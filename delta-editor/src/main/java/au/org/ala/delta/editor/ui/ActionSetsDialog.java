@@ -650,7 +650,7 @@ public class ActionSetsDialog extends AbstractDeltaView {
 			PrintStream out = new PrintStream(new OutputStreamAdapter(_dialog));
 			KeyContext context = new KeyContext(fileOnFileSystem.getParentFile(), out, out);
 			Key key = new Key(context);
-			key.calculateKey(fileOnFileSystem);
+			key.calculateKey();
 
 			List<File> results = key.getOutputFiles();
 			return results;
