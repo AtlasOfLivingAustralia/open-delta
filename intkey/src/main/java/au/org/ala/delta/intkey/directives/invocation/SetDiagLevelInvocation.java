@@ -17,16 +17,20 @@ package au.org.ala.delta.intkey.directives.invocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class SetDiagLevelInvocation extends IntkeyDirectiveInvocation {
-    
+
     private int _diagLevel;
 
     public void setDiagLevel(int diagLevel) {
         this._diagLevel = diagLevel;
     }
-    
+
     @Override
     public boolean execute(IntkeyContext context) {
-        context.setDiagLevel(_diagLevel);
+        if (_diagLevel > 0) {
+            context.setDiagLevel(_diagLevel);
+        } else {
+            context.getUI().displayErrorMessage("DiagLevel must be an integer greater than zero.");
+        }
         return true;
     }
 

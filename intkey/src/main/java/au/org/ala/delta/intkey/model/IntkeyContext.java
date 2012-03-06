@@ -1014,7 +1014,11 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
 
     public synchronized void setDiagLevel(int diagLevel) {
-        this._diagLevel = diagLevel;
+        if (diagLevel > 0) {
+            this._diagLevel = diagLevel;
+        } else {
+            throw new IllegalArgumentException("DiagLevel must be an integer greater than zero");
+        }
     }
 
     /**

@@ -75,6 +75,11 @@ public class Best {
             List<Integer> availableTaxaNumbers, double rBase, double varyWt) {
         return doOrdering(dataset, availableCharacterNumbers, availableTaxaNumbers, rBase, varyWt, OrderingType.SEPARATE, null, taxonToSeparate);
     }
+    
+    public static LinkedHashMap<au.org.ala.delta.model.Character, Double> orderDiagnose(int taxonToDiagnose, DeltaDataSet dataset, List<Integer> availableCharacterNumbers,
+            List<Integer> availableTaxaNumbers, double rBase, double varyWt) {
+        return doOrdering(dataset, availableCharacterNumbers, availableTaxaNumbers, rBase, varyWt, OrderingType.SEPARATE, null, taxonToDiagnose);
+    }
 
     //
     // public static LinkedHashMap<au.org.ala.delta.model.Character, Double>
@@ -232,7 +237,7 @@ public class Best {
                         }
                     }
 
-                    if (!taxon.equals(taxonToSeparate)) {
+                    if (taxon.getItemNumber() != taxonToSeparate) {
                         for (int i = 0; i < totalNumStates; i++) {
                             if (statePresence[i] && taxonToSeparateStatePresence[i]) {
                                 ndgSum++;
@@ -241,7 +246,6 @@ public class Best {
                         }
                     }
                 }
-
             }
 
             if (orderingType == OrderingType.BEST) {
