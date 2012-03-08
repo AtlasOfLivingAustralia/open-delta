@@ -14,7 +14,7 @@
  ******************************************************************************/
 package au.org.ala.delta.intkey.directives.invocation;
 
-import au.org.ala.delta.intkey.model.DiagType;
+import au.org.ala.delta.best.DiagType;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.MatchType;
 

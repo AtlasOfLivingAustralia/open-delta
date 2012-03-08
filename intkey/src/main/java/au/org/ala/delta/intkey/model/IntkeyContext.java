@@ -40,6 +40,7 @@ import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.best.Best;
+import au.org.ala.delta.best.DiagType;
 import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.intkey.IntkeyUI;
 import au.org.ala.delta.intkey.directives.DirectivePopulator;

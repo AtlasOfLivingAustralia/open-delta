@@ -18,6 +18,7 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 
+import au.org.ala.delta.best.DiagType;
 import au.org.ala.delta.intkey.directives.SetDiagTypeSpecimensDirective;
 import au.org.ala.delta.intkey.directives.SetDiagTypeTaxaDirective;
 

@@ -63,6 +63,14 @@ public class DataSetLoadTest extends IntkeyDatasetTestCase {
 
         assertEquals(87, context.getDataset().getNumberOfCharacters());
         assertEquals(14, context.getDataset().getNumberOfTaxa());
+        
+        for (Character ch: context.getDataset().getCharactersAsList()) {
+            for (Attribute attr: context.getDataset().getAllAttributesForCharacter(ch.getCharacterId())) {
+                if (!attr.isUnknown() && attr.isInapplicable()) {
+                    System.out.println(attr.getItem().getItemNumber() + " " + ch.getCharacterId());
+                }
+            }
+        }
     }
 
     /**

@@ -68,27 +68,19 @@ public class Best {
      */
     public static LinkedHashMap<au.org.ala.delta.model.Character, Double> orderBest(DeltaDataSet dataset, List<Integer> availableCharacterNumbers, List<Integer> availableTaxaNumbers, double rBase,
             double varyWt) {
-        return doOrdering(dataset, availableCharacterNumbers, availableTaxaNumbers, rBase, varyWt, OrderingType.BEST, null, -1);
+        return doOrdering(dataset, availableCharacterNumbers, availableTaxaNumbers, rBase, varyWt, OrderingType.BEST, null, -1, -1);
     }
 
     public static LinkedHashMap<au.org.ala.delta.model.Character, Double> orderSeparate(int taxonToSeparate, DeltaDataSet dataset, List<Integer> availableCharacterNumbers,
             List<Integer> availableTaxaNumbers, double rBase, double varyWt) {
-        return doOrdering(dataset, availableCharacterNumbers, availableTaxaNumbers, rBase, varyWt, OrderingType.SEPARATE, null, taxonToSeparate);
+        return doOrdering(dataset, availableCharacterNumbers, availableTaxaNumbers, rBase, varyWt, OrderingType.SEPARATE, null, taxonToSeparate, -1);
     }
     
-    public static LinkedHashMap<au.org.ala.delta.model.Character, Double> orderDiagnose(int taxonToDiagnose, DeltaDataSet dataset, List<Integer> availableCharacterNumbers,
+    public static LinkedHashMap<au.org.ala.delta.model.Character, Double> orderDiagnose(int taxonToDiagnose, DiagType diagType, int stopBest, DeltaDataSet dataset, List<Integer> availableCharacterNumbers,
             List<Integer> availableTaxaNumbers, double rBase, double varyWt) {
-        return doOrdering(dataset, availableCharacterNumbers, availableTaxaNumbers, rBase, varyWt, OrderingType.SEPARATE, null, taxonToDiagnose);
+        return doOrdering(dataset, availableCharacterNumbers, availableTaxaNumbers, rBase, varyWt, OrderingType.DIAGNOSE, diagType, taxonToDiagnose, stopBest);
     }
 
-    //
-    // public static LinkedHashMap<au.org.ala.delta.model.Character, Double>
-    // orderDiagnose(IntkeyContext context, Item taxonToSeparate, DiagType
-    // diagType) {
-    // return doOrdering(context, OrderingType.SEPARATE, taxonToSeparate);
-    // }
-
-    // TODO change arguments, pass in something other than the entire context.
     /**
      * Determines best order and separating power of all characters in the
      * supplied context's dataset
@@ -100,7 +92,7 @@ public class Best {
      *         supplied map
      */
     private static LinkedHashMap<au.org.ala.delta.model.Character, Double> doOrdering(DeltaDataSet dataset, List<Integer> availableCharacterNumbers, List<Integer> availableTaxaNumbers, double rBase,
-            double varyWt, OrderingType orderingType, DiagType diagType, int taxonToSeparate) {
+            double varyWt, OrderingType orderingType, DiagType diagType, int taxonToSeparate, int stopBest) {
         LinkedHashMap<Character, Double> retMap = new LinkedHashMap<Character, Double>();
 
         if (availableCharacterNumbers.isEmpty() || availableTaxaNumbers.isEmpty()) {
@@ -132,17 +124,24 @@ public class Best {
         for (int availableTaxonNum : availableTaxaNumbers) {
             availableTaxa.add(dataset.getItem(availableTaxonNum));
         }
-
+        
         // sort available characters by reliability (descending)
         Collections.sort(availableCharacters, new ReliabilityComparator());
+        
+        // If STOPBEST is greater than zero, only generate a best ordering for the 
+        // number of characters specified by the STOPBEST value.
+//        if (stopBest > 0 && stopBest < availableCharacters.size()) {
+//            availableCharacters = availableCharacters.subList(0, stopBest);
+//        }
 
         // minimum cost - this will always be the cost of the available
         // character with the greatest reliability
         double cmin = charCosts[availableCharacters.get(0).getCharacterId() - 1];
 
+        List<Character> bestCharacters = new ArrayList<Character>();
         List<Character> unsuitableCharacters = new ArrayList<Character>();
 
-        for (Character ch : availableCharacters) {
+        bestMainLoop: for (Character ch : availableCharacters) {
             int sumNumTaxaInSubgroups = 0;
             double sumSubgroupsFrequencies = 0;
             int numSubgroupsSameSizeAsOriginalGroup = 0;
@@ -195,6 +194,7 @@ public class Best {
             if (orderingType == OrderingType.SEPARATE || orderingType == OrderingType.DIAGNOSE) {
                 Attribute attr = charAttributes.get(taxonToSeparate - 1);
 
+                
                 if (attr.isUnknown() && attr.isInapplicable()) {
                     unsuitableCharacters.add(ch);
                     continue;
@@ -271,7 +271,7 @@ public class Best {
                         // single
                         // subgroup
                         unsuitableCharacters.add(ch);
-                        continue;
+                        continue bestMainLoop;
                     } else {
                         if (numTaxaInSubgroup == numAvailableTaxa) {
                             numSubgroupsSameSizeAsOriginalGroup++;
@@ -370,11 +370,18 @@ public class Best {
 
             sepVals[ch.getCharacterId() - 1] = sep;
             suVals[ch.getCharacterId() - 1] = su;
+            
+            bestCharacters.add(ch);
+            
+            // Stop searching for best characters if the limit specified by the
+            // SET STOPBEST directive has been specified. The limit is only used
+            // for DIAGNOSE
+            if (stopBest > 0 && bestCharacters.size() >= stopBest) {
+                break;
+            }
         }
 
-        availableCharacters.removeAll(unsuitableCharacters);
-
-        List<Character> sortedChars = new ArrayList<Character>(availableCharacters);
+        List<Character> sortedChars = new ArrayList<Character>(bestCharacters);
         Collections.sort(sortedChars, new Comparator<Character>() {
 
             @Override

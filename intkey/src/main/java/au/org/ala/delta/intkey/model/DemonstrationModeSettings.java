@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import au.org.ala.delta.best.DiagType;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MatchType;

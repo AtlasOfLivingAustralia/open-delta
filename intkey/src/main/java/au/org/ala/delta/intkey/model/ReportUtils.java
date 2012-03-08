@@ -26,6 +26,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.FloatRange;
 
+import au.org.ala.delta.best.DiagType;
 import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;

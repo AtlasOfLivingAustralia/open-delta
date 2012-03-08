@@ -20,9 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.impl.AvalonLogger;
-
 import au.org.ala.delta.best.Best;
+import au.org.ala.delta.best.DiagType;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.model.Attribute;
@@ -31,6 +30,7 @@ import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MatchType;
 import au.org.ala.delta.model.Specimen;
 import au.org.ala.delta.model.format.AttributeFormatter;
+import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
@@ -40,7 +40,7 @@ import au.org.ala.delta.util.Pair;
 public class DiagnoseDirectiveInvocation extends IntkeyDirectiveInvocation {
 
     private List<Item> _taxa;
-    private List<Character> _characters;
+    private List<Character> _presetCharacters;
 
     public void setSelectedTaxaSpecimen(Pair<List<Item>, Boolean> pair) {
         this._taxa = pair.getFirst();
@@ -50,89 +50,125 @@ public class DiagnoseDirectiveInvocation extends IntkeyDirectiveInvocation {
     }
 
     public void setCharacters(List<Character> characters) {
-        this._characters = characters;
+        this._presetCharacters = characters;
     }
 
     @Override
     public boolean execute(IntkeyContext context) {
+        int diagLevel = context.getDiagLevel();
+        DiagType diagType = context.getDiagType();
 
-        if (_characters.isEmpty()) {
-            _characters = context.getAvailableCharacters();
-            _characters.removeAll(context.getDataset().getCharactersToIgnoreForBest());
-        }
-
-        List<Integer> characterNumbers = new ArrayList<Integer>();
-        List<Integer> taxonNumbers = new ArrayList<Integer>();
-
-        for (Character ch : _characters) {
-            characterNumbers.add(ch.getCharacterId());
-        }
-
-        for (Item taxon : _taxa) {
-            taxonNumbers.add(taxon.getItemNumber());
-        }
+        // Remove any exclude taxa from the supplied list of taxa, and any
+        // excluded characters from the
+        // supplied list of preset characters
+        _taxa.removeAll(context.getExcludedTaxa());
+        _presetCharacters.removeAll(context.getExcludedCharacters());
 
         IntkeyDataset dataset = context.getDataset();
 
-        ItemFormatter itemFormatter = new ItemFormatter(false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE, false, false, true);
-        AttributeFormatter attributeFormatter = new AttributeFormatter(false, false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, context.getDataset().getOrWord());
-
+        ItemFormatter itemFormatter = new ItemFormatter(context.displayNumbering(), CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE, false, false, true);
+        CharacterFormatter characterFormatter = new CharacterFormatter(context.displayNumbering(), CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.REMOVE, false, true);
+        AttributeFormatter attributeFormatter = new AttributeFormatter(context.displayNumbering(), false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, context.getDataset()
+                .getOrWord());
         RTFBuilder builder = new RTFBuilder();
         builder.startDocument();
-
-        // saved information which will be altered by DIAGNOSE.
 
         // derive diagnostic character set for specified items from set of
         // masked-in characters.
         for (Item taxon : _taxa) {
-
-            List<Integer> remainingCharacterNumbers = new ArrayList<Integer>(characterNumbers);
-            List<Integer> remainingTaxonNumbers = new ArrayList<Integer>(taxonNumbers);
-
             // output taxon name
             builder.appendText(itemFormatter.formatItemDescription(taxon));
+            builder.increaseIndent();
 
             Specimen specimen = new Specimen(context.getDataset(), true, true, true, MatchType.OVERLAP);
 
-            // TODO process preset characters first
+            List<Character> remainingCharacters = context.getIncludedCharacters();
+            remainingCharacters.removeAll(context.getDataset().getCharactersToIgnoreForBest());
+            updateRemainingCharactersFromSpecimen(remainingCharacters, specimen);
+
+            List<Item> remainingTaxa = new ArrayList<Item>(_taxa);
+            updateRemainingTaxaFromSpecimen(remainingTaxa, specimen, diagLevel);
+
+            // process preset characters first
+            for (Character ch : _presetCharacters) {
+                Attribute attr = dataset.getAttribute(taxon.getItemNumber(), ch.getCharacterId());
+                useAttribute(specimen, attr, diagType, diagLevel, remainingCharacters, remainingTaxa, characterFormatter, attributeFormatter, builder);
+            }
 
             // calculate further separation characters for current taxon
-            // get diagnose order
-            //
-
-            while (remainingTaxonNumbers.size() > 1) {
-                LinkedHashMap<Character, Double> bestOrdering = Best.orderDiagnose(taxon.getItemNumber(), dataset, remainingCharacterNumbers, remainingTaxonNumbers, context.getRBase(),
-                        context.getVaryWeight());
+            while (remainingTaxa.size() > 1) {
+                LinkedHashMap<Character, Double> bestOrdering = Best.orderDiagnose(taxon.getItemNumber(), diagType, context.getStopBest(), dataset, characterListToIntegerList(remainingCharacters),
+                        taxonListToIntegerList(remainingTaxa), context.getRBase(), context.getVaryWeight());
+                if (bestOrdering.isEmpty()) {
+                    break;
+                }
+                
                 Character firstDiagnoseChar = bestOrdering.keySet().iterator().next();
 
                 Attribute attr = dataset.getAttribute(taxon.getItemNumber(), firstDiagnoseChar.getCharacterId());
                 
-                builder.appendText(attr.toString());
+                useAttribute(specimen, attr, diagType, diagLevel, remainingCharacters, remainingTaxa, characterFormatter, attributeFormatter, builder);
 
-                specimen.setAttributeForCharacter(firstDiagnoseChar, attr);
-
-                Map<Item, Set<Character>> taxonDifferences = specimen.getTaxonDifferences();
-
-                for (Item t : taxonDifferences.keySet()) {
-                    if (taxonDifferences.get(t).size() > 0) {
-                        remainingTaxonNumbers.remove((Integer)t.getItemNumber());
-                    }
-                }
-
-                for (Character ch : specimen.getUsedCharacters()) {
-                    remainingCharacterNumbers.remove((Integer)ch.getCharacterId());
-                }
-                
-                for (Character ch : specimen.getInapplicableCharacters()) {
-                    remainingCharacterNumbers.remove((Integer)ch.getCharacterId());
-                }
             }
+
+            builder.decreaseIndent();
         }
+        
+        
 
         builder.endDocument();
         context.getUI().displayRTFReport(builder.toString(), "Diagnose");
 
         return true;
+    }
+
+    private void useAttribute(Specimen specimen, Attribute attr, DiagType diagType, int diagLevel, List<Character> remainingCharacters, List<Item> remainingTaxa, CharacterFormatter characterFormatter,
+            AttributeFormatter attributeFormatter, RTFBuilder builder) {
+
+        // Ignore "maybe inapplicable" characters if DiagType is SPECIMENS
+        if (!attr.isUnknown() && (!attr.isInapplicable() || diagType == DiagType.TAXA)) {
+            builder.appendText(String.format("%s %s", characterFormatter.formatCharacterDescription(attr.getCharacter()), attributeFormatter.formatAttribute(attr)));
+
+            specimen.setAttributeForCharacter(attr.getCharacter(), attr);
+
+            updateRemainingCharactersFromSpecimen(remainingCharacters, specimen);
+            updateRemainingTaxaFromSpecimen(remainingTaxa, specimen, diagLevel);
+        }
+    }
+
+    private List<Integer> characterListToIntegerList(List<Character> characters) {
+        List<Integer> characterNumbers = new ArrayList<Integer>();
+
+        for (Character ch : characters) {
+            characterNumbers.add(ch.getCharacterId());
+        }
+
+        return characterNumbers;
+    }
+
+    private List<Integer> taxonListToIntegerList(List<Item> taxa) {
+        List<Integer> taxaNumbers = new ArrayList<Integer>();
+
+        for (Item taxon : taxa) {
+            taxaNumbers.add(taxon.getItemNumber());
+        }
+
+        return taxaNumbers;
+    }
+
+    private void updateRemainingCharactersFromSpecimen(List<Character> remainingCharacters, Specimen specimen) {
+        remainingCharacters.removeAll(specimen.getUsedCharacters());
+        remainingCharacters.removeAll(specimen.getInapplicableCharacters());
+    }
+
+    private void updateRemainingTaxaFromSpecimen(List<Item> remainingTaxa, Specimen specimen, int diagLevel) {
+        Map<Item, Set<Character>> taxonDifferences = specimen.getTaxonDifferences();
+
+        for (Item t : taxonDifferences.keySet()) {
+            if (taxonDifferences.get(t).size() > diagLevel - 1) {
+                remainingTaxa.remove(t);
+            }
+        }
     }
 
 }
