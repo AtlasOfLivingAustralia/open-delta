@@ -14,6 +14,8 @@
  ******************************************************************************/
 package au.org.ala.delta.intkey.directives.invocation;
 
+import java.awt.Color;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -67,6 +69,9 @@ public class DiagnoseDirectiveInvocation extends IntkeyDirectiveInvocation {
         IntkeyDataset dataset = context.getDataset();
 
         ItemFormatter itemFormatter = new ItemFormatter(context.displayNumbering(), CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE, false, false, true);
+        ItemFormatter noNumberingRTFCommentsItemFormatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false, true);
+        ItemFormatter noCommentsItemFormatter = new ItemFormatter(context.displayNumbering(), CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, false, false, true);
+        
         CharacterFormatter characterFormatter = new CharacterFormatter(context.displayNumbering(), CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.REMOVE, false, true);
         AttributeFormatter attributeFormatter = new AttributeFormatter(context.displayNumbering(), false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, context.getDataset()
                 .getOrWord());
@@ -96,25 +101,63 @@ public class DiagnoseDirectiveInvocation extends IntkeyDirectiveInvocation {
             }
 
             // calculate further separation characters for current taxon
-            while (remainingTaxa.size() > 1) {
-                LinkedHashMap<Character, Double> bestOrdering = Best.orderDiagnose(taxon.getItemNumber(), diagType, context.getStopBest(), dataset, characterListToIntegerList(remainingCharacters),
-                        taxonListToIntegerList(remainingTaxa), context.getRBase(), context.getVaryWeight());
-                if (bestOrdering.isEmpty()) {
-                    break;
+            boolean diagLevelNotAttained = false;
+            if (remainingTaxa.size() > 1) {
+                for (int i = 1; i < diagLevel + 1; i++) {
+                    List<Item> remainingTaxaForDiagLevel = new ArrayList<Item>(remainingTaxa);
+                    updateRemainingTaxaFromSpecimen(remainingTaxaForDiagLevel, specimen, i);
+
+                    while (remainingTaxaForDiagLevel.size() > 1) {
+                        LinkedHashMap<Character, Double> bestOrdering = Best.orderDiagnose(taxon.getItemNumber(), diagType, context.getStopBest(), dataset,
+                                characterListToIntegerList(remainingCharacters), taxonListToIntegerList(remainingTaxaForDiagLevel), context.getRBase(), context.getVaryWeight());
+                        if (bestOrdering.isEmpty()) {
+                            break;
+                        }
+
+                        Character firstDiagnoseChar = bestOrdering.keySet().iterator().next();
+
+                        Attribute attr = dataset.getAttribute(taxon.getItemNumber(), firstDiagnoseChar.getCharacterId());
+
+                        useAttribute(specimen, attr, diagType, i, remainingCharacters, remainingTaxaForDiagLevel, characterFormatter, attributeFormatter, builder);
+                    }
+
+                    builder.setTextColor(Color.RED);
+                    if (remainingTaxaForDiagLevel.size() == 1) {
+                        builder.appendText(MessageFormat.format("Diagnostic level {0} attained.", i));
+                    } else {
+                        // If we have failed to reach a diagnostic level, output a message to this effect.
+                        // Continue to use and output further diagnostic characters however.
+                        if (!diagLevelNotAttained) {
+                            diagLevelNotAttained = true;
+                            builder.appendText(MessageFormat.format("Diagnostic level {0} not attained.", i));
+                        }
+                    }
+
+                    builder.setTextColor(Color.BLACK);
                 }
-                
-                Character firstDiagnoseChar = bestOrdering.keySet().iterator().next();
-
-                Attribute attr = dataset.getAttribute(taxon.getItemNumber(), firstDiagnoseChar.getCharacterId());
-                
-                useAttribute(specimen, attr, diagType, diagLevel, remainingCharacters, remainingTaxa, characterFormatter, attributeFormatter, builder);
-
+            }
+            
+            if (diagLevelNotAttained) {
+                builder.setTextColor(Color.RED);
+                builder.appendText(MessageFormat.format("Diagnosis for {0} is incomplete.", noNumberingRTFCommentsItemFormatter.formatItemDescription(taxon)));
+                builder.setTextColor(Color.BLACK);
             }
 
             builder.decreaseIndent();
+            
+            // Output number of differences for each remaining taxon if the desired diagLevel was not reached.
+            if (diagLevelNotAttained) {
+                updateRemainingTaxaFromSpecimen(remainingTaxa, specimen, diagLevel);
+                builder.setTextColor(Color.RED);
+                builder.appendText(MessageFormat.format("{0} taxa remain.", remainingTaxa.size()));
+                builder.setTextColor(Color.BLACK);
+                Map<Item, Set<Character>> taxonDifferences = specimen.getTaxonDifferences();
+                for (Item remainingTaxon: remainingTaxa) {
+                    int numDifferences = taxonDifferences.get(remainingTaxon).size();
+                    builder.appendText(MessageFormat.format("({0}) {1}", numDifferences, noCommentsItemFormatter.formatItemDescription(remainingTaxon)));
+                }
+            }
         }
-        
-        
 
         builder.endDocument();
         context.getUI().displayRTFReport(builder.toString(), "Diagnose");
@@ -122,8 +165,8 @@ public class DiagnoseDirectiveInvocation extends IntkeyDirectiveInvocation {
         return true;
     }
 
-    private void useAttribute(Specimen specimen, Attribute attr, DiagType diagType, int diagLevel, List<Character> remainingCharacters, List<Item> remainingTaxa, CharacterFormatter characterFormatter,
-            AttributeFormatter attributeFormatter, RTFBuilder builder) {
+    private void useAttribute(Specimen specimen, Attribute attr, DiagType diagType, int diagLevel, List<Character> remainingCharacters, List<Item> remainingTaxa,
+            CharacterFormatter characterFormatter, AttributeFormatter attributeFormatter, RTFBuilder builder) {
 
         // Ignore "maybe inapplicable" characters if DiagType is SPECIMENS
         if (!attr.isUnknown() && (!attr.isInapplicable() || diagType == DiagType.TAXA)) {
@@ -165,6 +208,7 @@ public class DiagnoseDirectiveInvocation extends IntkeyDirectiveInvocation {
         Map<Item, Set<Character>> taxonDifferences = specimen.getTaxonDifferences();
 
         for (Item t : taxonDifferences.keySet()) {
+            // tolerance = diaglevel - 1
             if (taxonDifferences.get(t).size() > diagLevel - 1) {
                 remainingTaxa.remove(t);
             }
