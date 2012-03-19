@@ -491,5 +491,25 @@ public class ReportUtils {
 
         builder.append(" ");
     }
+    
+    public static List<Integer> characterListToIntegerList(List<Character> characters) {
+        List<Integer> characterNumbers = new ArrayList<Integer>();
+
+        for (Character ch : characters) {
+            characterNumbers.add(ch.getCharacterId());
+        }
+
+        return characterNumbers;
+    }
+
+    public static List<Integer> taxonListToIntegerList(List<Item> taxa) {
+        List<Integer> taxaNumbers = new ArrayList<Integer>();
+
+        for (Item taxon : taxa) {
+            taxaNumbers.add(taxon.getItemNumber());
+        }
+
+        return taxaNumbers;
+    }
 
 }
