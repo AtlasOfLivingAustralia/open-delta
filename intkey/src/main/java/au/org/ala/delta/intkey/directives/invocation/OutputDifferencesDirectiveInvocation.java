@@ -108,9 +108,9 @@ public class OutputDifferencesDirectiveInvocation extends IntkeyDirectiveInvocat
             if (context.getLastOutputLineWasComment()) {
                 context.setLastOutputLineWasComment(false);
             } else {
-                context.appendToOutputFile("OUTPUT DIFFERENCES");
+                context.appendTextToOutputFile("OUTPUT DIFFERENCES");
             }
-            context.appendToOutputFile(Utils.formatIntegersAsListOfRanges(differingCharNumbers));
+            context.appendTextToOutputFile(Utils.formatIntegersAsListOfRanges(differingCharNumbers));
         } catch (IllegalStateException ex) {
             throw new IntkeyDirectiveInvocationException("NoOutputFileOpen.error");
         }

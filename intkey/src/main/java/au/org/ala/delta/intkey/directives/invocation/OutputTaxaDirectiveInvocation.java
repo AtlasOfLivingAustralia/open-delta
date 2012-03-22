@@ -39,9 +39,9 @@ public class OutputTaxaDirectiveInvocation extends IntkeyDirectiveInvocation {
         try {
             if (context.getLastOutputLineWasComment()) {
                 context.setLastOutputLineWasComment(false);
-                context.appendToOutputFile(Utils.formatIntegersAsListOfRanges(taxonNumbers));
+                context.appendTextToOutputFile(Utils.formatIntegersAsListOfRanges(taxonNumbers));
             } else {
-                context.appendToOutputFile(String.format("OUTPUT TAXA %s", Utils.formatIntegersAsListOfRanges(taxonNumbers)));
+                context.appendTextToOutputFile(String.format("OUTPUT TAXA %s", Utils.formatIntegersAsListOfRanges(taxonNumbers)));
             }
         } catch (IllegalStateException ex) {
             throw new IntkeyDirectiveInvocationException("NoOutputFileOpen.error");

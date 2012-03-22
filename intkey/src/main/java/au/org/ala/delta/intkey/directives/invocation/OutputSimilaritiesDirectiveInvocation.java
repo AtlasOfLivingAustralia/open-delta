@@ -108,9 +108,9 @@ public class OutputSimilaritiesDirectiveInvocation extends IntkeyDirectiveInvoca
             if (context.getLastOutputLineWasComment()) {
                 context.setLastOutputLineWasComment(false);
             } else {
-                context.appendToOutputFile("OUTPUT SIMILARITIES");
+                context.appendTextToOutputFile("OUTPUT SIMILARITIES");
             }
-            context.appendToOutputFile(Utils.formatIntegersAsListOfRanges(similarCharNumbers));
+            context.appendTextToOutputFile(Utils.formatIntegersAsListOfRanges(similarCharNumbers));
         } catch (IllegalStateException ex) {
             throw new IntkeyDirectiveInvocationException("NoOutputFileOpen.error");
         }

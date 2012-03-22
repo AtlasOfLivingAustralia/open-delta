@@ -906,10 +906,14 @@ public class Utils {
 	}
 	
 	public static String formatIntegersAsListOfRanges(List<Integer> ints) {
-	    return formatIntegersAsListOfRanges(ints, "-");
+	    return formatIntegersAsListOfRanges(ints, " ", "-");
+	}
+	
+	public static String formatIntegersAsListOfRanges(List<Integer> ints, String rangeSymbol) {
+	    return formatIntegersAsListOfRanges(ints, " ", rangeSymbol);
 	}
 
-	public static String formatIntegersAsListOfRanges(List<Integer> ints, String rangeSeparator) {
+	public static String formatIntegersAsListOfRanges(List<Integer> ints, String spaceSymbol, String rangeSymbol) {
 		StringBuilder builder = new StringBuilder();
 
 		int startRange = 0;
@@ -927,11 +931,11 @@ public class Utils {
 					startRange = val;
 				} else {
 					if (previousValue < val - 1) {
-						builder.append(" ");
+						builder.append(spaceSymbol);
 						builder.append(startRange);
 
 						if (previousValue != startRange) {
-							builder.append(rangeSeparator);
+							builder.append(rangeSymbol);
 							builder.append(previousValue);
 						}
 
@@ -940,11 +944,11 @@ public class Utils {
 					}
 
 					if (i == ints.size() - 1) {
-						builder.append(" ");
+						builder.append(spaceSymbol);
 						builder.append(startRange);
 
 						if (val != startRange) {
-							builder.append(rangeSeparator);
+							builder.append(rangeSymbol);
 							builder.append(val);
 						}
 
@@ -954,8 +958,19 @@ public class Utils {
 
 				previousValue = val;
 			}
+			
+			String retStr = builder.toString();
+			
+			//Remove any leading or trailing space symbol
+			if (retStr.startsWith(spaceSymbol)) {
+			    retStr = retStr.substring(1);
+			}
+			
+			if (retStr.endsWith(spaceSymbol)) {
+			    retStr = retStr.substring(0, retStr.length() - 1);
+			}
 
-			return builder.toString().trim();
+			return retStr;
 		}
 	}
 

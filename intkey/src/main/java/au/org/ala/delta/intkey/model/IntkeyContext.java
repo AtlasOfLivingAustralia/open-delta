@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.net.URL;
@@ -56,6 +57,7 @@ import au.org.ala.delta.model.ResourceSettings;
 import au.org.ala.delta.model.Specimen;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.ImageSettings.FontInfo;
+import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.util.Pair;
 import au.org.ala.delta.util.Utils;
 
@@ -85,6 +87,8 @@ public class IntkeyContext extends AbstractDeltaContext {
     public static final String TAXON_KEYWORD_SELECTED = "selected";
 
     public static final String SPECIMEN_KEYWORD = "specimen";
+    
+    public static final int OUTPUT_FILE_WIDTH = 80;
 
     private File _taxaFile;
     private File _charactersFile;
@@ -200,14 +204,14 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     private File _logFile;
     private File _journalFile;
-    private PrintWriter _logFileWriter;
-    private PrintWriter _journalFileWriter;
+    private PrintFile _logPrintFile;
+    private PrintFile _journalPrintFile;
 
     // Intkey can only write to a single output file at a time, so need to keep
     // track of the
     // current file
     private File _currentOutputFile;
-    private PrintWriter _currentOutputFileWriter;
+    private PrintFile _currentOutputPrintFile;
 
     private StringBuilder _logCache;
     private StringBuilder _journalCache;
@@ -1443,19 +1447,16 @@ public class IntkeyContext extends AbstractDeltaContext {
      */
     public synchronized void cleanupForShutdown() {
         cleanupOldDataset();
-        if (_logFileWriter != null) {
-            _logFileWriter.flush();
-            _logFileWriter.close();
+        if (_logPrintFile != null) {
+            _logPrintFile.close();
         }
 
-        if (_journalFileWriter != null) {
-            _journalFileWriter.flush();
-            _journalFileWriter.close();
+        if (_journalPrintFile != null) {
+            _journalPrintFile.close();
         }
 
-        if (_currentOutputFileWriter != null) {
-            _currentOutputFileWriter.flush();
-            _currentOutputFileWriter.close();
+        if (_currentOutputPrintFile != null) {
+            _currentOutputPrintFile.close();
         }
     }
 
@@ -1646,27 +1647,27 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
 
     public synchronized void setLogFile(File logFile) throws IOException {
-        if (_logFileWriter != null) {
-            _logFileWriter.flush();
-            _logFileWriter.close();
+        if (_logPrintFile != null) {
+            _logPrintFile.close();
         }
 
-        _logFileWriter = new PrintWriter(new BufferedWriter(new FileWriter(logFile)));
+        _logPrintFile = new PrintFile(new PrintStream(logFile), OUTPUT_FILE_WIDTH);
         _logFile = logFile;
 
-        _logFileWriter.append(_logCache.toString());
+        _logPrintFile.outputLine(_logCache.toString());
+        _logPrintFile.setTrimInput(false, true);
     }
 
     public synchronized void setJournalFile(File journalFile) throws IOException {
-        if (_journalFileWriter != null) {
-            _journalFileWriter.flush();
-            _journalFileWriter.close();
+        if (_journalPrintFile != null) {
+            _journalPrintFile.close();
         }
 
-        _journalFileWriter = new PrintWriter(new BufferedWriter(new FileWriter(journalFile)));
+        _journalPrintFile = new PrintFile(new PrintStream(journalFile), OUTPUT_FILE_WIDTH);
         _journalFile = journalFile;
 
-        _journalFileWriter.append(_journalCache.toString());
+        _journalPrintFile.outputLine(_journalCache.toString());
+        _journalPrintFile.setTrimInput(false, true);
     }
 
     public synchronized void newOutputFile(File outputFile) throws IOException {
@@ -1677,13 +1678,13 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
 
         _currentOutputFile = outputFile;
-        _currentOutputFileWriter = new PrintWriter(new BufferedWriter(new FileWriter(outputFile)));
+        _currentOutputPrintFile = new PrintFile(new PrintStream(outputFile), OUTPUT_FILE_WIDTH);
+        _currentOutputPrintFile.setTrimInput(false, true);
     }
 
     public synchronized void closeOutputFile(File outputFile) {
         if (_currentOutputFile != null && _currentOutputFile.equals(outputFile)) {
-            _currentOutputFileWriter.flush();
-            _currentOutputFileWriter.close();
+            _currentOutputPrintFile.close();
             _currentOutputFile = null;
         }
     }
@@ -1701,19 +1702,28 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
 
     /**
-     * Appends the supplied text to the current output file
+     * Appends the supplied text to the current output file. Note that whitespace characters
+     * will be trimmed from the beginning of lines when line wrapping is done. To insert blank
+     * lines in the output file, use 
      * 
      * @param text
      */
-    public synchronized void appendToOutputFile(String text) {
+    public synchronized void appendTextToOutputFile(String text) {
         if (_currentOutputFile == null) {
             throw new IllegalStateException("No output file is open");
         }
 
-        _currentOutputFileWriter.println(text);
-        _currentOutputFileWriter.flush();
+        _currentOutputPrintFile.outputLine(text);
     }
+    
+    public synchronized void appendBlankLineToOutputFile() {
+        if (_currentOutputFile == null) {
+            throw new IllegalStateException("No output file is open");
+        }
 
+        _currentOutputPrintFile.writeBlankLines(1, 0);
+    }
+    
     public synchronized boolean getLastOutputLineWasComment() {
         return _lastOutputLineWasComment;
     }
@@ -1736,9 +1746,8 @@ public class IntkeyContext extends AbstractDeltaContext {
      * @param text
      */
     public synchronized void appendToLog(String text) {
-        if (_logFileWriter != null) {
-            _logFileWriter.println(text);
-            _logFileWriter.flush();
+        if (_logPrintFile != null) {
+            _logPrintFile.outputLine(text);
         }
 
         _logCache.append(text);
@@ -1748,9 +1757,8 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
 
     public synchronized void appendToJournal(String text) {
-        if (_journalFileWriter != null) {
-            _journalFileWriter.println(text);
-            _journalFileWriter.flush();
+        if (_journalPrintFile != null) {
+            _journalPrintFile.outputLine(text);
         }
 
         _journalCache.append(text);

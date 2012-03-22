@@ -23,7 +23,7 @@ public class OutputDiagnoseDirectiveInvocation extends AbstractDiagnoseDirective
             _context.setLastOutputLineWasComment(false);
         } else {
             //TODO - need to include arguments to command here
-            _context.appendToOutputFile("OUTPUT DIAGNOSE");
+            _context.appendTextToOutputFile("OUTPUT DIAGNOSE");
         }
         
         doDiagnose(context);
@@ -59,7 +59,7 @@ public class OutputDiagnoseDirectiveInvocation extends AbstractDiagnoseDirective
         //in the dataset
         Collections.sort(usedCharacters);
         
-        _context.appendToOutputFile(MessageFormat.format("#{0}. {1}", taxon.getItemNumber(), Utils.formatIntegersAsListOfRanges(ReportUtils.characterListToIntegerList(usedCharacters))));
+        _context.appendTextToOutputFile(MessageFormat.format("#{0}. {1}", taxon.getItemNumber(), Utils.formatIntegersAsListOfRanges(ReportUtils.characterListToIntegerList(usedCharacters))));
     }
 
 }

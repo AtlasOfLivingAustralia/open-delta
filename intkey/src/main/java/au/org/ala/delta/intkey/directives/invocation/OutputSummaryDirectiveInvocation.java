@@ -32,7 +32,6 @@ import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.util.Pair;
-import au.org.ala.delta.util.Utils;
 
 public class OutputSummaryDirectiveInvocation extends IntkeyDirectiveInvocation {
 
@@ -58,7 +57,7 @@ public class OutputSummaryDirectiveInvocation extends IntkeyDirectiveInvocation 
         if (context.getLastOutputLineWasComment()) {
             context.setLastOutputLineWasComment(false);
         } else {
-            builder.append("Output Summary");
+            builder.append("Output Summary\n");
         }
 
         int columnNumber = 0;
@@ -301,7 +300,7 @@ public class OutputSummaryDirectiveInvocation extends IntkeyDirectiveInvocation 
         }
 
         try {
-            context.appendToOutputFile(builder.toString());
+            context.appendTextToOutputFile(builder.toString());
         } catch (IllegalStateException ex) {
             throw new IntkeyDirectiveInvocationException("NoOutputFileOpen.error");
         }

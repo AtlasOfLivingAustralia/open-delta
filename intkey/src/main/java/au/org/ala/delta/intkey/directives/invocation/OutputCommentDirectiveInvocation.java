@@ -26,7 +26,7 @@ public class OutputCommentDirectiveInvocation extends IntkeyDirectiveInvocation 
 
     @Override
     public boolean execute(IntkeyContext context) throws IntkeyDirectiveInvocationException {
-        context.appendToOutputFile(_text);
+        context.appendTextToOutputFile(_text);
         context.setLastOutputLineWasComment(true);
         return true;
     }

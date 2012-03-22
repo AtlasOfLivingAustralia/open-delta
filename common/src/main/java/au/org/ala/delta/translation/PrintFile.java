@@ -17,8 +17,6 @@ package au.org.ala.delta.translation;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -129,6 +127,7 @@ public class PrintFile {
     }
 
     public void close() {
+        _output.flush();
         _output.close();
     }
 
@@ -219,6 +218,7 @@ public class PrintFile {
         }
 
         _output.println(text);
+        _output.flush();
     }
 
     protected String pad(String value) {
