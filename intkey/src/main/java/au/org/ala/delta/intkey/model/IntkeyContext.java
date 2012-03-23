@@ -15,13 +15,10 @@
 package au.org.ala.delta.intkey.model;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.io.StringReader;
 import java.net.URL;
 import java.util.ArrayList;
@@ -1797,7 +1794,6 @@ public class IntkeyContext extends AbstractDeltaContext {
             String infoPath = null;
 
             BufferedReader reader = new BufferedReader(new FileReader(_startupFile));
-            System.out.println(_startupFile.getAbsolutePath());
 
             String line;
             while ((line = reader.readLine()) != null) {

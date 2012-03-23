@@ -36,6 +36,13 @@ public class IntkeyDialog extends JDialog {
         init(false);
     }
 
+    /**
+     * 
+     * @param owner owner dialog
+     * @param modal true if the dialog should be modal
+     * @param registerDialog if true, dialog will be registered to obey the tile/cascade/close 
+     * menu commands
+     */
     public IntkeyDialog(Dialog owner, boolean modal, boolean registerDialog) {
         super(owner, modal);
         init(registerDialog);

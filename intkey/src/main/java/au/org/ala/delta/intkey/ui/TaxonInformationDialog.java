@@ -44,6 +44,7 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
+import org.jdesktop.application.SingleFrameApplication;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.Item;
@@ -264,12 +265,18 @@ public class TaxonInformationDialog extends IntkeyDialog {
         _itemFormatter = new ItemFormatter(_context.displayNumbering(), CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE, true, false, false);
         _imageDescriptionFormatter = new Formatter(CommentStrippingMode.RETAIN, AngleBracketHandlingMode.RETAIN, true, false);
 
+        int totalNumberImages = 0;
         _taxa = taxa;
         _taxaWithImages = new ArrayList<Item>();
         for (Item taxon : taxa) {
+            totalNumberImages += taxon.getImageCount();
             if (taxon.getImageCount() > 0) {
                 _taxaWithImages.add(taxon);
             }
+        }
+        
+        if (totalNumberImages < 2) {
+            _btnMultipleImages.setEnabled(false);
         }
 
         initialize();
@@ -410,7 +417,9 @@ public class TaxonInformationDialog extends IntkeyDialog {
 
     @Action
     public void displayMultipleImages() {
-
+        List<String> imageSubjects = _context.getImageSubjects();
+        MultipleImagesDialog dlg = new MultipleImagesDialog(this, true, getSelectedTaxon(), _taxa, imageSubjects, _imageSettings, _context.displayContinuous(), _context.displayScaled(), _context.getUI());
+        ((SingleFrameApplication) Application.getInstance()).show(dlg);
     }
 
     @Action
@@ -420,7 +429,7 @@ public class TaxonInformationDialog extends IntkeyDialog {
     	Item selectedTaxon = _taxa.get(_selectedIndex);
     	ItemFormatter formatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false, true);
     	websearch.setSearchTerm(formatter.formatItemDescription(selectedTaxon));
-    	websearch.setVisible(true);
+    	((SingleFrameApplication) Application.getInstance()).show(websearch);
     }
 
     @Action
@@ -443,7 +452,7 @@ public class TaxonInformationDialog extends IntkeyDialog {
         TaxonImageDialog dlg = new TaxonImageDialog(UIUtils.getMainFrame(), _imageSettings, _taxaWithImages, false, !_context.displayContinuous(), _context.displayScaled());
         dlg.displayImagesForTaxon(selectedTaxon);
         dlg.showImage(imageIndex);
-        dlg.setVisible(true);
+        ((SingleFrameApplication) Application.getInstance()).show(dlg);
     }
 
     /**
