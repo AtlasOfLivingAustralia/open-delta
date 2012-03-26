@@ -24,8 +24,6 @@ import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 
-//TODO this class currently uses CharacterValue objects, but needs to be 
-//refactored to use Attribute objects
 public class AttributeCellRenderer extends ColoringListCellRenderer {
 
     /**
@@ -39,15 +37,16 @@ public class AttributeCellRenderer extends ColoringListCellRenderer {
 
     public AttributeCellRenderer(boolean displayNumbering, String orWord) {
         _charactersToColor = new HashSet<Character>();
-        _attrFormatter = new AttributeFormatter(displayNumbering, true, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, false, orWord);
-        _charFormatter = new CharacterFormatter(displayNumbering, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false);
+        _attrFormatter = new AttributeFormatter(displayNumbering, true, CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.REMOVE, false, orWord);
+        _charFormatter = new CharacterFormatter(displayNumbering, CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.REMOVE, true, false);
     }
 
     @Override
     protected String getTextForValue(Object value) {
         Attribute attr = (Attribute) value;
         
-        return String.format("%s %s", _charFormatter.formatCharacterDescription(attr.getCharacter()), _attrFormatter.formatAttribute((Attribute) value));
+        String str = String.format("%s %s", _charFormatter.formatCharacterDescription(attr.getCharacter()), _attrFormatter.formatAttribute((Attribute) value)); 
+        return str;
     }
 
     @Override

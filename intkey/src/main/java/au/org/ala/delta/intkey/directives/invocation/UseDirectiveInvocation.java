@@ -332,6 +332,11 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
         // For each controlling character, set its value or prompt the user
         // for its value as appropriate
         for (MultiStateCharacter cc : controllingCharsList) {
+            //If the controlling character already has a value set for it in the specimen, do not modify it.
+            if (context.getSpecimen().hasValueFor(cc)) {
+                continue;
+            }
+            
             Set<Integer> inapplicableStates = controllingCharInapplicableStates.get(cc);
 
             // states for the controlling character that will make dependent

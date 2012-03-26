@@ -14,6 +14,9 @@
  ******************************************************************************/
 package au.org.ala.delta.intkey.model;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,11 +24,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.SwingWorker;
+
 import org.apache.commons.lang.math.FloatRange;
 import org.junit.Test;
 
 import au.org.ala.delta.directives.DirectiveSearchResult;
 import au.org.ala.delta.intkey.Intkey;
+import au.org.ala.delta.intkey.directives.DirectivePopulator;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParseException;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParser;
 import au.org.ala.delta.intkey.directives.UseDirective;
@@ -41,6 +47,7 @@ import au.org.ala.delta.model.Specimen;
 import au.org.ala.delta.model.TextAttribute;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.UnorderedMultiStateCharacter;
+import au.org.ala.delta.util.Pair;
 
 /**
  * Unit tests for the USE directive
@@ -613,6 +620,119 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
         assertEquals(1, taxonDifferingCharacters.get(ds.getItem(3)).size());
         assertEquals(1, taxonDifferingCharacters.get(ds.getItem(4)).size());
         assertEquals(0, taxonDifferingCharacters.get(ds.getItem(5)).size());
+    }
+
+    /**
+     * Test that the specimen already has a value set for a controlling
+     * character, no attempt is made to change that value when subsequently
+     * setting the value of one of the dependent characters
+     * 
+     * @throws Exception
+     */
+    public void testControllingCharacterAlreadySet() throws Exception {
+        URL initFileUrl = getClass().getResource("/dataset/controlling_characters_multi_available/intkey.ink");
+        
+        ReportCharacterValuePromptDirectivePopulator populator = new ReportCharacterValuePromptDirectivePopulator();
+        
+        IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), populator);
+        SwingWorker<?, ?> worker = context.newDataSetFile(new File(initFileUrl.toURI()));
+
+        // The dataset is loaded on a separate thread so we need to wait until
+        // it is loaded.
+        worker.get();
+        
+        new UseDirective().parseAndProcess(context, "2,1");
+        new UseDirective().parseAndProcess(context, "5,1");
+        
+        assertFalse(populator.promptedForCharacterValue());
+    }
+    
+    private class ReportCharacterValuePromptDirectivePopulator implements DirectivePopulator {
+        
+        private boolean _promptedForCharacterValue = false;
+        
+        public boolean promptedForCharacterValue() {
+            return _promptedForCharacterValue;
+        }
+        
+        @Override
+        public Boolean promptForYesNoOption(String message) {
+            return null;
+        }
+        
+        @Override
+        public List<String> promptForTextValue(TextCharacter ch) {
+            _promptedForCharacterValue = true;
+            return null;
+        }
+        
+        @Override
+        public List<Item> promptForTaxaByList(String directiveName, boolean selectFromIncludedTaxaOnly, boolean autoSelectSingleValue, boolean singleSelect) {
+            return null;
+        }
+        
+        @Override
+        public List<Item> promptForTaxaByKeyword(String directiveName, boolean permitSelectionFromIncludedTaxaOnly, boolean noneKeywordAvailable) {
+            return null;
+        }
+        
+        @Override
+        public String promptForString(String message, String initialSelectionValue, String directiveName) {
+            return null;
+        }
+        
+        @Override
+        public FloatRange promptForRealValue(RealCharacter ch) {
+            _promptedForCharacterValue = true;
+            return null;
+        }
+        
+        @Override
+        public Boolean promptForOnOffValue(String directiveName, boolean initialValue) {
+            return null;
+        }
+        
+        @Override
+        public Set<Integer> promptForMultiStateValue(MultiStateCharacter ch) {
+            _promptedForCharacterValue = true;
+            return null;
+        }
+        
+        @Override
+        public List<Object> promptForMatchSettings() {
+            return null;
+        }
+        
+        @Override
+        public Set<Integer> promptForIntegerValue(IntegerCharacter ch) {
+            _promptedForCharacterValue = true;
+            return null;
+        }
+        
+        @Override
+        public Pair<ImageDisplayMode, DisplayImagesReportType> promptForImageDisplaySettings() {
+            return null;
+        }
+        
+        @Override
+        public File promptForFile(List<String> fileExtensions, String description, boolean createFileIfNonExistant) throws IOException {
+            return null;
+        }
+        
+        @Override
+        public List<Character> promptForCharactersByList(String directiveName, boolean selectFromAvailableCharactersOnly) {
+            return null;
+        }
+        
+        @Override
+        public List<Character> promptForCharactersByKeyword(String directiveName, boolean permitSelectionFromIncludedCharactersOnly, boolean noneKeywordAvailable) {
+            return null;
+        }
+        
+        @Override
+        public List<Object> promptForButtonDefinition() {
+            return null;
+        }
     }
 
     /**
