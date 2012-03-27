@@ -768,7 +768,7 @@ public final class IntkeyDatasetFileReader {
 
         List<Integer> taxonNameOffsets = readIntegerList(itemBinFile, numItems + 1);
 
-        int recordsSpannedByOffsets = recordsSpannedByBytes(numItems * Constants.SIZE_INT_IN_BYTES);
+        int recordsSpannedByOffsets = recordsSpannedByBytes(taxonNameOffsets.size() * Constants.SIZE_INT_IN_BYTES);
 
         seekToRecord(itemBinFile, itemFileHeader.getRpTnam() + recordsSpannedByOffsets);
 
