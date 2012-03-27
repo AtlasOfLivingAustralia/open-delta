@@ -97,4 +97,6 @@ public interface IntkeyUI {
     void quitApplication();
 
     List<Item> getSelectedTaxa();
+    
+    void setDemonstrationMode(boolean demonstrationMode);
 }

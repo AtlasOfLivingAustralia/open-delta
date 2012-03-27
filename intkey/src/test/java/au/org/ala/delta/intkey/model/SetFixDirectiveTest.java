@@ -31,6 +31,8 @@ public class SetFixDirectiveTest extends IntkeyDatasetTestCase {
         IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
 
         List<au.org.ala.delta.model.Character> usedCharacters;
+        
+        assertFalse(context.charactersFixed());
 
         Character chIncluding = context.getDataset().getCharacter(1);
         Character chLongevity = context.getDataset().getCharacter(2);
@@ -42,6 +44,11 @@ public class SetFixDirectiveTest extends IntkeyDatasetTestCase {
         new UseDirective().parseAndProcess(context, "2,1");
 
         new SetFixDirective().parseAndProcess(context, "ON");
+        
+        assertTrue(context.charactersFixed());
+        assertEquals(2, context.getFixedCharactersList().size());
+        assertTrue(context.getFixedCharactersList().contains(1));
+        assertTrue(context.getFixedCharactersList().contains(2));
 
         new UseDirective().parseAndProcess(context, "3,2");
 
@@ -78,6 +85,9 @@ public class SetFixDirectiveTest extends IntkeyDatasetTestCase {
 
         // Turn the FIX setting off
         new SetFixDirective().parseAndProcess(context, "OFF");
+        
+        assertFalse(context.charactersFixed());
+        assertTrue(context.getFixedCharactersList().isEmpty());
 
         // The specimen should now be empty
         assertTrue(context.getUsedCharacters().isEmpty());

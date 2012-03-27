@@ -121,4 +121,8 @@ public class MockIntkeyUI implements IntkeyUI {
         return null;
     }
 
+    @Override
+    public void setDemonstrationMode(boolean demonstrationMode) {
+    }
+
 }

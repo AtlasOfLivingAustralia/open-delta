@@ -1822,6 +1822,9 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 	public void handleIdentificationRestarted() {
 		_btnDiffSpecimenTaxa.setEnabled(false);
 		handleUpdateAll();
+		if (_context.isDemonstrationMode()) {
+		    IntKeyDialogController.closeWindows();
+		}
 	}
 
 	@Override
@@ -2151,6 +2154,18 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
 		return retList;
 	}
+	
+    @Override
+    public void setDemonstrationMode(boolean demonstrationMode) {
+        if (demonstrationMode) {
+            // If in advanced mode, switch to basic mode
+            if (_advancedMode) {
+                toggleAdvancedMode();
+            }
+        }
+        
+        getMainFrame().getJMenuBar().setVisible(!demonstrationMode);
+    }
 
 	// ================================== DirectivePopulator methods
 	// ===================================================================
@@ -2850,4 +2865,5 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
 		return r;
 	}
+
 }

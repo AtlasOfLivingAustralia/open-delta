@@ -27,7 +27,7 @@ import org.apache.commons.lang.math.FloatRange;
 
 /**
  * Utility methods used to compare character values. Used by the DIFFERENCES,
- * SIMILARITIES and USE directives, among others.
+ * SIMILARITIES and USE intkey directives, among others.
  * 
  * @author ChrisF
  * 

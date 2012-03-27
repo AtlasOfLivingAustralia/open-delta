@@ -84,7 +84,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     public static final String TAXON_KEYWORD_SELECTED = "selected";
 
     public static final String SPECIMEN_KEYWORD = "specimen";
-    
+
     public static final int OUTPUT_FILE_WIDTH = 80;
 
     private File _taxaFile;
@@ -1483,7 +1483,15 @@ public class IntkeyContext extends AbstractDeltaContext {
                 }
             } else {
                 _fixedCharactersList = new ArrayList<Integer>();
-                restartIdentification();
+                // If in demonstration mode, need to temporarily disable it, otherwise
+                // fix mode back be immediately turned back on by restarting the identification.
+                if (_demonstrationMode) {
+                    _demonstrationMode = false;
+                    restartIdentification();
+                    _demonstrationMode = true;
+                } else {
+                    restartIdentification();
+                }
             }
         }
     }
@@ -1497,10 +1505,21 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
 
     /**
-     * Set the list of fixed characters.
+     * Take the supplied attributes, set them in the specimen, then set the
+     * corresponding characters as being fixed.
+     * 
+     * @param attrs
+     *            The list of attributes. These should be in the order of use in
+     *            the specimen - i.e. attributes for any controlling characters
+     *            should appear in the list before their dependent characters
      */
-    synchronized void setFixedCharactersList() {
-
+    synchronized void setFixedCharactersFromAttributes(List<Attribute> attrs) {
+        this._charactersFixed = true;
+        _fixedCharactersList.clear();
+        for (Attribute attr : attrs) {
+            _specimen.setAttributeForCharacter(attr.getCharacter(), attr);
+            _fixedCharactersList.add(attr.getCharacter().getCharacterId());
+        }
     }
 
     public synchronized boolean isAutoTolerance() {
@@ -1522,7 +1541,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         } else {
             _demonstrationModeSettings = null;
         }
-        // TODO need to update the UI.
+        getUI().setDemonstrationMode(demonstrationMode);
     }
 
     public synchronized Set<Character> getExactCharacters() {
@@ -1699,9 +1718,9 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
 
     /**
-     * Appends the supplied text to the current output file. Note that whitespace characters
-     * will be trimmed from the beginning of lines when line wrapping is done. To insert blank
-     * lines in the output file, use 
+     * Appends the supplied text to the current output file. Note that
+     * whitespace characters will be trimmed from the beginning of lines when
+     * line wrapping is done. To insert blank lines in the output file, use
      * 
      * @param text
      */
@@ -1712,7 +1731,7 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         _currentOutputPrintFile.outputLine(text);
     }
-    
+
     public synchronized void appendBlankLineToOutputFile() {
         if (_currentOutputFile == null) {
             throw new IllegalStateException("No output file is open");
@@ -1720,7 +1739,7 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         _currentOutputPrintFile.writeBlankLines(1, 0);
     }
-    
+
     public synchronized boolean getLastOutputLineWasComment() {
         return _lastOutputLineWasComment;
     }
