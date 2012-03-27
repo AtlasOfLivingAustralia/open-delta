@@ -19,13 +19,14 @@ import au.org.ala.delta.model.Specimen;
 import au.org.ala.delta.util.Pair;
 
 /**
- * Abstract class for DiagnoseDirectiveInvocation and OutputDiagnoseDirectiveInvocation. Provides some
- * shared utility methods
+ * Abstract class for DiagnoseDirectiveInvocation and
+ * OutputDiagnoseDirectiveInvocation. Provides some shared utility methods
+ * 
  * @author ChrisF
- *
+ * 
  */
 public abstract class AbstractDiagnoseDirectiveInvocation extends IntkeyDirectiveInvocation {
-    
+
     protected List<Item> _taxa;
     protected List<Character> _presetCharacters;
 
@@ -39,7 +40,7 @@ public abstract class AbstractDiagnoseDirectiveInvocation extends IntkeyDirectiv
     public void setCharacters(List<Character> characters) {
         this._presetCharacters = characters;
     }
-    
+
     protected boolean doDiagnose(IntkeyContext context) {
         int diagLevel = context.getDiagLevel();
         DiagType diagType = context.getDiagType();
@@ -63,7 +64,12 @@ public abstract class AbstractDiagnoseDirectiveInvocation extends IntkeyDirectiv
             remainingCharacters.removeAll(context.getDataset().getCharactersToIgnoreForBest());
             updateRemainingCharactersFromSpecimen(remainingCharacters, specimen);
 
-            List<Item> remainingTaxa = new ArrayList<Item>(_taxa);
+            // Each diagnostic description will (if possible) differ in at least
+            // DIAGLEVEL characters
+            // from the full description of *every other included taxon (not
+            // just the taxa specified in this command)*
+            List<Item> remainingTaxa = context.getIncludedTaxa();
+
             updateRemainingTaxaFromSpecimen(remainingTaxa, specimen, diagLevel);
 
             // process preset characters first
@@ -80,8 +86,9 @@ public abstract class AbstractDiagnoseDirectiveInvocation extends IntkeyDirectiv
                     updateRemainingTaxaFromSpecimen(remainingTaxaForDiagLevel, specimen, i);
 
                     while (remainingTaxaForDiagLevel.size() > 1) {
-                        LinkedHashMap<Character, Double> bestOrdering = Best.orderDiagnose(taxon.getItemNumber(), diagType, context.getStopBest(), dataset,
-                                ReportUtils.characterListToIntegerList(remainingCharacters), ReportUtils.taxonListToIntegerList(remainingTaxaForDiagLevel), context.getRBase(), context.getVaryWeight());
+                        LinkedHashMap<Character, Double> bestOrdering = Best
+                                .orderDiagnose(taxon.getItemNumber(), diagType, context.getStopBest(), dataset, ReportUtils.characterListToIntegerList(remainingCharacters),
+                                        ReportUtils.taxonListToIntegerList(remainingTaxaForDiagLevel), context.getRBase(), context.getVaryWeight());
                         if (bestOrdering.isEmpty()) {
                             break;
                         }
@@ -96,9 +103,12 @@ public abstract class AbstractDiagnoseDirectiveInvocation extends IntkeyDirectiv
                     if (remainingTaxaForDiagLevel.size() == 1) {
                         handleDiagLevelAttained(i);
                     } else {
-                        // If we have failed to reach a diagnostic level, output a message to this effect (RTF version of the diagnose report only -
+                        // If we have failed to reach a diagnostic level, output
+                        // a message to this effect (RTF version of the diagnose
+                        // report only -
                         // this is not done for OUTPUT DIAGNOSE.
-                        // Continue to use and output further diagnostic characters however.
+                        // Continue to use and output further diagnostic
+                        // characters however.
                         if (!diagLevelNotAttained) {
                             diagLevelNotAttained = true;
                             handleDiagLevelNotAttained(i);
@@ -106,7 +116,7 @@ public abstract class AbstractDiagnoseDirectiveInvocation extends IntkeyDirectiv
                     }
                 }
             }
-            
+
             updateRemainingTaxaFromSpecimen(remainingTaxa, specimen, diagLevel);
             handleEndProcessingTaxon(taxon, diagLevelNotAttained, specimen, remainingTaxa);
         }
@@ -120,18 +130,22 @@ public abstract class AbstractDiagnoseDirectiveInvocation extends IntkeyDirectiv
         if (!attr.isUnknown() && (!attr.isInapplicable() || diagType == DiagType.TAXA)) {
 
             specimen.setAttributeForCharacter(attr.getCharacter(), attr);
-            
+
             handleCharacterUsed(attr);
 
             updateRemainingCharactersFromSpecimen(remainingCharacters, specimen);
             updateRemainingTaxaFromSpecimen(remainingTaxa, specimen, diagLevel);
         }
     }
-    
+
     protected abstract void handleStartProcessingTaxon(Item taxon);
+
     protected abstract void handleCharacterUsed(Attribute attr);
+
     protected abstract void handleDiagLevelAttained(int diagLevel);
+
     protected abstract void handleDiagLevelNotAttained(int diagLevel);
+
     protected abstract void handleEndProcessingTaxon(Item taxon, boolean diagLevelNotAttained, Specimen specimen, List<Item> remainingTaxa);
 
     protected void updateRemainingCharactersFromSpecimen(List<Character> remainingCharacters, Specimen specimen) {
