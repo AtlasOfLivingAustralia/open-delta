@@ -540,7 +540,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 		_pnlAvailableCharacters.add(_sclPaneAvailableCharacters, BorderLayout.CENTER);
 
 		_listAvailableCharacters = new JList();
-		_listAvailableCharacters.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		//_listAvailableCharacters.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		_listAvailableCharacters.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		_listAvailableCharacters.setCellRenderer(_availableCharactersListCellRenderer);
 		_listAvailableCharacters.addMouseListener(new MouseInputAdapter() {
 
@@ -2283,7 +2284,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 		if (taxaToSelect.size() == 1 && autoSelectSingleValue) {
 			return taxaToSelect;
 		} else {
-			TaxonSelectionDialog dlg = new TaxonSelectionDialog(getMainFrame(), taxaToSelect, directiveName.toUpperCase(), keyword, _context.displayNumbering(), singleSelect);
+			TaxonSelectionDialog dlg = new TaxonSelectionDialog(getMainFrame(), taxaToSelect, directiveName.toUpperCase(), keyword, _context.displayNumbering(), singleSelect, _context);
 			show(dlg);
 			return dlg.getSelectedTaxa();
 		}

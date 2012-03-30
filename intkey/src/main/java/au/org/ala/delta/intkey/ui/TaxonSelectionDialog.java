@@ -24,15 +24,23 @@ import java.util.List;
 import javax.swing.ActionMap;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
+import org.jdesktop.application.SingleFrameApplication;
 
+import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.format.ItemFormatter;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
+import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 
 public class TaxonSelectionDialog extends ListSelectionDialog {
     /**
@@ -58,34 +66,43 @@ public class TaxonSelectionDialog extends ListSelectionDialog {
 
     // The name of the keyword that these characters belong to
     private String _keyword;
-
+    
+    private IntkeyContext _context;
+    
+    private ItemFormatter _fullTextTaxonFormatter;
+    
     @Resource
     String title;
 
     @Resource
     String titleFromKeyword;
+    
+    @Resource
+    String fullTextOfTaxonNameCaption;
 
-    public TaxonSelectionDialog(Dialog owner, List<Item> taxa, String directiveName, String keyword, boolean displayNumbering, boolean singleSelect) {
-        this(owner, taxa, directiveName, displayNumbering, singleSelect);
+    public TaxonSelectionDialog(Dialog owner, List<Item> taxa, String directiveName, String keyword, boolean displayNumbering, boolean singleSelect, IntkeyContext context) {
+        this(owner, taxa, directiveName, displayNumbering, singleSelect, context);
         _keyword = keyword;
         setTitle(MessageFormat.format(titleFromKeyword, _directiveName, _keyword));
     }
 
-    public TaxonSelectionDialog(Frame owner, List<Item> taxa, String directiveName, String keyword, boolean displayNumbering, boolean singleSelect) {
-        this(owner, taxa, directiveName, displayNumbering, singleSelect);
+    public TaxonSelectionDialog(Frame owner, List<Item> taxa, String directiveName, String keyword, boolean displayNumbering, boolean singleSelect, IntkeyContext context) {
+        this(owner, taxa, directiveName, displayNumbering, singleSelect, context);
         _keyword = keyword;
         setTitle(MessageFormat.format(titleFromKeyword, _directiveName, _keyword));
     }
 
-    public TaxonSelectionDialog(Dialog owner, List<Item> taxa, String directiveName, boolean displayNumbering, boolean singleSelect) {
+    public TaxonSelectionDialog(Dialog owner, List<Item> taxa, String directiveName, boolean displayNumbering, boolean singleSelect, IntkeyContext context) {
         super(owner);
         _directiveName = directiveName;
+        _context = context;
         init(taxa, displayNumbering, singleSelect);
     }
 
-    public TaxonSelectionDialog(Frame owner, List<Item> taxa, String directiveName, boolean displayNumbering, boolean singleSelect) {
+    public TaxonSelectionDialog(Frame owner, List<Item> taxa, String directiveName, boolean displayNumbering, boolean singleSelect, IntkeyContext context) {
         super(owner);
         _directiveName = directiveName;
+        _context = context;
         init(taxa, displayNumbering, singleSelect);
     }
 
@@ -95,6 +112,8 @@ public class TaxonSelectionDialog extends ListSelectionDialog {
         ActionMap actionMap = Application.getInstance().getContext().getActionMap(TaxonSelectionDialog.class, this);
 
         setTitle(MessageFormat.format(title, _directiveName));
+        
+        _fullTextTaxonFormatter = new ItemFormatter(true, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REPLACE, true, false, false);
 
         _panelButtons.setBorder(new EmptyBorder(0, 20, 10, 20));
         _panelButtons.setLayout(new GridLayout(0, 5, 5, 2));
@@ -109,7 +128,6 @@ public class TaxonSelectionDialog extends ListSelectionDialog {
 
         _btnKeywords = new JButton();
         _btnKeywords.setAction(actionMap.get("taxonSelectionDialog_Keywords"));
-        _btnKeywords.setEnabled(false);
         _panelButtons.add(_btnKeywords);
 
         _btnImages = new JButton();
@@ -119,7 +137,6 @@ public class TaxonSelectionDialog extends ListSelectionDialog {
 
         _btnSearch = new JButton();
         _btnSearch.setAction(actionMap.get("taxonSelectionDialog_Search"));
-        _btnSearch.setEnabled(false);
         _panelButtons.add(_btnSearch);
 
         _btnCancel = new JButton();
@@ -154,6 +171,21 @@ public class TaxonSelectionDialog extends ListSelectionDialog {
         if (singleSelect) {
             _list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         }
+        
+        _list.addListSelectionListener(new ListSelectionListener() {
+            
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (_list.getSelectedIndices().length == 1) {
+                    Item taxon = (Item) _list.getSelectedValue();
+                    _btnImages.setEnabled(taxon.getImages().size() > 0);
+                    _btnFullText.setEnabled(true);
+                } else {
+                    _btnImages.setEnabled(false);
+                    _btnFullText.setEnabled(false);
+                }
+            }
+        });
     }
 
     @Action
@@ -173,17 +205,30 @@ public class TaxonSelectionDialog extends ListSelectionDialog {
 
     @Action
     public void taxonSelectionDialog_Keywords() {
-
+        if (this.getOwner() instanceof TaxonKeywordSelectionDialog) {
+            // If this dialog was spawned using the "List" button in a taxon keyword selection dialog, just 
+            // close this window and bring the parent into focus
+            _selectedTaxa.clear();
+            this.setVisible(false);
+        }
     }
 
     @Action
     public void taxonSelectionDialog_Images() {
-
+        // images button will only be enabled if a single taxon is selected
+        Item taxon = (Item) _list.getSelectedValue();
+        List<Item> taxonInList = new ArrayList<Item>();
+        taxonInList.add(taxon);
+        TaxonImageDialog dlg = new TaxonImageDialog(this, _context.getImageSettings(), taxonInList, false, !_context.displayContinuous(), _context.displayScaled());
+        dlg.displayImagesForTaxon(taxon);
+        dlg.showImage(0);
+        ((SingleFrameApplication) Application.getInstance()).show(dlg);
     }
 
     @Action
     public void taxonSelectionDialog_Search() {
-
+        SimpleSearchDialog dlg = new SimpleSearchDialog(this);
+        ((SingleFrameApplication) Application.getInstance()).show(dlg);
     }
 
     @Action
@@ -198,7 +243,9 @@ public class TaxonSelectionDialog extends ListSelectionDialog {
 
     @Action
     public void taxonSelectionDialog_FullText() {
-
+        // full text button will only be enabled if a single taxon is selected
+        Item taxon = (Item) _list.getSelectedValue();
+        JOptionPane.showMessageDialog(this, _fullTextTaxonFormatter.formatItemDescription(taxon), fullTextOfTaxonNameCaption, JOptionPane.INFORMATION_MESSAGE);
     }
 
     @Action
@@ -212,7 +259,7 @@ public class TaxonSelectionDialog extends ListSelectionDialog {
     }
 
     public List<Item> getSelectedTaxa() {
-        return new ArrayList<Item>(_selectedTaxa);
+        return _selectedTaxa;
     }
 
 }

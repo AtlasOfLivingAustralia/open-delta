@@ -140,7 +140,7 @@ public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
                 charDlg.setVisible(true);
 
                 List<Character> charsSelectedInDlg = charDlg.getSelectedCharacters();
-                if (charsSelectedInDlg.size() > 0) {
+                if (charsSelectedInDlg != null && charsSelectedInDlg.size() > 0) {
                     _selectedCharacters.clear();
                     _selectedCharacters.addAll(charsSelectedInDlg);
                     this.setVisible(false);

@@ -73,7 +73,7 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
         this(owner, characters, directiveName, imageSettings, displayNumbering);
         _keyword = keyword;
 
-        setTitle(String.format(titleFromKeyword, _directiveName, _keyword));
+        setTitle(MessageFormat.format(titleFromKeyword, _directiveName, _keyword));
     }
 
     public CharacterSelectionDialog(Frame owner, List<Character> characters, String directiveName, String keyword, ImageSettings imageSettings, boolean displayNumbering) {
