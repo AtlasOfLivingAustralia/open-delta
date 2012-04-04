@@ -41,6 +41,8 @@ import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
+import au.org.ala.delta.rtf.RTFBuilder;
+import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
 
 public class TaxonSelectionDialog extends ListSelectionDialog {
     /**
@@ -245,12 +247,13 @@ public class TaxonSelectionDialog extends ListSelectionDialog {
     public void taxonSelectionDialog_FullText() {
         // full text button will only be enabled if a single taxon is selected
         Item taxon = (Item) _list.getSelectedValue();
-        JOptionPane.showMessageDialog(this, _fullTextTaxonFormatter.formatItemDescription(taxon), fullTextOfTaxonNameCaption, JOptionPane.INFORMATION_MESSAGE);
-    }
-
-    @Action
-    public void taxonSelectionDialog_Notes() {
-
+        RTFBuilder rtfBuilder = new RTFBuilder();
+        rtfBuilder.startDocument();
+        rtfBuilder.appendText(_fullTextTaxonFormatter.formatItemDescription(taxon));
+        rtfBuilder.endDocument();
+        
+        RtfReportDisplayDialog rtfDlg = new RtfReportDisplayDialog(this, new SimpleRtfEditorKit(null), rtfBuilder.toString(), fullTextOfTaxonNameCaption);
+        ((SingleFrameApplication) Application.getInstance()).show(rtfDlg);
     }
 
     @Action
@@ -260,6 +263,26 @@ public class TaxonSelectionDialog extends ListSelectionDialog {
 
     public List<Item> getSelectedTaxa() {
         return _selectedTaxa;
+    }
+
+    @Override
+    public int searchForText(String searchText, int startingIndex) {
+        int matchedIndex = -1;
+        
+        ItemFormatter formatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false, false);
+        
+        for (int i=startingIndex; i < _listModel.size(); i++) {
+            Item taxon = (Item) _listModel.getElementAt(i);
+            String taxonText = formatter.formatItemDescription(taxon);
+            if (taxonText.trim().toLowerCase().contains(searchText.trim().toLowerCase())) {
+                matchedIndex = i;
+                _list.setSelectedIndex(i);
+                _list.ensureIndexIsVisible(i);
+                break;
+            }
+        }
+        
+        return matchedIndex;
     }
 
 }

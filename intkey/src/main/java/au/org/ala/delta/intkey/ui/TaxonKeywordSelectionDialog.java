@@ -189,4 +189,10 @@ public class TaxonKeywordSelectionDialog extends KeywordSelectionDialog {
         return _selectedTaxa;
     }
 
+    @Override
+    public int searchForText(String searchText, int startingIndex) {
+        // TODO Auto-generated method stub
+        return -1;
+    }
+
 }

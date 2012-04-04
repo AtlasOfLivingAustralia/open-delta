@@ -411,10 +411,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 		ResourceMap resourceMap = getContext().getResourceMap(Intkey.class);
 		resourceMap.injectFields(this);
 
-		boolean startupInAdvancedMode = false;
-		boolean suppressStartupImages = false;
-		String startupPreferencesFile = null;
-
 		// Define and parse command line arguments
 		Options options = new Options();
 		options.addOption("A", false, "Startup in advanced mode.");

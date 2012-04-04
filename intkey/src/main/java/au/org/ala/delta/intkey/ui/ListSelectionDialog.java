@@ -27,7 +27,7 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 
-public class ListSelectionDialog extends JDialog {
+public abstract class ListSelectionDialog extends JDialog {
     
     /**
      * 
@@ -64,4 +64,12 @@ public class ListSelectionDialog extends JDialog {
         _list = new JList();
         _scrollPane.setViewportView(_list);
     }
+    
+    /**
+     * Starting at the supplied index, search for the supplied text in the dialog, and select the first match.
+     * @param searchText The text to search for
+     * @param startingIndex the list index to begin searching from
+     * @return the index of the first matching list item, or -1 if no match was found
+     */
+    public abstract int searchForText(String searchText, int startingIndex);
 }

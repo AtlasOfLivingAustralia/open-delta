@@ -30,9 +30,18 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
+import org.jdesktop.application.SingleFrameApplication;
 
+import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.format.AttributeFormatter;
+import au.org.ala.delta.model.format.CharacterFormatter;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
+import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.image.ImageSettings;
+import au.org.ala.delta.rtf.RTFBuilder;
+import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
 
 public class CharacterSelectionDialog extends ListSelectionDialog {
 
@@ -126,7 +135,6 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
 
         _btnSearch = new JButton();
         _btnSearch.setAction(actionMap.get("characterSelectionDialog_Search"));
-        _btnSearch.setEnabled(false);
         _panelButtons.add(_btnSearch);
 
         _btnCancel = new JButton();
@@ -139,7 +147,6 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
 
         _btnFullText = new JButton();
         _btnFullText.setAction(actionMap.get("characterSelectionDialog_FullText"));
-        _btnFullText.setEnabled(false);
         _panelButtons.add(_btnFullText);
 
         _btnNotes = new JButton();
@@ -191,7 +198,8 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
 
     @Action
     public void characterSelectionDialog_Search() {
-
+        SimpleSearchDialog dlg = new SimpleSearchDialog(this);
+        ((SingleFrameApplication) Application.getInstance()).show(dlg);
     }
 
     @Action
@@ -206,7 +214,28 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
 
     @Action
     public void characterSelectionDialog_FullText() {
+        // full text button will only be enabled if a single character is selected
+        Character ch = (Character) _list.getSelectedValue();
 
+        CharacterFormatter charFormatter = new CharacterFormatter(true, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, true, false);
+        
+        RTFBuilder rtfBuilder = new RTFBuilder();
+        rtfBuilder.startDocument();
+        rtfBuilder.appendText(charFormatter.formatCharacterDescription(ch));
+        
+        if (ch instanceof MultiStateCharacter) {
+            MultiStateCharacter msChar = (MultiStateCharacter) ch;
+            rtfBuilder.increaseIndent();
+            for (int i=0; i < msChar.getNumberOfStates(); i++) {
+                int stateNumber = i + 1;
+                rtfBuilder.appendText(charFormatter.formatState(msChar, stateNumber));
+            }
+        }
+        
+        rtfBuilder.endDocument();
+        
+        RtfReportDisplayDialog rtfDlg = new RtfReportDisplayDialog(this, new SimpleRtfEditorKit(null), rtfBuilder.toString(), "Full text of character");
+        ((SingleFrameApplication) Application.getInstance()).show(rtfDlg);
     }
 
     @Action
@@ -221,5 +250,25 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
 
     public List<Character> getSelectedCharacters() {
         return _selectedCharacters;
+    }
+
+    @Override
+    public int searchForText(String searchText, int startingIndex) {
+        int matchedIndex = -1;
+
+        CharacterFormatter formatter = new CharacterFormatter(false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, true, false);
+
+        for (int i = startingIndex; i < _listModel.size(); i++) {
+            Character ch = (Character) _listModel.getElementAt(i);
+            String charText = formatter.formatCharacterDescription(ch);
+            if (charText.trim().toLowerCase().contains(searchText.trim().toLowerCase())) {
+                matchedIndex = i;
+                _list.setSelectedIndex(i);
+                _list.ensureIndexIsVisible(i);
+                break;
+            }
+        }
+
+        return matchedIndex;
     }
 }

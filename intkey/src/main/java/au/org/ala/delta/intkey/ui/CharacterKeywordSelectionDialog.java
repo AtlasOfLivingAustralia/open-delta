@@ -189,4 +189,10 @@ public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
     public List<Character> getSelectedCharacters() {
         return _selectedCharacters;
     }
+
+    @Override
+    public int searchForText(String searchText, int startingIndex) {
+        // TODO Auto-generated method stub
+        return -1;
+    }
 }
