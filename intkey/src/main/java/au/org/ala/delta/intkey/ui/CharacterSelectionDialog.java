@@ -25,17 +25,20 @@ import javax.swing.ActionMap;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SingleFrameApplication;
 
-import au.org.ala.delta.model.Attribute;
+import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.MultiStateCharacter;
-import au.org.ala.delta.model.format.AttributeFormatter;
+import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
@@ -68,6 +71,8 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
 
     // The name of the keyword that these characters belong to
     private String _keyword;
+    
+    private IntkeyContext _context;
 
     // controls display of character images
     private ImageSettings _imageSettings;
@@ -78,31 +83,39 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
     @Resource
     String titleFromKeyword;
 
-    public CharacterSelectionDialog(Dialog owner, List<Character> characters, String directiveName, String keyword, ImageSettings imageSettings, boolean displayNumbering) {
-        this(owner, characters, directiveName, imageSettings, displayNumbering);
+    @Resource
+    String fullTextOfCharacterCaption;
+    
+    @Resource
+    String notesCaption;
+
+    public CharacterSelectionDialog(Dialog owner, List<Character> characters, String directiveName, String keyword, ImageSettings imageSettings, boolean displayNumbering, IntkeyContext context) {
+        this(owner, characters, directiveName, imageSettings, displayNumbering, context);
         _keyword = keyword;
 
         setTitle(MessageFormat.format(titleFromKeyword, _directiveName, _keyword));
     }
 
-    public CharacterSelectionDialog(Frame owner, List<Character> characters, String directiveName, String keyword, ImageSettings imageSettings, boolean displayNumbering) {
-        this(owner, characters, directiveName, imageSettings, displayNumbering);
+    public CharacterSelectionDialog(Frame owner, List<Character> characters, String directiveName, String keyword, ImageSettings imageSettings, boolean displayNumbering, IntkeyContext context) {
+        this(owner, characters, directiveName, imageSettings, displayNumbering, context);
         _keyword = keyword;
         _imageSettings = imageSettings;
         setTitle(MessageFormat.format(titleFromKeyword, _directiveName, _keyword));
     }
 
-    public CharacterSelectionDialog(Dialog owner, List<Character> characters, String directiveName, ImageSettings imageSettings, boolean displayNumbering) {
+    public CharacterSelectionDialog(Dialog owner, List<Character> characters, String directiveName, ImageSettings imageSettings, boolean displayNumbering, IntkeyContext context) {
         super(owner);
         _directiveName = directiveName;
         _imageSettings = imageSettings;
+        _context = context;
         init(characters, displayNumbering);
     }
 
-    public CharacterSelectionDialog(Frame owner, List<Character> characters, String directiveName, ImageSettings imageSettings, boolean displayNumbering) {
+    public CharacterSelectionDialog(Frame owner, List<Character> characters, String directiveName, ImageSettings imageSettings, boolean displayNumbering, IntkeyContext context) {
         super(owner);
         _directiveName = directiveName;
         _imageSettings = imageSettings;
+        _context = context;
         init(characters, displayNumbering);
     }
 
@@ -126,7 +139,6 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
 
         _btnKeywords = new JButton();
         _btnKeywords.setAction(actionMap.get("characterSelectionDialog_Keywords"));
-        _btnKeywords.setEnabled(false);
         _panelButtons.add(_btnKeywords);
 
         _btnImages = new JButton();
@@ -151,7 +163,6 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
 
         _btnNotes = new JButton();
         _btnNotes.setAction(actionMap.get("characterSelectionDialog_Notes"));
-        _btnNotes.setEnabled(false);
         _panelButtons.add(_btnNotes);
 
         _btnHelp = new JButton();
@@ -169,6 +180,23 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
             _list.setCellRenderer(new CharacterCellRenderer(displayNumbering));
             _list.setModel(_listModel);
         }
+
+        _list.addListSelectionListener(new ListSelectionListener() {
+
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (_list.getSelectedIndices().length == 1) {
+                    Character ch = (Character) _list.getSelectedValue();
+                    _btnImages.setEnabled(ch.getImages().size() > 0);
+                    _btnFullText.setEnabled(true);
+                    _btnNotes.setEnabled(StringUtils.isNotBlank(ch.getNotes()));
+                } else {
+                    _btnImages.setEnabled(false);
+                    _btnFullText.setEnabled(false);
+                    _btnNotes.setEnabled(false);
+                }
+            }
+        });
     }
 
     @Action
@@ -188,12 +216,31 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
 
     @Action
     public void characterSelectionDialog_Keywords() {
-
-    }
+        if (this.getOwner() instanceof CharacterKeywordSelectionDialog) {
+            // If this window was spawned by a CharacterKeywordSelectionDialog (keyword selection), don't 
+            // create another one.
+            _selectedCharacters = null;
+            this.setVisible(false);
+        } else {
+            CharacterKeywordSelectionDialog dlg = new CharacterKeywordSelectionDialog(this, _context, _directiveName, false);
+            ((SingleFrameApplication) Application.getInstance()).show(dlg);
+            if (dlg.getSelectedCharacters() != null) {
+                _selectedCharacters = dlg.getSelectedCharacters();
+                this.setVisible(false);
+            }
+        }
+    } 
 
     @Action
     public void characterSelectionDialog_Images() {
-
+        // images button will only be enabled if a single character is selected
+        Character ch = (Character) _list.getSelectedValue();
+        List<Character> charInList = new ArrayList<Character>();
+        charInList.add(ch);
+        CharacterImageDialog dlg = new CharacterImageDialog(this, charInList, _context.getImageSettings(), false, !_context.displayContinuous(), _context.displayScaled());
+        dlg.displayImagesForCharacter(ch);
+        dlg.showImage(0);
+        ((SingleFrameApplication) Application.getInstance()).show(dlg);
     }
 
     @Action
@@ -214,33 +261,51 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
 
     @Action
     public void characterSelectionDialog_FullText() {
-        // full text button will only be enabled if a single character is selected
+        // full text button will only be enabled if a single character is
+        // selected
         Character ch = (Character) _list.getSelectedValue();
 
         CharacterFormatter charFormatter = new CharacterFormatter(true, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, true, false);
-        
+
         RTFBuilder rtfBuilder = new RTFBuilder();
         rtfBuilder.startDocument();
         rtfBuilder.appendText(charFormatter.formatCharacterDescription(ch));
+
+        rtfBuilder.increaseIndent();
         
         if (ch instanceof MultiStateCharacter) {
             MultiStateCharacter msChar = (MultiStateCharacter) ch;
-            rtfBuilder.increaseIndent();
-            for (int i=0; i < msChar.getNumberOfStates(); i++) {
+            for (int i = 0; i < msChar.getNumberOfStates(); i++) {
                 int stateNumber = i + 1;
                 rtfBuilder.appendText(charFormatter.formatState(msChar, stateNumber));
             }
+        } else if (ch instanceof NumericCharacter) {
+            NumericCharacter<?> intChar = (NumericCharacter<?>) ch;
+            if (StringUtils.isNotBlank(intChar.getUnits())) {
+                rtfBuilder.appendText(intChar.getUnits());
+            }
         }
-        
+
         rtfBuilder.endDocument();
-        
-        RtfReportDisplayDialog rtfDlg = new RtfReportDisplayDialog(this, new SimpleRtfEditorKit(null), rtfBuilder.toString(), "Full text of character");
+
+        RtfReportDisplayDialog rtfDlg = new RtfReportDisplayDialog(this, new SimpleRtfEditorKit(null), rtfBuilder.toString(), fullTextOfCharacterCaption);
         ((SingleFrameApplication) Application.getInstance()).show(rtfDlg);
     }
 
     @Action
     public void characterSelectionDialog_Notes() {
+        // notes button will only be enabled if a single character is
+        // selected
+        Character ch = (Character) _list.getSelectedValue();
+        if (StringUtils.isNotBlank(ch.getNotes())) {
+            RTFBuilder rtfBuilder = new RTFBuilder();
+            rtfBuilder.startDocument();
+            rtfBuilder.appendText(ch.getNotes());
+            rtfBuilder.endDocument();
 
+            RtfReportDisplayDialog rtfDlg = new RtfReportDisplayDialog(this, new SimpleRtfEditorKit(null), rtfBuilder.toString(), notesCaption);
+            ((SingleFrameApplication) Application.getInstance()).show(rtfDlg);
+        }
     }
 
     @Action

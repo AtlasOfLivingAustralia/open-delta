@@ -24,7 +24,6 @@ import java.util.List;
 import javax.swing.ActionMap;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
@@ -38,9 +37,9 @@ import org.jdesktop.application.SingleFrameApplication;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.Item;
-import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
+import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.rtf.RTFBuilder;
 import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
 
@@ -210,8 +209,15 @@ public class TaxonSelectionDialog extends ListSelectionDialog {
         if (this.getOwner() instanceof TaxonKeywordSelectionDialog) {
             // If this dialog was spawned using the "List" button in a taxon keyword selection dialog, just 
             // close this window and bring the parent into focus
-            _selectedTaxa.clear();
+            _selectedTaxa = null;
             this.setVisible(false);
+        } else {
+            TaxonKeywordSelectionDialog dlg = new TaxonKeywordSelectionDialog(this, _context, _directiveName, false);
+            ((SingleFrameApplication) Application.getInstance()).show(dlg);
+            if (dlg.getSelectedTaxa() != null) {
+                _selectedTaxa = dlg.getSelectedTaxa();
+                this.setVisible(false);
+            }
         }
     }
 

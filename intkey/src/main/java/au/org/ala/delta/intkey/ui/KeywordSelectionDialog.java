@@ -24,15 +24,20 @@ import java.awt.event.ActionListener;
 
 import javax.swing.ActionMap;
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
+import org.jdesktop.application.SingleFrameApplication;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
@@ -62,6 +67,8 @@ public abstract class KeywordSelectionDialog extends ListSelectionDialog {
     protected final ButtonGroup buttonGroup = new ButtonGroup();
     
     protected boolean _selectFromIncluded = false;
+    
+    protected DefaultListModel _listModel;
 
     public KeywordSelectionDialog(Dialog owner, IntkeyContext context, String directiveName) {
         super(owner);
@@ -99,8 +106,8 @@ public abstract class KeywordSelectionDialog extends ListSelectionDialog {
 
         _btnList = new JButton();
         _panelInnerButtons.add(_btnList);
-        _btnList.setEnabled(false);
         _btnList.setAction(actionMap.get("keywordSelectionDialog_List"));
+        _btnList.setEnabled(false);
 
         _btnImages = new JButton();
         _panelInnerButtons.add(_btnImages);
@@ -109,7 +116,6 @@ public abstract class KeywordSelectionDialog extends ListSelectionDialog {
         _btnSearch = new JButton();
         _panelInnerButtons.add(_btnSearch);
         _btnSearch.setAction(actionMap.get("keywordSelectionDialog_Search"));
-        _btnSearch.setEnabled(false);
 
         _btnCancel = new JButton();
         _panelInnerButtons.add(_btnCancel);
@@ -145,10 +151,20 @@ public abstract class KeywordSelectionDialog extends ListSelectionDialog {
         });
         buttonGroup.add(_rdbtnSelectFromIncluded);
         _panelRadioButtons.add(_rdbtnSelectFromIncluded);
+        
+        _list.addListSelectionListener(new ListSelectionListener() {
+            
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (_list.getSelectedIndices().length == 1) {
+                    _btnList.setEnabled(true);
+                } else {
+                    _btnList.setEnabled(false);
+                }
+            }
+        });
 
         _context = context;
-        
-        
     }
 
     @Action
@@ -173,7 +189,8 @@ public abstract class KeywordSelectionDialog extends ListSelectionDialog {
 
     @Action
     public void keywordSelectionDialog_Search() {
-        searchBtnPressed();
+        SimpleSearchDialog dlg = new SimpleSearchDialog(this);
+        ((SingleFrameApplication) Application.getInstance()).show(dlg);
     }
 
     @Action
@@ -194,8 +211,23 @@ public abstract class KeywordSelectionDialog extends ListSelectionDialog {
 
     abstract protected void imagesBtnPressed();
 
-    abstract protected void searchBtnPressed();
-
     abstract protected void helpBtnPressed();
+    
+    @Override
+    public int searchForText(String searchText, int startingIndex) {
+        int matchedIndex = -1;
+
+        for (int i = startingIndex; i < _listModel.size(); i++) {
+            String keyword = (String) _listModel.getElementAt(i);
+            if (keyword.trim().toLowerCase().contains(searchText.trim().toLowerCase())) {
+                matchedIndex = i;
+                _list.setSelectedIndex(i);
+                _list.ensureIndexIsVisible(i);
+                break;
+            }
+        }
+
+        return matchedIndex;
+    }
 
 }

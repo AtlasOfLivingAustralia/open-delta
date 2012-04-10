@@ -76,11 +76,11 @@ public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
 
         List<String> characterKeywords = context.getCharacterKeywords();
 
-        DefaultListModel model = new DefaultListModel();
+        _listModel = new DefaultListModel();
         for (String keyword : characterKeywords) {
-            model.addElement(keyword);
+            _listModel.addElement(keyword);
         }
-        _list.setModel(model);
+        _list.setModel(_listModel);
 
         _includedCharacters = context.getIncludedCharacters();
 
@@ -96,6 +96,9 @@ public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
         }
 
         _displayCharacterNumbering = context.displayNumbering();
+
+        List<Image> characterKeywordImages = _context.getDataset().getCharacterKeywordImages();
+        _btnImages.setEnabled(characterKeywordImages != null && !characterKeywordImages.isEmpty());
     }
 
     @Override
@@ -136,11 +139,15 @@ public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
             if (characters.isEmpty()) {
                 JOptionPane.showMessageDialog(this, allCharactersInSelectedSetExcludedCaption, title, JOptionPane.ERROR_MESSAGE);
             } else {
-                CharacterSelectionDialog charDlg = new CharacterSelectionDialog(this, characters, _directiveName, selectedKeyword, _context.getImageSettings(), _displayCharacterNumbering);
+                CharacterSelectionDialog charDlg = new CharacterSelectionDialog(this, characters, _directiveName, selectedKeyword, _context.getImageSettings(), _displayCharacterNumbering, _context);
                 charDlg.setVisible(true);
 
                 List<Character> charsSelectedInDlg = charDlg.getSelectedCharacters();
                 if (charsSelectedInDlg != null && charsSelectedInDlg.size() > 0) {
+                    if (_selectedCharacters == null) {
+                        _selectedCharacters = new ArrayList<Character>();
+                    }
+
                     _selectedCharacters.clear();
                     _selectedCharacters.addAll(charsSelectedInDlg);
                     this.setVisible(false);
@@ -175,12 +182,6 @@ public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
     }
 
     @Override
-    protected void searchBtnPressed() {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     protected void helpBtnPressed() {
         // TODO Auto-generated method stub
 
@@ -190,9 +191,4 @@ public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
         return _selectedCharacters;
     }
 
-    @Override
-    public int searchForText(String searchText, int startingIndex) {
-        // TODO Auto-generated method stub
-        return -1;
-    }
 }

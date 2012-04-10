@@ -155,7 +155,7 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
                 // " ").toUpperCase();
                 String directiveName = "USE";
 
-                CharacterSelectionDialog selectDlg = new CharacterSelectionDialog(UIUtils.getMainFrame(), charsNoValues, directiveName, context.getImageSettings(), context.displayNumbering());
+                CharacterSelectionDialog selectDlg = new CharacterSelectionDialog(UIUtils.getMainFrame(), charsNoValues, directiveName, context.getImageSettings(), context.displayNumbering(), context);
                 selectDlg.setVisible(true);
 
                 List<au.org.ala.delta.model.Character> selectedCharacters = selectDlg.getSelectedCharacters();

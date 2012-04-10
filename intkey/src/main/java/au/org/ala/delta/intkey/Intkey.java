@@ -2219,7 +2219,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 			keyword = IntkeyContext.CHARACTER_KEYWORD_ALL;
 
 		}
-		CharacterSelectionDialog dlg = new CharacterSelectionDialog(getMainFrame(), charactersToSelect, directiveName.toUpperCase(), keyword, _context.getImageSettings(), _context.displayNumbering());
+		CharacterSelectionDialog dlg = new CharacterSelectionDialog(getMainFrame(), charactersToSelect, directiveName.toUpperCase(), keyword, _context.getImageSettings(), _context.displayNumbering(), _context);
 		show(dlg);
 		return dlg.getSelectedCharacters();
 	}

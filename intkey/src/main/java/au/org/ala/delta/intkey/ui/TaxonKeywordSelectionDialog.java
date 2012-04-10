@@ -74,11 +74,11 @@ public class TaxonKeywordSelectionDialog extends KeywordSelectionDialog {
         setTitle(MessageFormat.format(title, _directiveName));
         List<String> taxonKeywords = context.getTaxaKeywords();
 
-        DefaultListModel model = new DefaultListModel();
+        _listModel = new DefaultListModel();
         for (String keyword : taxonKeywords) {
-            model.addElement(keyword);
+            _listModel.addElement(keyword);
         }
-        _list.setModel(model);
+        _list.setModel(_listModel);
 
         _selectedTaxa = null;
         _context = context;
@@ -140,6 +140,9 @@ public class TaxonKeywordSelectionDialog extends KeywordSelectionDialog {
 
                 List<Item> taxaSelectedInDlg = taxonDlg.getSelectedTaxa();
                 if (taxaSelectedInDlg != null && taxaSelectedInDlg.size() > 0) {
+                    if (_selectedTaxa == null) {
+                        _selectedTaxa = new ArrayList<Item>();
+                    }
                     _selectedTaxa.clear();
                     _selectedTaxa.addAll(taxaSelectedInDlg);
                     this.setVisible(false);
@@ -174,12 +177,6 @@ public class TaxonKeywordSelectionDialog extends KeywordSelectionDialog {
     }
 
     @Override
-    protected void searchBtnPressed() {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     protected void helpBtnPressed() {
         // TODO Auto-generated method stub
 
@@ -187,12 +184,6 @@ public class TaxonKeywordSelectionDialog extends KeywordSelectionDialog {
 
     public List<Item> getSelectedTaxa() {
         return _selectedTaxa;
-    }
-
-    @Override
-    public int searchForText(String searchText, int startingIndex) {
-        // TODO Auto-generated method stub
-        return -1;
     }
 
 }
