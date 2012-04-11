@@ -29,11 +29,12 @@ import javax.swing.JScrollPane;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
+import org.jdesktop.application.SingleFrameApplication;
 
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.image.ImageSettings;
 
-public class MultiStateInputDialog extends CharacterValueInputDialog {
+public class MultiStateInputDialog extends CharacterValueInputDialog implements SearchableListDialog {
 
     /**
      * 
@@ -43,6 +44,7 @@ public class MultiStateInputDialog extends CharacterValueInputDialog {
     Set<Integer> _inputData;
 
     private JList _list;
+    private DefaultListModel _listModel;
     private JScrollPane _scrollPane;
 
     @Resource
@@ -69,12 +71,12 @@ public class MultiStateInputDialog extends CharacterValueInputDialog {
         _list = new JList();
         _scrollPane.setViewportView(_list);
 
-        DefaultListModel listModel = new DefaultListModel();
+        _listModel = new DefaultListModel();
         for (int i = 0; i < ch.getNumberOfStates(); i++) {
-            listModel.addElement(_formatter.formatState(ch, i + 1));
+            _listModel.addElement(_formatter.formatState(ch, i + 1));
         }
 
-        _list.setModel(listModel);
+        _list.setModel(_listModel);
 
         _inputData = new HashSet<Integer>();
 
@@ -121,6 +123,29 @@ public class MultiStateInputDialog extends CharacterValueInputDialog {
 
     public Set<Integer> getInputData() {
         return _inputData;
+    }
+
+    @Override
+    public int searchForText(String searchText, int startingIndex) {
+        int matchedIndex = -1;
+
+        for (int i = startingIndex; i < _listModel.size(); i++) {
+            String stateText = (String) _listModel.get(i);
+            if (stateText.trim().toLowerCase().contains(searchText.trim().toLowerCase())) {
+                matchedIndex = i;
+                _list.setSelectedIndex(i);
+                _list.ensureIndexIsVisible(i);
+                break;
+            }
+        }
+
+        return matchedIndex;
+    }
+
+    @Override
+    void handleBtnSearchClicked() {
+        SimpleSearchDialog dlg = new SimpleSearchDialog(this, this);
+        ((SingleFrameApplication) Application.getInstance()).show(dlg);
     }
 
 }

@@ -36,9 +36,8 @@ import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SingleFrameApplication;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.model.ReportUtils;
 import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.MultiStateCharacter;
-import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
@@ -46,7 +45,7 @@ import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.rtf.RTFBuilder;
 import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
 
-public class CharacterSelectionDialog extends ListSelectionDialog {
+public class CharacterSelectionDialog extends ListSelectionDialog implements SearchableListDialog {
 
     /**
      * 
@@ -143,6 +142,7 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
 
         _btnImages = new JButton();
         _btnImages.setAction(actionMap.get("characterSelectionDialog_Images"));
+        _btnImages.setEnabled(false);
         _panelButtons.add(_btnImages);
 
         _btnSearch = new JButton();
@@ -163,6 +163,7 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
 
         _btnNotes = new JButton();
         _btnNotes.setAction(actionMap.get("characterSelectionDialog_Notes"));
+        _btnNotes.setEnabled(false);
         _panelButtons.add(_btnNotes);
 
         _btnHelp = new JButton();
@@ -237,7 +238,7 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
         Character ch = (Character) _list.getSelectedValue();
         List<Character> charInList = new ArrayList<Character>();
         charInList.add(ch);
-        CharacterImageDialog dlg = new CharacterImageDialog(this, charInList, _context.getImageSettings(), false, !_context.displayContinuous(), _context.displayScaled());
+        CharacterImageDialog dlg = new CharacterImageDialog(this, charInList, _imageSettings, false, !_context.displayContinuous(), _context.displayScaled());
         dlg.displayImagesForCharacter(ch);
         dlg.showImage(0);
         ((SingleFrameApplication) Application.getInstance()).show(dlg);
@@ -245,7 +246,7 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
 
     @Action
     public void characterSelectionDialog_Search() {
-        SimpleSearchDialog dlg = new SimpleSearchDialog(this);
+        SimpleSearchDialog dlg = new SimpleSearchDialog(this, this);
         ((SingleFrameApplication) Application.getInstance()).show(dlg);
     }
 
@@ -265,30 +266,9 @@ public class CharacterSelectionDialog extends ListSelectionDialog {
         // selected
         Character ch = (Character) _list.getSelectedValue();
 
-        CharacterFormatter charFormatter = new CharacterFormatter(true, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, true, false);
+        String rtfFullCharacterText = ReportUtils.generateFullCharacterTextRTF(ch);
 
-        RTFBuilder rtfBuilder = new RTFBuilder();
-        rtfBuilder.startDocument();
-        rtfBuilder.appendText(charFormatter.formatCharacterDescription(ch));
-
-        rtfBuilder.increaseIndent();
-        
-        if (ch instanceof MultiStateCharacter) {
-            MultiStateCharacter msChar = (MultiStateCharacter) ch;
-            for (int i = 0; i < msChar.getNumberOfStates(); i++) {
-                int stateNumber = i + 1;
-                rtfBuilder.appendText(charFormatter.formatState(msChar, stateNumber));
-            }
-        } else if (ch instanceof NumericCharacter) {
-            NumericCharacter<?> intChar = (NumericCharacter<?>) ch;
-            if (StringUtils.isNotBlank(intChar.getUnits())) {
-                rtfBuilder.appendText(intChar.getUnits());
-            }
-        }
-
-        rtfBuilder.endDocument();
-
-        RtfReportDisplayDialog rtfDlg = new RtfReportDisplayDialog(this, new SimpleRtfEditorKit(null), rtfBuilder.toString(), fullTextOfCharacterCaption);
+        RtfReportDisplayDialog rtfDlg = new RtfReportDisplayDialog(this, new SimpleRtfEditorKit(null), rtfFullCharacterText, fullTextOfCharacterCaption);
         ((SingleFrameApplication) Application.getInstance()).show(rtfDlg);
     }
 

@@ -67,6 +67,8 @@ public class TextInputDialog extends CharacterValueInputDialog {
                 TextInputDialog.this.handleBtnOKClicked();
             }
         });
+        
+        _btnSearch.setEnabled(false);
 
         _inputData = new ArrayList<String>();
     }
@@ -103,6 +105,11 @@ public class TextInputDialog extends CharacterValueInputDialog {
         if (!_inputData.isEmpty()) {
             this.setVisible(false);
         }
+    }
+    
+    @Override
+    void handleBtnSearchClicked() {
+        // Text input dialog cannot be searched - do nothing
     }
 
 }

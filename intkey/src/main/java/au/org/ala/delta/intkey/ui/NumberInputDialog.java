@@ -70,6 +70,13 @@ public abstract class NumberInputDialog extends CharacterValueInputDialog {
         } else {
             _lblUnits.setVisible(false);
         }
+        
+        _btnSearch.setEnabled(false);
+    }
+
+    @Override
+    void handleBtnSearchClicked() {
+        // Number input dialog cannot be searched - do nothing
     }
 
 }

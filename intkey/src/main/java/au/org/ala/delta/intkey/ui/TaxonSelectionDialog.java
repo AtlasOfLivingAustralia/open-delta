@@ -43,7 +43,7 @@ import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.rtf.RTFBuilder;
 import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
 
-public class TaxonSelectionDialog extends ListSelectionDialog {
+public class TaxonSelectionDialog extends ListSelectionDialog implements SearchableListDialog {
     /**
      * 
      */
@@ -235,7 +235,7 @@ public class TaxonSelectionDialog extends ListSelectionDialog {
 
     @Action
     public void taxonSelectionDialog_Search() {
-        SimpleSearchDialog dlg = new SimpleSearchDialog(this);
+        SimpleSearchDialog dlg = new SimpleSearchDialog(this, this);
         ((SingleFrameApplication) Application.getInstance()).show(dlg);
     }
 

@@ -41,7 +41,7 @@ import org.jdesktop.application.SingleFrameApplication;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public abstract class KeywordSelectionDialog extends ListSelectionDialog {
+public abstract class KeywordSelectionDialog extends ListSelectionDialog implements SearchableListDialog {
     /**
      * 
      */
@@ -189,7 +189,7 @@ public abstract class KeywordSelectionDialog extends ListSelectionDialog {
 
     @Action
     public void keywordSelectionDialog_Search() {
-        SimpleSearchDialog dlg = new SimpleSearchDialog(this);
+        SimpleSearchDialog dlg = new SimpleSearchDialog(this, this);
         ((SingleFrameApplication) Application.getInstance()).show(dlg);
     }
 

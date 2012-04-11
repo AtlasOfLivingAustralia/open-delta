@@ -26,13 +26,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;
 
+import au.org.ala.delta.intkey.model.ReportUtils;
 import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.MultiStateCharacter;
-import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
@@ -60,11 +60,19 @@ public abstract class CharacterValueInputDialog extends JDialog {
     protected ImageSettings _imageSettings;
 
     protected boolean _imagesStartScaled;
+    
+    protected String _fullCharacterTextCaption;
+    protected String _notesCaption;
 
     public CharacterValueInputDialog(Frame owner, Character ch, ImageSettings imageSettings, boolean displayNumbering, boolean enableImagesButton, boolean imagesStartScaled) {
         super(owner, true);
         ActionMap actionMap = Application.getInstance().getContext().getActionMap(CharacterValueInputDialog.class, this);
-
+        
+        // Have to pull these resource strings out manually as BSAF does not play nicely with
+        // class hierarchies.
+        _fullCharacterTextCaption = UIUtils.getResourceString("CharacterValueInputDialog.fullCharacterTextCaption");
+        _notesCaption = UIUtils.getResourceString("CharacterValueInputDialog.notesCaption");
+        
         getContentPane().setLayout(new BorderLayout(0, 0));
 
         setResizable(false);
@@ -124,6 +132,10 @@ public abstract class CharacterValueInputDialog extends JDialog {
         _formatter = new CharacterFormatter(displayNumbering, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, true, false);
         _lblCharacterDescription.setText(_formatter.formatCharacterDescription(_ch));
         _pnlMain.add(_lblCharacterDescription, BorderLayout.NORTH);
+        
+        _btnImages.setEnabled(!_ch.getImages().isEmpty());
+        
+        _btnNotes.setEnabled(StringUtils.isNotBlank(_ch.getNotes()));
 
         setLocationRelativeTo(owner);
     }
@@ -133,27 +145,8 @@ public abstract class CharacterValueInputDialog extends JDialog {
     abstract void handleBtnCancelClicked();
 
     abstract void handleBtnImagesClicked();
-
-    private String generateRtfFullCharacterText() {
-        CharacterFormatter f = new CharacterFormatter(true, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, true, false);
-
-        RTFBuilder builder = new RTFBuilder();
-        builder.appendText(f.formatCharacterDescription(_ch));
-
-        builder.increaseIndent();
-
-        if (_ch instanceof MultiStateCharacter) {
-            MultiStateCharacter msChar = (MultiStateCharacter) _ch;
-            for (int i = 0; i < msChar.getNumberOfStates(); i++) {
-                builder.appendText(f.formatState(msChar, i + 1));
-            }
-        } else if (_ch instanceof NumericCharacter<?>) {
-            NumericCharacter<?> numChar = (NumericCharacter<?>) _ch;
-            builder.appendText(f.formatUnits(numChar));
-        }
-
-        return builder.toString();
-    }
+    
+    abstract void handleBtnSearchClicked();
 
     private void displayRTFWindow(String rtfContent, String title) {
         RtfReportDisplayDialog dlg = new RtfReportDisplayDialog(this, new SimpleRtfEditorKit(null), rtfContent, title);
@@ -174,12 +167,13 @@ public abstract class CharacterValueInputDialog extends JDialog {
 
     @Action
     public void characterValueInputDialog_FullText() {
-        String rtfFullText = generateRtfFullCharacterText();
-        displayRTFWindow(rtfFullText, "Full text of character");
+        String rtfFullText = ReportUtils.generateFullCharacterTextRTF(_ch);
+        displayRTFWindow(rtfFullText, _fullCharacterTextCaption);
     }
 
     @Action
     public void characterValueInputDialog_Search() {
+        handleBtnSearchClicked();
     }
 
     @Action
@@ -189,7 +183,11 @@ public abstract class CharacterValueInputDialog extends JDialog {
 
     @Action
     public void characterValueInputDialog_Notes() {
-        displayRTFWindow(_ch.getNotes(), "Image Notes");
+        RTFBuilder builder = new RTFBuilder();
+        builder.startDocument();
+        builder.appendText(_ch.getNotes());
+        builder.endDocument();
+        displayRTFWindow(builder.toString(), _notesCaption);
     }
 
     @Action

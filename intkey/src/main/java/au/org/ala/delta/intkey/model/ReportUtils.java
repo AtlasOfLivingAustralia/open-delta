@@ -35,9 +35,13 @@ import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.NumericCharacter;
 import au.org.ala.delta.model.RealAttribute;
 import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.TextCharacter;
+import au.org.ala.delta.model.format.CharacterFormatter;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
+import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.rtf.RTFBuilder;
 import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.util.Pair;
@@ -510,6 +514,33 @@ public class ReportUtils {
         }
 
         return taxaNumbers;
+    }
+    
+    public static String generateFullCharacterTextRTF(Character ch) {
+        CharacterFormatter charFormatter = new CharacterFormatter(true, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, true, false);
+
+        RTFBuilder rtfBuilder = new RTFBuilder();
+        rtfBuilder.startDocument();
+        rtfBuilder.appendText(charFormatter.formatCharacterDescription(ch));
+
+        rtfBuilder.increaseIndent();
+        
+        if (ch instanceof MultiStateCharacter) {
+            MultiStateCharacter msChar = (MultiStateCharacter) ch;
+            for (int i = 0; i < msChar.getNumberOfStates(); i++) {
+                int stateNumber = i + 1;
+                rtfBuilder.appendText(charFormatter.formatState(msChar, stateNumber));
+            }
+        } else if (ch instanceof NumericCharacter<?>) {
+            NumericCharacter<?> intChar = (NumericCharacter<?>) ch;
+            if (StringUtils.isNotBlank(intChar.getUnits())) {
+                rtfBuilder.appendText(intChar.getUnits());
+            }
+        }
+
+        rtfBuilder.endDocument();
+        
+        return rtfBuilder.toString();
     }
 
 }

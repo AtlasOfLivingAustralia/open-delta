@@ -5,6 +5,7 @@ import java.text.MessageFormat;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -31,7 +32,11 @@ public class SimpleSearchDialog extends IntkeyDialog {
     private JLabel _lblEnterSearchString;
     private JPanel _pnlMain;
 
-    private ListSelectionDialog _owner;
+    private JDialog _owner;
+
+    // The dialog to highlight search results in. Could be different from the
+    // "owner" of the dialog.
+    private SearchableListDialog _dialogToSearch;
 
     private int _lastMatchedListIndex;
 
@@ -47,10 +52,11 @@ public class SimpleSearchDialog extends IntkeyDialog {
     @Resource
     String informationDialogTitle;
 
-    public SimpleSearchDialog(ListSelectionDialog owner) {
+    public SimpleSearchDialog(JDialog owner, SearchableListDialog dialogToSearch) {
         super(owner, false);
 
         _owner = owner;
+        _dialogToSearch = dialogToSearch;
         _lastMatchedListIndex = -1;
 
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(SimpleSearchDialog.class);
@@ -83,19 +89,19 @@ public class SimpleSearchDialog extends IntkeyDialog {
         _btnCancel = new JButton();
         _btnCancel.setAction(actionMap.get("SimpleSearchDialog_Cancel"));
         _pnlButtons.add(_btnCancel);
-        
+
         _txtFldSearch.getDocument().addDocumentListener(new DocumentListener() {
-            
+
             @Override
             public void removeUpdate(DocumentEvent e) {
                 _lastMatchedListIndex = -1;
             }
-            
+
             @Override
             public void insertUpdate(DocumentEvent e) {
                 _lastMatchedListIndex = -1;
             }
-            
+
             @Override
             public void changedUpdate(DocumentEvent e) {
                 _lastMatchedListIndex = -1;
@@ -111,7 +117,7 @@ public class SimpleSearchDialog extends IntkeyDialog {
             if (_lastMatchedListIndex != -1) {
                 startingIndex = _lastMatchedListIndex + 1;
             }
-            int matchedIndex = _owner.searchForText(searchText, startingIndex);
+            int matchedIndex = _dialogToSearch.searchForText(searchText, startingIndex);
             if (matchedIndex == -1) {
                 String message = MessageFormat.format(noMoreOccurrencesCaption, searchText);
                 JOptionPane.showMessageDialog(this, message, informationDialogTitle, JOptionPane.INFORMATION_MESSAGE);
