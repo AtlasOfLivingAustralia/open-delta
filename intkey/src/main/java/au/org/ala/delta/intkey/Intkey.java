@@ -230,6 +230,7 @@ import au.org.ala.delta.rtf.RTFBuilder;
 import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.ui.AboutBox;
 import au.org.ala.delta.ui.DeltaSingleFrameApplication;
+import au.org.ala.delta.ui.help.HelpController;
 import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
 import au.org.ala.delta.ui.util.IconHelper;
 import au.org.ala.delta.util.Pair;
@@ -395,6 +396,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 	private File _lastOpenedDatasetDirectory = null;
 
 	private ItemFormatter _taxonformatter;
+	
+	private HelpController _helpController;
 
 	/**
 	 * Calls Desktop.getDesktop on a background thread as it's slow to initialise
@@ -477,6 +480,9 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 		mainFrame.setTitle("Intkey");
 		mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		mainFrame.setIconImages(IconHelper.getRedIconList());
+		
+		_helpController = new HelpController("help/Intkey");
+		//_helpController.enableHelpKey(mainFrame);
 
 		_taxonformatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false, true);
 		_context = new IntkeyContext(this, this);
@@ -1212,14 +1218,14 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 		JMenu mnuHelp = new JMenu();
 		mnuHelp.setName("mnuHelp");
 		JMenuItem mnuItHelpIntroduction = new JMenuItem();
-		mnuItHelpIntroduction.setAction(actionMap.get("mnuItHelpIntroduction"));
-		mnuItHelpIntroduction.setEnabled(false);
+		mnuItHelpIntroduction.setName("mnuItHelpIntroduction");
+		mnuItHelpIntroduction.addActionListener(_helpController.helpAction());
 		mnuHelp.add(mnuItHelpIntroduction);
 
 		if (advancedMode) {
 			JMenuItem mnuItHelpCommands = new JMenuItem();
-			mnuItHelpCommands.setAction(actionMap.get("mnuItHelpCommands"));
-			mnuItHelpCommands.setEnabled(false);
+			mnuItHelpCommands.setName("mnuItHelpCommands");
+			mnuItHelpCommands.addActionListener(_helpController.helpAction());
 			mnuHelp.add(mnuItHelpCommands);
 		}
 
