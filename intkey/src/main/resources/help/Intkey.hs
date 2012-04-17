@@ -10,7 +10,7 @@ PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp HelpSet Version 2.0//EN"
 
   <!-- maps -->
   <maps>
-     <homeID>test1</homeID>
+     <homeID>introduction</homeID>
      <mapref location="default/IntkeyMap.jhm"/>
   </maps>
   

@@ -1,0 +1,26 @@
+<html>
+<body>
+	<h2>DIAGNOSE</h2>
+	<p>This command generates diagnostic descriptions of taxa. You may
+		specify &quot;preset&quot; characters to be included in all the
+		descriptions: specify NONE if you want the diagnostic characters to be
+		selected entirely by the program. Each diagnostic description will (if
+		possible) differ in at least DIAGLEVEL characters from the full
+		description of every other INCLUDEd taxon (not just the taxa specified
+		in this command) (see SET DIAGLEVEL, INCLUDE TAXA). The current MATCH
+		setting (see SET MATCH) is ignored: the setting used is almost
+		equivalent to O U I, but see SET DIAGTYPE. The characters are selected
+		from the AVAILABLE characters (see Keywords). See also OUTPUT
+		DIAGNOSE, DISPLAY CHARACTERORDER SEPARATE.</p>
+	<p>
+		<i>Syntax of command line</i> DIAGNOSE ( <i>t</i> <sub>1</sub> <i>t</i>
+		<sub>2</sub> ...) <i>c</i> <sub>1</sub> <i>c</i> <sub>2</sub> ...
+	</p>
+	<p>
+		where <i>t</i> <sub>1</sub>, <i>t</i> <sub>2</sub> ... are taxon
+		numbers, ranges or keywords, and <i>c</i> <sub>1</sub>, <i>c</i> <sub>2</sub>
+		... are character numbers, ranges or keywords. If there is only one
+		taxon number, range or keyword, the parentheses may be omitted.
+	</p>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<html>
+<body>
+<h2><a name="_restart"></a><img src="../../images/restarts.png" border="1" />&nbsp;&nbsp;Restart Identification</h2>
+This button starts a new identification. To identify a specimen:
+<ol>
+<li>Press the &quot;Restart identification&quot; button.</li>
+<li>The top-left pane shows a list of characters. Normally, the pane is headed &quot;Best Characters&quot; and the best characters are at the top (if not, you can restore this setting by pressing the &quot;Best order&quot; button). Click on a character.</li>
+<li>The program displays a list of character states, or a box for entering values such as lengths. If there is an illustration for the character, it will be normally be displayed automatically (if not, press the &quot;Images&quot; button). Most characters have explanatory notes, which may be viewed by pressing the &quot;Notes&quot; button. Click on the state, or enter the value, that applies to your specimen, and press &quot;OK&quot;. <i>If you are not sure, do not guess a single state or value</i>. Instead, click on more than one state, enter a range of values, or press &quot;Cancel&quot; and try another character. To deselect a previously selected state, click on it again.</li>
+<li>The &quot;Taxa Remaining&quot; (top-right) pane shows the taxa that match the information that you have entered. The &quot;Taxa Eliminated&quot; (bottom-right) pane shows the taxa that do not match, with the number of mismatches in parentheses. Repeat from step 2 until &quot;Identification complete&quot; or some other message is displayed in the top-left pane. A &quot;Help&quot; button is also displayed; press this to obtain information on how to proceed (for example, how to confirm the identification).</li>
+</ol>
+If, at any stage, you think you have made a mistake and want to correct it, click on the appropriate character in the &quot;Used Characters&quot; (bottom-left) pane. The program again displays the box for selecting character states or entering values, and you can change the information you previously entered. You can remove the character from the identification by clearing all the information.
+
+<h2><a name="_best"></a><img src="../../images/obests.png" border="1" />&nbsp;&nbsp;&quot;Best&quot; Order</h2>
+This button displays the characters in the top-left pane in order of their merit for separating the remaining taxa in an identification. The merit of a character is calculated partly from its separating power, and partly from its &quot;reliability&quot; or ease of use.
+In Advanced operating mode, the separating powers of the characters are shown at the left each line. A separating power of 1 corresponds to a division of the group of remaining taxa into halves, and a value of 0 indicates very poor separation. See Section 5.4 of the DELTA User&quot;s Guide for more details.
+
+<h2><a name="_separate"></a><img src="../../images/oseps.png" border="1" />&nbsp;&nbsp;&quot;Separate a given taxon&quot; Order</h2>
+This button displays the characters in the top-left pane in order of their merit for separating a particular taxon from the other remaining taxa in an identification. The merit of a character is calculated partly from its separating power, and partly from its &quot;reliability&quot; or ease of use. The separating powers of the characters are shown at the left each line.
+
+<h2><a name="_natural"></a><img src="../../images/onats.png" border="1" />&nbsp;&nbsp;Natural Order</h2>
+This button displays the characters in the top-left pane in the order in which the author placed them in the character list.
+<b><i>Warning.</i></b> Unless you are familiar enough with the data to know that certain character values exhibited by your specimen will eliminate a good proportion of the taxa <i>at the current stage of the identification</i>, you should use the &quot;Best&quot; order instead.
+
+<h2><a name="_diff_specimen_remaining"></a><img src="../../images/diff_ss.png" border="1" />&nbsp;&nbsp;Differences between the Specimen and the Remaining Taxa</h2>
+This button displays the differences between the specimen and the remaining taxa. The specimen may not exactly match the remaining taxa because: (a) their attributes may be overlapping but not identical; (b) the specified characters may be unrecorded or inapplicable for the remaining taxa; (c) the error tolerance may have been set to allow mismatches.
+
+<h2><a name="_tolerance"></a><img src="../../images/set_tols.png" border="1" />&nbsp;&nbsp;Error Tolerance</h2>
+This button allows you to set the &quot;error tolerance&quot; for an identification. A taxon will remain under consideration until the number of differences between it and the specimen is greater than the error tolerance. You should increase the current value by 1 if you are aware that you have made a mistake in an identification (because the illustration or description of the remaining taxon does not correspond to your specimen) but you do not know what the mistake is. Then continue the identification as before. The name of each remaining taxon will be preceded by a number in parentheses, indicating the number of differences between the specimen and the taxon.
+The error tolerance also allows a correct identification when there are errors in the database.
+Increasing the error tolerance and continuing with the identification also provides a way to increase your confidence in an identification, even when no error is apparent.
+
+<h2><a name="_set_match"></a><img src="../../images/set_mats.png" border="1" />&nbsp;&nbsp;Set Match</h2>
+This button allows you to specify which character values are to be regarded as effectively equal or &quot;matching&quot; in identification and queries (when the program eliminates taxa which do not &quot;match&quot; the specified attributes), and in the calculation of differences and similarities between taxa. For details, see the help for the &quot;Set Match&quot; command, which is available via the main &quot;Help&quot; menu, or by pressing the &quot;Help&quot; button in the &quot;Set Match&quot; dialog box.
+Regardless of the current &quot;Match&quot; settings, the &quot;Differences between the specimen and the remaining taxa&quot; button always uses settings equivalent to &quot;Match Exact&quot;, and the &quot;Differences between taxa&quot; button always uses settings equivalent to &quot;Match Unknowns Inapplicables&quot;. To obtain differences in terms of the current &quot;Match&quot; settings, use the &quot;Differences&quot; option in the &quot;Queries&quot; menu.
+
+<h2><a name="_subset_characters"></a><img src="../../images/inc_cs.png" border="1" />&nbsp;&nbsp;Use a Subset of the Characters</h2>
+This button allows you to choose a set of characters to be used in subsequent operations.
+N.B. The set of characters persists until changed by using the button again. In particular, it is not affected by starting a new identification.
+
+<h2><a name="_find_characters"></a><img src="../../images/finds.png" border="1" />&nbsp;&nbsp;Find Text in the Characters</h2>
+This button allows you to search for text in the &quot;Characters&quot; (left-hand) panes. The characters found are shown in blue. By default, only the lines in the top-left pane are searched. Check boxes allow the search to be extended to the bottom-left pane and to the character states.
+</body>
+</html>

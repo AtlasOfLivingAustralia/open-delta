@@ -1,0 +1,175 @@
+<html>
+<body>
+	<h2>DEFINE</h2>
+	<p>This command defines the following entities.
+	<ul>
+		<li>Keywords. These are names representing sets of characters or
+			taxa (see Keywords in the general help).</li>
+		<li>Toolbar buttons. The command associates Intkey commands with
+			a button.</li>
+		<li>Intkey commands to be executed at the end of an
+			identification. The commands are executed only if DISPLAY IMAGES AUTO
+			is set. N.B. This feature was designed for use with older versions of
+			Intkey. We recommend against using it with the current version, as it
+			usually obscures other important information which the program
+			displays at the end of an identification.</li>
+		<li>Intkey commands to be executed as part of the INFORMATION
+			command.</li>
+		<li>Words or phrases to be used for selection of taxon images by
+			subject.</li>
+	</ul>
+	</p>
+	<p>
+	<h3>Syntax of command line &#45; keywords:</h3>
+	DEFINE CHARACTERS
+	<i>keyword</i>
+	<i>c</i>
+	<sub>1</sub>
+	<i>c</i>
+	<sub>2</sub> ...
+	<br /> DEFINE TAXA
+	<i>keyword</i>
+	<i>t</i>
+	<sub>1</sub>
+	<i>t</i>
+	<sub>2</sub> ...
+	<br /> DEFINE NAMES
+	<i>keyword</i>
+	<i>n</i>
+	<sub>1</sub>,
+	<i>n</i>
+	<sub>2</sub>, ...
+	</p>
+	where
+	<i>c</i>
+	<sub>1</sub>,
+	<i>c</i>
+	<sub>2</sub> ... are character numbers, ranges or previously defined
+	keywords,
+	<i>t</i>
+	<sub>1</sub>,
+	<i>t</i>
+	<sub>2</sub> ... are taxon numbers, ranges or previously defined
+	keywords, and
+	<i>n</i>
+	<sub>1</sub>,
+	<i>n</i>
+	<sub>2</sub> ... are taxon names. Taxon names must be separated by a
+	comma or the end of a line. If the keyword contains spaces, it must be
+	enclosed in quotation marks ("). If a keyword is defined in terms of a
+	previously defined keyword, the meaning of the new keyword is fixed at
+	the time of its definition &#45; that is, it is not affected by
+	subsequent changes in the meaning of the previously defined keyword.
+	The NAMES form of the command is mainly intended for use in INPUT
+	files.
+	<h3>Examples</h3>
+	<p>
+		<i>DEFINE CHARACTERS "reproductive organization" 12 23&#45;24<br />
+			RESTART<br /> USE 13,2 27,1<br /> DEFINE TAXA g1 remaining</i>
+	</p>
+	<p>The keyword &quot;g1&quot; continues to represent those taxa
+		with attributes &quot;13,2 27,1&quot;, even though the set of taxa
+		represented by the keyword &quot;remaining&quot; may change later in
+		the session.</p>
+	<i>DEFINE NAMES cereals Echinochloa, Eleusine, Oryza, Panicum, Zea</i>
+	<h3>Syntax of command line &#45; buttons</h3>
+	<p>
+		DEFINE BUTTON <i>switches</i> <i>bitmap</i>.BMP " <i>c</i> <sub>1</sub>;
+		<i>c</i> <sub>2</sub>; ..." " <i>shorthelp</i>" " <i>fullhelp</i>" </br>
+		DEFINE BUTTON CLEAR </br> DEFINE BUTTON SPACE
+	</p>
+	<p>
+		where <i>bitmap</i>.BMP is the image to be displayed on the button, <i>c</i>
+		<sub>1</sub>, <i>c</i> <sub>2</sub>, ... are commands, <i>shorthelp</i>
+		is a short help message (&quot;hint&quot;) for the button, and <i>fullhelp</i>
+		is detailed help for the button (optional). The buttons are added to
+		the toolbar in the order in which they are defined.
+	</p>
+	<p>The optional switches are as follows.
+	<ul>
+		<li>/A displays the button only in Advanced mode.</li>
+		<li>/N displays the button only in Normal mode.</li>
+		<li>/U makes the button inactive (grey) unless there are USED
+			characters.</li>
+	</ul>
+	</p>
+	<p>The special parameters &quot;?&quot;, &quot;?K&quot;,
+		&quot;?L&quot;, and &quot;?L1&quot; can be used in place of
+		predetermined sets of taxa or characters in the commands invoked by
+		the button. They cause an appropriate dialog box to be displayed, so
+		that the user can make a selection. &quot;?&quot; causes the default
+		dialog box to be displayed (keyword or character/taxon selection
+		depending on the DISPLAY KEYWORDS setting). &quot;?K&quot; causes the
+		keyword selection dialog box to be displayed. &quot;?L&quot; causes
+		the character or taxon selection dialog box to be displayed.
+		&quot;?L1&quot; is applicable only to taxa. It has the same effect as
+		&quot;?L&quot;, except that the dialog is not displayed if it would
+		contain only a single taxon &#45; that taxon is automatically
+		selected.</p>
+	<p>DEFINE BUTTON CLEAR clears all the buttons, and DEFINE BUTTON
+		SPACE puts a space between buttons.</p>
+	<p>
+		Example:</br> <i>DEFINE BUTTON START.BMP "INCLUDE TAXA CEREALS;
+			RESTART" "Start a new identification, including only cereals"<br />
+			DEFINE BUTTON /U CHANGE.BMP "CHANGE ?L" "Change previously entered
+			information about the specimen being identified" "This button allows
+			you to change previously entered information about the specimen being
+			identified." </i>
+	</p>
+	<h3>Syntax of command line &#45; end of identification</h3>
+	<p>N.B. This feature was designed for use with older versions of
+		Intkey. We recommend against using it with the current version, as it
+		usually obscures other important information which the program
+		displays at the end of an identification.</p>
+	<p>
+		DEFINE ENDIDENTIFY <i>switch</i> " <i>c</i> <sub>1</sub>; <i>c</i> <sub>2</sub>;
+		..."
+	</p>
+	<p>
+		where <i>c</i> <sub>1</sub>, <i>c</i> <sub>2</sub>, ... are commands.
+		The optional switch /T= <i>n</i> causes the output to be produced in <i>n</i>
+		tiled windows.
+	</p>
+	<p>
+		Example:<br /> <i>DEFINE ENDIDENTIFY "DESCRIBE REMAINING BRIEF"</i>
+	</p>
+	<h3>Syntax of command line &#45;information</h3>
+	<p>
+		DEFINE INFORMATION " <i>s</i>" " <i>c</i>"
+	</p>
+	<p>
+		where <i>s</i> is the subject to be displayed in the INFORMATION
+		dialog, and <i>c</i> is an Intkey command. The subjects are added to
+		the list box in the dialog in the order in which they are defined, and
+		after any subjects which were defined when the Intkey data files were
+		generated. The special parameter &quot;?S&quot; should be used in
+		place of a set of taxa in the command <i>c</i>. It means &quot;the
+		taxon currently selected in the INFORMATION dialog&quot;.
+	</p>
+	<p>
+		Example: <i>DEFINE INFORMATION "Diagnostic description" "diagnose
+			?S none"</i>
+	</p>
+	<h3>Syntax of command line &#45; subjects</h3>
+	<p>
+		DEFINE SUBJECTS <i>w<sub>1</sub> </i> <i>w<sub>2</sub> </i> ...
+	</p>
+	<p>
+		where <i>w<sub>1</sub> </i>, <i>w<sub>2</sub> </i>, ... are words, or
+		phrases enclosed in quotation marks ("). The words or phrases are
+		placed in the &quot;Subjects&quot; list box in the &quot;Select
+		Multiple Images&quot; dialog box, which is invoked by the
+		&quot;Multiple Images&quot; option of the &quot;Control&quot; menu in
+		taxon-image windows. The images displayed are restricted to those
+		whose &quot;subjects&quot; contain any of the words or phrases
+		selected in the list box.
+	</p>
+	<p>
+		Example:<br /> <i>DEFINE SUBJECTS anatomy "distribution map"
+			"habit " habitat inflorescence type</i>
+	</p>
+	<p>The space in "habit " prevents it from matching
+		&quot;habitat&quot; in a subject. "type" matches &quot;holotype&quot;
+		and &quot;isotype&quot;, but " type" would not.</p>
+</body>
+</html>

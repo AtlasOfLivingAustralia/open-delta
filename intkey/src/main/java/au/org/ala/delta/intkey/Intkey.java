@@ -513,9 +513,9 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 		_btnContextHelp.setMinimumSize(new Dimension(30, 30));
 		_btnContextHelp.setMaximumSize(new Dimension(30, 30));
 		_btnContextHelp.setAction(actionMap.get("btnContextHelp"));
-		_btnContextHelp.setEnabled(false);
 		_btnContextHelp.setPreferredSize(new Dimension(30, 30));
 		_btnContextHelp.setMargin(new Insets(2, 5, 2, 5));
+		_btnContextHelp.addActionListener(_helpController.helpOnSelectionAction());
 		_globalOptionBar.add(_btnContextHelp, BorderLayout.EAST);
 
 		_rootSplitPane = new JSplitPane();
@@ -811,6 +811,22 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 		_txtFldCmdBar.setColumns(10);
 
 		_logDialog = new RtfReportDisplayDialog(getMainFrame(), new SimpleRtfEditorKit(null), null, logDialogTitle);
+		
+		//Set context-sensitive help keys for toolbar buttons
+		_helpController.setHelpKeyForComponent(_btnRestart, "characters_toolbar_restart");
+		_helpController.setHelpKeyForComponent(_btnBestOrder, "characters_toolbar_best");
+		_helpController.setHelpKeyForComponent(_btnSeparate, "characters_toolbar_separate");
+		_helpController.setHelpKeyForComponent(_btnNaturalOrder, "characters_toolbar_natural");
+		_helpController.setHelpKeyForComponent(_btnDiffSpecimenTaxa, "characters_toolbar_diff_specimen_remaining");
+		_helpController.setHelpKeyForComponent(_btnSetTolerance, "characters_toolbar_tolerance");
+		_helpController.setHelpKeyForComponent(_btnSetMatch, "characters_toolbar_set_match");
+		_helpController.setHelpKeyForComponent(_btnSubsetCharacters, "characters_toolbar_subset_characters");
+		_helpController.setHelpKeyForComponent(_btnFindCharacter, "characters_toolbar_find_characters");
+		
+        _helpController.setHelpKeyForComponent(_btnTaxonInfo, "taxa_toolbar_info");
+        _helpController.setHelpKeyForComponent(_btnDiffTaxa, "taxa_toolbar_diff_taxa");
+        _helpController.setHelpKeyForComponent(_btnSeparate, "taxa_toolbar_subset_taxa");
+        _helpController.setHelpKeyForComponent(_btnFindTaxon, "taxa_toolbar_find_taxa");	
 
 		show(_rootPanel);
 	}

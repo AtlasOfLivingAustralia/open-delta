@@ -4,9 +4,52 @@
          "http://java.sun.com/products/javahelp/toc_1_0.dtd">
 <toc label="DELTA Editor Help">
   <tocitem text="Topics">
-    <tocitem text="Test 1" target="test1" />
+    <tocitem text="Introduction" target="introduction" />
+    <tocitem text="Identification" target="identification" />
+    <tocitem text="Checking an Identification" target="checking_an_identification" />
+    <tocitem text="Not Enough Characters for Identification" target="not_enough_characters_for_identification" />
+    <tocitem text="Selecting Taxa" target="selecting_taxa" />
+    <tocitem text="Information Retrieval" target="information_retrieval" />
+    <tocitem text="Modes of Operation" target="modes_of_operation" />
+    <tocitem text="Keywords" target="keywords" />
+    <tocitem text="Dialog Boxes and List Boxes" target="dialog_list_boxes" />
+    <tocitem text="Buttons in Dialog Boxes" target="dialog_buttons" />
+    <tocitem text="Command Line" target="command_line" />
+    <tocitem text="Saving Output" target="saving_output" />
+    <tocitem text="Data-Sets Index and Startup Parameters" target="data_sets_index_startup_parameters" />
+    <tocitem text="Hardware Requirements" target="hardware_requirements" />
+    <tocitem text="Conditions of Use" target="conditions_of_use" />
+    <tocitem text="Characters Toolbar Buttons" target="characters_toolbar_buttons" />
+    <tocitem text="Taxa Toolbar Buttons" target="taxa_toolbar_buttons" />
   </tocitem>
-  <tocitem text="Directives">
-    <tocitem text="Test 2" target="test2" />
+  <tocitem text="Commands">
+  	<tocitem text="Change" target="directive_change" />
+	<tocitem text="Characters" target="directive_characters" />
+	<tocitem text="Comment" target="directive_comment" />
+	<tocitem text="Contents" target="directive_contents" />
+	<tocitem text="Define" target="directive_define" />
+	<tocitem text="Delete" target="directive_delete" />
+	<tocitem text="Describe" target="directive_describe" />
+	<tocitem text="Diagnose" target="directive_diagnose" />
+	<tocitem text="Differences" target="directive_differences" />
+	<tocitem text="Display" target="directive_display" />
+	<tocitem text="Exclude" target="directive_exclude" />
+	<tocitem text="File" target="directive_file" />
+	<tocitem text="Find" target="directive_find" />
+	<tocitem text="Illustrate" target="directive_illustrate" />
+	<tocitem text="Include" target="directive_include" />
+	<tocitem text="Information" target="directive_information" />
+	<tocitem text="NewDataSet" target="directive_newdataset" />
+	<tocitem text="Output" target="directive_output" />
+	<tocitem text="Preferences" target="directive_preferences" />
+	<tocitem text="Quit" target="directive_quit" />
+	<tocitem text="Restart" target="directive_restart" />
+	<tocitem text="Set" target="directive_set" />
+	<tocitem text="Show" target="directive_show" />
+	<tocitem text="Similarities" target="directive_similarities" />
+	<tocitem text="Status" target="directive_status" />
+	<tocitem text="Summary" target="directive_summary" />
+	<tocitem text="Taxa" target="directive_taxa" />
+	<tocitem text="Use" target="directive_use" />
   </tocitem>
 </toc>

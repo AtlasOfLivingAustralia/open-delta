@@ -1,0 +1,49 @@
+<html>
+<body>
+	<h2>Dialog Boxes and List Boxes</h2>
+	Many commands require you to specify the taxa and/or characters upon
+	which the command is to act, and some also require you to specify
+	character states. These commands automatically display a &quot;dialog
+	box&quot; from which you can make your selection. Inside the dialog box
+	are various buttons, and a &quot;list box&quot; containing taxa,
+	characters, or states. Clicking on an item in the list selects the item
+	(or deselects it if it was already selected). You can also
+	drag the cursor to select or deselect multiple items. Some dialog boxes
+	contain &quot;SelectAll&quot; and &quot;DeselectAll&quot; buttons,
+	which select or deselect all the items in the list. The item currently
+	at the &quot;focus&quot; of a list box is enclosed in a dotted
+	rectangle, and is also indicated by an arrow. If you press the
+	&quot;OK&quot; button (or its equivalent) without having selected any
+	items from the list, then the item at the focus is automatically
+	selected. Taxa and characters may be selected in groups from
+	&quot;keyword&quot; dialog boxes, or individually from taxon and
+	character dialog boxes. To switch between these dialog
+	boxes, use the &quot;Keywords&quot; and &quot;List&quot; buttons.
+
+	<h4>Using the keyboard in list boxes</h4>
+	You can move the focus in list boxes by pressing the up-arrow,
+	down-arrow, PageUp, PageDown, Home, and End keys, or by typing the
+	number of the required item. The space bar selects or deselects the
+	item at the focus.
+	<h4>Advanced selection methods</h4>
+	A set of taxa or characters may be built up by repeated selections or
+	deselections in the keyword and taxon or character dialog boxes. The
+	rules governing the process are as follows.
+	<ol>
+		<li>When a keyword dialog box is deactivated by pressing an
+			&quot;OK&quot; or &quot;List&quot; button, the taxa or characters
+			corresponding to the selected keywords are added to the set.</li>
+		<li>When a taxon or character dialog box is deactivated by
+			pressing an &quot;OK&quot; or &quot;Keywords&quot; button, the
+			selected taxa or characters are added to the set, and the deselected
+			taxa or characters are removed from the set.</li>
+	</ol>
+	Note that taxa or characters cannot be
+	<i>removed</i> from the set via the keyword dialog box. As control
+	passes to and fro between the keyword and taxon or character dialog
+	boxes, the keywords and taxa or characters that are currently in the
+	set are automatically marked as selected. The fact that a keyword is
+	<i>not</i> automatically marked as selected implies only that at least
+	one of its taxa or characters is not in the set.
+</body>
+</html>

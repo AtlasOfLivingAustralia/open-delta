@@ -1,0 +1,102 @@
+<html>
+<body>
+	<h2>DISPLAY</h2>
+	<p>This command sets options for controlling the screen display.</p>
+	<p>
+		<i>Syntax of command line:</i> DISPLAY <i>option</i> <i>value</i>
+	</p>
+
+	<h3>
+		DISPLAY CHARACTERORDER BEST<br />DISPLAY CHARACTERORDER NATURAL<br />DISPLAY
+		CHARACTERORDER SEPARATE <i>t</i><br />
+	</h3>
+
+	<p>
+		where <i>t</i> is a taxon number, or a keyword representing a single
+		taxon.
+	</p>
+	<p>Causes the list of characters to be displayed in
+		&quot;Best&quot; order, natural order, or the most appropriate order
+		to &quot;Separate&quot; the specified taxon, respectively.</p>
+	<p>In &quot;Best&quot; and &quot;Separate&quot; orders, the merit
+		of a character is calculated partly from its separating power, and
+		partly from its &quot;reliability&quot; or ease of use. Characters are
+		displayed in order of merit, and their separating powers are shown at
+		the left of the display. A separating power of 1 corresponds to a
+		division of the group of remaining taxa into halves, and a value of 0
+		indicates very poor separation. See Section 5.4 of the DELTA
+		User&quot;s Guide for more details.</p>
+	<p>See also SET RELIABILITIES, SET RBASE.</p>
+
+
+	<h3>DISPLAY COMMENTS ON|OFF</h3>
+	<p>Determines whether comments in taxon names are displayed in list
+		boxes and in the output of the TAXA command. The default is OFF.</p>
+
+	<h3>DISPLAY CONTINUOUS ON|OFF</h3>
+	<p>When CONTINUOUS is ON, the main text display does not pause
+		between &quot;pages&quot;, images are displayed in a continuous loop,
+		and the &quot;Multiple Images&quot; option in taxon-image windows is
+		unavailable. The default is OFF.</p>
+	<h3>DISPLAY ENDIDENTIFY ON|OFF</h3>
+	<p>When ENDIDENTIFY is ON, the commands specified by DEFINE
+		ENDIDENTIFY are executed at the end of an identification. The default
+		is ON for Normal mode, and OFF for Advanced mode.</p>
+
+	<h3>DISPLAY IMAGES</h3>
+	<p>
+		<i>options</i>
+	<ul>
+		<li>where <i>options</i> are one of AUTO, MANUAL, and OFF, and/or
+			one of MISSING_IMAGE_LIST, CHARACTER_IMAGE_LIST, and
+			TAXON_IMAGE_LIST.</li>
+		<li>When AUTO is set, images are displayed automatically after a
+			state-selection menu is displayed; MANUAL cancels this option. OFF
+			suppresses all references to images; this option is intended for use
+			with data sets whose images have not been installed (for example,
+			because of lack of disk space). The default is AUTO in Normal mode,
+			and MANUAL in Advanced mode.</li>
+		<li>The MISSING_IMAGE_LIST option checks local disks for the
+			presence of all images, and lists missing ones (images on the
+			Internet are not checked). The CHARACTER_IMAGE_LIST and
+			TAXON_IMAGE_LIST options list the images which are linked to INCLUDEd
+			characters or taxa (the <i>presence</i> of the images is not
+			checked).</li>
+	</ul>
+
+	<h3>DISPLAY INAPPLICABLES ON|OFF</h3>
+	<p>Determines whether inapplicable characters are displayed in the
+		output of the DESCRIBE command. The default is ON.</p>
+
+	<h3>DISPLAY INPUT ON|OFF</h3>
+	<p>Determines whether the contents of an input file are displayed
+		(and included in the LOG and JOURNAL files) as it is executed (see
+		FILE INPUT). The default is OFF.</p>
+
+	<h3>DISPLAY KEYWORDS ON|OFF</h3>
+	<p>If KEYWORDS is OFF, the display does not pause at keyword menus,
+		but immediately displays the default character or taxon menu. The
+		default is OFF in Normal mode, and ON in Advanced mode.</p>
+
+	<h3>DISPLAY LOG ON|OFF</h3>
+	<p>Determines whether the log window is displayed. The default is
+		OFF.</p>
+
+	<h3>DISPLAY NUMBERING ON|OFF</h3>
+	<p>Determines whether taxon and character numbers are displayed in
+		some contexts. The default is OFF.</p>
+
+	<h3>DISPLAY SCALED ON|OFF</h3>
+	<p>DISPLAY SCALED ON causes taxon images to be automatically scaled
+		to fit within the image window. DISPLAY SCALED OFF turns this option
+		off. The default is ON.</p>
+
+	<h3>DISPLAY UNKNOWNS ON|OFF</h3>
+	<p>Determines whether unknown characters are displayed in the
+		output of the DESCRIBE command. The default is ON.</p>
+
+	<h3>DISPLAY WINDOWING ON|OFF</h3>
+	<p>Determines whether output is displayed in separate windows. The
+		default is ON.</p>
+</body>
+</html>

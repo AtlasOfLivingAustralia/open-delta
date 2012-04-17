@@ -5,7 +5,39 @@
          "http://java.sun.com/products/javahelp/map_1_0.dtd">
 
 <map version="1.0">
-<mapID target="test1" url="topics/test1.html"/>
-<mapID target="test2" url="directives/test2.html"/>
-<mapID target="intkey.image.icon" url="images/Delta_red_16.png"/>	
+
+<mapID target="introduction" url="topics/introduction.html" />
+<mapID target="identification" url="topics/identification.html" />
+<mapID target="checking_an_identification" url="topics/checking_an_identification.html" />
+<mapID target="not_enough_characters_for_identification" url="topics/not_enough_characters_for_identification.html" />
+<mapID target="selecting_taxa" url="topics/selecting_taxa.html" />
+<mapID target="information_retrieval" url="topics/information_retrieval.html" />
+<mapID target="modes_of_operation" url="topics/modes_of_operation.html" />
+<mapID target="keywords" url="topics/keywords.html" />
+<mapID target="dialog_list_boxes" url="topics/dialog_list_boxes.html" />
+<mapID target="dialog_buttons" url="topics/dialog_buttons.html" />
+<mapID target="command_line" url="topics/command_line.html" />
+<mapID target="saving_output" url="topics/saving_output.html" />
+<mapID target="data_sets_index_startup_parameters" url="topics/data_sets_index_startup_parameters.html" />
+<mapID target="hardware_requirements" url="topics/hardware_requirements.html" />
+<mapID target="conditions_of_use" url="topics/conditions_of_use.html" />
+
+<mapID target="characters_toolbar_buttons" url="topics/characters_toolbar_buttons.html"/>
+<mapID target="characters_toolbar_restart" url="topics/characters_toolbar_buttons.html#_restart"/>
+<mapID target="characters_toolbar_best" url="topics/characters_toolbar_buttons.html#_best"/>
+<mapID target="characters_toolbar_separate" url="topics/characters_toolbar_buttons.html#_separate"/>
+<mapID target="characters_toolbar_natural" url="topics/characters_toolbar_buttons.html#_natural"/>
+<mapID target="characters_toolbar_diff_specimen_remaining" url="topics/characters_toolbar_buttons.html#_diff_specimen_remaining"/>
+<mapID target="characters_toolbar_tolerance" url="topics/characters_toolbar_buttons.html#_tolerance"/>
+<mapID target="characters_toolbar_set_match" url="topics/characters_toolbar_buttons.html#_set_match"/>
+<mapID target="characters_toolbar_subset_characters" url="topics/characters_toolbar_buttons.html#_subset_characters"/>
+<mapID target="characters_toolbar_find_characters" url="topics/characters_toolbar_buttons.html#_find_characters"/>
+
+<mapID target="taxa_toolbar_buttons" url="topics/taxa_toolbar_buttons.html"/>
+<mapID target="taxa_toolbar_info" url="topics/taxa_toolbar_buttons.html#_info"/>
+<mapID target="taxa_toolbar_diff_taxa" url="topics/taxa_toolbar_buttons.html#_diff_taxa"/>
+<mapID target="taxa_toolbar_subset_taxa" url="topics/taxa_toolbar_buttons.html#_subset_taxa"/>
+<mapID target="taxa_toolbar_find_taxa" url="topics/taxa_toolbar_buttons.html#_find_taxa"/>
+
+<mapID target="intkey.image.icon" url="../images/Delta_red_16.png"/>	
 </map>
