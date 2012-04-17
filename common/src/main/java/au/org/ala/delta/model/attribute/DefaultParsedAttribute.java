@@ -21,8 +21,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import sun.misc.Cleaner;
-
 import au.org.ala.delta.directives.validation.DirectiveError;
 import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.model.Character;
