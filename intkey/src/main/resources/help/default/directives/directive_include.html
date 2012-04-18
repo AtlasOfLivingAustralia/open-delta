@@ -1,5 +1,28 @@
 <html>
 <body>
-
+	<h2>INCLUDE</h2>
+	<p>This command is used to specify the set of characters or taxa on
+		which subsequent commands operate. If another command also specifies
+		ranges of characters or taxa, the ones used are normally those
+		specified in both the current command and the last INCLUDE command.
+		For example, INCLUDE CHARACTERS 1&#45;5 9&#45;20 followed by
+		CHARACTERS 5&#45;10 would display characters 5, 9, and 10. However,
+		the INCLUDE command completely overrides previous INCLUDE commands.
+		The currently INCLUDEd characters or taxa can be overridden in any
+		command by means of a checkbox in the keyword selection dialog box.
+		The same thing can be achieved on the command line by means of the
+		switch /C (for characters) and /T (for taxa). Example: DESC REMAINING
+		/C ALL will display a complete description regardless of which
+		characters are currently INCLUDEd. See also EXCLUDE, Keywords.</p>
+	<p>
+		<i>Syntax of command line:</i><br /> INCLUDE CHARACTERS <i>c</i><sub>1</sub>
+		<i>c</i><sub>2</sub> ...<br /> INCLUDE TAXA <i>t</i><sub>1</sub> <i>t</i><sub>2</sub>
+		...
+	</p>
+	<p>
+		where <i>c</i><sub>1</sub>, <i>c</i><sub>2</sub> ... are character
+		numbers, ranges or keywords, and <i>t</i><sub>1</sub>, <i>t</i><sub>2</sub>
+		... are taxon numbers, ranges or keywords.
+	</p>
 </body>
 </html>

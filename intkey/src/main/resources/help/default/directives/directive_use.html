@@ -1,5 +1,67 @@
 <html>
 <body>
-
+	<h2>USE</h2>
+	<p>This command is no longer available in the menus, but is
+		retained for use in the command line.</p>
+	<p>The command allows the user to enter information about a
+		specimen, in terms of characters selected according to categories
+		(e.g. leaves, fruit, inflorescence, &quot;available&quot; &#45; see
+		Keywords). After the characters have been selected, the program
+		prompts for the character value(s) exhibited by the specimen.
+		Character values can be changed at any stage by specifying the
+		character in a CHANGE command or another USE command, and characters
+		can be completely removed from the specimen description by means of
+		the DELETE command. The characters currently in use are represented by
+		the keyword USED (see Keywords). These characters, and the values that
+		have been entered for them, are displayed in the main window, and can
+		be displayed again by entering DESCRIBE SPECIMEN USED.</p>
+	<p>
+		<i>Syntax of command line:</i> USE <i>switch</i> <i>c</i><sub>1</sub>,<i>v</i><sub>1</sub>
+		<i>c</i><sub>2</sub>,<i>v</i><sub>2</sub> ...
+	</p>
+	<p>
+		where <i>c</i><sub>1</sub>, <i>c</i><sub>2</sub>, ... are character
+		numbers, ranges, or keywords, and <i>v</i><sub>1</sub>, <i>v</i><sub>2</sub>,
+		... are state values (or numerical or text values, depending on the
+		character type). The state values and the preceding commas are
+		optional; if they are not specified, the program prompts for them.
+	</p>
+	<p>The optional switch /M suppresses the warning message when
+		characters that have already been used are specified.</p>
+	<p>
+		The command-word (&quot;USE&quot;) is optional (unless <i>c</i> <sub>1</sub>
+		is a keyword): any input line starting with a number is assumed to be
+		a USE command. Examples:
+	<ul></ul>
+	<li>17</li>
+	<li>USE 3 10&#45;12</li>
+	<li>USE lemmas</li>
+	<li>4,1 7,2&#45;4/7 26,1.2&#45;2.6 biochemistry,1/2 104,tundra</li>
+	</ul>
+	<p>&quot;/&quot; indicates alternative values (&quot;or&quot;), and
+		&quot;&#45;&quot; indicates a range of values (&quot;to&quot;). If the
+		value of a text character contains spaces, it must be enclosed in
+		quotation marks (").</p>
+	<p>Example:
+	<ul>
+		<li>104,"disturbed ground"</li>
+	</ul>
+	</p>
+	<p>Blanks may be used in text values to control matching of parts
+		of words; for example, " tropical" will match &quot;tropical&quot; and
+		&quot;tropically&quot; but not &quot;subtropical&quot;.</p>
+	<p>A value consisting of a single blank is treated as a special
+		case. It matches any text recorded in the data, even text without
+		blanks.</p>
+	<p>Several strings separated by &quot;/&quot; may be specified for
+		text characters. If MATCH is set to E or S, every string must be
+		present to constitute a match; if MATCH is set to O, the presence of
+		any of the strings is sufficient. Example:
+	<ul>
+		<li>1,"poa/agrostis"</li>
+	</ul>
+	<p>The MATCH U and I settings do not affect text characters, for
+		which unknown and inapplicable attributes are never treated as
+		matches. See also SET MATCH, SET FIX, SET EXACT, Keywords.</p>
 </body>
 </html>

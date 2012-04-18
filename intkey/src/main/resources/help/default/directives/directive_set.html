@@ -1,5 +1,190 @@
 <html>
 <body>
+	<h2>SET</h2>
+	<p>Sets the values of various parameters.</p>
+	<p>
+		<i>Syntax of command line:</i> SET <i>parameter value</i>
+	</p>
+
+	<h3>SET AUTOTOLERANCE ON|OFF</h3>
+	<p>When AUTOTOLERANCE is ON, then TOLERANCE (see SET TOLERANCE) is
+		decreased automatically by the program to the smallest value such that
+		the number of taxa remaining is non-zero; the value is never
+		automatically increased. The default is ON in Normal mode, and OFF in
+		Advanced mode. See also SET EXACT.</p>
+
+	<h3>SET DEMONSTRATION ON|OFF</h3>
+	<p>When DEMONSTRATION is ON, the RESTART command restores the SET,
+		DISPLAY, and INCLUDE parameters to the values they had when
+		demonstration mode was turned on, or the values associated with the
+		selected operation mode (automatic or manual).</p>
+	<p>When DEMONSTRATION is turned ON from an input command file it
+		cannot subsequently be turned OFF except from another input file.</p>
+	<p>This option is intended for running unattended demonstrations of
+		the program. The default is OFF.</p>
+
+	<h3>
+		SET DIAGLEVEL <i>n</i>
+	</h3>
+	<p>Sets the required level of diagnostic descriptions (see
+		DIAGNOSE). Each diagnostic description will (if possible) differ in at
+		least DIAGLEVEL characters from the full description of every other
+		INCLUDEd taxon. The default value is 1.</p>
+
+	<h3>SET DIAGTYPE SPECIMENS|TAXA</h3>
+	<p>Specifies whether DIAGNOSE will generate specimen- or
+		taxon-diagnostic descriptions. A specimen-diagnostic description must
+		be able to distinguish any specimen belonging to the diagnosed taxon
+		from any specimen belonging to any other taxon. A taxon-diagnostic
+		description must be able to distinguish the diagnosed taxon from any
+		other taxon. When generating specimen-diagnostic descriptions, the
+		program will not include characters which may be inapplicable to
+		specimens in the diagnosed taxon, because, for some specimens, such
+		characters cannot contribute to the desired separation. The default is
+		SPECIMENS.</p>
+
+	<h3>
+		SET EXACT <i>c</i> <sub>1</sub> <i>c</i> <sub>2</sub> ...
+	</h3>
+	<p>
+		where <i>c</i><sub>1</sub>, <i>c</i><sub>2</sub> ... are character
+		numbers, ranges or keywords.
+	</p>
+	<p>Specifies characters which are to be regarded as not subject to
+		error. When such a character is USEd, taxa inconsistent with the
+		specified value are eliminated, regardless of the TOLERANCE value.
+		Furthermore, any intra-taxon variability inconsistent with the
+		specified value is subsequently ignored, and does not appear in
+		descriptions.</p>
+	<p>See also Keywords.</p>
+
+	<h3>SET FIX ON|OFF</h3>
+	<p>SET FIX ON fixes the attributes that have currently been USEd,
+		so that they are not cleared by the RESTART command. SET FIX OFF
+		cancels the SET FIX ON command: fixed characters are cleared and the
+		identification is restarted.</p>
+
+	<h3>
+		SET IMAGEPATH <i>path</i>
+	</h3>
+	<p>Specifies the directory path which will be searched for the
+		character and taxon images. The default is the current directory.
+		Example: SET IMAGEPATH .;IMAGES;B:\\ will cause the program to search
+		for images in the current directory, its subdirectory IMAGES, and the
+		root directory of the B drive. Components of the imagepath may be
+		URL&quot;s, e.g. http://biodiversity.uno.edu/delta/angio/images.</p>
+	<li>See also ILLUSTRATE.</li>
+
+	<h3>
+		SET INFOPATH <i>path</i>
+	</h3>
+	<p>Specifies the directory path which will be searched for files
+		specified in the INFORMATION dialog. The default is the current
+		directory. Example: SET INFOPATH .;INFO;B:\\ will cause the program to
+		search for files in the current directory, its subdirectory INFO, and
+		the root directory of the B drive. Components of the infopath may be
+		URL&quot;s, e.g. http://biodiversity.uno.edu/delta/angio/info.</p>
+
+	<h3>
+		SET MATCH <i>option1 option2</i> ...
+	</h3>
+	<p>
+		where <i>option1</i>, <i>option2</i>, ... are chosen from Overlap,
+		Subset, Exact, Unknowns, and Inapplicables.
+	</p>
+	<p>Specifies which character values are to be regarded as equal
+		&#45; that is, &quot;match&quot; &#45; in the commands USE,
+		DIFFERENCES, or SIMILARITIES.</p>
+	<p>SET MATCH O specifies that two sets of values match if they
+		overlap, that is, if they have any values in common (e.g. 1/2 matches
+		2/3; 2&#45;5 matches 4&#45;10). (S and O cannot be used together.)</p>
+	<p>SET MATCH S specifies that two sets of values match if one set
+		(usually the values of the specimen) is a subset of the other. (E.g.
+		1/2 matches 1/2/4 but not 2/3; 2&#45;5 matches 1&#45;6 but not
+		4&#45;10).</p>
+	<p>SET MATCH E specifies that two sets of values match only if they
+		are identical.</p>
+	<p>SET MATCH U specifies that &quot;unknown&quot; matches any
+		value.</p>
+	<p>SET MATCH I specifies that &quot;inapplicable&quot; matches any
+		value.</p>
+	<p>The default setting is O U I, which is usually the most
+		appropriate for identification. For information retrieval, the most
+		appropriate setting is usually O.</p>
+	<p>The U and I settings do not affect text characters, for which
+		unknown and inapplicable attributes are never treated as matches.</p>
+	<p>N.B. Regardless of the current &quot;Match&quot; settings, the
+		&quot;Differences between the specimen and the remaining taxa&quot;
+		button always uses settings equivalent to &quot;Match exact&quot;, and
+		the &quot;Differences between taxa&quot; button always uses settings
+		equivalent to &quot;Match Unknowns Inapplicables&quot;. To obtain
+		differences in terms of the current &quot;Match&quot; settings, use
+		the &quot;Differences&quot; option in the &quot;Queries&quot; menu.</p>
+
+	<h3>
+		SET RBASE <i>r</i>
+	</h3>
+	<p>
+		where <i>r</i> is a real number in the range 1 to 5. Sets the base of
+		the logarithmic character-reliability scale, which is used in
+		determining the &quot;best&quot; characters during an identification.
+		The default value is 1.1. A value of 1 causes character reliabilities
+		to have no effect on character merit. See Section 5.4 of the DELTA
+		User&quot;s Guide for more details.
+	</p>
+	<p>See also DISPLAY CHARACTERORDER BEST, SET RELIABILITIES, SET
+		VARYWT.</p>
+
+	<h3>
+		SET RELIABILITIES <i>c</i> <sub>1</sub>, <i>v</i> <sub>1</sub> <i>c</i>
+		<sub>2</sub>, <i>v</i> <sub>2</sub> ...
+	</h3>
+	<p>
+		where <i>c</i><sub>1</sub>, <i>c</i><sub>2</sub> ... are character
+		numbers, ranges or keywords, and <i>v</i><sub>1</sub>, <i>v</i><sub>2</sub>,
+		... are reliability values in the range 0 to 10. The values and their
+		preceding commas are optional.
+	</p>
+	<p>Specifies character reliabilities, which are used in determining
+		the &quot;best&quot; characters for separating taxa.</p>
+	<p>If character numbers, ranges, or keywords are entered without
+		following commas and values, the program prompts for a value, which is
+		applied to all the specified characters.</p>
+	<p>The default reliabilities are those that were specified when the
+		Intkey data files were generated. See Sections 3.6 and 5.4 of the
+		DELTA User&quot;s Guide for more details.</p>
+	<p>See also DISPLAY CHARACTERORDER BEST, SET RBASE, Keywords.</p>
+
+	<h3>
+		SET STOPBEST <i>n</i>
+	</h3>
+	<p>
+		Specifies the number of characters which a DIAGNOSE command must find
+		before it stops searching for acceptable characters. Characters are
+		processed in order of decreasing reliability. If <i>n</i> is 0, which
+		is the default, all the characters are examined.
+	</p>
+
+	<h3>SET TOLERANCE
+	<i>n</i></h3>
+	<p>Sets the maximum number of differences between a taxon and the
+		specimen which still allows the taxon to remain under consideration in
+		an identification. The default value is 0.</p>
+	<p>If AUTOTOLERANCE is ON (see SET AUTOTOLERANCE), then TOLERANCE
+		is altered automatically by the program to the smallest value such
+		that the number of taxa remaining is non-zero. Regardless of the
+		AUTOTOLERANCE setting, TOLERANCE is reset to 0 by the RESTART command.</p>
+
+	<h3>SET VARYWT
+	<i>r</i></h3>
+	<p>where <i>r</i> is a real number in the range 0 to 1. Sets the
+		value of a parameter which determines the treatment of intra-taxon
+		variability in selecting the &quot;best&quot; characters during an
+		identification. The default value is 1. If VARYWT is 1, there is no
+		special penalty for intra-taxon variability; if it is 0, characters
+		with intra-taxon variability are ranked lowest. See Section 5.4 of the
+		DELTA User&quot;s Guide for more details.</p>
+	<p>See also DISPLAY CHARACTERORDER BEST, SET RBASE.</p>
 
 </body>
 </html>

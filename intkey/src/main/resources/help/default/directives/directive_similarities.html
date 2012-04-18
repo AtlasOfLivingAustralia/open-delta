@@ -1,5 +1,25 @@
 <html>
 <body>
-
+	<h2>SIMILARITIES</h2>
+	<p>This command displays the similarities (that is, the character
+		values they have in common) between the specified taxa, for the
+		specified characters. (However, characters which are unknown or
+		inapplicable for all taxa are not displayed.) See also SET MATCH,
+		DIFFERENCES, OUTPUT SIMILARITIES, DISPLAY, Keywords.</p>
+	<p>
+		<i>Syntax of command line:</i> SIMILARITIES switches (<i>t</i><sub>1</sub>
+		<i>t</i><sub>2</sub> ...) <i>c</i><sub>1</sub> <i>c</i><sub>2</sub>
+		...
+	</p>
+	<p>
+		where <i>t</i><sub>1</sub>, <i>t</i><sub>2</sub> ... are taxon
+		numbers, ranges or keywords, which may include the word SPECIMEN, and
+		<i>c</i><sub>1</sub>, <i>c</i><sub>2</sub> ... are character numbers,
+		ranges or keywords. If there is only one taxon range or keyword, the
+		parentheses may be omitted.
+	</p>
+	<p>The optional switches /O, /S, /E, /U, and /I set the
+		corresponding values of the MATCH parameter (see SET MATCH) for the
+		current command only.</p>
 </body>
 </html>

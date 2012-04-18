@@ -1,5 +1,25 @@
 <html>
 <body>
-
+	<h2>PREFERENCES</h2>
+	This command displays a dialog box for selecting an input file (see
+	FILE INPUT) specifying preferred parameter settings. This input file is
+	executed immediately, and again after the initialization file
+	(INTKEY.INI) of each new data set. The default file type is .PRF, and
+	the default directory is the one containing the program. The settings
+	associated with the operating mode initially selected by the user (see
+	&quot;Modes of Operation&quot;, under &quot;Introduction&quot;) are
+	also reset at the start of each new data set. The order of setting
+	parameters is: initialization file, operating mode, preferences file.
+	You can also specify a preferences file to be automatically invoked
+	when the program starts: see &quot;Data-Sets Index and Startup
+	Parameters&quot; under &quot;Introduction&quot;.
+	<h3>Example of &quot;preferences&quot; file</h3>
+	<pre>*SHOW Preferences: SET AUTOTOLERANCE ON, DISPLAY NUMBERING ON
+*SET AUTOTOLERANCE ON
+*DISPLAY NUMBERING ON
+</pre>
+	<p>
+		<i>Syntax of command line:</i> PREFERENCES <i>filename</i>
+	</p>
 </body>
 </html>

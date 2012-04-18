@@ -1,5 +1,76 @@
 <html>
 <body>
+	<h2>OUTPUT</h2>
+	<p>This command is available only if an OUTPUT file (see FILE
+		OUTPUT) has been opened. It provides alternative versions of the
+		commands CHARACTERS, TAXA, DESCRIBE, SUMMARY, DIAGNOSE, DIFFERENCES,
+		SIMILARITIES, and COMMENT. These versions format the output
+		differently (in formats designed for input to other programs).</p>
+	<p>OUTPUT commands, except for COMMENT, normally output a heading
+		identical with the first two words of the command. This heading is
+		suppressed if the preceding command was an OUTPUT COMMENT command.
+		This enables the construction of complete directives for other
+		programs. For example, &quot;OUTPUT COMMENT *INCLUDE ITEMS&quot;
+		followed by &quot;OUTPUT TAXA REMAINING&quot; would produce an INCLUDE
+		ITEMS directive suitable for CONFOR.</p>
+	<p>
+		<i>Syntax of command line:</i> OUTPUT <i>option parameters</i>
+	</p>
+
+
+	<h3>
+		OUTPUT CHARACTERS <i>parameters</i>
+	</h3>
+	<p>The same as the CHARACTERS command, except that the output
+		consists only of the specified character numbers. This command can be
+		used to generate INCLUDE or EXCLUDE CHARACTERS directives for CONFOR.</p>
+
+	<h3>
+		OUTPUT TAXA <i>parameters</i>
+	</h3>
+	<p>The same as the TAXA command, except that the output consists
+		only of the specified taxon numbers. This command can be used to
+		generate INCLUDE or EXCLUDE ITEMS directives for CONFOR.</p>
+
+	<h3>
+		OUTPUT DESCRIBE <i>parameters</i>
+	</h3>
+	<p>The same as the DESCRIBE command, except that the output is in
+		DELTA format.</p>
+
+	<h3>
+		OUTPUT SUMMARY <i>parameters</i>
+	</h3>
+	<p>The same as the SUMMARY command, except that the output is in
+		DELTA format.</p>
+
+	<h3>
+		OUTPUT DIAGNOSE <i>parameters</i>
+	</h3>
+	<p>The same as the DIAGNOSE command, except that the output is in a
+		format suitable for the CONFOR directives ADD or EMPHASIZE CHARACTERS.</p>
+
+	<h3>
+		OUTPUT DIFFERENCES <i>parameters</i>
+	</h3>
+	<p>The same as the DIFFERENCES command, except that the output
+		consists only of the character numbers for which the taxa are
+		different. This command can be used to generate INCLUDE or EXCLUDE
+		CHARACTERS directives for CONFOR.</p>
+
+	<h3>
+		OUTPUT SIMILARITIES <i>parameters</i>
+	</h3>
+	<p>The same as the SIMILARITIES command, except that the output
+		consists only of the character numbers for which the taxa are similar.
+		This command can be used to generate INCLUDE or EXCLUDE CHARACTERS
+		directives for CONFOR.</p>
+
+	<h3>
+		OUTPUT COMMENT <i>text</i>
+	</h3>
+	<p>The same as the COMMENT command, except that the text is written
+		to the OUTPUT file.</p>
 
 </body>
 </html>

@@ -1,5 +1,31 @@
 <html>
 <body>
-
+	<h2>SUMMARY</h2>
+	<p>This command displays a summary of the character values
+		exhibited by the specified set of taxa, for the specified set of
+		characters. The output line labelled &quot;U/I/Recorded&quot; gives,
+		for each character, the numbers of taxa for which the character is
+		unknown, inapplicable, or recorded. Multistate and integer numeric
+		values are summarized as a &quot;distribution of values&quot;. Each
+		value is followed by the number (in parentheses) of taxa which exhibit
+		the value. If this number is the same for consecutive values of a
+		character, the values are expressed as a range; note that this does
+		not imply that the range occurs as such in any of the members of the
+		set. Real numeric values are summarized as a &quot;mean&quot; and
+		&quot;standard deviation&quot;. The standard deviation is calculated
+		from the within-taxon means, that is, the variation within taxa is not
+		included. If difficulties arise with interpretation of the output,
+		comparison with DESCRIBE output may be helpful. See also OUTPUT
+		SUMMARY, Keywords.</p>
+	<p>
+		<i>Syntax of command line:</i> SUMMARY (<i>t</i><sub>1</sub> <i>t</i><sub>2</sub>
+		...) <i>c</i><sub>1</sub> <i>c</i><sub>2</sub> ...
+	</p>
+	<p>
+		where <i>t</i><sub>1</sub>, <i>t</i><sub>2</sub> ... are taxon
+		numbers, ranges or keywords, and <i>c</i><sub>1</sub>, <i>c</i><sub>2</sub>
+		... are character numbers, ranges or keywords. If there is only one
+		taxon number, range or keyword, the parentheses may be omitted.
+	</p>
 </body>
 </html>

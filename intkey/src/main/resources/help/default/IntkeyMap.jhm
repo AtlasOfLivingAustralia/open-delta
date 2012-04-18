@@ -39,5 +39,34 @@
 <mapID target="taxa_toolbar_subset_taxa" url="topics/taxa_toolbar_buttons.html#_subset_taxa"/>
 <mapID target="taxa_toolbar_find_taxa" url="topics/taxa_toolbar_buttons.html#_find_taxa"/>
 
+<mapID target="directive_change" url="directives/directive_change.html" />
+<mapID target="directive_characters" url="directives/directive_characters.html" />
+<mapID target="directive_comment" url="directives/directive_comment.html" />
+<mapID target="directive_contents" url="directives/directive_contents.html" />
+<mapID target="directive_define" url="directives/directive_define.html" />
+<mapID target="directive_delete" url="directives/directive_delete.html" />
+<mapID target="directive_describe" url="directives/directive_describe.html" />
+<mapID target="directive_diagnose" url="directives/directive_diagnose.html" />
+<mapID target="directive_differences" url="directives/directive_differences.html" />
+<mapID target="directive_display" url="directives/directive_display.html" />
+<mapID target="directive_exclude" url="directives/directive_exclude.html" />
+<mapID target="directive_file" url="directives/directive_file.html" />
+<mapID target="directive_find" url="directives/directive_find.html" />
+<mapID target="directive_illustrate" url="directives/directive_illustrate.html" />
+<mapID target="directive_include" url="directives/directive_include.html" />
+<mapID target="directive_information" url="directives/directive_information.html" />
+<mapID target="directive_newdataset" url="directives/directive_newdataset.html" />
+<mapID target="directive_output" url="directives/directive_output.html" />
+<mapID target="directive_preferences" url="directives/directive_preferences.html" />
+<mapID target="directive_quit" url="directives/directive_quit.html" />
+<mapID target="directive_restart" url="directives/directive_restart.html" />
+<mapID target="directive_set" url="directives/directive_set.html" />
+<mapID target="directive_show" url="directives/directive_show.html" />
+<mapID target="directive_similarities" url="directives/directive_similarities.html" />
+<mapID target="directive_status" url="directives/directive_status.html" />
+<mapID target="directive_summary" url="directives/directive_summary.html" />
+<mapID target="directive_taxa" url="directives/directive_taxa.html" />
+<mapID target="directive_use" url="directives/directive_use.html" />
+
 <mapID target="intkey.image.icon" url="../images/Delta_red_16.png"/>	
 </map>
