@@ -271,7 +271,13 @@ public class StateEditor extends CharacterEditTab {
 		if (!_ignoreUpdates && _selectedState > 0) {
 
 			if (_selectedState == _character.getNumberOfStates() + 1) {
-				_stateController.addState(null);
+				try {
+					_ignoreUpdates = true;
+					_stateController.addState(null);
+				}
+				finally {
+					_ignoreUpdates = false;
+				}
 			}
 
 			String text = stateDescriptionPane.getRtfTextBody();
