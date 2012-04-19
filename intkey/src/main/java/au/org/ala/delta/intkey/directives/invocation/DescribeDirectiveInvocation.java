@@ -138,7 +138,7 @@ public class DescribeDirectiveInvocation extends IntkeyDirectiveInvocation {
                 // subheading that is an empty
                 // paragraph. Ignore any item subheadings that contain only
                 // formatting marks
-                if (!StringUtils.isEmpty(RTFUtils.stripFormatting(currentItemSubheading))) {
+                if (!StringUtils.isEmpty(RTFUtils.stripFormatting(itemSubheading))) {
                     builder.appendText(itemSubheading);
                 }
 
@@ -181,9 +181,6 @@ public class DescribeDirectiveInvocation extends IntkeyDirectiveInvocation {
             StringBuilder itemSubheadingGroupBuilder = new StringBuilder();
 
             for (Character ch : _characters) {
-                // TODO need to refactor specimen class to take attribute
-                // values directly.
-                //Attribute attr = DiffUtils.createAttributeForSpecimenValue(specimen, ch);
                 Attribute attr = specimen.getAttributeForCharacter(ch);
                 currentItemSubheading = groupedByItemSubheadingReportHandleAttribute(builder, itemSubheadingGroupBuilder, attr, charactersItemSubheadingMap, currentItemSubheading,
                         displayInapplicables, displayUnknowns, characterFormatter, attributeFormatter);
