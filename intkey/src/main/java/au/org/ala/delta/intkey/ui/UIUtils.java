@@ -15,6 +15,8 @@
 package au.org.ala.delta.intkey.ui;
 
 import java.awt.Desktop;
+import java.awt.Window;
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.net.URL;
 import java.text.MessageFormat;
@@ -29,6 +31,7 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;
 
 import au.org.ala.delta.intkey.Intkey;
+import au.org.ala.delta.ui.help.HelpController;
 import au.org.ala.delta.ui.image.AudioPlayer;
 import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
 
@@ -88,7 +91,15 @@ public class UIUtils {
 
         if (fileName.toLowerCase().endsWith(".rtf")) {
             File file = convertURLToFile(fileURL, 60000);
-            String rtfSource = FileUtils.readFileToString(file, "cp1252"); // RTF must always be read as windows cp1252 encoding                       
+            String rtfSource = FileUtils.readFileToString(file, "cp1252"); // RTF
+                                                                           // must
+                                                                           // always
+                                                                           // be
+                                                                           // read
+                                                                           // as
+                                                                           // windows
+                                                                           // cp1252
+                                                                           // encoding
             RtfReportDisplayDialog dlg = new RtfReportDisplayDialog(getMainFrame(), new SimpleRtfEditorKit(null), rtfSource, description);
             ((SingleFrameApplication) Application.getInstance()).show(dlg);
         } else if (fileName.toLowerCase().endsWith(".html")) {
@@ -134,5 +145,31 @@ public class UIUtils {
             FileUtils.copyURLToFile(url, tempFile, timeout, timeout);
             return tempFile;
         }
+    }
+
+    /**
+     * Display a help topic in the help viewer
+     * 
+     * @param helpID
+     *            the ID of the desired help topic
+     * @param activationWindow
+     *            the activation (parent) window for the help viewer
+     * @param event
+     *            the ActionEvent causing the help to be opened. This is
+     *            required to pass to the helpController's "helpAction" listener
+     */
+    public static void displayHelpTopic(String helpID, Window activationWindow, ActionEvent event) {
+        HelpController helpController = new HelpController(Intkey.HELPSET_PATH);
+        helpController.helpAction().actionPerformed(event);
+        helpController.displayHelpTopic(activationWindow, helpID);
+    }
+    
+    /**
+     * For a given directive, return the helpID for the directive
+     * @param directiveName
+     * @return the helpID for the directive
+     */
+    public static String getHelpIDForDirective(String directiveName) {
+        return "directive_" + directiveName.split(" ")[0].toLowerCase();
     }
 }

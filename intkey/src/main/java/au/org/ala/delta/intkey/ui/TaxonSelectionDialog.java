@@ -17,6 +17,7 @@ package au.org.ala.delta.intkey.ui;
 import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,17 +68,17 @@ public class TaxonSelectionDialog extends ListSelectionDialog implements Searcha
 
     // The name of the keyword that these characters belong to
     private String _keyword;
-    
+
     private IntkeyContext _context;
-    
+
     private ItemFormatter _fullTextTaxonFormatter;
-    
+
     @Resource
     String title;
 
     @Resource
     String titleFromKeyword;
-    
+
     @Resource
     String fullTextOfTaxonNameCaption;
 
@@ -113,7 +114,7 @@ public class TaxonSelectionDialog extends ListSelectionDialog implements Searcha
         ActionMap actionMap = Application.getInstance().getContext().getActionMap(TaxonSelectionDialog.class, this);
 
         setTitle(MessageFormat.format(title, _directiveName));
-        
+
         _fullTextTaxonFormatter = new ItemFormatter(true, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REPLACE, true, false, false);
 
         _panelButtons.setBorder(new EmptyBorder(0, 20, 10, 20));
@@ -155,7 +156,6 @@ public class TaxonSelectionDialog extends ListSelectionDialog implements Searcha
 
         _btnHelp = new JButton();
         _btnHelp.setAction(actionMap.get("taxonSelectionDialog_Help"));
-        _btnHelp.setEnabled(false);
         _panelButtons.add(_btnHelp);
 
         _selectedTaxa = null;
@@ -172,9 +172,9 @@ public class TaxonSelectionDialog extends ListSelectionDialog implements Searcha
         if (singleSelect) {
             _list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         }
-        
+
         _list.addListSelectionListener(new ListSelectionListener() {
-            
+
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 if (_list.getSelectedIndices().length == 1) {
@@ -207,7 +207,8 @@ public class TaxonSelectionDialog extends ListSelectionDialog implements Searcha
     @Action
     public void taxonSelectionDialog_Keywords() {
         if (this.getOwner() instanceof TaxonKeywordSelectionDialog) {
-            // If this dialog was spawned using the "List" button in a taxon keyword selection dialog, just 
+            // If this dialog was spawned using the "List" button in a taxon
+            // keyword selection dialog, just
             // close this window and bring the parent into focus
             _selectedTaxa = null;
             this.setVisible(false);
@@ -257,14 +258,14 @@ public class TaxonSelectionDialog extends ListSelectionDialog implements Searcha
         rtfBuilder.startDocument();
         rtfBuilder.appendText(_fullTextTaxonFormatter.formatItemDescription(taxon));
         rtfBuilder.endDocument();
-        
+
         RtfReportDisplayDialog rtfDlg = new RtfReportDisplayDialog(this, new SimpleRtfEditorKit(null), rtfBuilder.toString(), fullTextOfTaxonNameCaption);
         ((SingleFrameApplication) Application.getInstance()).show(rtfDlg);
     }
 
     @Action
-    public void taxonSelectionDialog_Help() {
-
+    public void taxonSelectionDialog_Help(ActionEvent e) {
+        UIUtils.displayHelpTopic(UIUtils.getHelpIDForDirective(_directiveName), this, e);
     }
 
     public List<Item> getSelectedTaxa() {
@@ -274,10 +275,10 @@ public class TaxonSelectionDialog extends ListSelectionDialog implements Searcha
     @Override
     public int searchForText(String searchText, int startingIndex) {
         int matchedIndex = -1;
-        
+
         ItemFormatter formatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false, false);
-        
-        for (int i=startingIndex; i < _listModel.size(); i++) {
+
+        for (int i = startingIndex; i < _listModel.size(); i++) {
             Item taxon = (Item) _listModel.getElementAt(i);
             String taxonText = formatter.formatItemDescription(taxon);
             if (taxonText.trim().toLowerCase().contains(searchText.trim().toLowerCase())) {
@@ -287,7 +288,7 @@ public class TaxonSelectionDialog extends ListSelectionDialog implements Searcha
                 break;
             }
         }
-        
+
         return matchedIndex;
     }
 

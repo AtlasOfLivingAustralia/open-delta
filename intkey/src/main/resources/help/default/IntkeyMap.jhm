@@ -5,7 +5,7 @@
          "http://java.sun.com/products/javahelp/map_1_0.dtd">
 
 <map version="1.0">
-
+<mapID target="topics" url="topics/topics.html" />
 <mapID target="introduction" url="topics/introduction.html" />
 <mapID target="identification" url="topics/identification.html" />
 <mapID target="checking_an_identification" url="topics/checking_an_identification.html" />

@@ -176,12 +176,6 @@ public class TaxonKeywordSelectionDialog extends KeywordSelectionDialog {
         }
     }
 
-    @Override
-    protected void helpBtnPressed() {
-        // TODO Auto-generated method stub
-
-    }
-
     public List<Item> getSelectedTaxa() {
         return _selectedTaxa;
     }

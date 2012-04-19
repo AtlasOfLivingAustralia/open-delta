@@ -124,7 +124,6 @@ public abstract class KeywordSelectionDialog extends ListSelectionDialog impleme
         _btnHelp = new JButton();
         _panelInnerButtons.add(_btnHelp);
         _btnHelp.setAction(actionMap.get("keywordSelectionDialog_Help"));
-        _btnHelp.setEnabled(false);
 
         _panelRadioButtons = new JPanel();
         FlowLayout flowLayout = (FlowLayout) _panelRadioButtons.getLayout();
@@ -194,8 +193,8 @@ public abstract class KeywordSelectionDialog extends ListSelectionDialog impleme
     }
 
     @Action
-    public void keywordSelectionDialog_Help() {
-        helpBtnPressed();
+    public void keywordSelectionDialog_Help(ActionEvent e) {
+        UIUtils.displayHelpTopic(UIUtils.getHelpIDForDirective(_directiveName), this, e);
     }
 
     @Action
@@ -211,8 +210,6 @@ public abstract class KeywordSelectionDialog extends ListSelectionDialog impleme
 
     abstract protected void imagesBtnPressed();
 
-    abstract protected void helpBtnPressed();
-    
     @Override
     public int searchForText(String searchText, int startingIndex) {
         int matchedIndex = -1;

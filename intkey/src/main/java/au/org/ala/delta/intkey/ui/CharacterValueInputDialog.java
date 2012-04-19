@@ -18,6 +18,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
@@ -31,6 +32,7 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;
 
+import au.org.ala.delta.intkey.directives.UseDirective;
 import au.org.ala.delta.intkey.model.ReportUtils;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.format.CharacterFormatter;
@@ -119,7 +121,6 @@ public abstract class CharacterValueInputDialog extends JDialog {
 
         _btnHelp = new JButton();
         _btnHelp.setAction(actionMap.get("characterValueInputDialog_Help"));
-        _btnHelp.setEnabled(false);
         _buttonPanel.add(_btnHelp);
 
         _pnlMain = new JPanel();
@@ -191,6 +192,7 @@ public abstract class CharacterValueInputDialog extends JDialog {
     }
 
     @Action
-    public void characterValueInputDialog_Help() {
+    public void characterValueInputDialog_Help(ActionEvent e) {
+        UIUtils.displayHelpTopic("directive_use", this, e);
     }
 }

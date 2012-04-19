@@ -93,6 +93,10 @@ public class RTFBuilder {
     }
 
     public void appendText(String str) {
+        // newline characters are new significant in RTF. convert them to spaces to avoid
+        // words getting concatenated etc. in the output.
+        str = str.replaceAll("\\n", " ");
+        
         // If string contains the "par" or "pard" control words, assume that it
         // has already been
         // completely formatted, and does not require any additional formatting.

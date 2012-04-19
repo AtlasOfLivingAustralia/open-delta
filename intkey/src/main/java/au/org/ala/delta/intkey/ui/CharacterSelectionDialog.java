@@ -17,6 +17,7 @@ package au.org.ala.delta.intkey.ui;
 import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -168,7 +169,6 @@ public class CharacterSelectionDialog extends ListSelectionDialog implements Sea
 
         _btnHelp = new JButton();
         _btnHelp.setAction(actionMap.get("characterSelectionDialog_Help"));
-        _btnHelp.setEnabled(false);
         _panelButtons.add(_btnHelp);
 
         _selectedCharacters = null;
@@ -289,8 +289,8 @@ public class CharacterSelectionDialog extends ListSelectionDialog implements Sea
     }
 
     @Action
-    public void characterSelectionDialog_Help() {
-
+    public void characterSelectionDialog_Help(ActionEvent e) {
+        UIUtils.displayHelpTopic(UIUtils.getHelpIDForDirective(_directiveName), this, e);
     }
 
     public List<Character> getSelectedCharacters() {

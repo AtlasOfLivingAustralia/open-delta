@@ -181,12 +181,6 @@ public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
         }
     }
 
-    @Override
-    protected void helpBtnPressed() {
-        // TODO Auto-generated method stub
-
-    }
-
     public List<Character> getSelectedCharacters() {
         return _selectedCharacters;
     }
