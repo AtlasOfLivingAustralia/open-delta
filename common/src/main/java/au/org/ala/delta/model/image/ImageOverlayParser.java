@@ -235,7 +235,7 @@ public class ImageOverlayParser {
                         throw DirectiveError.asException(DirectiveError.Error.MISSING_DATA, i - nHidden);
 
                     int lowerBoundStart = i;
-                    while (i < buffer.length() && Character.isDigit(buffer.charAt(i))) {
+                    while (i < buffer.length() && (Character.isDigit(buffer.charAt(i)) || buffer.charAt(i) == '.')) {
                         i++;
                     }
                     int lowerBoundEnd = i;
@@ -255,7 +255,7 @@ public class ImageOverlayParser {
                         i++;
                         int upperBoundStart = i;
 
-                        while (i < buffer.length() && Character.isDigit(buffer.charAt(i))) {
+                        while (i < buffer.length() && (Character.isDigit(buffer.charAt(i)) || buffer.charAt(i) == '.')) {
                             i++;
                         }
                         int upperBoundEnd = i;
