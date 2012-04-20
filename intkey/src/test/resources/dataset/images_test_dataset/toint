@@ -53,6 +53,17 @@ character before which the heading is placed.
 #87. \pard\li0\fi340\b{}Anatomical references\b0{}. 
 #88. \pard\li0\fi340\b{}Miscellaneous\b0{}.
 
+*TAXON LINKS
+# Frog/ frog.rtf <@subject rtf file>
+http://delta-intkey.com/www/data.htm <@subject http page> 
+notify.wav <@subject sound file> foo.txt <@subject text file> 
+other_intkey.ink <@subject ink file>
+# Parrot/ parrot.rtf <@subject rtf file> 
+http://delta-intkey.com/www/data.htm
+<@subject http page> notify.wav <@subject sound file>
+foo.txt <@subject text file> 
+other_intkey.ink <@subject ink file>
+
 *INPUT FILE cnotes
 
 *INPUT FILE ofonts

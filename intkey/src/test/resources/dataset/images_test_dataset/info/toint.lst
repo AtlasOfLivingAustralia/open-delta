@@ -1,0 +1,55 @@
+ 
+CONFOR version 2.25 Windows
+ 
+M.J. Dallwitz, T.A. Paine and E.J. Zurcher
+ 
+CSIRO Division of Entomology, GPO Box 1700, Canberra, ACT 2601, Australia
+Phone +61 2 6246 4075. Fax +61 2 6246 4000. Email delta@ento.csiro.au
+ 
+Translate into INTKEY format. 
+ 
+..ple2\toint,3 *LISTING FILE toint.lst
+..ple2\toint,4  
+..ple2\toint,5 *HEADING Chris' Test Data 2
+..ple2\toint,6 *REGISTRATION SUBHEADING Test multiple controlling characters for a single character
+..ple2\toint,7  
+..ple2\toint,8 *INPUT FILE specs
+..ple2\specs,1 *SHOW ~ Chris Test - specifications.
+..ple2\specs,2  
+..ple2\specs,3 *NUMBER OF CHARACTERS 4
+..ple2\specs,4 *MAXIMUM NUMBER OF STATES 2
+..ple2\specs,5 *MAXIMUM NUMBER OF ITEMS 7
+..ple2\specs,6 *DATA BUFFER SIZE 4000
+..ple2\specs,7  
+..ple2\specs,8 *CHARACTER TYPES 3,RN 4,RN
+..ple2\specs,9  
+..le2\specs,10 *NUMBERS OF STATES 1,2 2,2
+..le2\specs,11  
+..le2\specs,12 *DEPENDENT CHARACTERS 1,2:3 2,2:3
+..le2\specs,13 *PREVIOUS INPUT FILE
+..ple2\toint,9  
+..le2\toint,10 *TRANSLATE INTO INTKEY FORMAT
+..le2\toint,11 *COMMENT CHARACTER FOR SYNONOMY 1
+..le2\toint,12  
+..le2\toint,13 *COMMENT CHARACTER RELIABILITIES
+..le2\toint,14  
+..le2\toint,15 *INTKEY OUTPUT FILE ichars
+..le2\toint,16 *INPUT FILE chars
+..ple2\chars,1 *SHOW ~ Chris Test 2 - character list.
+..ple2\chars,2  
+..ple2\chars,3 *CHARACTER LIST
+..le2\chars,18 *PREVIOUS INPUT FILE
+..le2\toint,17  
+..le2\toint,18 *INTKEY OUTPUT FILE iitems
+..le2\toint,19 *INPUT FILE items
+..ple2\items,1 *SHOW ~ Chris Test - item descriptions.
+..ple2\items,2  
+..ple2\items,3 *ITEM DESCRIPTIONS
+..le2\items,25 *PREVIOUS INPUT FILE
+..le2\toint,20 *END
+Normal Termination.
+ 
+Output files - 
+   C:\delta\chris_test_sample2\toint.lst
+   C:\delta\chris_test_sample2\ichars
+   C:\delta\chris_test_sample2\iitems
