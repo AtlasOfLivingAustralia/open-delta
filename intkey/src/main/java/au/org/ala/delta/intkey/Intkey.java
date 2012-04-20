@@ -247,7 +247,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     public static final String HELP_ID_NO_MATCHING_TAXA_REMAIN = "no_taxa_match_the_specimen";
     public static final String HELP_ID_IDENTIFICATION_COMPLETE = "checking_an_identification";
     public static final String HELP_ID_NO_CHARACTERS_REMAINING = "not_enough_characters_for_identification";
-    
 
     // Resource strings
     @Resource
@@ -312,6 +311,9 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Resource
     String separateInformationMessage;
+
+    @Resource
+    String noHelpAvailableCaption;
 
     // GUI components
     private JPanel _rootPanel;
@@ -880,6 +882,9 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                         JButton button = (JButton) component;
                         if (_dynamicButtonsFullHelp.containsKey(button)) {
                             String fullHelpText = _dynamicButtonsFullHelp.get(button);
+                            if (fullHelpText == null) {
+                                fullHelpText = noHelpAvailableCaption;
+                            }
                             RTFBuilder builder = new RTFBuilder();
                             builder.startDocument();
                             builder.appendText(fullHelpText);
@@ -890,7 +895,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                     }
                 }
             }
-
         });
 
         show(_rootPanel);
@@ -1707,7 +1711,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     private void handleNoAvailableCharacters() {
         String message = null;
-        
+
         if (_context.getIncludedCharacters().size() < _context.getDataset().getNumberOfCharacters()) { // characters
             message = charactersExcludedCannotSeparateCaption;
         } else {
@@ -1722,9 +1726,9 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _sclPaneAvailableCharacters.setViewportView(messagePanel);
         _sclPaneAvailableCharacters.revalidate();
     }
-    
+
     private void handleNoAvailableTaxa() {
-        
+
     }
 
     /**
@@ -2261,13 +2265,12 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         getMainFrame().getJMenuBar().setVisible(!demonstrationMode);
     }
-    
-    
+
     @Override
     public void displayHelpTopic(String topicID) {
         _helpController.displayHelpTopic(getMainFrame(), topicID);
     }
-    
+
     // ================================== DirectivePopulator methods
     // ===================================================================
 
@@ -2969,7 +2972,5 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         return r;
     }
-    
-    
 
 }

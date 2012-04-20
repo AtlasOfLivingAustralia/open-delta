@@ -132,8 +132,8 @@ public class ImageSettings extends ResourceSettings {
 
     public ImageSettings() {
         _dataSetPath = null;
-        _resourcePaths = new ArrayList<String>();
-        _resourcePaths.add("images");
+        _resourceLocations = new ArrayList<String>();
+        _resourceLocations.add("images");
 
         _defaultFontInfo = new FontInfo(10, 4, false, 2, 2, 0, "MS Sans Serif");
         _defaultButtonFont = new FontInfo(10, 4, false, 2, 2, 0, "MS Sans Serif");

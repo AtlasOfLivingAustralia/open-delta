@@ -20,7 +20,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -37,11 +39,13 @@ import au.org.ala.delta.util.FileUtils;
 public class ResourceSettings {
 
     public static final String RESOURCE_PATH_SEPARATOR = ";";
-    protected List<String> _resourcePaths;
+    protected List<String> _resourceLocations;
+    protected Set<String> _remoteResourceLocations;
     protected String _dataSetPath;
 
     public ResourceSettings() {
         super();
+        _remoteResourceLocations = new HashSet<String>();
     }
 
     /**
@@ -67,8 +71,8 @@ public class ResourceSettings {
     /**
      * @return the first entry on the resource path as an absolute file path.
      */
-    public String getFirstResourcePath() {
-        if (_resourcePaths.isEmpty()) {
+    public String getFirstResourcePathLocation() {
+        if (_resourceLocations.isEmpty()) {
             return "";
         } else {
             return getResourcePathLocations().get(0);
@@ -79,14 +83,14 @@ public class ResourceSettings {
      * @return the list of resource path locations as a ';' separated String.
      */
     public String getResourcePath() {
-        if (_resourcePaths.isEmpty()) {
+        if (_resourceLocations.isEmpty()) {
             return "";
         }
         StringBuilder path = new StringBuilder();
-        path.append(_resourcePaths.get(0));
-        for (int i = 1; i < _resourcePaths.size(); i++) {
+        path.append(_resourceLocations.get(0));
+        for (int i = 1; i < _resourceLocations.size(); i++) {
             path.append(RESOURCE_PATH_SEPARATOR);
-            path.append(_resourcePaths.get(i));
+            path.append(_resourceLocations.get(i));
         }
         return path.toString();
     }
@@ -97,11 +101,11 @@ public class ResourceSettings {
     public List<String> getResourcePathLocations() {
         List<String> retList = new ArrayList<String>();
 
-        for (String imagePath : _resourcePaths) {
-            if (imagePath.startsWith("http") || new File(imagePath).isAbsolute() || StringUtils.isEmpty(_dataSetPath)) {
-                retList.add(imagePath);
+        for (String resourcePath : _resourceLocations) {
+            if (_remoteResourceLocations.contains(resourcePath) || new File(resourcePath).isAbsolute() || StringUtils.isEmpty(_dataSetPath)) {
+                retList.add(resourcePath);
             } else {
-                retList.add(FilenameUtils.concat(_dataSetPath, imagePath));
+                retList.add(FilenameUtils.concat(_dataSetPath, resourcePath));
             }
         }
 
@@ -115,9 +119,9 @@ public class ResourceSettings {
      *            a list of resource path locations as a ';' separated String.
      */
     public void setResourcePath(String resourcePath) {
-        _resourcePaths = new ArrayList<String>();
-
-        _resourcePaths.addAll(Arrays.asList(resourcePath.split(RESOURCE_PATH_SEPARATOR)));
+        _resourceLocations = new ArrayList<String>();
+        _resourceLocations.addAll(Arrays.asList(resourcePath.split(RESOURCE_PATH_SEPARATOR)));
+        determineRemoteResourceLocations();
     }
 
     /**
@@ -126,7 +130,8 @@ public class ResourceSettings {
      * @param resourcePaths
      */
     public void setResourcePaths(List<String> resourcePaths) {
-        _resourcePaths = new ArrayList<String>(resourcePaths);
+        _resourceLocations = new ArrayList<String>(resourcePaths);
+        determineRemoteResourceLocations();
     }
 
     /**
@@ -146,9 +151,9 @@ public class ResourceSettings {
         }
         return false;
     }
-    
+
     public URL findFileOnResourcePath(String fileName, boolean ignoreRemoteLocations) {
-    	return findFileOnResourcePath(fileName, ignoreRemoteLocations, true);
+        return findFileOnResourcePath(fileName, ignoreRemoteLocations, true);
     }
 
     /**
@@ -157,9 +162,13 @@ public class ResourceSettings {
      * dataset path is also searched if the file cannot be found at any of the
      * resource path locations.
      * 
-     * if ignoreCase is true then the exact case is test first, and if the file could not be found
-     * a case insensitive search is performed. This is avoid problems with older data sets developed under MS DOS or Windows
-     * in which items inconsistently cased names.
+     * if ignoreCase is true then the exact case is test first, and if the file
+     * could not be found a case insensitive search is performed. This is avoid
+     * problems with older data sets developed under MS DOS or Windows in which
+     * items inconsistently cased names.
+     * 
+     * if the fileName is already a valid URL string, a URL object will be
+     * created an returned, without the resource path locations being searched.
      * 
      * @param fileName
      *            The file name
@@ -169,29 +178,40 @@ public class ResourceSettings {
      * @return A URL for the found file, or null if the file was not found.
      */
     public URL findFileOnResourcePath(String fileName, boolean ignoreRemoteLocations, boolean ignoreCase) {
+        // If the fileName is a valid URL in its own right, simply return it as
+        // a URL object - don't search the resource path locations
+
         URL fileLocation = null;
+
+        try {
+            fileLocation = new URL(fileName);
+            return fileLocation;
+        } catch (MalformedURLException ex) {
+            // do nothing
+        }
 
         List<String> locationsToSearch = getResourcePathLocations();
 
-        // First check to see if the filename is an absolute filename on the file system
+        // First check to see if the filename is an absolute filename on the
+        // file system
         File file = new File(fileName);
         if (file.exists() && file.isAbsolute()) {
-        	try {
-        		return file.toURI().toURL();
-        	} catch (MalformedURLException ex) {
-        		// Ignore
-        	}
+            try {
+                return file.toURI().toURL();
+            } catch (MalformedURLException ex) {
+                // Ignore
+            }
         }
-        
+
         if (ignoreCase) {
-        	file = FileUtils.findFileIgnoreCase(file);
-        	if (file != null) {
-            	try {
-            		return file.toURI().toURL();
-            	} catch (MalformedURLException ex) {
-            		// Ignore
-            	}        	
-        	}
+            file = FileUtils.findFileIgnoreCase(file);
+            if (file != null) {
+                try {
+                    return file.toURI().toURL();
+                } catch (MalformedURLException ex) {
+                    // Ignore
+                }
+            }
         }
 
         // If file cannot be found at any of the resource path locations, also
@@ -201,7 +221,7 @@ public class ResourceSettings {
 
         for (String resourcePath : locationsToSearch) {
             try {
-                if (resourcePath.toLowerCase().startsWith("http")) {
+                if (_remoteResourceLocations.contains(resourcePath)) {
                     if (ignoreRemoteLocations) {
                         continue;
                     }
@@ -225,13 +245,13 @@ public class ResourceSettings {
                         fileLocation = f.toURI().toURL();
                         break;
                     } else {
-                    	if (ignoreCase) {
-	                    	f = FileUtils.findFileIgnoreCase(f);
-	                    	if (f != null) {
-	                            fileLocation = f.toURI().toURL();
-	                            break;                    		 
-	                    	}
-                    	}
+                        if (ignoreCase) {
+                            f = FileUtils.findFileIgnoreCase(f);
+                            if (f != null) {
+                                fileLocation = f.toURI().toURL();
+                                break;
+                            }
+                        }
                     }
 
                 }
@@ -260,8 +280,31 @@ public class ResourceSettings {
     }
 
     private void addToResourcePath(String relativePath) {
-        if (!_resourcePaths.contains(relativePath)) {
-            _resourcePaths.add(relativePath);
+        if (!_resourceLocations.contains(relativePath)) {
+            _resourceLocations.add(relativePath);
+        }
+    }
+
+    /**
+     * Go through the list of resource locations and determine which ones are
+     * remote. I.e. which do not point to locations on local disks.
+     */
+    private void determineRemoteResourceLocations() {
+        for (String location : _resourceLocations) {
+            if (isResourceLocationRemote(location)) {
+                _remoteResourceLocations.add(location);
+            }
+        }
+    }
+
+    private boolean isResourceLocationRemote(String location) {
+        try {
+            // If the location string can be parsed as a URL, then it is deemed
+            // to be a remote location
+            new URL(location);
+            return true;
+        } catch (MalformedURLException ex) {
+            return false;
         }
     }
 

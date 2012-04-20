@@ -185,7 +185,7 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 	@Override
 	public String getImagePath() {
 		ImageSettings settings = getImageSettings();
-		String imagePath = settings.getFirstResourcePath();
+		String imagePath = settings.getFirstResourcePathLocation();
 		File file = new File(imagePath);
 		if (!file.isAbsolute()) {
 			imagePath = getDataSetPath() + imagePath;

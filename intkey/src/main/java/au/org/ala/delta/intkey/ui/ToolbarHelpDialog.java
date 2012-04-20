@@ -33,7 +33,7 @@ public class ToolbarHelpDialog extends IntkeyDialog {
     
     @Resource
     String title;
-
+    
     public ToolbarHelpDialog(Frame owner, String rtfText, Icon icon) {
         super(owner, true);
         
