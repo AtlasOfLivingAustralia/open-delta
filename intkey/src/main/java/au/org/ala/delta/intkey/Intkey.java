@@ -183,6 +183,7 @@ import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.intkey.model.SearchUtils;
 import au.org.ala.delta.intkey.model.StartupFileData;
 import au.org.ala.delta.intkey.model.StartupUtils;
+import au.org.ala.delta.intkey.ui.AllowMismatchMessagePanel;
 import au.org.ala.delta.intkey.ui.AttributeCellRenderer;
 import au.org.ala.delta.intkey.ui.BestCharacterCellRenderer;
 import au.org.ala.delta.intkey.ui.BusyGlassPane;
@@ -201,6 +202,7 @@ import au.org.ala.delta.intkey.ui.ImageUtils;
 import au.org.ala.delta.intkey.ui.IntKeyDialogController;
 import au.org.ala.delta.intkey.ui.IntegerInputDialog;
 import au.org.ala.delta.intkey.ui.MenuBuilder;
+import au.org.ala.delta.intkey.ui.MessagePanel;
 import au.org.ala.delta.intkey.ui.MultiStateInputDialog;
 import au.org.ala.delta.intkey.ui.OnOffPromptDialog;
 import au.org.ala.delta.intkey.ui.ReExecuteDialog;
@@ -242,6 +244,10 @@ import au.org.ala.delta.util.Pair;
 public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, DirectivePopulator {
 
     public static final String HELPSET_PATH = "help/Intkey";
+    public static final String HELP_ID_NO_MATCHING_TAXA_REMAIN = "no_taxa_match_the_specimen";
+    public static final String HELP_ID_IDENTIFICATION_COMPLETE = "checking_an_identification";
+    public static final String HELP_ID_NO_CHARACTERS_REMAINING = "not_enough_characters_for_identification";
+    
 
     // Resource strings
     @Resource
@@ -1701,9 +1707,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     private void handleNoAvailableCharacters() {
         String message = null;
-
+        
         if (_context.getIncludedCharacters().size() < _context.getDataset().getNumberOfCharacters()) { // characters
-                                                                                                       // excluded?
             message = charactersExcludedCannotSeparateCaption;
         } else {
             if (_context.getTolerance() > 0) {
@@ -1713,12 +1718,13 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             }
         }
 
-        JLabel lbl = new JLabel(message);
-        lbl.setHorizontalAlignment(JLabel.CENTER);
-        lbl.setBackground(Color.WHITE);
-        lbl.setOpaque(true);
-        _sclPaneAvailableCharacters.setViewportView(lbl);
+        MessagePanel messagePanel = new MessagePanel(message, HELP_ID_NO_CHARACTERS_REMAINING);
+        _sclPaneAvailableCharacters.setViewportView(messagePanel);
         _sclPaneAvailableCharacters.revalidate();
+    }
+    
+    private void handleNoAvailableTaxa() {
+        
     }
 
     /**
@@ -1867,19 +1873,16 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             if (availableTaxa.size() > 1) {
                 updateAvailableCharacters();
             } else {
-                String message = null;
+                JPanel messagePanel = null;
 
                 if (availableTaxa.size() == 0) {
-                    message = noMatchingTaxaRemainCaption;
-                } else if (availableTaxa.size() == 1) {
-                    message = identificationCompleteCaption;
+                    messagePanel = new AllowMismatchMessagePanel(noMatchingTaxaRemainCaption, HELP_ID_NO_MATCHING_TAXA_REMAIN, _context);
+                } else {
+                    // 1 available taxon
+                    messagePanel = new MessagePanel(noMatchingTaxaRemainCaption, HELP_ID_IDENTIFICATION_COMPLETE);
                 }
 
-                JLabel lbl = new JLabel(message);
-                lbl.setHorizontalAlignment(JLabel.CENTER);
-                lbl.setBackground(Color.WHITE);
-                lbl.setOpaque(true);
-                _sclPaneAvailableCharacters.setViewportView(lbl);
+                _sclPaneAvailableCharacters.setViewportView(messagePanel);
                 _sclPaneAvailableCharacters.revalidate();
 
                 switch (_context.getCharacterOrder()) {
@@ -2258,7 +2261,13 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         getMainFrame().getJMenuBar().setVisible(!demonstrationMode);
     }
-
+    
+    
+    @Override
+    public void displayHelpTopic(String topicID) {
+        _helpController.displayHelpTopic(getMainFrame(), topicID);
+    }
+    
     // ================================== DirectivePopulator methods
     // ===================================================================
 
@@ -2960,5 +2969,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         return r;
     }
+    
+    
 
 }

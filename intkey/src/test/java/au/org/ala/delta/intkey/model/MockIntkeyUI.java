@@ -125,4 +125,9 @@ public class MockIntkeyUI implements IntkeyUI {
     public void setDemonstrationMode(boolean demonstrationMode) {
     }
 
+    @Override
+    public void displayHelpTopic(String topicID) {
+        // do nothing
+    }
+
 }

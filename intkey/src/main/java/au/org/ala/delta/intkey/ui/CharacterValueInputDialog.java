@@ -32,7 +32,6 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;
 
-import au.org.ala.delta.intkey.directives.UseDirective;
 import au.org.ala.delta.intkey.model.ReportUtils;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.format.CharacterFormatter;
@@ -47,6 +46,8 @@ public abstract class CharacterValueInputDialog extends JDialog {
      * 
      */
     private static final long serialVersionUID = 361631735179369565L;
+    
+    public static final String USE_DIRECTIVE_HELP_TOPIC_ID = "directive_use";
 
     protected JPanel _buttonPanel;
     protected JButton _btnImages;
@@ -193,6 +194,6 @@ public abstract class CharacterValueInputDialog extends JDialog {
 
     @Action
     public void characterValueInputDialog_Help(ActionEvent e) {
-        UIUtils.displayHelpTopic("directive_use", this, e);
+        UIUtils.displayHelpTopic(USE_DIRECTIVE_HELP_TOPIC_ID, this, e);
     }
 }

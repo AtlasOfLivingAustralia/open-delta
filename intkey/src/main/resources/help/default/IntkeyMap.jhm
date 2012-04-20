@@ -10,6 +10,7 @@
 <mapID target="identification" url="topics/identification.html" />
 <mapID target="checking_an_identification" url="topics/checking_an_identification.html" />
 <mapID target="not_enough_characters_for_identification" url="topics/not_enough_characters_for_identification.html" />
+<mapID target="no_taxa_match_the_specimen" url="topics/no_taxa_match_the_specimen.html" />
 <mapID target="selecting_taxa" url="topics/selecting_taxa.html" />
 <mapID target="information_retrieval" url="topics/information_retrieval.html" />
 <mapID target="modes_of_operation" url="topics/modes_of_operation.html" />

@@ -99,4 +99,6 @@ public interface IntkeyUI {
     List<Item> getSelectedTaxa();
     
     void setDemonstrationMode(boolean demonstrationMode);
+    
+    void displayHelpTopic(String topicID);
 }
