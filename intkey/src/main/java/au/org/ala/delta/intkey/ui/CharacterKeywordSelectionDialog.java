@@ -19,6 +19,7 @@ import java.awt.Frame;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -104,6 +105,7 @@ public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
     @Override
     protected void okBtnPressed() {
         _selectedCharacters = new ArrayList<Character>();
+        HashSet<Character> selectedCharactersSet = new HashSet<Character>();
         for (Object o : _list.getSelectedValues()) {
             String keyword = (String) o;
 
@@ -113,8 +115,9 @@ public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
                 characters.retainAll(_includedCharacters);
             }
 
-            _selectedCharacters.addAll(characters);
+            selectedCharactersSet.addAll(characters);
         }
+        _selectedCharacters.addAll(selectedCharactersSet);
         Collections.sort(_selectedCharacters);
         this.setVisible(false);
     }

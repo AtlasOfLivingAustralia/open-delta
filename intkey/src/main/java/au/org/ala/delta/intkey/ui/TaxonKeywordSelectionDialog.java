@@ -19,6 +19,7 @@ import java.awt.Frame;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -118,6 +119,7 @@ public class TaxonKeywordSelectionDialog extends KeywordSelectionDialog {
     @Override
     protected void okBtnPressed() {
         _selectedTaxa = new ArrayList<Item>();
+        HashSet<Item> selectedTaxaSet = new HashSet<Item>();
         for (Object o : _list.getSelectedValues()) {
             String keyword = (String) o;
 
@@ -130,9 +132,10 @@ public class TaxonKeywordSelectionDialog extends KeywordSelectionDialog {
                     taxa.retainAll(_includedTaxa);
                 }
 
-                _selectedTaxa.addAll(taxa);
+                selectedTaxaSet.addAll(taxa);
             }
         }
+        _selectedTaxa.addAll(selectedTaxaSet);
         Collections.sort(_selectedTaxa);
         this.setVisible(false);
     }
