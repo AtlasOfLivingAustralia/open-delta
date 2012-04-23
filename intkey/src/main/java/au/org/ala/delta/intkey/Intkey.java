@@ -89,6 +89,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.FloatRange;
+import org.apache.commons.lang.mutable.MutableBoolean;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
@@ -2333,7 +2334,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     }
 
     @Override
-    public List<Item> promptForTaxaByKeyword(String directiveName, boolean permitSelectionFromIncludedTaxaOnly, boolean noneKeywordAvailable) {
+    public List<Item> promptForTaxaByKeyword(String directiveName, boolean permitSelectionFromIncludedTaxaOnly, boolean noneKeywordAvailable, boolean includeSpecimenAsOption, MutableBoolean returnSpecimenSelected) {
 
         List<Image> taxonKeywordImages = _context.getDataset().getTaxonKeywordImages();
         if (_context.getImageDisplayMode() == ImageDisplayMode.AUTO && taxonKeywordImages != null && !taxonKeywordImages.isEmpty()) {
@@ -2366,14 +2367,14 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
             return selectedTaxa;
         } else {
-            TaxonKeywordSelectionDialog dlg = new TaxonKeywordSelectionDialog(getMainFrame(), _context, directiveName.toUpperCase(), permitSelectionFromIncludedTaxaOnly);
+            TaxonKeywordSelectionDialog dlg = new TaxonKeywordSelectionDialog(getMainFrame(), _context, directiveName.toUpperCase(), permitSelectionFromIncludedTaxaOnly, includeSpecimenAsOption, returnSpecimenSelected);
             show(dlg);
             return dlg.getSelectedTaxa();
         }
     }
 
     @Override
-    public List<Item> promptForTaxaByList(String directiveName, boolean selectFromRemainingTaxaOnly, boolean autoSelectSingleValue, boolean singleSelect) {
+    public List<Item> promptForTaxaByList(String directiveName, boolean selectFromRemainingTaxaOnly, boolean autoSelectSingleValue, boolean singleSelect, boolean includeSpecimenAsOption, MutableBoolean returnSpecimenSelected) {
         List<Item> taxaToSelect;
 
         String keyword = null;
@@ -2388,7 +2389,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         if (taxaToSelect.size() == 1 && autoSelectSingleValue) {
             return taxaToSelect;
         } else {
-            TaxonSelectionDialog dlg = new TaxonSelectionDialog(getMainFrame(), taxaToSelect, directiveName.toUpperCase(), keyword, _context.displayNumbering(), singleSelect, _context);
+            TaxonSelectionDialog dlg = new TaxonSelectionDialog(getMainFrame(), taxaToSelect, directiveName.toUpperCase(), keyword, _context.displayNumbering(), singleSelect, _context, includeSpecimenAsOption, returnSpecimenSelected);
             show(dlg);
             return dlg.getSelectedTaxa();
         }

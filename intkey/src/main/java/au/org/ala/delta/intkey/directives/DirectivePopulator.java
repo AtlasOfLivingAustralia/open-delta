@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.math.FloatRange;
+import org.apache.commons.lang.mutable.MutableBoolean;
 
 import au.org.ala.delta.intkey.model.DisplayImagesReportType;
 import au.org.ala.delta.intkey.model.ImageDisplayMode;
@@ -73,10 +74,17 @@ public interface DirectivePopulator {
      * @param noneKeywordAvailable
      *            if true, the NONE keyword, representing an empty set of
      *            characters will be available as an option
+     * @param includeSpecimenAsOption
+     *            if true, the specimen will be included as an available option
+     * @param returnSpecimenSelected
+     *            Mutable boolean, if true after the method has returned, the
+     *            specimen was chosen as one of the options. Mutable boolean
+     *            used here as java does not allow pass by reference.
      * @return the list of selected taxa, or null if the user cancelled the
      *         operation
      */
-    List<Item> promptForTaxaByKeyword(String directiveName, boolean permitSelectionFromIncludedTaxaOnly, boolean noneKeywordAvailable);
+    List<Item> promptForTaxaByKeyword(String directiveName, boolean permitSelectionFromIncludedTaxaOnly, boolean noneKeywordAvailable, boolean includeSpecimenAsOption,
+            MutableBoolean returnSpecimenSelected);
 
     /**
      * 
@@ -89,11 +97,18 @@ public interface DirectivePopulator {
      *            if true, no prompt will be shown if only a single taxon is
      *            available for selection - that taxon will be selected
      *            automatically
+     * @param includeSpecimenAsOption
+     *            if true, the specimen will be included as an available option
+     * @param returnSpecimenSelected
+     *            Mutable boolean, if true after the method has returned, the
+     *            specimen was chosen as one of the options. Mutable boolean
+     *            used here as java does not allow pass by reference.
      * @param if true, the user will only be permitted to select a single taxon
      * @return the list of selected taxa, or null if the user cancelled the
      *         operation
      */
-    List<Item> promptForTaxaByList(String directiveName, boolean selectFromIncludedTaxaOnly, boolean autoSelectSingleValue, boolean singleSelect);
+    List<Item> promptForTaxaByList(String directiveName, boolean selectFromIncludedTaxaOnly, boolean autoSelectSingleValue, boolean singleSelect, boolean includeSpecimenAsOption,
+            MutableBoolean returnSpecimenSelected);
 
     /**
      * Prompts the user with a yes/no question
@@ -198,7 +213,7 @@ public interface DirectivePopulator {
     List<Object> promptForMatchSettings();
 
     List<Object> promptForButtonDefinition();
-    
+
     Pair<ImageDisplayMode, DisplayImagesReportType> promptForImageDisplaySettings();
 
 }

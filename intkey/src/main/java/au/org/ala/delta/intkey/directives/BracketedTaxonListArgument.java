@@ -19,6 +19,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
 
+import org.apache.commons.lang.mutable.MutableBoolean;
+
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Item;
@@ -113,15 +115,18 @@ public class BracketedTaxonListArgument extends AbstractTaxonListArgument<Pair<L
         }
 
         if (taxa == null) {
-            // TODO NEED TO BE ABLE TO INCLUDE OPTION TO SELECT SPECIMEN IN
-            // THESE PROMPTS
+            // The specimen is included as an option for these prompts
+            MutableBoolean specimenSelected = new MutableBoolean(false);
+            boolean includeSpecimenAsOption = !context.getSpecimen().getUsedCharacters().isEmpty();
             DirectivePopulator populator = context.getDirectivePopulator();
             if (selectionMode == SelectionMode.KEYWORD && context.displayKeywords()) {
-                taxa = populator.promptForTaxaByKeyword(directiveName, !overrideExcludedTaxa, _noneSelectionPermitted);
+                taxa = populator.promptForTaxaByKeyword(directiveName, !overrideExcludedTaxa, _noneSelectionPermitted, includeSpecimenAsOption, specimenSelected);
+                
             } else {
                 boolean autoSelectSingleValue = (selectionMode == SelectionMode.LIST_AUTOSELECT_SINGLE_VALUE);
-                taxa = populator.promptForTaxaByList(directiveName, !overrideExcludedTaxa, autoSelectSingleValue, false);
+                taxa = populator.promptForTaxaByList(directiveName, !overrideExcludedTaxa, autoSelectSingleValue, false, includeSpecimenAsOption, specimenSelected);
             }
+            includeSpecimen = specimenSelected.booleanValue();
         }
 
         if (taxa.size() == 0 && includeSpecimen == false && !_noneSelectionPermitted) {

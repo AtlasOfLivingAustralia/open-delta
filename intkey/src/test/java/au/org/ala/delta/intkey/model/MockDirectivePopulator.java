@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.math.FloatRange;
+import org.apache.commons.lang.mutable.MutableBoolean;
 
 import au.org.ala.delta.intkey.directives.DirectivePopulator;
 import au.org.ala.delta.model.Character;
@@ -43,12 +44,12 @@ public class MockDirectivePopulator implements DirectivePopulator {
     }
 
     @Override
-    public List<Item> promptForTaxaByKeyword(String directiveName, boolean selectFromIncludedTaxaOnly, boolean noneKeywordAvailable) {
+    public List<Item> promptForTaxaByKeyword(String directiveName, boolean selectFromIncludedTaxaOnly, boolean noneKeywordAvailable, boolean includeSpecimenAsOption, MutableBoolean specimenSelected) {
         return null;
     }
 
     @Override
-    public List<Item> promptForTaxaByList(String directiveName, boolean selectFromIncludedTaxaOnly, boolean autoSelectSingleValue, boolean singleSelect) {
+    public List<Item> promptForTaxaByList(String directiveName, boolean selectFromIncludedTaxaOnly, boolean autoSelectSingleValue, boolean singleSelect, boolean includeSpecimenAsOption, MutableBoolean specimenSelected) {
         return null;
     }
 

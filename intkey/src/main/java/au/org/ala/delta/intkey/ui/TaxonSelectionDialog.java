@@ -30,6 +30,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.commons.lang.mutable.MutableBoolean;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
@@ -73,6 +74,15 @@ public class TaxonSelectionDialog extends ListSelectionDialog implements Searcha
 
     private ItemFormatter _fullTextTaxonFormatter;
 
+    /**
+     * Used to return whether or not, the specimen was chosen as one of the
+     * options. Mutable boolean used here as java does not allow pass by
+     * reference.
+     */
+    private MutableBoolean _specimenSelectedReturnValue;
+
+    private boolean _includeSpecimenAsOption;
+
     @Resource
     String title;
 
@@ -82,33 +92,42 @@ public class TaxonSelectionDialog extends ListSelectionDialog implements Searcha
     @Resource
     String fullTextOfTaxonNameCaption;
 
-    public TaxonSelectionDialog(Dialog owner, List<Item> taxa, String directiveName, String keyword, boolean displayNumbering, boolean singleSelect, IntkeyContext context) {
-        this(owner, taxa, directiveName, displayNumbering, singleSelect, context);
+    /**
+     * @wbp.parser.constructor
+     */
+    public TaxonSelectionDialog(Dialog owner, List<Item> taxa, String directiveName, String keyword, boolean displayNumbering, boolean singleSelect, IntkeyContext context,
+            boolean includeSpecimenAsOption, MutableBoolean specimenSelectedReturnValue) {
+        this(owner, taxa, directiveName, displayNumbering, singleSelect, context, includeSpecimenAsOption, specimenSelectedReturnValue);
         _keyword = keyword;
         setTitle(MessageFormat.format(titleFromKeyword, _directiveName, _keyword));
     }
 
-    public TaxonSelectionDialog(Frame owner, List<Item> taxa, String directiveName, String keyword, boolean displayNumbering, boolean singleSelect, IntkeyContext context) {
-        this(owner, taxa, directiveName, displayNumbering, singleSelect, context);
+    public TaxonSelectionDialog(Frame owner, List<Item> taxa, String directiveName, String keyword, boolean displayNumbering, boolean singleSelect, IntkeyContext context,
+            boolean includeSpecimenAsOption, MutableBoolean specimenSelectedReturnValue) {
+        this(owner, taxa, directiveName, displayNumbering, singleSelect, context, includeSpecimenAsOption, specimenSelectedReturnValue);
         _keyword = keyword;
         setTitle(MessageFormat.format(titleFromKeyword, _directiveName, _keyword));
     }
 
-    public TaxonSelectionDialog(Dialog owner, List<Item> taxa, String directiveName, boolean displayNumbering, boolean singleSelect, IntkeyContext context) {
+    public TaxonSelectionDialog(Dialog owner, List<Item> taxa, String directiveName, boolean displayNumbering, boolean singleSelect, IntkeyContext context, boolean includeSpecimenAsOption,
+            MutableBoolean specimenSelectedReturnValue) {
         super(owner);
         _directiveName = directiveName;
         _context = context;
-        init(taxa, displayNumbering, singleSelect);
+        _specimenSelectedReturnValue = specimenSelectedReturnValue;
+        init(taxa, displayNumbering, singleSelect, includeSpecimenAsOption);
     }
 
-    public TaxonSelectionDialog(Frame owner, List<Item> taxa, String directiveName, boolean displayNumbering, boolean singleSelect, IntkeyContext context) {
+    public TaxonSelectionDialog(Frame owner, List<Item> taxa, String directiveName, boolean displayNumbering, boolean singleSelect, IntkeyContext context, boolean includeSpecimenAsOption,
+            MutableBoolean specimenSelectedReturnValue) {
         super(owner);
         _directiveName = directiveName;
         _context = context;
-        init(taxa, displayNumbering, singleSelect);
+        _specimenSelectedReturnValue = specimenSelectedReturnValue;
+        init(taxa, displayNumbering, singleSelect, includeSpecimenAsOption);
     }
 
-    private void init(List<Item> taxa, boolean displayNumbering, boolean singleSelect) {
+    private void init(List<Item> taxa, boolean displayNumbering, boolean singleSelect, boolean includeSpecimenAsOption) {
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(TaxonSelectionDialog.class);
         resourceMap.injectFields(this);
         ActionMap actionMap = Application.getInstance().getContext().getActionMap(TaxonSelectionDialog.class, this);
@@ -160,8 +179,15 @@ public class TaxonSelectionDialog extends ListSelectionDialog implements Searcha
 
         _selectedTaxa = null;
 
+        _includeSpecimenAsOption = includeSpecimenAsOption;
+
         if (taxa != null) {
             _listModel = new DefaultListModel();
+
+            if (_includeSpecimenAsOption) {
+                _listModel.addElement(IntkeyContext.SPECIMEN_KEYWORD);
+            }
+
             for (Item taxon : taxa) {
                 _listModel.addElement(taxon);
             }
@@ -177,7 +203,7 @@ public class TaxonSelectionDialog extends ListSelectionDialog implements Searcha
 
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                if (_list.getSelectedIndices().length == 1) {
+                if (_list.getSelectedIndices().length == 1 && !_list.getSelectedValue().equals(IntkeyContext.SPECIMEN_KEYWORD)) {
                     Item taxon = (Item) _list.getSelectedValue();
                     _btnImages.setEnabled(taxon.getImages().size() > 0);
                     _btnFullText.setEnabled(true);
@@ -193,6 +219,11 @@ public class TaxonSelectionDialog extends ListSelectionDialog implements Searcha
     public void taxonSelectionDialog_OK() {
         _selectedTaxa = new ArrayList<Item>();
         for (int i : _list.getSelectedIndices()) {
+            // Specimen is a special case here - it is not a real taxon.
+            if (_listModel.getElementAt(i).equals(IntkeyContext.SPECIMEN_KEYWORD)) {
+                _specimenSelectedReturnValue.setValue(true);
+                continue;
+            }
             _selectedTaxa.add((Item) _listModel.getElementAt(i));
         }
 
@@ -213,7 +244,7 @@ public class TaxonSelectionDialog extends ListSelectionDialog implements Searcha
             _selectedTaxa = null;
             this.setVisible(false);
         } else {
-            TaxonKeywordSelectionDialog dlg = new TaxonKeywordSelectionDialog(this, _context, _directiveName, false);
+            TaxonKeywordSelectionDialog dlg = new TaxonKeywordSelectionDialog(this, _context, _directiveName, false, _includeSpecimenAsOption, _specimenSelectedReturnValue);
             ((SingleFrameApplication) Application.getInstance()).show(dlg);
             if (dlg.getSelectedTaxa() != null) {
                 _selectedTaxa = dlg.getSelectedTaxa();

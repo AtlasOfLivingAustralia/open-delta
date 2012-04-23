@@ -36,7 +36,7 @@ public class DisplayCharacterOrderSeparateDirective extends IntkeyDirective {
         Item taxonToSeparate;
 
         if (data == null) {
-            List<Item> selectedTaxonInList = context.getDirectivePopulator().promptForTaxaByList(StringUtils.join(getControlWords(), " ").toUpperCase(), true, true, true);
+            List<Item> selectedTaxonInList = context.getDirectivePopulator().promptForTaxaByList(StringUtils.join(getControlWords(), " ").toUpperCase(), true, true, true, false, null);
             if (selectedTaxonInList == null || selectedTaxonInList.size() == 0) {
                 // cancel
                 return null;

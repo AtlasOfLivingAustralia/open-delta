@@ -85,7 +85,7 @@ public class DefineNamesDirective extends IntkeyDirective {
         }
 
         if (taxa.isEmpty()) {
-            taxa = context.getDirectivePopulator().promptForTaxaByList(directiveName, false, false, false);
+            taxa = context.getDirectivePopulator().promptForTaxaByList(directiveName, false, false, false, false, null);
             if (taxa == null || taxa.isEmpty()) {
                 // cancelled
                 return null;

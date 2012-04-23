@@ -746,7 +746,7 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         keyword = keyword.toLowerCase();
         if (keyword.equals(TAXON_KEYWORD_ALL) || keyword.equals(TAXON_KEYWORD_ELIMINATED) || keyword.equals(TAXON_KEYWORD_REMAINING) || keyword.equals(TAXON_KEYWORD_SELECTED)
-                || keyword.equals(TAXON_KEYWORD_NONE)) {
+                || keyword.equals(TAXON_KEYWORD_NONE) || keyword.equals(SPECIMEN_KEYWORD)) {
             throw new IllegalArgumentException(UIUtils.getResourceString("RedefineSystemKeyword.error", keyword));
         }
 
@@ -841,7 +841,16 @@ public class IntkeyContext extends AbstractDeltaContext {
         return retList;
     }
 
-    public synchronized List<String> getTaxaKeywords() {
+    /**
+     * Return a list of valid taxon keywords
+     * 
+     * @param includeSpecimen
+     *            if true, include the specimen keyword in the list if the
+     *            current specimen is not empty i.e. characters have been used
+     * @return A list of valid taxon keywords. The specimen keyword is included
+     *         if applicable.
+     */
+    public synchronized List<String> getTaxaKeywords(boolean includeSpecimen) {
         List<String> retList = new ArrayList<String>();
         retList.add(TAXON_KEYWORD_ALL);
 
@@ -860,15 +869,22 @@ public class IntkeyContext extends AbstractDeltaContext {
             }
         }
 
+        // Include "eliminated" keyword if taxa have been eliminated
         if (remainingTaxaCount < _dataset.getNumberOfTaxa()) {
             retList.add(TAXON_KEYWORD_ELIMINATED);
         }
 
+        //Include "remaining" keyword if there are remaining taxa
         if (remainingTaxaCount > 0) {
             retList.add(TAXON_KEYWORD_REMAINING);
         }
 
         retList.add(TAXON_KEYWORD_NONE);
+        
+        //Include the "specimen" keyword if desired, and the specimen is not empty.
+        if (includeSpecimen && !_specimen.getUsedCharacters().isEmpty()) {
+            retList.add(SPECIMEN_KEYWORD);
+        }
 
         retList.addAll(_userDefinedTaxonKeywords.keySet());
 
@@ -1483,8 +1499,10 @@ public class IntkeyContext extends AbstractDeltaContext {
                 }
             } else {
                 _fixedCharactersList = new ArrayList<Integer>();
-                // If in demonstration mode, need to temporarily disable it, otherwise
-                // fix mode back be immediately turned back on by restarting the identification.
+                // If in demonstration mode, need to temporarily disable it,
+                // otherwise
+                // fix mode back be immediately turned back on by restarting the
+                // identification.
                 if (_demonstrationMode) {
                     _demonstrationMode = false;
                     restartIdentification();

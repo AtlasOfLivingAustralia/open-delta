@@ -96,6 +96,16 @@ public class DifferencesDirectiveInvocation extends IntkeyDirectiveInvocation {
 
     @Override
     public boolean execute(IntkeyContext context) {
+        int numberOfTaxa = _taxa.size();
+        if (_includeSpecimen) {
+            numberOfTaxa++;
+        }
+        
+        if (numberOfTaxa < 2) {
+            context.getUI().displayErrorMessage(String.format("At least two taxa required for comparison."));
+            return false;
+        }
+        
         if (_useGlobalMatchValues) {
             _matchType = context.getMatchType();
             _matchUnknowns = context.getMatchUnknowns();
@@ -176,5 +186,4 @@ public class DifferencesDirectiveInvocation extends IntkeyDirectiveInvocation {
 
         return true;
     }
-
 }

@@ -27,6 +27,7 @@ import java.util.Set;
 import javax.swing.SwingWorker;
 
 import org.apache.commons.lang.math.FloatRange;
+import org.apache.commons.lang.mutable.MutableBoolean;
 import org.junit.Test;
 
 import au.org.ala.delta.directives.DirectiveSearchResult;
@@ -667,12 +668,12 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
         }
         
         @Override
-        public List<Item> promptForTaxaByList(String directiveName, boolean selectFromIncludedTaxaOnly, boolean autoSelectSingleValue, boolean singleSelect) {
+        public List<Item> promptForTaxaByList(String directiveName, boolean selectFromIncludedTaxaOnly, boolean autoSelectSingleValue, boolean singleSelect, boolean includeSpecimenAsOption, MutableBoolean specimenSelected) {
             return null;
         }
         
         @Override
-        public List<Item> promptForTaxaByKeyword(String directiveName, boolean permitSelectionFromIncludedTaxaOnly, boolean noneKeywordAvailable) {
+        public List<Item> promptForTaxaByKeyword(String directiveName, boolean permitSelectionFromIncludedTaxaOnly, boolean noneKeywordAvailable, boolean includeSpecimenAsOption, MutableBoolean specimenSelected) {
             return null;
         }
         

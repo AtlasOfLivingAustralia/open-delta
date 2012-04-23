@@ -85,10 +85,10 @@ public class TaxonListArgument extends AbstractTaxonListArgument<List<Item>> {
 		if (taxa == null) {
 			DirectivePopulator populator = context.getDirectivePopulator();
 			if (selectionMode == SelectionMode.KEYWORD) {
-				taxa = populator.promptForTaxaByKeyword(directiveName, !overrideExcludedTaxa, _noneSelectionPermitted);
+				taxa = populator.promptForTaxaByKeyword(directiveName, !overrideExcludedTaxa, _noneSelectionPermitted, false, null);
 			} else {
 				boolean autoSelectSingleValue = (selectionMode == SelectionMode.LIST_AUTOSELECT_SINGLE_VALUE);
-				taxa = populator.promptForTaxaByList(directiveName, !overrideExcludedTaxa, autoSelectSingleValue, false);
+				taxa = populator.promptForTaxaByList(directiveName, !overrideExcludedTaxa, autoSelectSingleValue, false, false, null);
 			}
 		}
 

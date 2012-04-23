@@ -87,7 +87,7 @@ public abstract class KeywordSelectionDialog extends ListSelectionDialog impleme
     private void init(IntkeyContext context) {
         ActionMap actionMap = Application.getInstance().getContext().getActionMap(KeywordSelectionDialog.class, this);
 
-        _list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        _list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
         _panelButtons.setBorder(new EmptyBorder(0, 20, 10, 20));
         _panelButtons.setLayout(new BorderLayout(0, 0));

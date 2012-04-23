@@ -25,6 +25,7 @@ import java.util.Set;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 
+import org.apache.commons.lang.mutable.MutableBoolean;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
@@ -54,25 +55,39 @@ public class TaxonKeywordSelectionDialog extends KeywordSelectionDialog {
 
     private List<Item> _includedTaxa;
     private List<Item> _selectedTaxa;
-    
-    public TaxonKeywordSelectionDialog(Dialog owner, IntkeyContext context, String directiveName, boolean permitSelectionFromIncludedTaxaOnly) {
+
+    /**
+     * Used to return whether or not, the specimen was chosen as one of the
+     * options. Mutable boolean used here as java does not allow pass by
+     * reference.
+     */
+    private MutableBoolean _specimenSelectedReturnValue;
+
+    private boolean _includeSpecimenAsOption;
+
+    public TaxonKeywordSelectionDialog(Dialog owner, IntkeyContext context, String directiveName, boolean permitSelectionFromIncludedTaxaOnly, boolean includeSpecimenAsOption,
+            MutableBoolean specimenSelectedReturnValue) {
         super(owner, context, directiveName);
         _directiveName = directiveName;
-        init(context, permitSelectionFromIncludedTaxaOnly);
+        _specimenSelectedReturnValue = specimenSelectedReturnValue;
+        init(context, permitSelectionFromIncludedTaxaOnly, includeSpecimenAsOption);
     }
 
-    public TaxonKeywordSelectionDialog(Frame owner, IntkeyContext context, String directiveName, boolean permitSelectionFromIncludedTaxaOnly) {
+    public TaxonKeywordSelectionDialog(Frame owner, IntkeyContext context, String directiveName, boolean permitSelectionFromIncludedTaxaOnly, boolean includeSpecimenAsOption,
+            MutableBoolean specimenSelectedReturnValue) {
         super(owner, context, directiveName);
         _directiveName = directiveName;
-        init(context, permitSelectionFromIncludedTaxaOnly);
+        _specimenSelectedReturnValue = specimenSelectedReturnValue;
+        init(context, permitSelectionFromIncludedTaxaOnly, includeSpecimenAsOption);
     }
 
-    private void init(IntkeyContext context, boolean permitSelectionFromIncludedTaxaOnly) {
+    private void init(IntkeyContext context, boolean permitSelectionFromIncludedTaxaOnly, boolean includeSpecimenAsOption) {
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(TaxonKeywordSelectionDialog.class);
         resourceMap.injectFields(this);
 
         setTitle(MessageFormat.format(title, _directiveName));
-        List<String> taxonKeywords = context.getTaxaKeywords();
+        _includeSpecimenAsOption = includeSpecimenAsOption;
+        List<String> taxonKeywords = context.getTaxaKeywords(_includeSpecimenAsOption);
 
         _listModel = new DefaultListModel();
         for (String keyword : taxonKeywords) {
@@ -95,6 +110,9 @@ public class TaxonKeywordSelectionDialog extends KeywordSelectionDialog {
             _rdbtnSelectFromIncluded.setSelected(true);
             _selectFromIncluded = true;
         }
+
+        List<Image> taxonKeywordImages = _context.getDataset().getTaxonKeywordImages();
+        _btnImages.setEnabled(taxonKeywordImages != null && !taxonKeywordImages.isEmpty());
     }
 
     @Override
@@ -102,14 +120,18 @@ public class TaxonKeywordSelectionDialog extends KeywordSelectionDialog {
         _selectedTaxa = new ArrayList<Item>();
         for (Object o : _list.getSelectedValues()) {
             String keyword = (String) o;
-            
-            List<Item> taxa =  _context.getTaxaForKeyword(keyword);
-            
-            if (_selectFromIncluded) {
-                taxa.retainAll(_includedTaxa);
+
+            if (keyword.equals(IntkeyContext.SPECIMEN_KEYWORD)) {
+                _specimenSelectedReturnValue.setValue(true);
+            } else {
+                List<Item> taxa = _context.getTaxaForKeyword(keyword);
+
+                if (_selectFromIncluded) {
+                    taxa.retainAll(_includedTaxa);
+                }
+
+                _selectedTaxa.addAll(taxa);
             }
-            
-            _selectedTaxa.addAll(taxa);
         }
         Collections.sort(_selectedTaxa);
         this.setVisible(false);
@@ -122,12 +144,20 @@ public class TaxonKeywordSelectionDialog extends KeywordSelectionDialog {
 
     @Override
     protected void listBtnPressed() {
+        // List button will only be enabled if a single taxon is selected.
         if (_list.getSelectedValue() != null) {
 
             List<Item> taxa = new ArrayList<Item>();
             String selectedKeyword = (String) _list.getSelectedValue();
+
+            // do nothing if the "specimen" keyword is selected - this is not a
+            // real taxon keyword.
+            if (selectedKeyword.equals(IntkeyContext.SPECIMEN_KEYWORD)) {
+                return;
+            }
+
             taxa.addAll(_context.getTaxaForKeyword(selectedKeyword));
-            
+
             if (_selectFromIncluded) {
                 taxa.retainAll(_includedTaxa);
             }
@@ -135,7 +165,8 @@ public class TaxonKeywordSelectionDialog extends KeywordSelectionDialog {
             if (taxa.isEmpty()) {
                 JOptionPane.showMessageDialog(this, allTaxaInSelectedSetExcludedCaption, title, JOptionPane.ERROR_MESSAGE);
             } else {
-                TaxonSelectionDialog taxonDlg = new TaxonSelectionDialog(this, taxa, _directiveName, selectedKeyword, _context.displayNumbering(), false, _context);
+                TaxonSelectionDialog taxonDlg = new TaxonSelectionDialog(this, taxa, _directiveName, selectedKeyword, _context.displayNumbering(), false, _context, _includeSpecimenAsOption,
+                        _specimenSelectedReturnValue);
                 taxonDlg.setVisible(true);
 
                 List<Item> taxaSelectedInDlg = taxonDlg.getSelectedTaxa();

@@ -25,7 +25,6 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.DiffUtils;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.Specimen;
 import au.org.ala.delta.model.format.AttributeFormatter;
