@@ -415,8 +415,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     private HelpController _helpController;
 
-    private boolean _contextSensitiveHelpModeOn = false;
-
     /**
      * Calls Desktop.getDesktop on a background thread as it's slow to
      * initialise
@@ -909,12 +907,14 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         // If a dataset was supplied on the command line, load it
         if (_datasetInitFileToOpen != null) {
-            executeDirective(new NewDatasetDirective(), _datasetInitFileToOpen);
+            // Need to surround file path in quotes, otherwise it may be broken up into more than 1 token.
+            executeDirective(new NewDatasetDirective(), "\"" + _datasetInitFileToOpen + "\"");
         }
 
         // If a preferences file was supplied on the command line, process it
         if (_startupPreferencesFile != null) {
-            executeDirective(new PreferencesDirective(), _startupPreferencesFile);
+            // Need to surround file path in quotes, otherwise it may be broken up into more than 1 token.
+            executeDirective(new PreferencesDirective(), "\"" + _startupPreferencesFile + "\"");
         }
 
         loadDesktopInBackground();

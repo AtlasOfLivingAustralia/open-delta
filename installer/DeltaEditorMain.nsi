@@ -88,12 +88,14 @@ Section -post SEC0001
     SetOutPath "$INSTDIR"
     WriteUninstaller "$INSTDIR\uninstall.exe"
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
-    SetOutPath $SMPROGRAMS\$StartMenuGroup
+    
+    #SetOutPath $SMPROGRAMS\$StartMenuGroup
+    CreateDirectory "$SMPROGRAMS\$StartMenuGroup"
+    SetOutPath "$INSTDIR"
     
     CreateShortCut "$SMPROGRAMS\$StartMenuGroup\DELTA Editor.lnk" "$INSTDIR\${DELTA-EDITOR-EXEOUTPUTNAME}"
     CreateShortCut "$SMPROGRAMS\$StartMenuGroup\Intkey.lnk" "$INSTDIR\${INTKEY-EXEOUTPUTNAME}"
     
-    SetOutPath "$INSTDIR"
     CreateShortCut "$SMPROGRAMS\$StartMenuGroup\CONFOR.lnk" "cmd.exe" '/k "$INSTDIR\${CONFOR-EXEOUTPUTNAME}"' "$INSTDIR\${CONFOR-EXEOUTPUTNAME}" "" ""
     CreateShortCut "$SMPROGRAMS\$StartMenuGroup\DIST.lnk" "cmd.exe" '/k "$INSTDIR\${DIST-EXEOUTPUTNAME}"' "$INSTDIR\${DIST-EXEOUTPUTNAME}" "" ""
     CreateShortCut "$SMPROGRAMS\$StartMenuGroup\KEY.lnk" "cmd.exe" '/k "$INSTDIR\${KEY-EXEOUTPUTNAME}"' "$INSTDIR\${KEY-EXEOUTPUTNAME}" "" ""

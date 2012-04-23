@@ -15,20 +15,14 @@
 package au.org.ala.delta.editor.ui;
 
 import java.awt.BorderLayout;
-import java.awt.Desktop;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -45,7 +39,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
-import javax.swing.RowSorter;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -77,7 +70,7 @@ import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
 import au.org.ala.delta.editor.ui.util.MessageDialogHelper;
 import au.org.ala.delta.key.Key;
 import au.org.ala.delta.key.KeyContext;
-import au.org.ala.delta.util.Platform;
+import au.org.ala.delta.util.Utils;
 
 /**
  * Allows the user to see and execute CONFOR / DIST / KEY directives files.
@@ -668,62 +661,10 @@ public class ActionSetsDialog extends AbstractDeltaView {
 		@Override
 		public List<File> doInBackground() throws Exception {
 
-			if (!launchScript()) {
-				launchViaClassLoader();
-			}
+		    Utils.launchIntkeyInSeparateProcess(STARTUP_DIR, getInputFile());
 
 			List<File> results = new ArrayList<File>();
 			return results;
-		}
-
-		private boolean launchScript() {
-			String scriptFile = (Platform.isWindows() ? "Intkey.bat" : "Intkey.sh");
-			String fullpath = String.format("%s%s%s", STARTUP_DIR,  File.separator, scriptFile);
-			if (!launchFile(fullpath, getInputFile())) {
-				String path = System.getenv("PATH");
-				String[] elements = path.split("\\Q" + File.pathSeparator + "\\E");
-				for (String element : elements) {
-					fullpath = String.format("%s%s%s", element, File.separator, scriptFile);
-					if (launchFile(fullpath, getInputFile())) {
-						return true;
-					}
-				}
-				return false;
-			}
-			return true;
-		}
-
-		private boolean launchFile(String path, String args) {
-			File f = new File(path);
-			if (f.exists()) {
-				try {
-					Runtime.getRuntime().exec(path + " " + args);
-					return true;
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-			}
-			return false;
-		}
-
-		private void launchViaClassLoader() throws Exception {
-			// Gah.... this is a horrible work around for the fact that
-			// the swing application framework relies on a static
-			// Application instance so we can't have the Editor and
-			// Intkey playing together nicely in the same JVM.
-			// It doesn't really work properly anyway, the swing application
-			// framework generates exceptions during loading and saving
-			// state due to failing instanceof checks.
-			String classPath = System.getProperty("java.class.path");
-			String[] path = classPath.split(File.pathSeparator);
-			List<URL> urls = new ArrayList<URL>();
-			for (String pathEntry : path) {
-				urls.add(new File(pathEntry).toURI().toURL());
-			}
-			ClassLoader intkeyLoader = new URLClassLoader(urls.toArray(new URL[0]), ClassLoader.getSystemClassLoader().getParent());
-			Class<?> intkey = intkeyLoader.loadClass("au.org.ala.delta.intkey.Intkey");
-			Method main = intkey.getMethod("main", String[].class);
-			main.invoke(null, (Object) new String[] { getInputFile() });
 		}
 
 		@Override

@@ -34,6 +34,7 @@ import au.org.ala.delta.intkey.Intkey;
 import au.org.ala.delta.ui.help.HelpController;
 import au.org.ala.delta.ui.image.AudioPlayer;
 import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
+import au.org.ala.delta.util.Utils;
 
 public class UIUtils {
 
@@ -107,7 +108,8 @@ public class UIUtils {
                 desktop.browse(fileURL.toURI());
             }
         } else if (fileName.toLowerCase().endsWith(".ink")) {
-            System.out.println(fileURL);
+            File file = convertURLToFile(fileURL, 60000);
+            Utils.launchIntkeyInSeparateProcess(System.getProperty("user.dir"), file.getAbsolutePath());
         } else if (fileName.toLowerCase().endsWith(".wav")) {
             AudioPlayer.playClip(fileURL);
         } else {
