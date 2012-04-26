@@ -641,7 +641,7 @@ public class ActionSetsDialog extends AbstractDeltaView {
 		public List<File> doInBackground() throws Exception {
 			File fileOnFileSystem = new File(getInputFile());
 			PrintStream out = new PrintStream(new OutputStreamAdapter(_dialog));
-			KeyContext context = new KeyContext(fileOnFileSystem.getParentFile(), out, out);
+			KeyContext context = new KeyContext(fileOnFileSystem, out, out);
 			Key key = new Key(context);
 			key.calculateKey();
 
