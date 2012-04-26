@@ -911,6 +911,7 @@ public class VODirFileDesc extends VOAnyDesc implements WindowsConstants {
 		            if (dir.args.size() == 0) {
 		                dir.setDirType(0);
 		            }
+		            break;
 		            
 		         case DirectiveArgType.DIRARG_CHARGROUPS:
 		         case DirectiveArgType.DIRARG_ITEMCHARLIST:
