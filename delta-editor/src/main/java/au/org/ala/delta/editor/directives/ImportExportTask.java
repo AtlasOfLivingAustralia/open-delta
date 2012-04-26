@@ -92,7 +92,11 @@ public abstract class ImportExportTask extends Task<Void, ImportExportStatus> im
 	@Override
 	public void handleDirectiveProcessingException(ImportContext context, AbstractDirective<ImportContext> d,
 			Exception ex) {
-		error(ex.getMessage());
+		String message = ex.getMessage();
+		if (message == null) {
+			message = ex.toString();
+		}
+		error(message);
 	}
 	
 	@Override

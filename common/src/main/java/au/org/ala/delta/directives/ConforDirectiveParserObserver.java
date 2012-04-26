@@ -17,8 +17,6 @@ package au.org.ala.delta.directives;
 import java.io.File;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.validation.DirectiveError;
@@ -261,7 +259,6 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 	private void handleErrors() throws DirectiveException {
 		List<DirectiveError> errors = _context.getErrors();
 		ParsingContext pc = _context.getCurrentParsingContext();
-		OutputFileManager manager = _context.getOutputFileSelector();
 		for (DirectiveError error : errors) {
 			writeError(_context, error, pc);
 			if (error.isError()) {

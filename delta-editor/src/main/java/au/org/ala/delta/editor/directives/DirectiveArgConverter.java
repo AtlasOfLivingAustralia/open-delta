@@ -36,7 +36,6 @@ import au.org.ala.delta.editor.slotfile.VOItemDesc;
  * AbstractDirective.
  */
 public class DirectiveArgConverter {
-
 	
 	private ItemDescriptionConverter _itemDescriptionConverter = new ItemDescriptionConverter();
 	private CharacterNumberConverter _characterNumberConverter = new CharacterNumberConverter();
@@ -185,6 +184,9 @@ public class DirectiveArgConverter {
 	class ItemNumberConverter implements IdConverter {
 		@Override
 		public int convertToSlotFileId(Object id) {
+			if (id == null) {
+				return 0;
+			}
 			return _vop.getDeltaMaster().uniIdFromItemNo((Integer)id);
 		}
 		@Override
