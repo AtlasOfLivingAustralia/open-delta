@@ -50,7 +50,7 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 		_context.setDirectiveParserObserver(this);
 		_factory = new DataSetTranslatorFactory();
 		_helper = new DataSetHelper(context.getDataSet());
-		_validator = new IncompatibleDirectivesValidator();
+		_validator = new IncompatibleDirectivesValidator(context);
 	}
 
 	@Override

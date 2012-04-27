@@ -50,10 +50,16 @@ public class IncompatibleDirectivesValidator {
 	class IncompatibleDirectives {
 		boolean _encountered;
 		Set<String> _incompatibleDirectives;
+		boolean _warning;
 		
 		public IncompatibleDirectives(Set<String> directives) {
+			this(directives, false);
+		}
+		
+		public IncompatibleDirectives(Set<String> directives, boolean warning) {
 			_incompatibleDirectives = directives;
 			_encountered = false;
+			_warning = warning;
 		}
 	}
 	
@@ -63,8 +69,11 @@ public class IncompatibleDirectivesValidator {
 	
 	private Set<String> _encounteredDirectivesExceptions;
 	
-	public IncompatibleDirectivesValidator() {
+	private DeltaContext _context;
+	
+	public IncompatibleDirectivesValidator(DeltaContext context) {
 		
+		_context = context;
 		_incompatibleDirectives = new HashMap<String, IncompatibleDirectives>();
 		_encounteredDirectives = new HashSet<String>();
 		
@@ -72,7 +81,7 @@ public class IncompatibleDirectivesValidator {
 		
 		add(IncludeCharacters.CONTROL_WORDS, ExcludeCharacters.CONTROL_WORDS);
 		
-		add(ApplicableCharacters.CONTROL_WORDS, InapplicableCharacters.CONTROL_WORDS, DependentCharacters.CONTROL_WORDS);
+		add(ApplicableCharacters.CONTROL_WORDS, InapplicableCharacters.CONTROL_WORDS, DependentCharacters.CONTROL_WORDS, true);
 	
 		add(CharacterWeights.CONTROL_WORDS, CharacterReliabilities.CONTROL_WORDS);
 		
@@ -93,21 +102,23 @@ public class IncompatibleDirectivesValidator {
 		addToIncompatibleDirectives(incompatible);
 	}
 	
-	private void add(String[] directive1, String[] directive2, String[] directive3) {
+	private void add(String[] directive1, String[] directive2, String[] directive3, boolean warning) {
 		Set<String> incompatible = new HashSet<String>();
 		incompatible.add(join(directive1));
 		incompatible.add(join(directive2));
 		incompatible.add(join(directive3));
-		addToIncompatibleDirectives(incompatible);
+		addToIncompatibleDirectives(incompatible, warning);
 	}
 	
 	private void addToIncompatibleDirectives(Set<String> directives) {
-		IncompatibleDirectives incompatibleDirectives = new IncompatibleDirectives(directives);
+		addToIncompatibleDirectives(directives, false);
+	}
+	private void addToIncompatibleDirectives(Set<String> directives, boolean warning) {
+		IncompatibleDirectives incompatibleDirectives = new IncompatibleDirectives(directives, warning);
 		for (String directive : directives) {
 			_incompatibleDirectives.put(directive, incompatibleDirectives);
 		}
 	}
-	
 	
 	public void validate(AbstractDirective<DeltaContext> directive) throws DirectiveException {
 		String name = join(directive.getControlWords());
@@ -120,7 +131,11 @@ public class IncompatibleDirectivesValidator {
 		IncompatibleDirectives incompatibleDirectives = _incompatibleDirectives.get(name);
 		if (incompatibleDirectives != null) {
 			if (incompatibleDirectives._encountered) {
-				throw DirectiveError.asException(DirectiveError.Error.EQUIVALENT_DIRECTIVE_USED, 0);
+				if (incompatibleDirectives._warning) {
+					_context.addError(new DirectiveError(DirectiveError.Warning.EQUIVALENT_DIRECTIVE_USED, 0));
+				} else {
+					throw DirectiveError.asException(DirectiveError.Error.EQUIVALENT_DIRECTIVE_USED, 0);
+				}
 			}
 			incompatibleDirectives._encountered = true;
 		}

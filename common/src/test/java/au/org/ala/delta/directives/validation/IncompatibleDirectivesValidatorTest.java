@@ -19,6 +19,7 @@ import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 
+import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.ExcludeCharacters;
 import au.org.ala.delta.directives.ExcludeItems;
 import au.org.ala.delta.directives.IncludeCharacters;
@@ -35,7 +36,7 @@ public class IncompatibleDirectivesValidatorTest extends TestCase {
 	
 	@Before
 	public void setUp() {
-		_validator = new IncompatibleDirectivesValidator();
+		_validator = new IncompatibleDirectivesValidator(new DeltaContext());
 	}
 	@Test
 	public void testDuplicateDirectives() {

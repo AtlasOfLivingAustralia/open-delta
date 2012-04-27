@@ -54,7 +54,7 @@ public class DirectiveError {
 	};
 	
 	public enum Warning {
-		TAXON_NAMES_DUPLICATED_OR_UNMATCHED(103), FIRST_ITEM_CANNOT_BE_VARIANT(158);
+		EQUIVALENT_DIRECTIVE_USED(3), TAXON_NAMES_DUPLICATED_OR_UNMATCHED(103), FIRST_ITEM_CANNOT_BE_VARIANT(158);
 		
 		private int _errorNumber;
 		private Warning(int number) {
