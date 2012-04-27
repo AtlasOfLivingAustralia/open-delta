@@ -50,11 +50,11 @@ public class ExportViewModel extends ImportExportViewModel {
 					dirFile.getShortFileName(), dirFile.getType());
 			info.setDirectiveFile(dirFile);
 
-			if (dirFile.isSpecsFile()) {
+			if (dirFile.isSpecsFile() && getSpecsFile() == null) {
 				setSpecsFile(info);
-			} else if (dirFile.isItemsFile()) {
+			} else if (dirFile.isItemsFile() && getItemsFile() == null) {
 				setItemsFile(info);
-			} else if (dirFile.isCharsFile()) {
+			} else if (dirFile.isCharsFile() && getCharactersFile() == null) {
 				setCharactersFile(info);
 			} else {
 				files.add(info);
