@@ -359,7 +359,17 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 						if (cacheCharTextInfo) {
 							_charDescript = someInfo;
 						}
-						return (VOCharTextDesc) getVOP().getDescFromId(someInfo.charDesc);
+						VOAnyDesc desc = getVOP().getDescFromId(someInfo.charDesc);
+						// This simulates the behaviour of a c++ dynamic cast.
+						// There are datasets (presumably old) that have a 
+						// VOCharBaseDesc value in the descriptor.
+						if (desc instanceof VOCharTextDesc) {
+							return (VOCharTextDesc)desc;
+						}
+						else {
+							System.err.println("CharTextInfo contains a reference to a desc not of type VOCharTextDesc: "+getUniId());
+							return null;
+						}
 					}
 				}
 			}
