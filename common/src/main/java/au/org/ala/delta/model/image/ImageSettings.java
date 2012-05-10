@@ -16,7 +16,6 @@ package au.org.ala.delta.model.image;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Toolkit;
 import java.util.ArrayList;
 
 import au.org.ala.delta.model.ResourceSettings;
@@ -29,6 +28,8 @@ import au.org.ala.delta.util.Utils;
  */
 public class ImageSettings extends ResourceSettings {
 
+	public static final int DEFAULT_FONT_SIZE = 10;
+	
     private String _datasetName;
 
     public enum ButtonAlignment {
@@ -135,9 +136,9 @@ public class ImageSettings extends ResourceSettings {
         _resourceLocations = new ArrayList<String>();
         _resourceLocations.add("images");
 
-        _defaultFontInfo = new FontInfo(10, 4, false, 2, 2, 0, "MS Sans Serif");
-        _defaultButtonFont = new FontInfo(10, 4, false, 2, 2, 0, "MS Sans Serif");
-        _defaultFeatureFontInfo = new FontInfo(10, 7, false, 2, 2, 0, "MS Sans Serif");
+        _defaultFontInfo = new FontInfo(DEFAULT_FONT_SIZE, 4, false, 2, 2, 0, "MS Sans Serif");
+        _defaultButtonFont = new FontInfo(DEFAULT_FONT_SIZE, 4, false, 2, 2, 0, "MS Sans Serif");
+        _defaultFeatureFontInfo = new FontInfo(DEFAULT_FONT_SIZE, 7, false, 2, 2, 0, "MS Sans Serif");
     }
 
     public ImageSettings(String dataSetPath) {
@@ -314,13 +315,14 @@ public class ImageSettings extends ResourceSettings {
     }
 
     private Font fontInfoToFont(FontInfo info) {
-        if (info.size == 0) {
-            return null;
-        }
+        int fontSize = info.size;
+//    	if (fontSize == 0) {
+//            fontSize = DEFAULT_FONT_SIZE;
+//        }
         int style = info.italic ? Font.ITALIC : 0;
         style = style | (info.weight >= 5 ? Font.BOLD : 0);
 
-        int fontSize = Utils.adjustFontSizeForDPI(info.size);
+        fontSize = Utils.adjustFontSizeForDPI(fontSize);
 
         return new Font(info.name, style, fontSize);
     }
