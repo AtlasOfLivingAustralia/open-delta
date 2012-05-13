@@ -316,9 +316,9 @@ public class ImageSettings extends ResourceSettings {
 
     private Font fontInfoToFont(FontInfo info) {
         int fontSize = info.size;
-//    	if (fontSize == 0) {
-//            fontSize = DEFAULT_FONT_SIZE;
-//        }
+    	if (fontSize == 0) {
+            fontSize = DEFAULT_FONT_SIZE;
+        }
         int style = info.italic ? Font.ITALIC : 0;
         style = style | (info.weight >= 5 ? Font.BOLD : 0);
 
