@@ -520,6 +520,10 @@ public class TaxonInformationDialog extends IntkeyDialog {
         public void execute() {
             URL linkFileURL = _infoSettings.findFileOnResourcePath(_linkFileName, false);
 
+            if (linkFileURL == null) {
+                _context.getUI().displayErrorMessage("Could not locate file " + _linkFileName);
+            }
+            
             try {
                 _context.getUI().displayFile(linkFileURL, _description);
             } catch (Exception ex) {
