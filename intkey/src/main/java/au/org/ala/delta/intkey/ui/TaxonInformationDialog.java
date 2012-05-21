@@ -35,6 +35,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.MouseInputAdapter;
@@ -160,7 +161,7 @@ public class TaxonInformationDialog extends IntkeyDialog {
         _btnMultipleImages.setAction(actionMap.get("displayMultipleImages"));
         _btnMultipleImages.setEnabled(!context.displayContinuous() && imageDisplayEnabled);
         _btnPanel.add(_btnMultipleImages);
-        
+
         _btnWebSearch = new JButton();
         _btnWebSearch.setAction(actionMap.get("webSearch"));
         _btnWebSearch.setEnabled(true);
@@ -274,7 +275,7 @@ public class TaxonInformationDialog extends IntkeyDialog {
                 _taxaWithImages.add(taxon);
             }
         }
-        
+
         if (totalNumberImages < 2) {
             _btnMultipleImages.setEnabled(false);
         }
@@ -413,23 +414,32 @@ public class TaxonInformationDialog extends IntkeyDialog {
                 displaySelectedTaxonImage(idx);
             }
         }
+
+        // Tile the all spawned dialogs once they have finished displaying themselves.
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                IntKeyDialogController.tileWindows();
+            }
+        });
     }
 
     @Action
     public void displayMultipleImages() {
         List<String> imageSubjects = _context.getImageSubjects();
-        MultipleImagesDialog dlg = new MultipleImagesDialog(this, true, getSelectedTaxon(), _taxa, imageSubjects, _imageSettings, _context.displayContinuous(), _context.displayScaled(), _context.getUI());
+        MultipleImagesDialog dlg = new MultipleImagesDialog(this, true, getSelectedTaxon(), _taxa, imageSubjects, _imageSettings, _context.displayContinuous(), _context.displayScaled(),
+                _context.getUI());
         ((SingleFrameApplication) Application.getInstance()).show(dlg);
     }
 
     @Action
     public void webSearch() {
-    	WebSearchDialog websearch = new WebSearchDialog(this);    	
-    	websearch.setModal(true);
-    	Item selectedTaxon = _taxa.get(_selectedIndex);
-    	ItemFormatter formatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false, true);
-    	websearch.setSearchTerm(formatter.formatItemDescription(selectedTaxon));
-    	((SingleFrameApplication) Application.getInstance()).show(websearch);
+        WebSearchDialog websearch = new WebSearchDialog(this);
+        websearch.setModal(true);
+        Item selectedTaxon = _taxa.get(_selectedIndex);
+        ItemFormatter formatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false, true);
+        websearch.setSearchTerm(formatter.formatItemDescription(selectedTaxon));
+        ((SingleFrameApplication) Application.getInstance()).show(websearch);
     }
 
     @Action
@@ -523,7 +533,7 @@ public class TaxonInformationDialog extends IntkeyDialog {
             if (linkFileURL == null) {
                 _context.getUI().displayErrorMessage("Could not locate file " + _linkFileName);
             }
-            
+
             try {
                 _context.getUI().displayFile(linkFileURL, _description);
             } catch (Exception ex) {
