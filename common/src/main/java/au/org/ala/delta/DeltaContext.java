@@ -142,8 +142,8 @@ public class DeltaContext extends AbstractDeltaContext {
     private DirectiveParserObserver _observer;
 
     private Map<String, String> _indexHeadings = new HashMap<String, String>();
-    private PrintStream _defaultOut;
-    private PrintStream _defaultErr;
+    protected PrintStream _defaultOut;
+    protected PrintStream _defaultErr;
 
     public DeltaContext() {
         this(new DefaultDataSetFactory().createDataSet(""));
