@@ -4,9 +4,6 @@ import java.io.File;
 import java.io.PrintStream;
 import java.util.List;
 
-import org.apache.commons.io.FilenameUtils;
-
-import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.io.OutputFileSelector;
 import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.translation.PrintFile;
@@ -17,7 +14,6 @@ public class KeyOutputFileManager extends OutputFileSelector {
     private static final String RTF_FILE_EXTENSION = ".rtf";
     private static final String HTML_FILE_EXTENSION = ".html";
     private static final String DEFAULT_OUTPUT_FILE_EXTENSION = ".prt";
-    private static final int DEFAULT_OUTPUT_FILE_WIDTH = 80;
 
     private String _defaultBaseFileName;
 
@@ -31,8 +27,8 @@ public class KeyOutputFileManager extends OutputFileSelector {
     // true if the OUTPUT FORMAT HTML has been used.
     private boolean _typesetOutputHtml;
 
-    public KeyOutputFileManager(MutableDeltaDataSet dataSet) {
-        super(dataSet);
+    public KeyOutputFileManager(MutableDeltaDataSet dataSet, PrintStream out, PrintStream err) {
+        super(dataSet, out, err);
         _defaultBaseFileName = "key"; // Set a default here to ensure it is
                                       // never null.
         // default base file name should always be set in the constructor for
@@ -125,8 +121,16 @@ public class KeyOutputFileManager extends OutputFileSelector {
         if (_keyListingFile != null) {
             _keyListingFile.outputLine(line);
         }
-        // Output message to stdout
-        System.out.println(line);
+        // Output message to the default output stream
+        _defaultOut.println(line);
+    }
+    
+    public PrintStream getDefaultOutputStream() {
+        return _defaultOut;
+    }
+    
+    public PrintStream getDefaultErrorStream() {
+        return _defaultErr;
     }
 
     public void setTypesetOutputHtml(boolean typesetOutputHtml) {

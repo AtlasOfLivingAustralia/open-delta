@@ -223,7 +223,7 @@ public class KeyContext extends DeltaContext {
 
     @Override
     protected void createOutputFileManager() {
-        _outputFileSelector = new KeyOutputFileManager(getDataSet());
+        _outputFileSelector = new KeyOutputFileManager(getDataSet(), _defaultOut, _defaultErr);
     }
 
     public KeyOutputFileManager getOutputFileManager() {

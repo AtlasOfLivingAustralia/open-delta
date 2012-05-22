@@ -18,6 +18,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -84,6 +85,8 @@ public class Key implements DirectiveParserObserver {
     private CharacterFormatter _charFormatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false);
     private ItemFormatter _itemFormatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false, false);
 
+    private PrintStream _defaultOutputStream;
+    
     /**
      * @param args
      *            specifies the name of the input file to use.
@@ -144,10 +147,12 @@ public class Key implements DirectiveParserObserver {
 
     public Key(File directivesFile) {
         _context = new KeyContext(directivesFile);
+        _defaultOutputStream = _context.getOutputFileManager().getDefaultOutputStream();
     }
 
     public Key(KeyContext context) {
         _context = context;
+        _defaultOutputStream = _context.getOutputFileManager().getDefaultOutputStream();
     }
 
     public List<File> getOutputFiles() {
@@ -203,7 +208,7 @@ public class Key implements DirectiveParserObserver {
                     }
 
                     doCalculateKey(key, dataset, includedCharacters, includedItems, specimen, null, null);
-                    System.out.println("Key generation completed");
+                    _defaultOutputStream.println("Key generation completed");
 
                     Map<Integer, TypeSettingMark> typesettingMarksMap = _context.getTypeSettingMarks();
                     boolean typsettingMarksSpecified = !(typesettingMarksMap == null || typesettingMarksMap.isEmpty());
@@ -218,9 +223,10 @@ public class Key implements DirectiveParserObserver {
 
             _nestedObserver.finishedProcessing();
         } catch (Exception ex) {
-            System.out.println(MessageFormat.format("FATAL ERROR: {0}", ex.getMessage()));
-            System.out.println("Execution terminated");
-            System.out.println("ABNORMAL TERMINATION");
+            ex.printStackTrace();
+            _defaultOutputStream.println(MessageFormat.format("FATAL ERROR: {0}", ex.getMessage().toString()));
+            _defaultOutputStream.println("Execution terminated");
+            _defaultOutputStream.println("ABNORMAL TERMINATION");
         }
     }
 
@@ -304,7 +310,7 @@ public class Key implements DirectiveParserObserver {
             if (presetCharacterNumber > 0) {
                 Character presetCharacter = _context.getDataSet().getCharacter(presetCharacterNumber);
                 if (checkPresetCharacter(presetCharacter, specimen, includedItems)) {
-                    System.out.println(MessageFormat.format("Using preset character {0},{1}:{2}", presetCharacterNumber, currentColumn, currentGroup));
+                    _defaultOutputStream.println(MessageFormat.format("Using preset character {0},{1}:{2}", presetCharacterNumber, currentColumn, currentGroup));
                     bestCharacter = (MultiStateCharacter) presetCharacter;
                 } else {
                     throw new RuntimeException(MessageFormat.format("Character {0} is not suitable for use at column {1} group {2}", presetCharacterNumber, currentColumn, currentGroup));
@@ -474,10 +480,6 @@ public class Key implements DirectiveParserObserver {
                 }
 
                 if (compareStateDistributions(mainCharacterStateDistributions, confirmatoryCharacterStateDistributions)) {
-                    // System.out.println(MessageFormat.format("Confirmatory character {0}:{1}",
-                    // mainCharacter.getCharacterId(),
-                    // multiStateChar.getCharacterId()));
-
                     Map<Integer, Integer> mainToConfirmatoryStateMap = new HashMap<Integer, Integer>();
 
                     for (int i = 0; i < mainCharacterStateDistributions.size(); i++) {
@@ -555,17 +557,17 @@ public class Key implements DirectiveParserObserver {
     private void generateKeyOutput(TabularKey tabularKey, List<Character> includedCharacters, List<Item> includedItems, boolean outputTabularKey, boolean outputBracketedKey,
             boolean typesettingMarksSpecified) {
         PrintFile printFile = _context.getOutputFileManager().getOutputFile();
-        PrintFile typesetFile = _context.getOutputFileManager().getTypesettingFile();
 
         if (outputTabularKey) {
             generateKeyHeader(printFile, tabularKey, includedCharacters, includedItems, outputTabularKey, outputBracketedKey);
             printTabularKey(tabularKey, printFile);
-            System.out.println("Tabular key completed");
+            _defaultOutputStream.println("Tabular key completed");
         }
 
         if (outputBracketedKey) {
             BracketedKey bracketedKey = KeyUtils.convertTabularKeyToBracketedKey(tabularKey);
             if (typesettingMarksSpecified) {
+                PrintFile typesetFile = _context.getOutputFileManager().getTypesettingFile();
                 generateTypesetBracketedKey(bracketedKey, includedCharacters, includedItems, typesetFile, _context.getAddCharacterNumbers(), _context.getOutputHtml(), tabularKey
                         .getCharactersUsedInKey().size(), tabularKey.getItemsUsedInKey().size(), tabularKey.getAverageLength(), tabularKey.getAverageCost(), tabularKey.getMaximumLength(),
                         tabularKey.getMaximumCost());
@@ -577,7 +579,7 @@ public class Key implements DirectiveParserObserver {
                 generateKeyHeader(printFile, tabularKey, includedCharacters, includedItems, outputTabularKey, outputBracketedKey);
                 printBracketedKey(bracketedKey, _context.getAddCharacterNumbers(), printFile);
             }
-            System.out.println("Bracketed key completed");
+            _defaultOutputStream.println("Bracketed key completed");
         }
     }
 
@@ -667,7 +669,7 @@ public class Key implements DirectiveParserObserver {
 
         PrintFile listingPrintFile = outputFileManager.getKeyListingFile();
         if (listingPrintFile == null) {
-            listingPrintFile = new PrintFile(System.out, outputWidth);
+            listingPrintFile = new PrintFile(outputFileManager.getDefaultOutputStream(), outputWidth);
         } else {
             // Only append the credits if we are not outputting to stdout.
             // The credits are always output to stdout when the application is
