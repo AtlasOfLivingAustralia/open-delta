@@ -2809,6 +2809,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             _context.newDataSetFile(new File(fileName));
         } catch (Exception ex) {
             displayErrorMessage(ex.getMessage());
+            removeFileFromMRU(fileName);
         }
     }
 
