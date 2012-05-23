@@ -1298,6 +1298,30 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         mnuItCloseAll.setAction(actionMap.get("mnuItCloseAllWindows"));
         mnuItCloseAll.setEnabled(true);
         mnuWindow.add(mnuItCloseAll);
+        
+        mnuWindow.addSeparator();
+        
+        JMenu mnuLF = new JMenu();
+        mnuLF.setName("mnuLF");
+        mnuWindow.add(mnuLF);
+
+        JMenuItem mnuItMetalLF = new JMenuItem();
+        mnuItMetalLF.setAction(actionMap.get("metalLookAndFeel"));
+        mnuLF.add(mnuItMetalLF);
+
+        JMenuItem mnuItWindowsLF = new JMenuItem();
+        mnuItWindowsLF.setAction(actionMap.get("systemLookAndFeel"));
+        mnuLF.add(mnuItWindowsLF);
+        
+        try {
+            // Nimbus L&F was added in update java 6 update 10.
+            Class.forName("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel").newInstance();
+            JMenuItem mnuItNimbusLF = new JMenuItem();
+            mnuItNimbusLF.setAction(actionMap.get("nimbusLookAndFeel"));
+            mnuLF.add(mnuItNimbusLF);
+        } catch (Exception e) {
+            // The Nimbus L&F is not available, no matter.
+        }
 
         return mnuWindow;
     }
@@ -3014,6 +3038,21 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         r.height = r.height - _pnlAvailableCharactersHeader.getHeight();
 
         return r;
+    }
+    
+    @Action
+    public void systemLookAndFeel() {
+        au.org.ala.delta.ui.util.UIUtils.systemLookAndFeel(getMainFrame());
+    }
+
+    @Action
+    public void metalLookAndFeel() {
+        au.org.ala.delta.ui.util.UIUtils.metalLookAndFeel(getMainFrame());
+    }
+
+    @Action
+    public void nimbusLookAndFeel() {
+        au.org.ala.delta.ui.util.UIUtils.nimbusLookAndFeel(getMainFrame());
     }
 
 }

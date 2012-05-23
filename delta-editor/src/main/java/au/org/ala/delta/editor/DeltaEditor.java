@@ -394,37 +394,17 @@ public class DeltaEditor extends InternalFrameApplication implements PreferenceC
 
 	@Action
 	public void systemLookAndFeel() {
-		try {
-			Class<?> c = Class.forName(UIManager.getSystemLookAndFeelClassName());
-			LookAndFeel sysLaf = (LookAndFeel) c.newInstance();
-			changeLookAndFeel(sysLaf);
-		} catch (Exception e) {
-		}
+	    UIUtils.systemLookAndFeel(getMainFrame());
 	}
 
 	@Action
 	public void metalLookAndFeel() {
-		changeLookAndFeel(new MetalLookAndFeel());
+	    UIUtils.metalLookAndFeel(getMainFrame());
 	}
 
 	@Action
 	public void nimbusLookAndFeel() {
-		// Nimbus L&F was added in update java 6 update 10.
-		LookAndFeel nimbusLaF;
-		try {
-			nimbusLaF = (LookAndFeel) Class.forName("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel").newInstance();
-			changeLookAndFeel(nimbusLaF);
-		} catch (Exception e) {
-		}
-	}
-
-	private void changeLookAndFeel(LookAndFeel laf) {
-		try {
-			UIManager.setLookAndFeel(laf);
-			SwingUtilities.updateComponentTreeUI(getMainFrame());
-		} catch (Exception ex) {
-			System.err.println(ex);
-		}
+	    UIUtils.nimbusLookAndFeel(getMainFrame());
 	}
 
 	/**

@@ -26,8 +26,13 @@ import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JInternalFrame.JDesktopIcon;
+import javax.swing.LookAndFeel;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.MultiStateCharacter;
@@ -225,5 +230,37 @@ public class UIUtils {
 			x = bounds.x;
 		}
 	}
+	
+	    public static void systemLookAndFeel(JFrame appFrame) {
+	        try {
+	            Class<?> c = Class.forName(UIManager.getSystemLookAndFeelClassName());
+	            LookAndFeel sysLaf = (LookAndFeel) c.newInstance();
+	            changeLookAndFeel(sysLaf, appFrame);
+	        } catch (Exception e) {
+	        }
+	    }
+
+	    public static void metalLookAndFeel(JFrame appFrame) {
+	        changeLookAndFeel(new MetalLookAndFeel(), appFrame);
+	    }
+
+	    public static void nimbusLookAndFeel(JFrame appFrame) {
+	        // Nimbus L&F was added in update java 6 update 10.
+	        LookAndFeel nimbusLaF;
+	        try {
+	            nimbusLaF = (LookAndFeel) Class.forName("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel").newInstance();
+	            changeLookAndFeel(nimbusLaF, appFrame);
+	        } catch (Exception e) {
+	        }
+	    }
+
+	    private static void changeLookAndFeel(LookAndFeel laf, JFrame appFrame) {
+	        try {
+	            UIManager.setLookAndFeel(laf);
+	            SwingUtilities.updateComponentTreeUI(appFrame);
+	        } catch (Exception ex) {
+	            System.err.println(ex);
+	        }
+	    }
 
 }
