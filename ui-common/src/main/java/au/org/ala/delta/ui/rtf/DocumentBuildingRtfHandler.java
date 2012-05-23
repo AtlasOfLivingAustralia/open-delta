@@ -62,7 +62,7 @@ public class DocumentBuildingRtfHandler extends RTFHandlerAdapter {
 
 	private char _previousChar;
 
-	private List<String> _fontFamilyNames = new ArrayList<String>();
+	private Map<Integer, String> _fontFamilyNames = new HashMap<Integer, String>();
 
 	private List<Color> _colors = new ArrayList<Color>();
 
@@ -283,7 +283,7 @@ public class DocumentBuildingRtfHandler extends RTFHandlerAdapter {
 
 			@Override
 			public void onFont(RTFFontInfo font) {
-				_fontFamilyNames.add(font.getIndex(), font.getName());
+				_fontFamilyNames.put(font.getIndex(), font.getName());
 			}
 		});
 	}

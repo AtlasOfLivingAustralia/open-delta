@@ -2193,7 +2193,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         try {
             UIUtils.displayFileFromURL(fileURL, description, _desktopWorker.get());
         } catch (Exception ex) {
-            displayErrorMessage("Could not display file " + fileURL.toString());
+            ex.printStackTrace();
+            displayErrorMessage("Error displaying file " + fileURL.toString());
         }
     }
 
