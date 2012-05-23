@@ -60,7 +60,7 @@ public class MultipleImagesDialog extends IntkeyDialog {
 
     @Resource
     String selectBySubjectCaption;
-    
+
     @Resource
     String noImagesForSpecifiedTaxaMsg;
 
@@ -248,7 +248,7 @@ public class MultipleImagesDialog extends IntkeyDialog {
 
             imagesToDisplay.removeAll(imagesToRemove);
         }
-        
+
         if (_chckbxCloseOpenWindows.isSelected()) {
             IntKeyDialogController.closeWindows();
         }
@@ -261,7 +261,7 @@ public class MultipleImagesDialog extends IntkeyDialog {
             }
             IntKeyDialogController.tileWindows();
         }
-        
+
         this.setVisible(false);
     }
 
@@ -269,10 +269,15 @@ public class MultipleImagesDialog extends IntkeyDialog {
         List<Item> taxonInList = new ArrayList<Item>();
         taxonInList.add(taxon);
 
-        TaxonImageDialog dlg = new TaxonImageDialog(UIUtils.getMainFrame(), _imageSettings, taxonInList, false, !_displayContinuous, !_displayScaled);
-        dlg.displayImagesForTaxon(taxon);
-        dlg.showImage(taxon.getImages().indexOf(img));
-        ((SingleFrameApplication) Application.getInstance()).show(dlg);
+        try {
+            TaxonImageDialog dlg = new TaxonImageDialog(UIUtils.getMainFrame(), _imageSettings, taxonInList, false, !_displayContinuous, !_displayScaled);
+            dlg.displayImagesForTaxon(taxon);
+            dlg.showImage(taxon.getImages().indexOf(img));
+            ((SingleFrameApplication) Application.getInstance()).show(dlg);
+        } catch (IllegalArgumentException ex) {
+            // Display error message if unable to display 
+            _mainUI.displayErrorMessage(UIUtils.getResourceString("CouldNotDisplayImage.error", ex.getMessage()));
+        }
     }
 
     @Action

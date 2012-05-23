@@ -415,7 +415,8 @@ public class TaxonInformationDialog extends IntkeyDialog {
             }
         }
 
-        // Tile the all spawned dialogs once they have finished displaying themselves.
+        // Tile the all spawned dialogs once they have finished displaying
+        // themselves.
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -458,11 +459,16 @@ public class TaxonInformationDialog extends IntkeyDialog {
     }
 
     private void displaySelectedTaxonImage(int imageIndex) {
-        Item selectedTaxon = getSelectedTaxon();
-        TaxonImageDialog dlg = new TaxonImageDialog(UIUtils.getMainFrame(), _imageSettings, _taxaWithImages, false, !_context.displayContinuous(), _context.displayScaled());
-        dlg.displayImagesForTaxon(selectedTaxon);
-        dlg.showImage(imageIndex);
-        ((SingleFrameApplication) Application.getInstance()).show(dlg);
+        try {
+            Item selectedTaxon = getSelectedTaxon();
+            TaxonImageDialog dlg = new TaxonImageDialog(UIUtils.getMainFrame(), _imageSettings, _taxaWithImages, false, !_context.displayContinuous(), _context.displayScaled());
+            dlg.displayImagesForTaxon(selectedTaxon);
+            dlg.showImage(imageIndex);
+            ((SingleFrameApplication) Application.getInstance()).show(dlg);
+        } catch (IllegalArgumentException ex) {
+            // Display error message if unable to display 
+            _context.getUI().displayErrorMessage(UIUtils.getResourceString("CouldNotDisplayImage.error", ex.getMessage()));
+        }
     }
 
     /**
@@ -481,8 +487,9 @@ public class TaxonInformationDialog extends IntkeyDialog {
                 displaySelectedTaxonImage(i);
             }
         }
-        
-        // Tile the all spawned dialogs once they have finished displaying themselves.
+
+        // Tile the all spawned dialogs once they have finished displaying
+        // themselves.
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -515,8 +522,9 @@ public class TaxonInformationDialog extends IntkeyDialog {
                 cmd.execute();
             }
         }
-        
-        // Tile the all spawned dialogs once they have finished displaying themselves.
+
+        // Tile the all spawned dialogs once they have finished displaying
+        // themselves.
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {

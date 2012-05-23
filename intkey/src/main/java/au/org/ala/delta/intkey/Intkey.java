@@ -908,13 +908,15 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         // If a dataset was supplied on the command line, load it
         if (_datasetInitFileToOpen != null) {
-            // Need to surround file path in quotes, otherwise it may be broken up into more than 1 token.
+            // Need to surround file path in quotes, otherwise it may be broken
+            // up into more than 1 token.
             executeDirective(new NewDatasetDirective(), "\"" + _datasetInitFileToOpen + "\"");
         }
 
         // If a preferences file was supplied on the command line, process it
         if (_startupPreferencesFile != null) {
-            // Need to surround file path in quotes, otherwise it may be broken up into more than 1 token.
+            // Need to surround file path in quotes, otherwise it may be broken
+            // up into more than 1 token.
             executeDirective(new PreferencesDirective(), "\"" + _startupPreferencesFile + "\"");
         }
 
@@ -2167,8 +2169,13 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         if (_context.getImageDisplayMode() == ImageDisplayMode.OFF) {
             displayErrorMessage(UIUtils.getResourceString("ImageDisplayDisabled.error"));
         } else {
-            CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), characters, _context.getImageSettings(), true, false, _context.displayScaled());
-            show(dlg);
+            try {
+                CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), characters, _context.getImageSettings(), true, false, _context.displayScaled());
+                show(dlg);
+            } catch (IllegalArgumentException ex) {
+                // Display error message if unable to display
+                displayErrorMessage(UIUtils.getResourceString("CouldNotDisplayImage.error", ex.getMessage()));
+            }
         }
     }
 
@@ -2177,8 +2184,13 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         if (_context.getImageDisplayMode() == ImageDisplayMode.OFF) {
             displayErrorMessage(UIUtils.getResourceString("ImageDisplayDisabled.error"));
         } else {
-            TaxonImageDialog dlg = new TaxonImageDialog(getMainFrame(), _context.getImageSettings(), taxa, false, !_context.displayContinuous(), _context.displayScaled());
-            show(dlg);
+            try {
+                TaxonImageDialog dlg = new TaxonImageDialog(getMainFrame(), _context.getImageSettings(), taxa, false, !_context.displayContinuous(), _context.displayScaled());
+                show(dlg);
+            } catch (IllegalArgumentException ex) {
+                // Display error message if unable to display
+                displayErrorMessage(UIUtils.getResourceString("CouldNotDisplayImage.error", ex.getMessage()));
+            }
         }
     }
 
@@ -2194,7 +2206,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             UIUtils.displayFileFromURL(fileURL, description, _desktopWorker.get());
         } catch (Exception ex) {
             ex.printStackTrace();
-            displayErrorMessage("Error displaying file " + fileURL.toString());
+            displayErrorMessage(UIUtils.getResourceString("CouldNotDisplayFile.error", fileURL.toString()));
         }
     }
 
@@ -2335,7 +2347,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     }
 
     @Override
-    public List<Item> promptForTaxaByKeyword(String directiveName, boolean permitSelectionFromIncludedTaxaOnly, boolean noneKeywordAvailable, boolean includeSpecimenAsOption, MutableBoolean returnSpecimenSelected) {
+    public List<Item> promptForTaxaByKeyword(String directiveName, boolean permitSelectionFromIncludedTaxaOnly, boolean noneKeywordAvailable, boolean includeSpecimenAsOption,
+            MutableBoolean returnSpecimenSelected) {
 
         List<Image> taxonKeywordImages = _context.getDataset().getTaxonKeywordImages();
         if (_context.getImageDisplayMode() == ImageDisplayMode.AUTO && taxonKeywordImages != null && !taxonKeywordImages.isEmpty()) {
@@ -2368,14 +2381,16 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
             return selectedTaxa;
         } else {
-            TaxonKeywordSelectionDialog dlg = new TaxonKeywordSelectionDialog(getMainFrame(), _context, directiveName.toUpperCase(), permitSelectionFromIncludedTaxaOnly, includeSpecimenAsOption, returnSpecimenSelected);
+            TaxonKeywordSelectionDialog dlg = new TaxonKeywordSelectionDialog(getMainFrame(), _context, directiveName.toUpperCase(), permitSelectionFromIncludedTaxaOnly, includeSpecimenAsOption,
+                    returnSpecimenSelected);
             show(dlg);
             return dlg.getSelectedTaxa();
         }
     }
 
     @Override
-    public List<Item> promptForTaxaByList(String directiveName, boolean selectFromRemainingTaxaOnly, boolean autoSelectSingleValue, boolean singleSelect, boolean includeSpecimenAsOption, MutableBoolean returnSpecimenSelected) {
+    public List<Item> promptForTaxaByList(String directiveName, boolean selectFromRemainingTaxaOnly, boolean autoSelectSingleValue, boolean singleSelect, boolean includeSpecimenAsOption,
+            MutableBoolean returnSpecimenSelected) {
         List<Item> taxaToSelect;
 
         String keyword = null;
@@ -2390,7 +2405,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         if (taxaToSelect.size() == 1 && autoSelectSingleValue) {
             return taxaToSelect;
         } else {
-            TaxonSelectionDialog dlg = new TaxonSelectionDialog(getMainFrame(), taxaToSelect, directiveName.toUpperCase(), keyword, _context.displayNumbering(), singleSelect, _context, includeSpecimenAsOption, returnSpecimenSelected);
+            TaxonSelectionDialog dlg = new TaxonSelectionDialog(getMainFrame(), taxaToSelect, directiveName.toUpperCase(), keyword, _context.displayNumbering(), singleSelect, _context,
+                    includeSpecimenAsOption, returnSpecimenSelected);
             show(dlg);
             return dlg.getSelectedTaxa();
         }
@@ -2414,11 +2430,17 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     @Override
     public List<String> promptForTextValue(TextCharacter ch) {
         if (_context.getImageDisplayMode() == ImageDisplayMode.AUTO && !ch.getImages().isEmpty()) {
-            CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), Arrays.asList(new Character[] { ch }), _context.getImageSettings(), true, true, _context.displayScaled());
-            show(dlg);
-            if (dlg.okButtonPressed()) {
-                return dlg.getInputTextValues();
-            } else {
+            try {
+                CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), Arrays.asList(new Character[] { ch }), _context.getImageSettings(), true, true, _context.displayScaled());
+                show(dlg);
+                if (dlg.okButtonPressed()) {
+                    return dlg.getInputTextValues();
+                } else {
+                    return null;
+                }
+            } catch (IllegalArgumentException ex) {
+                // Display error message if unable to display
+                displayErrorMessage(UIUtils.getResourceString("CouldNotDisplayImage.error", ex.getMessage()));
                 return null;
             }
         } else {
@@ -2432,11 +2454,17 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     @Override
     public Set<Integer> promptForIntegerValue(IntegerCharacter ch) {
         if (_context.getImageDisplayMode() == ImageDisplayMode.AUTO && !ch.getImages().isEmpty()) {
-            CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), Arrays.asList(new Character[] { ch }), _context.getImageSettings(), true, true, _context.displayScaled());
-            show(dlg);
-            if (dlg.okButtonPressed()) {
-                return dlg.getInputIntegerValues();
-            } else {
+            try {
+                CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), Arrays.asList(new Character[] { ch }), _context.getImageSettings(), true, true, _context.displayScaled());
+                show(dlg);
+                if (dlg.okButtonPressed()) {
+                    return dlg.getInputIntegerValues();
+                } else {
+                    return null;
+                }
+            } catch (IllegalArgumentException ex) {
+                // Display error message if unable to display
+                displayErrorMessage(UIUtils.getResourceString("CouldNotDisplayImage.error", ex.getMessage()));
                 return null;
             }
         } else {
@@ -2450,11 +2478,17 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     @Override
     public FloatRange promptForRealValue(RealCharacter ch) {
         if (_context.getImageDisplayMode() == ImageDisplayMode.AUTO && !ch.getImages().isEmpty()) {
-            CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), Arrays.asList(new Character[] { ch }), _context.getImageSettings(), true, true, _context.displayScaled());
-            show(dlg);
-            if (dlg.okButtonPressed()) {
-                return dlg.getInputRealValues();
-            } else {
+            try {
+                CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), Arrays.asList(new Character[] { ch }), _context.getImageSettings(), true, true, _context.displayScaled());
+                show(dlg);
+                if (dlg.okButtonPressed()) {
+                    return dlg.getInputRealValues();
+                } else {
+                    return null;
+                }
+            } catch (IllegalArgumentException ex) {
+                // Display error message if unable to display
+                displayErrorMessage(UIUtils.getResourceString("CouldNotDisplayImage.error", ex.getMessage()));
                 return null;
             }
         } else {
@@ -2468,11 +2502,17 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     @Override
     public Set<Integer> promptForMultiStateValue(MultiStateCharacter ch) {
         if (_context.getImageDisplayMode() == ImageDisplayMode.AUTO && !ch.getImages().isEmpty()) {
-            CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), Arrays.asList(new Character[] { ch }), _context.getImageSettings(), true, true, _context.displayScaled());
-            show(dlg);
-            if (dlg.okButtonPressed()) {
-                return dlg.getSelectedStates();
-            } else {
+            try {
+                CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), Arrays.asList(new Character[] { ch }), _context.getImageSettings(), true, true, _context.displayScaled());
+                show(dlg);
+                if (dlg.okButtonPressed()) {
+                    return dlg.getSelectedStates();
+                } else {
+                    return null;
+                }
+            } catch (IllegalArgumentException ex) {
+                // Display error message if unable to display
+                displayErrorMessage(UIUtils.getResourceString("CouldNotDisplayImage.error", ex.getMessage()));
                 return null;
             }
         } else {

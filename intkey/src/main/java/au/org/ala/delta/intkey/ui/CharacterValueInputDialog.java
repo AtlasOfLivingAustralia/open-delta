@@ -32,6 +32,7 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;
 
+import au.org.ala.delta.intkey.Intkey;
 import au.org.ala.delta.intkey.model.ReportUtils;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.format.CharacterFormatter;
@@ -46,7 +47,7 @@ public abstract class CharacterValueInputDialog extends JDialog {
      * 
      */
     private static final long serialVersionUID = 361631735179369565L;
-    
+
     public static final String USE_DIRECTIVE_HELP_TOPIC_ID = "directive_use";
 
     protected JPanel _buttonPanel;
@@ -63,19 +64,20 @@ public abstract class CharacterValueInputDialog extends JDialog {
     protected ImageSettings _imageSettings;
 
     protected boolean _imagesStartScaled;
-    
+
     protected String _fullCharacterTextCaption;
     protected String _notesCaption;
 
     public CharacterValueInputDialog(Frame owner, Character ch, ImageSettings imageSettings, boolean displayNumbering, boolean enableImagesButton, boolean imagesStartScaled) {
         super(owner, true);
         ActionMap actionMap = Application.getInstance().getContext().getActionMap(CharacterValueInputDialog.class, this);
-        
-        // Have to pull these resource strings out manually as BSAF does not play nicely with
+
+        // Have to pull these resource strings out manually as BSAF does not
+        // play nicely with
         // class hierarchies.
         _fullCharacterTextCaption = UIUtils.getResourceString("CharacterValueInputDialog.fullCharacterTextCaption");
         _notesCaption = UIUtils.getResourceString("CharacterValueInputDialog.notesCaption");
-        
+
         getContentPane().setLayout(new BorderLayout(0, 0));
 
         setResizable(false);
@@ -134,9 +136,9 @@ public abstract class CharacterValueInputDialog extends JDialog {
         _formatter = new CharacterFormatter(displayNumbering, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, true, false);
         _lblCharacterDescription.setText(_formatter.formatCharacterDescription(_ch));
         _pnlMain.add(_lblCharacterDescription, BorderLayout.NORTH);
-        
+
         _btnImages.setEnabled(!_ch.getImages().isEmpty());
-        
+
         _btnNotes.setEnabled(StringUtils.isNotBlank(_ch.getNotes()));
 
         setLocationRelativeTo(owner);
@@ -147,7 +149,7 @@ public abstract class CharacterValueInputDialog extends JDialog {
     abstract void handleBtnCancelClicked();
 
     abstract void handleBtnImagesClicked();
-    
+
     abstract void handleBtnSearchClicked();
 
     private void displayRTFWindow(String rtfContent, String title) {
@@ -164,7 +166,12 @@ public abstract class CharacterValueInputDialog extends JDialog {
 
     @Action
     public void characterValueInputDialog_Images() {
-        handleBtnImagesClicked();
+        try {
+            handleBtnImagesClicked();
+        } catch (IllegalArgumentException ex) {
+            // Display error message if unable to display
+            ((Intkey) Application.getInstance()).displayErrorMessage(UIUtils.getResourceString("CouldNotDisplayImage.error", ex.getMessage()));
+        }
     }
 
     @Action
