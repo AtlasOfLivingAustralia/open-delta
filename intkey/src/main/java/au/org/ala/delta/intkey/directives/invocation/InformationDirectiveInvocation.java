@@ -33,11 +33,8 @@ public class InformationDirectiveInvocation extends IntkeyDirectiveInvocation {
 
     @Override
     public boolean execute(IntkeyContext context) {
-    	//if (_taxa != null) {
-    		context.getUI().displayTaxonInformation(_taxa, _imagesAutoDisplayText, _otherItemsAutoDisplayText, _closePromptAfterAutoDisplay);
-    		return true;
-    	//}
-        //return false;
+        context.getUI().displayTaxonInformation(_taxa, _imagesAutoDisplayText, _otherItemsAutoDisplayText, _closePromptAfterAutoDisplay);
+        return true;
     }
 
     public void setImagesAutoDisplayText(String imagesAutoDisplayText) {

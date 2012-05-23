@@ -480,8 +480,15 @@ public class TaxonInformationDialog extends IntkeyDialog {
             if (StringUtils.isEmpty(text) || subjectText.toLowerCase().contains(text.toLowerCase())) {
                 displaySelectedTaxonImage(i);
             }
-
         }
+        
+        // Tile the all spawned dialogs once they have finished displaying themselves.
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                IntKeyDialogController.tileWindows();
+            }
+        });
     }
 
     /**
@@ -508,6 +515,14 @@ public class TaxonInformationDialog extends IntkeyDialog {
                 cmd.execute();
             }
         }
+        
+        // Tile the all spawned dialogs once they have finished displaying themselves.
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                IntKeyDialogController.tileWindows();
+            }
+        });
     }
 
     private interface InformationDialogCommand {

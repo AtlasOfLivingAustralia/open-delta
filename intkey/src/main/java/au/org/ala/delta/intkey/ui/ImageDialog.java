@@ -42,6 +42,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.FloatRange;
@@ -172,7 +173,6 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
                 // fitToImage();
                 replaySound();
             }
-
         });
     }
 
@@ -436,17 +436,17 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
 
     @Action
     public void cascade() {
-    	IntKeyDialogController.cascadeWindows();
+        IntKeyDialogController.cascadeWindows();
     }
 
     @Action
     public void tile() {
-    	IntKeyDialogController.tileWindows();
+        IntKeyDialogController.tileWindows();
     }
 
     @Action
     public void closeAll() {
-    	IntKeyDialogController.closeWindows();
+        IntKeyDialogController.closeWindows();
     }
 
     @Action
