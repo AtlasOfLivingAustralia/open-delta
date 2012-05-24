@@ -44,6 +44,9 @@ public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
     private List<Character> _includedCharacters;
     private List<Character> _selectedCharacters;
     private boolean _displayCharacterNumbering;
+    
+    // names of keywords selected;
+    private List<String> _selectedKeywords;
 
     @Resource
     String title;
@@ -100,6 +103,8 @@ public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
 
         List<Image> characterKeywordImages = _context.getDataset().getCharacterKeywordImages();
         _btnImages.setEnabled(characterKeywordImages != null && !characterKeywordImages.isEmpty());
+        
+        _selectedKeywords = new ArrayList<String>();
     }
 
     @Override
@@ -108,6 +113,7 @@ public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
         HashSet<Character> selectedCharactersSet = new HashSet<Character>();
         for (Object o : _list.getSelectedValues()) {
             String keyword = (String) o;
+            _selectedKeywords.add(keyword);
 
             List<Character> characters = _context.getCharactersForKeyword(keyword);
 
@@ -186,6 +192,10 @@ public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
 
     public List<Character> getSelectedCharacters() {
         return _selectedCharacters;
+    }
+    
+    public List<String> getSelectedKeywords() {
+        return _selectedKeywords;
     }
 
 }

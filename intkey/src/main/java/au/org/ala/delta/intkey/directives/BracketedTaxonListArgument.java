@@ -19,12 +19,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableBoolean;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
-import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.util.Pair;
+import au.org.ala.delta.util.Utils;
 
 /**
  * List of taxa. Must be surrounded in brackets if specifying more than one
@@ -46,15 +47,16 @@ public class BracketedTaxonListArgument extends AbstractTaxonListArgument<Pair<L
 
     @Override
     public Pair<List<Item>, Boolean> parseInput(Queue<String> inputTokens, IntkeyContext context, String directiveName, StringBuilder stringRepresentationBuilder) throws IntkeyDirectiveParseException {
+        List<String> selectedKeywordsOrTaxonNumbers = new ArrayList<String>();
+
         boolean overrideExcludedTaxa = false;
+        boolean inBrackets = false;
 
         String token = inputTokens.poll();
         if (token != null && token.equalsIgnoreCase(OVERRIDE_EXCLUDED_TAXA)) {
             overrideExcludedTaxa = true;
             token = inputTokens.poll();
         }
-
-        overrideExcludedTaxa = overrideExcludedTaxa || _selectFromAll;
 
         boolean includeSpecimen = false;
         List<Item> taxa = null;
@@ -73,15 +75,12 @@ public class BracketedTaxonListArgument extends AbstractTaxonListArgument<Pair<L
             } else {
                 taxa = new ArrayList<Item>();
 
-                boolean inBrackets = false;
-
                 if (token.equals(OPEN_BRACKET)) {
                     inBrackets = true;
                     token = inputTokens.poll();
                 }
 
                 while (token != null) {
-
                     if (token.equals(CLOSE_BRACKET)) {
                         break;
                     }
@@ -93,6 +92,8 @@ public class BracketedTaxonListArgument extends AbstractTaxonListArgument<Pair<L
                         } else {
                             taxa.addAll(ParsingUtils.parseTaxonToken(token, context));
                         }
+
+                        selectedKeywordsOrTaxonNumbers.add(token);
 
                         // If we are expecting a bracketed list, but no brackets
                         // are present,
@@ -108,47 +109,79 @@ public class BracketedTaxonListArgument extends AbstractTaxonListArgument<Pair<L
                     }
                 }
 
-                if (!overrideExcludedTaxa) {
+                if (!(overrideExcludedTaxa || _selectFromAll)) {
                     taxa.retainAll(context.getIncludedTaxa());
                 }
             }
         }
 
         if (taxa == null) {
+            inBrackets = true;
+
             // The specimen is included as an option for these prompts
             MutableBoolean specimenSelected = new MutableBoolean(false);
+            List<String> selectedKeywords = new ArrayList<String>();
             boolean includeSpecimenAsOption = !context.getSpecimen().getUsedCharacters().isEmpty();
             DirectivePopulator populator = context.getDirectivePopulator();
             if (selectionMode == SelectionMode.KEYWORD && context.displayKeywords()) {
-                taxa = populator.promptForTaxaByKeyword(directiveName, !overrideExcludedTaxa, _noneSelectionPermitted, includeSpecimenAsOption, specimenSelected);
-                
+                taxa = populator.promptForTaxaByKeyword(directiveName, !(overrideExcludedTaxa || _selectFromAll), _noneSelectionPermitted, includeSpecimenAsOption, specimenSelected, selectedKeywords);
+
             } else {
                 boolean autoSelectSingleValue = (selectionMode == SelectionMode.LIST_AUTOSELECT_SINGLE_VALUE);
-                taxa = populator.promptForTaxaByList(directiveName, !overrideExcludedTaxa, autoSelectSingleValue, false, includeSpecimenAsOption, specimenSelected);
+                taxa = populator.promptForTaxaByList(directiveName, !(overrideExcludedTaxa || _selectFromAll), autoSelectSingleValue, false, includeSpecimenAsOption, specimenSelected,
+                        selectedKeywords);
             }
+
+            if (taxa == null) {
+                // cancelled
+                return null;
+            }
+
             includeSpecimen = specimenSelected.booleanValue();
+
+            // Put selected keywords or taxon numbers into a collection to use
+            // to build the string representation.
+            if (!selectedKeywords.isEmpty()) {
+                for (String selectedKeyword : selectedKeywords) {
+                    if (selectedKeyword.contains(" ")) {
+                        // Enclose any keywords that contain spaces in quotes
+                        // for the string representation
+                        selectedKeywordsOrTaxonNumbers.add("\"" + selectedKeyword + "\"");
+                    } else {
+                        selectedKeywordsOrTaxonNumbers.add(selectedKeyword);
+                    }
+                }
+            } else {
+                List<Integer> selectedTaxonNumbers = new ArrayList<Integer>();
+                for (int i = 0; i < taxa.size(); i++) {
+                    Item taxon = taxa.get(i);
+                    selectedTaxonNumbers.add(taxon.getItemNumber());
+                }
+                selectedKeywordsOrTaxonNumbers.add(Utils.formatIntegersAsListOfRanges(selectedTaxonNumbers));
+            }
+        }
+
+        // build the string representation of the directive call
+        stringRepresentationBuilder.append(" ");
+
+        if (overrideExcludedTaxa) {
+            stringRepresentationBuilder.append(OVERRIDE_EXCLUDED_TAXA);
+            stringRepresentationBuilder.append(" ");
+        }
+
+        if (inBrackets) {
+            stringRepresentationBuilder.append(OPEN_BRACKET);
+        }
+
+        stringRepresentationBuilder.append(StringUtils.join(selectedKeywordsOrTaxonNumbers, " "));
+
+        if (inBrackets) {
+            stringRepresentationBuilder.append(CLOSE_BRACKET);
         }
 
         if (taxa.size() == 0 && includeSpecimen == false && !_noneSelectionPermitted) {
             throw new IntkeyDirectiveParseException("NoTaxaInSet.error");
         }
-
-        // TODO need to handle keywords here
-        stringRepresentationBuilder.append(" ");
-        stringRepresentationBuilder.append(OPEN_BRACKET);
-        for (int i = 0; i < taxa.size(); i++) {
-            Item taxon = taxa.get(i);
-            stringRepresentationBuilder.append(taxon.getItemNumber());
-            if (i < taxa.size() - 1) {
-                stringRepresentationBuilder.append(" ");
-            }
-        }
-
-        if (includeSpecimen) {
-            stringRepresentationBuilder.append(" ");
-            stringRepresentationBuilder.append(IntkeyContext.SPECIMEN_KEYWORD.toUpperCase());
-        }
-        stringRepresentationBuilder.append(CLOSE_BRACKET);
 
         Collections.sort(taxa);
         return new Pair<List<Item>, Boolean>(taxa, includeSpecimen);

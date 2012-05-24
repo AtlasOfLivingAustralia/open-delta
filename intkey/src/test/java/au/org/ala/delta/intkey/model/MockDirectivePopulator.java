@@ -34,22 +34,22 @@ import au.org.ala.delta.util.Pair;
 public class MockDirectivePopulator implements DirectivePopulator {
 
     @Override
-    public List<Character> promptForCharactersByKeyword(String directiveName, boolean permitSelectionFromIncludedCharactersOnly, boolean noneKeywordAvailable) {
+    public List<Character> promptForCharactersByKeyword(String directiveName, boolean permitSelectionFromIncludedCharactersOnly, boolean noneKeywordAvailable, List<String> returnSelectedKeywords) {
         return null;
     }
 
     @Override
-    public List<Character> promptForCharactersByList(String directiveName, boolean permitSelectionFromIncludedCharactersOnly) {
+    public List<Character> promptForCharactersByList(String directiveName, boolean permitSelectionFromIncludedCharactersOnly, List<String> returnSelectedKeywords) {
         return null;
     }
 
     @Override
-    public List<Item> promptForTaxaByKeyword(String directiveName, boolean selectFromIncludedTaxaOnly, boolean noneKeywordAvailable, boolean includeSpecimenAsOption, MutableBoolean specimenSelected) {
+    public List<Item> promptForTaxaByKeyword(String directiveName, boolean selectFromIncludedTaxaOnly, boolean noneKeywordAvailable, boolean includeSpecimenAsOption, MutableBoolean specimenSelected, List<String> returnSelectedKeywords) {
         return null;
     }
 
     @Override
-    public List<Item> promptForTaxaByList(String directiveName, boolean selectFromIncludedTaxaOnly, boolean autoSelectSingleValue, boolean singleSelect, boolean includeSpecimenAsOption, MutableBoolean specimenSelected) {
+    public List<Item> promptForTaxaByList(String directiveName, boolean selectFromIncludedTaxaOnly, boolean autoSelectSingleValue, boolean singleSelect, boolean includeSpecimenAsOption, MutableBoolean specimenSelected, List<String> returnSelectedKeywords) {
         return null;
     }
 

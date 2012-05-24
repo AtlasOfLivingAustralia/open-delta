@@ -146,7 +146,12 @@ public class IntkeyDataset implements DeltaDataSet {
         determineCharactersToIgnoreForBest();
     }
 
-    private void determineCharactersToIgnoreForBest() {
+    /**
+     * Examine the characters in the dataset and based on their types and
+     * reliabilities, determine which characters should be ignored when
+     * determining the best ordering.
+     */
+    public void determineCharactersToIgnoreForBest() {
         _charactersToIgnoreForBest = new HashSet<Character>();
         for (Character ch : _characters) {
             // Ignore character if its reliability is zero

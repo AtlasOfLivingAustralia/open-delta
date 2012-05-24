@@ -24,6 +24,9 @@ import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class DefineButtonDirective extends IntkeyDirective {
+    
+    public static final String SPACE_KEYWORD = "space";
+    public static final String CLEAR_KEYWORD = "clear";
 
     public DefineButtonDirective() {
         super(false, "define", "button");
@@ -70,9 +73,9 @@ public class DefineButtonDirective extends IntkeyDirective {
         } else {
             String firstToken = tokens.get(0);
 
-            if (firstToken.equalsIgnoreCase("space")) {
+            if (firstToken.equalsIgnoreCase(SPACE_KEYWORD)) {
                 return processInsertButtonSpace();
-            } else if (firstToken.equalsIgnoreCase("clear")) {
+            } else if (firstToken.equalsIgnoreCase(CLEAR_KEYWORD)) {
                 return processClearButtons();
             } else {
                 return processDefineButton(tokens, context);
@@ -120,11 +123,15 @@ public class DefineButtonDirective extends IntkeyDirective {
     }
 
     private IntkeyDirectiveInvocation processInsertButtonSpace() {
-        return new DefineButtonSpaceDirectiveInvocation();
+        DefineButtonSpaceDirectiveInvocation invoc = new DefineButtonSpaceDirectiveInvocation();
+        invoc.setStringRepresentation(getControlWordsAsString() + " " + SPACE_KEYWORD);
+        return invoc;
     }
 
     private IntkeyDirectiveInvocation processClearButtons() {
-        return new DefineButtonClearDirectiveInvocation();
+        DefineButtonClearDirectiveInvocation invoc = new DefineButtonClearDirectiveInvocation();
+        invoc.setStringRepresentation(getControlWordsAsString() + " " + CLEAR_KEYWORD);
+        return invoc;
     }
 
 }

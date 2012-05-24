@@ -26,7 +26,9 @@ public class DisplayCharacterOrderBestDirective extends IntkeyDirective {
 
     @Override
     protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
-        return new DisplayCharacterOrderBestDirectiveInvocation();
+        DisplayCharacterOrderBestDirectiveInvocation invoc = new DisplayCharacterOrderBestDirectiveInvocation();
+        invoc.setStringRepresentation(getControlWordsAsString());
+        return invoc;
     }
 
 }

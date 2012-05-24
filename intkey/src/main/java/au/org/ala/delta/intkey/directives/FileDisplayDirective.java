@@ -48,6 +48,8 @@ public class FileDisplayDirective extends IntkeyDirective {
             File file = Utils.createFileFromPath(filePath, context.getDatasetDirectory());
             invoc = new FileDisplayDirectiveInvocation(file.toURI().toURL(), file.getName());
         }
+        
+        invoc.setStringRepresentation(getControlWordsAsString() + " " + filePath);
 
         return invoc;
     }

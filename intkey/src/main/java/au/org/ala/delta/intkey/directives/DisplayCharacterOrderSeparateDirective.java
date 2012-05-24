@@ -14,7 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.intkey.directives;
 
-import java.text.MessageFormat;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -22,7 +21,6 @@ import org.apache.commons.lang.StringUtils;
 import au.org.ala.delta.intkey.directives.invocation.DisplayCharacterOrderSeparateDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
-import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Item;
 
 public class DisplayCharacterOrderSeparateDirective extends IntkeyDirective {
@@ -36,7 +34,7 @@ public class DisplayCharacterOrderSeparateDirective extends IntkeyDirective {
         Item taxonToSeparate;
 
         if (data == null) {
-            List<Item> selectedTaxonInList = context.getDirectivePopulator().promptForTaxaByList(StringUtils.join(getControlWords(), " ").toUpperCase(), true, true, true, false, null);
+            List<Item> selectedTaxonInList = context.getDirectivePopulator().promptForTaxaByList(StringUtils.join(getControlWords(), " ").toUpperCase(), true, true, true, false, null, null);
             if (selectedTaxonInList == null || selectedTaxonInList.size() == 0) {
                 // cancel
                 return null;

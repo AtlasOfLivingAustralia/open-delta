@@ -45,10 +45,13 @@ public interface DirectivePopulator {
      * @param noneKeywordAvailable
      *            if true, the NONE keyword, representing an empty set of
      *            characters will be available as an option
+     * @param returnSelectedKeywords
+     *            returns a list of selected keywords, if applicable
      * @return the list of selected characters, or null if the user cancelled
      *         the operation
      */
-    List<au.org.ala.delta.model.Character> promptForCharactersByKeyword(String directiveName, boolean permitSelectionFromIncludedCharactersOnly, boolean noneKeywordAvailable);
+    List<au.org.ala.delta.model.Character> promptForCharactersByKeyword(String directiveName, boolean permitSelectionFromIncludedCharactersOnly, boolean noneKeywordAvailable,
+            List<String> returnSelectedKeywords);
 
     /**
      * Prompt the user to select characters from a list
@@ -58,10 +61,12 @@ public interface DirectivePopulator {
      * @param selectFromRemainingCharactersOnly
      *            if true, only the available characters (those not eliminated
      *            or excluded) will be available for selection
+     * @param returnSelectedKeywords
+     *            returns a list of selected keywords, if applicable
      * @return the list of selected characters, or null if the user cancelled
      *         the operation
      */
-    List<au.org.ala.delta.model.Character> promptForCharactersByList(String directiveName, boolean selectFromAvailableCharactersOnly);
+    List<au.org.ala.delta.model.Character> promptForCharactersByList(String directiveName, boolean selectFromAvailableCharactersOnly, List<String> returnSelectedKeywords);
 
     /**
      * 
@@ -80,11 +85,13 @@ public interface DirectivePopulator {
      *            Mutable boolean, if true after the method has returned, the
      *            specimen was chosen as one of the options. Mutable boolean
      *            used here as java does not allow pass by reference.
+     * @param returnSelectedKeywords
+     *            returns a list of selected keywords, if applicable
      * @return the list of selected taxa, or null if the user cancelled the
      *         operation
      */
     List<Item> promptForTaxaByKeyword(String directiveName, boolean permitSelectionFromIncludedTaxaOnly, boolean noneKeywordAvailable, boolean includeSpecimenAsOption,
-            MutableBoolean returnSpecimenSelected);
+            MutableBoolean returnSpecimenSelected, List<String> returnSelectedKeywords);
 
     /**
      * 
@@ -104,11 +111,13 @@ public interface DirectivePopulator {
      *            specimen was chosen as one of the options. Mutable boolean
      *            used here as java does not allow pass by reference.
      * @param if true, the user will only be permitted to select a single taxon
+     * @param returnSelectedKeywords
+     *            returns a list of selected keywords, if applicable
      * @return the list of selected taxa, or null if the user cancelled the
      *         operation
      */
     List<Item> promptForTaxaByList(String directiveName, boolean selectFromIncludedTaxaOnly, boolean autoSelectSingleValue, boolean singleSelect, boolean includeSpecimenAsOption,
-            MutableBoolean returnSpecimenSelected);
+            MutableBoolean returnSpecimenSelected, List<String> returnSelectedKeywords);
 
     /**
      * Prompts the user with a yes/no question

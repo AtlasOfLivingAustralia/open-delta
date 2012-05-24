@@ -33,10 +33,4 @@ public class FileDisplayDirectiveInvocation extends IntkeyDirectiveInvocation {
         context.getUI().displayFile(_fileURL, _fileDescription);
         return true;
     }
-
-    @Override
-    public String toString() {
-        return String.format("FILE DISPLAY \"%s\"", _fileURL.getPath());
-    }
-
 }

@@ -26,7 +26,9 @@ public class FileCloseDirective extends IntkeyDirective {
 
     @Override
     protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
-        return new FileCloseDirectiveInvocation();
+        FileCloseDirectiveInvocation invoc = new FileCloseDirectiveInvocation();
+        invoc.setStringRepresentation(getControlWordsAsString() + " " + data);
+        return invoc;
     }
 
 }

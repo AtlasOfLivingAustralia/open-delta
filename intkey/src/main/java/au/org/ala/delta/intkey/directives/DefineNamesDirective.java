@@ -68,7 +68,7 @@ public class DefineNamesDirective extends IntkeyDirective {
         for (String taxonName : names) {
             Item taxon = context.getDataset().getTaxonByName(taxonName);
             if (taxon == null) {
-                throw new IntkeyDirectiveParseException("InvalidTaxonName.error");
+                throw new IntkeyDirectiveParseException(UIUtils.getResourceString("InvalidTaxonName.error", taxonName));
             } else {
                 taxa.add(taxon);
             }
@@ -85,7 +85,7 @@ public class DefineNamesDirective extends IntkeyDirective {
         }
 
         if (taxa.isEmpty()) {
-            taxa = context.getDirectivePopulator().promptForTaxaByList(directiveName, false, false, false, false, null);
+            taxa = context.getDirectivePopulator().promptForTaxaByList(directiveName, false, false, false, false, null, null);
             if (taxa == null || taxa.isEmpty()) {
                 // cancelled
                 return null;

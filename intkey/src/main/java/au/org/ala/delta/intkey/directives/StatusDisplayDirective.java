@@ -25,6 +25,8 @@ public class StatusDisplayDirective extends IntkeyDirective {
 
     @Override
     protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
-        return new StatusDisplayDirectiveInvocation();
+        StatusDisplayDirectiveInvocation invoc = new StatusDisplayDirectiveInvocation();
+        invoc.setStringRepresentation(getControlWordsAsString());
+        return invoc;
     }
 }

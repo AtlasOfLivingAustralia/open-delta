@@ -33,6 +33,10 @@ public class DisplayImagesDirective extends IntkeyDirective {
 
     @Override
     protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
+        StringBuilder stringRepresentationBuilder = new StringBuilder();
+        stringRepresentationBuilder.append(getControlWordsAsString());
+        stringRepresentationBuilder.append(" ");
+        
         DisplayImagesDirectiveInvocation invoc = new DisplayImagesDirectiveInvocation();
 
         if (StringUtils.isEmpty(data) || data.startsWith(IntkeyDirectiveArgument.DEFAULT_DIALOG_WILDCARD)) {
@@ -44,35 +48,45 @@ public class DisplayImagesDirective extends IntkeyDirective {
             } else {
                 invoc.setDisplayMode(settings.getFirst());
                 invoc.setReportType(settings.getSecond());
+                stringRepresentationBuilder.append(settings.getFirst().toString());
+                stringRepresentationBuilder.append(" ");
+                stringRepresentationBuilder.append(settings.getSecond().toString());
             }
         } else {
             List<String> tokens = ParsingUtils.tokenizeDirectiveCall(data);
 
-            String firstToken = tokens.get(0);
-            processToken(firstToken, invoc);
-
-            if (tokens.size() > 1) {
-                String secondToken = tokens.get(0);
-                processToken(secondToken, invoc);
+            for (int i=0; i < tokens.size(); i++) {
+                if (i != 0) {
+                    stringRepresentationBuilder.append(" ");
+                }
+                processToken(tokens.get(i), invoc, stringRepresentationBuilder);                
             }
         }
-
+        
+        invoc.setStringRepresentation(stringRepresentationBuilder.toString());
+        
         return invoc;
     }
 
-    private void processToken(String token, DisplayImagesDirectiveInvocation invoc) {
+    private void processToken(String token, DisplayImagesDirectiveInvocation invoc, StringBuilder stringRepresentationBuilder) {
         if (token.equalsIgnoreCase(ImageDisplayMode.AUTO.name())) {
             invoc.setDisplayMode(ImageDisplayMode.AUTO);
+            stringRepresentationBuilder.append(ImageDisplayMode.AUTO.name());
         } else if (token.equalsIgnoreCase(ImageDisplayMode.MANUAL.name())) {
             invoc.setDisplayMode(ImageDisplayMode.MANUAL);
+            stringRepresentationBuilder.append(ImageDisplayMode.MANUAL.name());
         } else if (token.equalsIgnoreCase(ImageDisplayMode.OFF.name())) {
             invoc.setDisplayMode(ImageDisplayMode.OFF);
+            stringRepresentationBuilder.append(ImageDisplayMode.OFF.name());
         } else if (token.equalsIgnoreCase(DisplayImagesReportType.MISSING_IMAGE_LIST.name())) {
             invoc.setReportType(DisplayImagesReportType.MISSING_IMAGE_LIST);
+            stringRepresentationBuilder.append(DisplayImagesReportType.MISSING_IMAGE_LIST.name());
         } else if (token.equalsIgnoreCase(DisplayImagesReportType.CHARACTER_IMAGE_LIST.name())) {
             invoc.setReportType(DisplayImagesReportType.CHARACTER_IMAGE_LIST);
+            stringRepresentationBuilder.append(DisplayImagesReportType.MISSING_IMAGE_LIST.name());
         } else if (token.equalsIgnoreCase(DisplayImagesReportType.TAXON_IMAGE_LIST.name())) {
             invoc.setReportType(DisplayImagesReportType.TAXON_IMAGE_LIST);
+            stringRepresentationBuilder.append(DisplayImagesReportType.TAXON_IMAGE_LIST.name());
         }
     }
 }

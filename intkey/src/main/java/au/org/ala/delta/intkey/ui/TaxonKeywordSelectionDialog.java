@@ -57,6 +57,9 @@ public class TaxonKeywordSelectionDialog extends KeywordSelectionDialog {
     private List<Item> _includedTaxa;
     private List<Item> _selectedTaxa;
 
+    // names of keywords;
+    private List<String> _selectedKeywords;
+
     /**
      * Used to return whether or not, the specimen was chosen as one of the
      * options. Mutable boolean used here as java does not allow pass by
@@ -114,6 +117,8 @@ public class TaxonKeywordSelectionDialog extends KeywordSelectionDialog {
 
         List<Image> taxonKeywordImages = _context.getDataset().getTaxonKeywordImages();
         _btnImages.setEnabled(taxonKeywordImages != null && !taxonKeywordImages.isEmpty());
+
+        _selectedKeywords = new ArrayList<String>();
     }
 
     @Override
@@ -122,6 +127,8 @@ public class TaxonKeywordSelectionDialog extends KeywordSelectionDialog {
         HashSet<Item> selectedTaxaSet = new HashSet<Item>();
         for (Object o : _list.getSelectedValues()) {
             String keyword = (String) o;
+
+            _selectedKeywords.add(keyword);
 
             if (keyword.equals(IntkeyContext.SPECIMEN_KEYWORD)) {
                 _specimenSelectedReturnValue.setValue(true);
@@ -212,6 +219,10 @@ public class TaxonKeywordSelectionDialog extends KeywordSelectionDialog {
 
     public List<Item> getSelectedTaxa() {
         return _selectedTaxa;
+    }
+
+    public List<String> getSelectedKeywords() {
+        return _selectedKeywords;
     }
 
 }

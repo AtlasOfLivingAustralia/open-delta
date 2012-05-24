@@ -25,6 +25,8 @@ public class StatusIncludeTaxaDirective extends IntkeyDirective {
 
     @Override
     protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
-        return new StatusIncludeTaxaDirectiveInvocation();
+        StatusIncludeTaxaDirectiveInvocation invoc = new StatusIncludeTaxaDirectiveInvocation();
+        invoc.setStringRepresentation(getControlWordsAsString());
+        return invoc;
     }
 }

@@ -26,7 +26,9 @@ public class QuitDirective extends IntkeyDirective {
 
     @Override
     protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
-        return new QuitDirectiveInvocation();
+        QuitDirectiveInvocation invoc = new QuitDirectiveInvocation();
+        invoc.setStringRepresentation(getControlWordsAsString());
+        return invoc;
     }
 
 }

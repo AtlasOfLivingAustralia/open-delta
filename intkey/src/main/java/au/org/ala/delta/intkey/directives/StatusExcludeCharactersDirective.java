@@ -25,6 +25,8 @@ public class StatusExcludeCharactersDirective extends IntkeyDirective {
 
     @Override
     protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
-        return new StatusExcludeCharactersDirectiveInvocation();
+        StatusExcludeCharactersDirectiveInvocation invoc = new StatusExcludeCharactersDirectiveInvocation();
+        invoc.setStringRepresentation(getControlWordsAsString());
+        return invoc;
     }
 }

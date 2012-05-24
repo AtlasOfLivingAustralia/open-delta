@@ -38,17 +38,38 @@ public class SetReliabilitiesDirective extends IntkeyDirective {
 
     @Override
     protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
-        String directiveName = StringUtils.join(getControlWords(), " ").toUpperCase();
+        StringBuilder stringRepresentationBuilder = new StringBuilder();
+        stringRepresentationBuilder.append(getControlWordsAsString());
+        stringRepresentationBuilder.append(" ");
 
         IntkeyDataset dataset = context.getDataset();
 
         Map<Character, Float> reliabilitiesMap = new HashMap<Character, Float>();
 
         if (data == null) {
-            List<Character> characters = context.getDirectivePopulator().promptForCharactersByKeyword(directiveName, true, false);
-            Float reliability = Float.parseFloat(context.getDirectivePopulator().promptForString("Enter reliability value", null, directiveName));
+            List<String> selectedKeywords = new ArrayList<String>();
+            List<Character> characters = context.getDirectivePopulator().promptForCharactersByKeyword(getControlWordsAsString(), true, false, selectedKeywords);
+            Float reliability = Float.parseFloat(context.getDirectivePopulator().promptForString("Enter reliability value", null, getControlWordsAsString()));
             for (Character ch : characters) {
                 reliabilitiesMap.put(ch, reliability);
+            }
+
+            if (!selectedKeywords.isEmpty()) {
+                for (int i = 0; i < selectedKeywords.size(); i++) {
+                    if (i != 0) {
+                        stringRepresentationBuilder.append(" ");
+                    }
+                    String keyword = selectedKeywords.get(i);
+                    if (keyword.contains(" ")) {
+                        stringRepresentationBuilder.append("\"" + selectedKeywords.get(i) + "\"");
+                    } else {
+                        stringRepresentationBuilder.append(selectedKeywords.get(i));
+                    }
+                    stringRepresentationBuilder.append(",");
+                    stringRepresentationBuilder.append(reliability);
+                }
+            } else {
+
             }
         } else {
             List<String> subCmds = ParsingUtils.tokenizeDirectiveCall(data);
@@ -76,8 +97,11 @@ public class SetReliabilitiesDirective extends IntkeyDirective {
                     reliabilitiesMap.put(ch, reliability);
                 }
             }
+            stringRepresentationBuilder.append(data);
         }
 
-        return new SetReliabilitiesDirectiveInvocation(reliabilitiesMap);
+        SetReliabilitiesDirectiveInvocation invoc = new SetReliabilitiesDirectiveInvocation(reliabilitiesMap);
+        invoc.setStringRepresentation(stringRepresentationBuilder.toString());
+        return invoc;
     }
 }

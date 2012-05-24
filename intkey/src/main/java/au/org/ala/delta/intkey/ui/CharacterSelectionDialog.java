@@ -71,11 +71,14 @@ public class CharacterSelectionDialog extends ListSelectionDialog implements Sea
 
     // The name of the keyword that these characters belong to
     private String _keyword;
-    
+
     private IntkeyContext _context;
 
     // controls display of character images
     private ImageSettings _imageSettings;
+
+    // names of keywords selected via the "keywords" button;
+    private List<String> _selectedKeywords;
 
     @Resource
     String title;
@@ -85,7 +88,7 @@ public class CharacterSelectionDialog extends ListSelectionDialog implements Sea
 
     @Resource
     String fullTextOfCharacterCaption;
-    
+
     @Resource
     String notesCaption;
 
@@ -198,6 +201,8 @@ public class CharacterSelectionDialog extends ListSelectionDialog implements Sea
                 }
             }
         });
+
+        _selectedKeywords = new ArrayList<String>();
     }
 
     @Action
@@ -218,7 +223,8 @@ public class CharacterSelectionDialog extends ListSelectionDialog implements Sea
     @Action
     public void characterSelectionDialog_Keywords() {
         if (this.getOwner() instanceof CharacterKeywordSelectionDialog) {
-            // If this window was spawned by a CharacterKeywordSelectionDialog (keyword selection), don't 
+            // If this window was spawned by a CharacterKeywordSelectionDialog
+            // (keyword selection), don't
             // create another one.
             _selectedCharacters = null;
             this.setVisible(false);
@@ -227,10 +233,11 @@ public class CharacterSelectionDialog extends ListSelectionDialog implements Sea
             ((SingleFrameApplication) Application.getInstance()).show(dlg);
             if (dlg.getSelectedCharacters() != null) {
                 _selectedCharacters = dlg.getSelectedCharacters();
+                _selectedKeywords = dlg.getSelectedKeywords();
                 this.setVisible(false);
             }
         }
-    } 
+    }
 
     @Action
     public void characterSelectionDialog_Images() {
@@ -295,6 +302,10 @@ public class CharacterSelectionDialog extends ListSelectionDialog implements Sea
 
     public List<Character> getSelectedCharacters() {
         return _selectedCharacters;
+    }
+
+    public List<String> getSelectedKeywords() {
+        return _selectedKeywords;
     }
 
     @Override

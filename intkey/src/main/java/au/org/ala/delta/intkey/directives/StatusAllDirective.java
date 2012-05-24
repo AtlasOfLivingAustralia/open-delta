@@ -25,6 +25,8 @@ public class StatusAllDirective extends IntkeyDirective {
 
     @Override
     protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
-        return new StatusAllDirectiveInvocation();
+        StatusAllDirectiveInvocation invoc = new StatusAllDirectiveInvocation();
+        invoc.setStringRepresentation(getControlWordsAsString());
+        return invoc;
     }
 }

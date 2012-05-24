@@ -211,9 +211,10 @@ public class ParsingUtils {
                 if (i == 0) {
                     inQuotedString = true;
                 } else if (i != data.length() - 1) {
-                    if (inQuotedString && (nextChar == ' ' || nextChar == ',' || nextChar == '\n' || nextChar == '\r')) {
+                    if (inQuotedString && (nextChar == ' ' || nextChar == ',' || nextChar == '\n' || nextChar == '\r' || nextChar == '(' || nextChar == ')')) {
                         inQuotedString = false;
-                    } else if (!inQuotedString && (prevChar == ' ' || prevChar == ',' || prevChar == '\n' || prevChar == '\r')) {
+                        isEndToken = true;
+                    } else if (!inQuotedString && (prevChar == ' ' || prevChar == ',' || prevChar == '\n' || prevChar == '\r' || prevChar == '(' || prevChar == ')')) {
                         inQuotedString = true;
                     }
                 }

@@ -16,8 +16,14 @@ package au.org.ala.delta.intkey.model;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.SwingWorker;
+
+import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.Item;
+import au.org.ala.delta.util.Pair;
 
 import junit.framework.TestCase;
 
@@ -57,5 +63,23 @@ public abstract class IntkeyDatasetTestCase extends TestCase {
         // The dataset is loaded on a separate thread so we need to wait until
         // it is loaded.
         worker.get();
+    }
+    
+    public static Pair<List<Integer>, List<Integer>> getCharacterAndTaxonNumbersForBest(IntkeyContext context) {
+        List<Integer> characterNumbers = new ArrayList<Integer>();
+        List<Integer> taxonNumbers = new ArrayList<Integer>();
+
+        List<Character> availableCharacters = context.getAvailableCharacters();
+        availableCharacters.removeAll(context.getDataset().getCharactersToIgnoreForBest());
+
+        for (Character ch : availableCharacters) {
+            characterNumbers.add(ch.getCharacterId());
+        }
+
+        for (Item taxon : context.getAvailableTaxa()) {
+            taxonNumbers.add(taxon.getItemNumber());
+        }
+
+        return new Pair<List<Integer>, List<Integer>>(characterNumbers, taxonNumbers);
     }
 }

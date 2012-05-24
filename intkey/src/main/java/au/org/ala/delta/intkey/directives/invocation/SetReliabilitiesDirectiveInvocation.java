@@ -32,6 +32,10 @@ public class SetReliabilitiesDirectiveInvocation extends IntkeyDirectiveInvocati
             ch.setReliability(_reliabilitiesMap.get(ch));
         }
 
+        // Need dataset to re-calculate which characters should be ignored when
+        // doing a BEST ordering.
+        context.getDataset().determineCharactersToIgnoreForBest();
+
         // Clear the cached best characters then force the UI to update itself,
         // calculating the best
         // characters in the process

@@ -240,24 +240,6 @@ public class DisplayCharacterOrderBestTest extends IntkeyDatasetTestCase {
 
     }
 
-    private Pair<List<Integer>, List<Integer>> getCharacterAndTaxonNumbersForBest(IntkeyContext context) {
-        List<Integer> characterNumbers = new ArrayList<Integer>();
-        List<Integer> taxonNumbers = new ArrayList<Integer>();
-
-        List<Character> availableCharacters = context.getAvailableCharacters();
-        availableCharacters.removeAll(context.getDataset().getCharactersToIgnoreForBest());
-
-        for (Character ch : availableCharacters) {
-            characterNumbers.add(ch.getCharacterId());
-        }
-
-        for (Item taxon : context.getAvailableTaxa()) {
-            taxonNumbers.add(taxon.getItemNumber());
-        }
-
-        return new Pair<List<Integer>, List<Integer>>(characterNumbers, taxonNumbers);
-    }
-
     private void bestTestHelper(int index, int expectedCharNum, double expectedSeparation, List<Character> orderedChars, Map<Character, Double> separationMap) {
 
         int actualCharNum = orderedChars.get(index).getCharacterId();

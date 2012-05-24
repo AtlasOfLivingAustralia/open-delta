@@ -51,6 +51,9 @@ import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.impl.SimpleAttributeData;
 
 public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
+    
+    private static final String USE_DIRECTIVE_NAME = "USE";
+    private static final String CHANGE_DIRECTIVE_NAME = "CHANGE";
 
     private Map<au.org.ala.delta.model.Character, Attribute> _characterAttributes;
     private boolean _change;
@@ -149,11 +152,7 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
         } else {
             Collections.sort(charsNoValues);
             while (!charsNoValues.isEmpty()) {
-                // String directiveName = _change ? directiveName =
-                // StringUtils.join(new ChangeDirective().getControlWords(),
-                // " ").toUpperCase() : StringUtils.join(_controlWords,
-                // " ").toUpperCase();
-                String directiveName = "USE";
+                String directiveName = _change ? "CHANGE" : "USE";
 
                 CharacterSelectionDialog selectDlg = new CharacterSelectionDialog(UIUtils.getMainFrame(), charsNoValues, directiveName, context.getImageSettings(), context.displayNumbering(), context);
                 selectDlg.setVisible(true);
@@ -467,27 +466,6 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
         attr.setSpecimenAttribute(true);
 
         return attr;
-    }
-
-    @Override
-    public String toString() {
-        // StringBuilder builder = new StringBuilder();
-        // if (_change) {
-        // builder.append(StringUtils.join(new
-        // ChangeDirective().getControlWords(), "").toUpperCase());
-        // } else {
-        // builder.append(StringUtils.join(_controlWords, " ").toUpperCase());
-        // }
-        // builder.append(" ");
-        // for (Character ch : _characterValues.keySet()) {
-        // CharacterValue val = _characterValues.get(ch);
-        // builder.append(" ");
-        // builder.append(ch.getCharacterId());
-        // builder.append(",");
-        // builder.append(val.toShortString());
-        // }
-        // return builder.toString();
-        return "USE";
     }
 
     /**

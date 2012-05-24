@@ -26,7 +26,9 @@ public class StatusFilesDirective extends IntkeyDirective {
 
     @Override
     protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
-        return new StatusFilesDirectiveInvocation();
+        StatusFilesDirectiveInvocation invoc = new StatusFilesDirectiveInvocation();
+        invoc.setStringRepresentation(getControlWordsAsString());
+        return invoc;
     }
 
 }

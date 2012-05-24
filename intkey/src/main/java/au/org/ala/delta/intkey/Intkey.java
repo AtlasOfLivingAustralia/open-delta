@@ -1298,9 +1298,9 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         mnuItCloseAll.setAction(actionMap.get("mnuItCloseAllWindows"));
         mnuItCloseAll.setEnabled(true);
         mnuWindow.add(mnuItCloseAll);
-        
+
         mnuWindow.addSeparator();
-        
+
         JMenu mnuLF = new JMenu();
         mnuLF.setName("mnuLF");
         mnuWindow.add(mnuLF);
@@ -1312,7 +1312,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         JMenuItem mnuItWindowsLF = new JMenuItem();
         mnuItWindowsLF.setAction(actionMap.get("systemLookAndFeel"));
         mnuLF.add(mnuItWindowsLF);
-        
+
         try {
             // Nimbus L&F was added in update java 6 update 10.
             Class.forName("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel").newInstance();
@@ -2313,7 +2313,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     // ===================================================================
 
     @Override
-    public List<Character> promptForCharactersByKeyword(String directiveName, boolean permitSelectionFromIncludedCharactersOnly, boolean noneKeywordAvailable) {
+    public List<Character> promptForCharactersByKeyword(String directiveName, boolean permitSelectionFromIncludedCharactersOnly, boolean noneKeywordAvailable, List<String> returnSelectedKeywords) {
         List<Image> characterKeywordImages = _context.getDataset().getCharacterKeywordImages();
         if (_context.getImageDisplayMode() == ImageDisplayMode.AUTO && characterKeywordImages != null && !characterKeywordImages.isEmpty()) {
             ImageDialog dlg = new ImageDialog(getMainFrame(), _context.getImageSettings(), true, _context.displayScaled());
@@ -2337,6 +2337,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
             for (String keyword : keywords) {
                 selectedCharacters.addAll(_context.getCharactersForKeyword(keyword));
+                returnSelectedKeywords.add(keyword);
             }
 
             if (permitSelectionFromIncludedCharactersOnly) {
@@ -2347,12 +2348,13 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         } else {
             CharacterKeywordSelectionDialog dlg = new CharacterKeywordSelectionDialog(getMainFrame(), _context, directiveName.toUpperCase(), permitSelectionFromIncludedCharactersOnly);
             show(dlg);
+            returnSelectedKeywords.addAll(dlg.getSelectedKeywords());
             return dlg.getSelectedCharacters();
         }
     }
 
     @Override
-    public List<Character> promptForCharactersByList(String directiveName, boolean selectFromAvailableCharactersOnly) {
+    public List<Character> promptForCharactersByList(String directiveName, boolean selectFromAvailableCharactersOnly, List<String> returnSelectedKeywords) {
         List<Character> charactersToSelect;
 
         String keyword = null;
@@ -2367,12 +2369,13 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         CharacterSelectionDialog dlg = new CharacterSelectionDialog(getMainFrame(), charactersToSelect, directiveName.toUpperCase(), keyword, _context.getImageSettings(), _context.displayNumbering(),
                 _context);
         show(dlg);
+        returnSelectedKeywords.addAll(dlg.getSelectedKeywords());
         return dlg.getSelectedCharacters();
     }
 
     @Override
     public List<Item> promptForTaxaByKeyword(String directiveName, boolean permitSelectionFromIncludedTaxaOnly, boolean noneKeywordAvailable, boolean includeSpecimenAsOption,
-            MutableBoolean returnSpecimenSelected) {
+            MutableBoolean returnSpecimenSelected, List<String> returnSelectedKeywords) {
 
         List<Image> taxonKeywordImages = _context.getDataset().getTaxonKeywordImages();
         if (_context.getImageDisplayMode() == ImageDisplayMode.AUTO && taxonKeywordImages != null && !taxonKeywordImages.isEmpty()) {
@@ -2397,6 +2400,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
             for (String keyword : keywords) {
                 selectedTaxa.addAll(_context.getTaxaForKeyword(keyword));
+                returnSelectedKeywords.add(keyword);
             }
 
             if (permitSelectionFromIncludedTaxaOnly) {
@@ -2408,13 +2412,14 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             TaxonKeywordSelectionDialog dlg = new TaxonKeywordSelectionDialog(getMainFrame(), _context, directiveName.toUpperCase(), permitSelectionFromIncludedTaxaOnly, includeSpecimenAsOption,
                     returnSpecimenSelected);
             show(dlg);
+            returnSelectedKeywords.addAll(dlg.getSelectedKeywords());
             return dlg.getSelectedTaxa();
         }
     }
 
     @Override
     public List<Item> promptForTaxaByList(String directiveName, boolean selectFromRemainingTaxaOnly, boolean autoSelectSingleValue, boolean singleSelect, boolean includeSpecimenAsOption,
-            MutableBoolean returnSpecimenSelected) {
+            MutableBoolean returnSpecimenSelected, List<String> returnSelectedKeywords) {
         List<Item> taxaToSelect;
 
         String keyword = null;
@@ -2432,6 +2437,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             TaxonSelectionDialog dlg = new TaxonSelectionDialog(getMainFrame(), taxaToSelect, directiveName.toUpperCase(), keyword, _context.displayNumbering(), singleSelect, _context,
                     includeSpecimenAsOption, returnSpecimenSelected);
             show(dlg);
+            returnSelectedKeywords.addAll(dlg.getSelectedKeywords());
             return dlg.getSelectedTaxa();
         }
     }
@@ -3039,7 +3045,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         return r;
     }
-    
+
     @Action
     public void systemLookAndFeel() {
         au.org.ala.delta.ui.util.UIUtils.systemLookAndFeel(getMainFrame());

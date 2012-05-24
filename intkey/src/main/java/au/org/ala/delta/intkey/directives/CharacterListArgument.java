@@ -19,8 +19,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
 
+import org.apache.commons.lang.StringUtils;
+
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.Item;
+import au.org.ala.delta.util.Utils;
 
 public class CharacterListArgument extends IntkeyDirectiveArgument<List<au.org.ala.delta.model.Character>> {
 
@@ -46,6 +50,9 @@ public class CharacterListArgument extends IntkeyDirectiveArgument<List<au.org.a
     @Override
     public List<au.org.ala.delta.model.Character> parseInput(Queue<String> inputTokens, IntkeyContext context, String directiveName, StringBuilder stringRepresentationBuilder)
             throws IntkeyDirectiveParseException {
+
+        List<String> selectedKeywordsOrCharacterNumbers = new ArrayList<String>();
+
         boolean overrideExcludedCharacters = false;
 
         String token = inputTokens.poll();
@@ -53,8 +60,6 @@ public class CharacterListArgument extends IntkeyDirectiveArgument<List<au.org.a
             overrideExcludedCharacters = true;
             token = inputTokens.poll();
         }
-
-        overrideExcludedCharacters = overrideExcludedCharacters || _selectFromAll;
 
         List<au.org.ala.delta.model.Character> characters = null;
 
@@ -72,36 +77,60 @@ public class CharacterListArgument extends IntkeyDirectiveArgument<List<au.org.a
                 characters = new ArrayList<au.org.ala.delta.model.Character>();
                 while (token != null) {
                     characters.addAll(ParsingUtils.parseCharacterToken(token, context));
+                    selectedKeywordsOrCharacterNumbers.add(token);
                     token = inputTokens.poll();
                 }
 
-                if (!overrideExcludedCharacters) {
+                if (!(overrideExcludedCharacters || _selectFromAll)) {
                     characters.retainAll(context.getIncludedCharacters());
                 }
             }
         }
 
         if (characters == null) {
+            List<String> selectedKeywords = new ArrayList<String>();
             if (selectionMode == SelectionMode.KEYWORD) {
-                characters = populator.promptForCharactersByKeyword(directiveName, !overrideExcludedCharacters, _noneSelectionPermitted);
+                characters = populator.promptForCharactersByKeyword(directiveName, !(overrideExcludedCharacters || _selectFromAll), _noneSelectionPermitted, selectedKeywords);
             } else {
-                characters = populator.promptForCharactersByList(directiveName, !overrideExcludedCharacters);
+                characters = populator.promptForCharactersByList(directiveName, !(overrideExcludedCharacters || _selectFromAll), selectedKeywords);
             }
 
             if (characters == null) {
                 // cancelled
                 return null;
             }
-        }
 
-        stringRepresentationBuilder.append(" ");
-        for (int i = 0; i < characters.size(); i++) {
-            Character ch = characters.get(i);
-            stringRepresentationBuilder.append(ch.getCharacterId());
-            if (i < characters.size() - 1) {
-                stringRepresentationBuilder.append(" ");
+            // Put selected keywords or taxon numbers into a collection to use
+            // to build the string representation.
+            if (!selectedKeywords.isEmpty()) {
+                for (String selectedKeyword : selectedKeywords) {
+                    if (selectedKeyword.contains(" ")) {
+                        // Enclose any keywords that contain spaces in quotes
+                        // for the string representation
+                        selectedKeywordsOrCharacterNumbers.add("\"" + selectedKeyword + "\"");
+                    } else {
+                        selectedKeywordsOrCharacterNumbers.add(selectedKeyword);
+                    }
+                }
+            } else {
+                List<Integer> selectedCharacterNumbers = new ArrayList<Integer>();
+                for (int i = 0; i < characters.size(); i++) {
+                    Character ch = characters.get(i);
+                    selectedCharacterNumbers.add(ch.getCharacterId());
+                }
+                selectedKeywordsOrCharacterNumbers.add(Utils.formatIntegersAsListOfRanges(selectedCharacterNumbers));
             }
         }
+
+        // build the string representation of the directive call
+        stringRepresentationBuilder.append(" ");
+
+        if (overrideExcludedCharacters) {
+            stringRepresentationBuilder.append(OVERRIDE_EXCLUDED_CHARACTERS);
+            stringRepresentationBuilder.append(" ");
+        }
+
+        stringRepresentationBuilder.append(StringUtils.join(selectedKeywordsOrCharacterNumbers, " "));
 
         if (characters.size() == 0 && !_noneSelectionPermitted) {
             throw new IntkeyDirectiveParseException("NoCharactersInSet.error");

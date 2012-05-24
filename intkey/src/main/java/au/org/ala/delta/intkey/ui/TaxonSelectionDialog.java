@@ -83,6 +83,9 @@ public class TaxonSelectionDialog extends ListSelectionDialog implements Searcha
 
     private boolean _includeSpecimenAsOption;
 
+    // names of keywords selected via the "keywords" button;
+    private List<String> _selectedKeywords;
+
     @Resource
     String title;
 
@@ -213,6 +216,8 @@ public class TaxonSelectionDialog extends ListSelectionDialog implements Searcha
                 }
             }
         });
+        
+        _selectedKeywords = new ArrayList<String>();
     }
 
     @Action
@@ -248,6 +253,7 @@ public class TaxonSelectionDialog extends ListSelectionDialog implements Searcha
             ((SingleFrameApplication) Application.getInstance()).show(dlg);
             if (dlg.getSelectedTaxa() != null) {
                 _selectedTaxa = dlg.getSelectedTaxa();
+                _selectedKeywords = dlg.getSelectedKeywords();
                 this.setVisible(false);
             }
         }
@@ -306,6 +312,10 @@ public class TaxonSelectionDialog extends ListSelectionDialog implements Searcha
 
     public List<Item> getSelectedTaxa() {
         return _selectedTaxa;
+    }
+    
+    public List<String> getSelectedKeywords() {
+        return _selectedKeywords;
     }
 
     @Override
