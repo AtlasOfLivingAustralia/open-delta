@@ -106,7 +106,7 @@ public class KeyTypesettingFileTest extends TestCase {
         Key key = new Key(directivesFile);
         key.calculateKey();
 
-        File typesetFile = Utils.createFileFromPath("foo\\bar.rtf", directivesFile.getParentFile());
+        File typesetFile = Utils.createFileFromPath("foo/bar.rtf", directivesFile.getParentFile());
 
         assertTrue(typesetFile.exists());
     }    
