@@ -108,6 +108,7 @@ public class ImageSettingsDialog extends JDialog {
 		setName("ImageSettings");
 		updateGUI();
 		addEventHandlers();
+		this.setMinimumSize(new Dimension(650,430));
 	}
 
 	private void addEventHandlers() {
