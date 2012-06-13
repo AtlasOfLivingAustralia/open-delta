@@ -131,6 +131,8 @@ public class DeltaEditor extends InternalFrameApplication implements PreferenceC
 	private String newDataSetName;	
 	@Resource
 	private String unableToCloseMessage;
+	
+	private String[] _args;
 
 	public static void main(String[] args) {
 		setupMacSystemProperties(DeltaEditor.class);
@@ -151,6 +153,7 @@ public class DeltaEditor extends InternalFrameApplication implements PreferenceC
 	protected void initialize(String[] args) {
 		_resourceMap = getContext().getResourceMap(DeltaEditor.class);
 		_resourceMap.injectFields(this);
+		_args = args;
 	}
 
 	public boolean getSaveEnabled() {
@@ -213,6 +216,19 @@ public class DeltaEditor extends InternalFrameApplication implements PreferenceC
 		EditorPreferences.addPreferencesChangeListener(this);
 		JOptionPane.showConfirmDialog(getMainFrame(), warning, warningTitle, JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE);
 		super.ready();
+		
+		if (_args != null && _args.length > 0) {
+			try {
+				File f = new File(_args[0]);
+				if (f.exists()) {
+					Task<AbstractObservableDataSet, Void> fileOpenTask = new DeltaFileLoader(this, f);
+					fileOpenTask.addPropertyChangeListener(_statusBar);
+					fileOpenTask.execute();
+				}
+			} catch (Exception ex) {
+				throw new RuntimeException(ex);
+			}
+		}
 	}
 
 	public EditorDataModel getCurrentDataSet() {

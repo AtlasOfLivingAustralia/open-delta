@@ -32,6 +32,10 @@ Name "Open DELTA Suite"
 !include MultiUser.nsh
 !include Sections.nsh
 !include MUI2.nsh
+!include FileFunc.nsh
+
+!insertmacro RefreshShellIcons
+!insertmacro un.RefreshShellIcons
 
 # Variables
 Var StartMenuGroup
@@ -114,6 +118,14 @@ Section -post SEC0001
     WriteRegStr SHELL_CONTEXT "Software\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" "URLInfoAbout" "http://code.google.com/p/open-delta/"
     WriteRegStr SHELL_CONTEXT "Software\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" "InstallDate" "${DATE}"
     
+    # File type associations
+    WriteRegStr HKCR ".dlt" "" "OpenDelta.EditorDocument"    
+    WriteRegStr HKCR "OpenDelta.EditorDocument" "" "OpenDelta Editor data file"
+    WriteRegStr HKCR "OpenDelta.EditorDocument\DefaultIcon" "" "$INSTDIR\DeltaEditor.exe,1"
+    WriteRegStr HKCR "OpenDelta.EditorDocument\shell\open\command" "" '"$INSTDIR\DeltaEditor.exe" "%1"'
+        
+    ${RefreshShellIcons}
+    
     WriteINIStr "$INSTDIR\uninstall.ini" UninstallMode mode $MultiUser.InstallMode
 SectionEnd
 
@@ -163,6 +175,13 @@ Section -un.post UNSEC0001
     DeleteRegValue SHELL_CONTEXT "${REGKEY}" Path
     DeleteRegKey /IfEmpty SHELL_CONTEXT "${REGKEY}\Components"
     DeleteRegKey /IfEmpty SHELL_CONTEXT "${REGKEY}"
+    
+    # File type associations
+    DeleteRegKey HKCR ".dlt"
+    DeleteRegKey HKCR "OpenDelta.EditorDocument" 
+    
+    ${un.RefreshShellIcons}   
+    
     RmDir /REBOOTOK "$SMPROGRAMS\$StartMenuGroup"
     RmDir /REBOOTOK "$INSTDIR"
     Push $R0
