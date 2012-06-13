@@ -121,7 +121,7 @@ Section -post SEC0001
     # File type associations
     WriteRegStr HKCR ".dlt" "" "OpenDelta.EditorDocument"    
     WriteRegStr HKCR "OpenDelta.EditorDocument" "" "OpenDelta Editor data file"
-    WriteRegStr HKCR "OpenDelta.EditorDocument\DefaultIcon" "" "$INSTDIR\DeltaEditor.exe,1"
+    WriteRegStr HKCR "OpenDelta.EditorDocument\DefaultIcon" "" "$INSTDIR\DeltaEditor.exe,0"
     WriteRegStr HKCR "OpenDelta.EditorDocument\shell\open\command" "" '"$INSTDIR\DeltaEditor.exe" "%1"'
         
     ${RefreshShellIcons}
