@@ -379,13 +379,17 @@ public class ImageDetailsPanel extends JPanel {
 			
 			ImageSettings settings = _dataSet.getImageSettings();
 			if (settings.isOnResourcePath(imageFile)) {
-				List<ImageOverlay> existingSounds = _selectedImage.getSounds();
+				
 				String name = imageFile.getName();
 				boolean exists = false;
-				for (ImageOverlay sound : existingSounds) {
-					if (name.equals(sound.overlayText)) {
-						exists = true;
-						break;
+				
+				if (_selectedImage != null) {
+					List<ImageOverlay> existingSounds = _selectedImage.getSounds();
+					for (ImageOverlay sound : existingSounds) {
+						if (name.equals(sound.overlayText)) {
+							exists = true;
+							break;
+						}
 					}
 				}
 				if (exists) {
