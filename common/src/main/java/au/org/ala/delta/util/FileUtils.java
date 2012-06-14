@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 
 public class FileUtils {
 
@@ -49,6 +50,15 @@ public class FileUtils {
 		backupAndDelete(fullPath);
 	}
 	
+	/**
+	 * Attempts to make a relative path from path to file. If path and file have different roots (like drives under Windows), then
+	 * the path cannot be made relative, and in these cases this function will return null.
+	 * 
+	 * @param path the source path
+	 * @param file the file/directory that will be made relative to the source path
+	 * @return either relative path from path to file, or null indicating that no common ancestor could be found (i.e. path cannot be made relative).
+	 * 
+	 */
 	public static String makeRelativeTo(String path, File file) {
 		String relativePath;
 		if (file.isAbsolute()) {
@@ -57,11 +67,17 @@ public class FileUtils {
             File parent = parent(file, dataSetPath);
             File commonParent = dataSetPath;
             String prefix = "";
-            while (!parent.equals(commonParent)) {
+            while (!parent.equals(commonParent) && commonParent != null) {
                 prefix += ".." + File.separatorChar;
                 commonParent = commonParent.getParentFile();
                 parent = parent(file, commonParent);
             }
+            
+            if (commonParent == null) {
+            	// No common parent, cannot make relative
+            	return null;
+            }
+            
             String filePath = file.getAbsolutePath();
             String parentPath = parent.getAbsolutePath();
 
@@ -69,10 +85,16 @@ public class FileUtils {
             if (!parentPath.endsWith(File.separator)) {
                 relativePathIndex++;
             }
+            if (relativePathIndex > filePath.length()) {
+            	relativePathIndex = filePath.length();
+            }
             relativePath = prefix + filePath.substring(relativePathIndex);
+            if (StringUtils.isEmpty(relativePath)) {
+            	relativePath = ".";
+            }
         } else {
             relativePath = file.getPath();
-        }
+        }		
 		return relativePath;
 
 	}
