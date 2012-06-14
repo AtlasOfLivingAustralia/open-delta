@@ -15,6 +15,7 @@
 package au.org.ala.delta.editor.ui;
 
 import java.awt.Cursor;
+import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
@@ -23,8 +24,10 @@ import java.awt.event.MouseEvent;
 import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
+import javax.swing.ToolTipManager;
 import javax.swing.TransferHandler;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -32,6 +35,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.jdesktop.application.Application;
 
 import au.org.ala.delta.editor.ui.dnd.SimpleTransferHandler;
@@ -173,6 +177,8 @@ public class CharacterTree extends JTree implements ReorderableList {
 		_stateListBehaviour = new StateListBehaviour();
 
 		_reorderableListBehaviour = _characterListBehaviour;
+		
+		ToolTipManager.sharedInstance().registerComponent(this);
 
 		addMouseListener(new MouseAdapter() {
 
@@ -228,6 +234,27 @@ public class CharacterTree extends JTree implements ReorderableList {
 			getActionMap().put("findNext", findNext);
 		}
 
+	}
+	
+	@Override
+	public String getToolTipText(MouseEvent event) {
+		TreePath path = getClosestPathForLocation(event.getX(), event.getY());
+		if (path != null) {
+			Object node = path.getLastPathComponent();
+			if (node instanceof CharacterTreeNode) {
+				CharacterTreeNode chNode = (CharacterTreeNode) node;
+				String desc = chNode.getCharacter().getDescription();				
+				int width = getGraphics().getFontMetrics(getFont()).stringWidth(desc);
+				if (width > getParent().getWidth() - 70) {					
+					if (width > 400) {
+						return String.format("<html><body style=\"width: %dpx;\">%s</body></html>", 400, StringEscapeUtils.escapeHtml(desc));						
+					} else {
+						return desc;
+					}				
+				}
+			}
+		}
+		return null;		
 	}
 
 	private SearchDialog _search;
