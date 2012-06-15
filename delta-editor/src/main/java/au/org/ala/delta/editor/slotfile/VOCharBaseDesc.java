@@ -367,8 +367,10 @@ public class VOCharBaseDesc extends VOImageHolderDesc {
 							return (VOCharTextDesc)desc;
 						}
 						else {
-							System.err.println("CharTextInfo contains a reference to a desc not of type VOCharTextDesc: "+getUniId());
-							return null;
+                            if (desc != null) {
+                                System.err.println("CharTextInfo contains a reference to a desc not of type VOCharTextDesc: "+getUniId()+" Desc: "+desc);
+                            }
+                            return null;
 						}
 					}
 				}
