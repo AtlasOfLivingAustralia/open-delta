@@ -50,6 +50,16 @@ public class DeltaVOP extends VOP {
 	}
 
 	public VOImageInfoDesc getImageInfo() {
+		if (_imageInfo == null) {
+			VOImageInfoDesc.ImageInfoFixedData imageInfoData = new VOImageInfoDesc.ImageInfoFixedData();
+
+		    _imageInfo = (VOImageInfoDesc)insertObject(
+		           imageInfoData,
+		    	   VOImageInfoDesc.ImageInfoFixedData.SIZE,
+		           null,
+		           0,
+		           0);
+		}
 		return _imageInfo;
 	}
 

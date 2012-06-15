@@ -18,6 +18,7 @@ import java.awt.Font;
 import java.awt.font.TextAttribute;
 import java.util.Arrays;
 import java.util.Map;
+
 import au.org.ala.delta.io.BinFile;
 import au.org.ala.delta.io.BinFileEncoding;
 import au.org.ala.delta.model.image.ImageSettings.OverlayFontType;
@@ -264,12 +265,14 @@ public class VOImageInfoDesc extends VOAnyDesc {
 	public static final int overlayDefsOffs = alignmentOffs + 2;
 	public static final int hotspotDefsOffs = overlayDefsOffs + 2;
 
-	public class ImageInfoFixedData extends FixedData {
+	public static class ImageInfoFixedData extends FixedData {
 
 		public static final int SIZE = FixedData.SIZE + 2 + 2 + 2 + 2 + 2 + 4;
 
 		public ImageInfoFixedData() {
 			super("Img inf Desc");
+			this.TypeID = VODescFactory.VOImageInfoDesc_TypeId;
+			
 		}
 
 		public short fixedSize = SIZE;
