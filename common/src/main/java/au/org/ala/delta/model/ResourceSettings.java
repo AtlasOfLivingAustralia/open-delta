@@ -45,6 +45,7 @@ public class ResourceSettings {
 
 	public ResourceSettings() {
 		super();
+        _resourceLocations = new ArrayList<String>();
 		_remoteResourceLocations = new HashSet<String>();
 	}
 

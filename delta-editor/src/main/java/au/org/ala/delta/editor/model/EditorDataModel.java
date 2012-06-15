@@ -457,6 +457,17 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 		return displayTextFromAttributeValue(attribute, _wrappedDataSet.getAttributeAsString(itemNumber, characterNumber));
 		
 	}
+
+    @Override
+    public void setImageSettings(ImageSettings imageSettings) {
+
+        ImageSettings oldSettings = getImageSettings();
+        if (!imageSettings.equals(oldSettings)) {
+
+            super.setImageSettings(imageSettings);
+            setModified(true);
+        }
+    }
 	
 	
 }

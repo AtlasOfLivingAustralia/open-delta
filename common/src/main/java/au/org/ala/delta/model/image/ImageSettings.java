@@ -345,4 +345,51 @@ public class ImageSettings extends ResourceSettings {
     public void setDatasetName(String datasetName) {
         this._datasetName = datasetName;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ImageSettings)) return false;
+
+        ImageSettings that = (ImageSettings) o;
+
+        if (_centreInBox != that._centreInBox) return false;
+        if (_hotspotsPopup != that._hotspotsPopup) return false;
+        if (_includeComments != that._includeComments) return false;
+        if (_omitDescription != that._omitDescription) return false;
+        if (_useCustomPopupColour != that._useCustomPopupColour) return false;
+        if (_useIntegralHeight != that._useIntegralHeight) return false;
+        if (getButtonAlignment() != that.getButtonAlignment()) return false;
+        if (_customPopupColour != null ? !_customPopupColour.equals(that._customPopupColour) : that._customPopupColour != null)
+            return false;
+        if (_defaultButtonFont != null ? !_defaultButtonFont.equals(that._defaultButtonFont) : that._defaultButtonFont != null)
+            return false;
+        if (_defaultFeatureFontInfo != null ? !_defaultFeatureFontInfo.equals(that._defaultFeatureFontInfo) : that._defaultFeatureFontInfo != null)
+            return false;
+        if (_defaultFontInfo != null ? !_defaultFontInfo.equals(that._defaultFontInfo) : that._defaultFontInfo != null)
+            return false;
+        if (!_resourceLocations.equals(that._resourceLocations)) return false;
+        if (!_remoteResourceLocations.equals(that._remoteResourceLocations)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = _defaultFontInfo != null ? _defaultFontInfo.hashCode() : 0;
+        result = 31 * result + (_defaultFeatureFontInfo != null ? _defaultFeatureFontInfo.hashCode() : 0);
+        result = 31 * result + (_defaultButtonFont != null ? _defaultButtonFont.hashCode() : 0);
+        result = 31 * result + (_centreInBox ? 1 : 0);
+        result = 31 * result + (_includeComments ? 1 : 0);
+        result = 31 * result + (_omitDescription ? 1 : 0);
+        result = 31 * result + (_useIntegralHeight ? 1 : 0);
+        result = 31 * result + (_hotspotsPopup ? 1 : 0);
+        result = 31 * result + (_useCustomPopupColour ? 1 : 0);
+        result = 31 * result + (_customPopupColour != null ? _customPopupColour.hashCode() : 0);
+        result = 31 * result + (_buttonAlignment != null ? _buttonAlignment.hashCode() : 0);
+        result = 31 * result + (_resourceLocations.hashCode());
+        result = 31 * result + (_remoteResourceLocations.hashCode());
+
+        return result;
+    }
 }

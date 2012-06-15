@@ -66,32 +66,34 @@ public class VOImageInfoDesc extends VOAnyDesc {
 	}
 
 	public void storeQData() {
-		makeTemp();
-		byte[] trailerBuf = null;
-		int trailerLeng = 0;
+        synchronized (getVOP()) {
+            makeTemp();
+            byte[] trailerBuf = null;
+            int trailerLeng = 0;
 
-		// If the size of TFixedData has been increased (due to a newer program version)
-		// re-write the whole slot, using the new size.
-		if (_fixedData.fixedSize < ImageInfoFixedData.SIZE) {
-		      // Save a copy of all "variable" data
-		      trailerBuf = dupTrailingData(0);
-		      if (trailerBuf != null) {
-		    	  trailerLeng = trailerBuf.length;
-		      }
-		      _dataOffs = SlotFile.SlotHeader.SIZE + ImageInfoFixedData.SIZE; ///// Adjust DataOffs accordingly
-		      _fixedData.fixedSize = ImageInfoFixedData.SIZE;
-		      // Do seek to force allocation of large enough slot
-		      dataSeek(trailerLeng);
-		}
+            // If the size of TFixedData has been increased (due to a newer program version)
+            // re-write the whole slot, using the new size.
+            if (_fixedData.fixedSize < ImageInfoFixedData.SIZE) {
+                  // Save a copy of all "variable" data
+                  trailerBuf = dupTrailingData(0);
+                  if (trailerBuf != null) {
+                      trailerLeng = trailerBuf.length;
+                  }
+                  _dataOffs = SlotFile.SlotHeader.SIZE + ImageInfoFixedData.SIZE; ///// Adjust DataOffs accordingly
+                  _fixedData.fixedSize = ImageInfoFixedData.SIZE;
+                  // Do seek to force allocation of large enough slot
+                  dataSeek(trailerLeng);
+            }
 
-		_slotFile.seek(_slotHdrPtr + SlotFile.SlotHeader.SIZE);
-		dataWrite(_fixedData);
-		
-		if (trailerBuf != null) { // If fixedData was resized, re-write the saved, variable-length data
-		    dataSeek(0);
-		    dataWrite(trailerBuf);
-		    dataTruncate();
-		}
+            _slotFile.seek(_slotHdrPtr + SlotFile.SlotHeader.SIZE);
+            _fixedData.write(_slotFile);
+
+            if (trailerBuf != null) { // If fixedData was resized, re-write the saved, variable-length data
+                dataSeek(0);
+                dataWrite(trailerBuf);
+                dataTruncate();
+            }
+        }
 	}
 
 	public short getButtonAlignment() {

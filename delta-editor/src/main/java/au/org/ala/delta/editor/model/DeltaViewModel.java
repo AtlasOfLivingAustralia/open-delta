@@ -28,6 +28,7 @@ import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.SearchDirection;
 import au.org.ala.delta.model.image.Image;
+import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import au.org.ala.delta.util.Predicate;
 import au.org.ala.delta.util.Visitor;
@@ -227,5 +228,9 @@ public class DeltaViewModel extends DataSetWrapper implements EditorViewModel, P
 	public String attributeValueFromDisplayText(Attribute attribute, String attributeDisplayText) {
 		return _editorDataModel.attributeValueFromDisplayText(attribute, attributeDisplayText);
 	}
-	
+
+    @Override
+    public void setImageSettings(ImageSettings imageSettings) {
+        _editorDataModel.setImageSettings(imageSettings);
+    }
 }
