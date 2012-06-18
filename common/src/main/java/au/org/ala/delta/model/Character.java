@@ -90,7 +90,7 @@ public abstract class Character implements Illustratable, Comparable<Character>,
      * that control (or make inapplicable) this Character.
      * 
      * Use CharacterDependency.removeDependentCharacter instead of this method!
-     * @param dependency the CharacterDependency that controls this Character.
+     * @param characterDependency the CharacterDependency that controls this Character.
      */
 	public void removeControllingCharacter(
 			CharacterDependency characterDependency) {
