@@ -105,7 +105,10 @@ public class OutputFileManager {
                 return null;
             }
             String parentPath = _context.getFile().getParent();
-            String fileName = FilenameUtils.concat(parentPath, getFileName());
+            String fileName = getFileName();
+            if (StringUtils.isNotBlank(parentPath)) {
+                fileName = FilenameUtils.concat(parentPath, fileName);
+            }
             return new File(fileName);
         }
 
