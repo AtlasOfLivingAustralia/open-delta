@@ -14,6 +14,11 @@
  ******************************************************************************/
 package au.org.ala.delta.translation.attribute;
 
+import au.org.ala.delta.model.NumericRange;
+import au.org.ala.delta.model.attribute.DefaultAttributeChunkFormatter;
+import au.org.ala.delta.model.attribute.DefaultParsedAttribute;
+import au.org.ala.delta.model.attribute.ParsedAttribute;
+import au.org.ala.delta.model.impl.DefaultAttributeData;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.model.NumericCharacter;
@@ -23,6 +28,9 @@ import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.translation.ItemListTypeSetter;
 import au.org.ala.delta.translation.attribute.CommentedValueList.Values;
+
+import java.text.ParseException;
+import java.util.List;
 
 /**
  * The NumericAttributeTranslator is responsible for translating NumericCharacter attributes into 
@@ -63,22 +71,35 @@ public class NumericAttributeTranslator extends AttributeTranslator {
 	
 	@Override
 	public String translateValue(String value) {
-		if (_omitLower) {
-			int upperExtreme = value.indexOf("(-");
-			int upperEnd = upperExtreme < 0 ? value.length() : upperExtreme;
-			StringBuilder upper = new StringBuilder();
-			int i;
-			for (i=upperEnd-1; i>=0; i--) {
-				if (value.charAt(i) == '-') {
-					break;
-				}
-			}
-			upper.append(value.substring(i+1, upperEnd));
-			if (upperExtreme >= 0) {
-				upper.append(value.substring(upperExtreme, value.length()));
-			}
-			return upper.toString();
-		}
+        DefaultAttributeData attributeData = new DefaultAttributeData(_character);
+        try {
+            attributeData.setValueFromString(value);
+
+            if (_omitLower) {
+
+                List<NumericRange> number = attributeData.getNumericValue();
+
+                if (number.size() > 0) {
+                    NumericRange range = number.get(0);
+
+
+                    StringBuilder result = new StringBuilder(range.getNormalRange().getMaximumNumber().toString());
+                    if (range.hasExtremeHigh()) {
+                        result.append("(").append(_typeSetter.rangeSeparator()).append(range.getExtremeHigh()).append(")");
+                    }
+                    return result.toString();
+                }
+            }
+
+            return attributeData.parsedAttribute().getAsText(new DefaultAttributeChunkFormatter(false, _typeSetter.rangeSeparator()));
+
+        }
+        catch (ParseException e) {
+            // This shouldn't happen as the attribute has already been parsed at this point.
+        }
+
+
+
 		return value;
 	}
 

@@ -47,10 +47,17 @@ public class DefaultParsedAttribute implements ParsedAttribute {
 		init(charBase);
 	}
 
-	public DefaultParsedAttribute(String text, Character character) throws ParseException {
+	public DefaultParsedAttribute(Character character, String text) throws ParseException {
 		init(character);
 		parse(text, false);
 	}
+
+    public DefaultParsedAttribute(Character character, List<AttrChunk> chunks) {
+        init(character);
+        for (AttrChunk chunk : chunks) {
+            insert(end(), chunk);
+        }
+    }
 
 	@Override
 	public String toString() {

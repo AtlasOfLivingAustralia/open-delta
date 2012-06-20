@@ -256,13 +256,11 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
 
     /**
      * 
-     * @param item
-     *            the item to write the name of
+     * @param item the item to write the name of
      * @param commentAction
      *            0 = omit comments, 1 = output comments with angle brackets, 2
      *            - output comments without angle brackets
-     * @param typeSettingMarkNum
-     * @param completionAction
+     * @param completionAction what to do after writing the name.
      */
     private void writeName(Item item, int commentAction, int completionAction) {
 
@@ -465,7 +463,13 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
             }
         }
 
-        String formattedAttribute = translator.translate(_attributeParser.parse(value));
+        String formattedAttribute;
+        if (attribute.getCharacter().getCharacterType().isNumeric()) {
+            formattedAttribute = translator.translate(_attributeParser.toCommentedValues(attribute));
+        }
+        else {
+            formattedAttribute = translator.translate(_attributeParser.parse(value));
+        }
 		return formattedAttribute;
 	}
 

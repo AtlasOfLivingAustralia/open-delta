@@ -25,6 +25,7 @@ import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.translation.DataSetTranslator;
 import au.org.ala.delta.translation.FilteredDataSet;
 import au.org.ala.delta.translation.FormatterFactory;
+import au.org.ala.delta.translation.PlainTextTypeSetter;
 import au.org.ala.delta.translation.attribute.AttributeTranslatorFactory;
 import au.org.ala.delta.util.FileUtils;
 
@@ -51,7 +52,8 @@ public class KeyTranslator implements DataSetTranslator {
 		_attributeTranslatorFactory = new AttributeTranslatorFactory(
 				_context, 
 				_formatterFactory.createCharacterFormatter(),
-				_formatterFactory.createAttributeFormatter(), null);
+				_formatterFactory.createAttributeFormatter(),
+                new PlainTextTypeSetter());
 		
 	}
 

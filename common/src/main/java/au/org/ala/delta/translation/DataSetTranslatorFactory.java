@@ -170,7 +170,7 @@ public class DataSetTranslatorFactory {
 				context, 
 				stateFormatter,
 				formatterFactory.createAttributeFormatter(),
-				null);
+				new PlainTextTypeSetter());
 		KeyStateTranslator keyStateTranslator = new KeyStateTranslator(attributeTranslatorFactory);
 		return new NexusTranslator(context, dataSet, printFile, keyStateTranslator, charFormatter, itemFormatter);
 	}
@@ -192,7 +192,7 @@ public class DataSetTranslatorFactory {
 				context, 
 				stateFormatter,
 				formatterFactory.createAttributeFormatter(),
-				null);
+                new PlainTextTypeSetter());
 		
 		KeyStateTranslator keyStateTranslator = new KeyStateTranslator(attributeTranslatorFactory);
 		

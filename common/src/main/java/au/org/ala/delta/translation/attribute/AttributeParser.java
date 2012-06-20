@@ -17,9 +17,13 @@ package au.org.ala.delta.translation.attribute;
 import java.io.StringReader;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import au.org.ala.delta.directives.AbstractStreamParser;
+import au.org.ala.delta.model.Attribute;
+import au.org.ala.delta.model.attribute.AttrChunk;
+import au.org.ala.delta.model.attribute.ChunkType;
 import au.org.ala.delta.translation.attribute.CommentedValueList.CommentedValues;
 import au.org.ala.delta.translation.attribute.CommentedValueList.Values;
 
@@ -131,5 +135,57 @@ public class AttributeParser {
 		
 		
 	}
+
+    public CommentedValueList toCommentedValues(Attribute attribute) {
+        String characterComment = null;
+        List<CommentedValues> commentedValues = new ArrayList<CommentedValues>();
+        int i = 0;
+        Iterator<AttrChunk> chunks = attribute.parsedAttribute().iterator();
+        while (chunks.hasNext()) {
+            AttrChunk chunk = chunks.next();
+
+            // The character comment is treated differently to value comments.
+            if (i==0 && chunk.isTextChunk()) {
+                characterComment = chunk.getAsText(true);
+            }
+            else {
+                String comment = "";
+                StringBuilder value = new StringBuilder();
+                while (chunks.hasNext() && chunk.getType() != ChunkType.CHUNK_OR) {
+                    if (chunk.isTextChunk()) {
+                        if (comment.length() > 0) {
+                            throw new IllegalArgumentException("Unexpected second comment");
+                        }
+                        comment = chunk.getAsText(true);
+                    }
+                    else {
+                        value.append(chunk.getAsText(true));
+                    }
+                    chunk = chunks.next();
+                }
+                Values values;
+                String separator = "";
+                if (value.indexOf(RANGE_SEPARATOR) > 0) {
+                    separator = RANGE_SEPARATOR;
+                }
+                if (value.indexOf(AND_SEPARATOR) > 0) {
+                    separator = AND_SEPARATOR;
+                }
+                if ("".equals(separator) || (attribute.getCharacter().getCharacterType().isNumeric() && RANGE_SEPARATOR.equals(separator))) {
+                    values = new Values(value.toString());
+                }
+                else {
+                    values = new Values(value.toString().split(separator), separator);
+                }
+
+
+                commentedValues.add(new CommentedValues(values, comment));
+
+            }
+
+            i++;
+        }
+        return new CommentedValueList(characterComment, commentedValues);
+    }
 	
 }

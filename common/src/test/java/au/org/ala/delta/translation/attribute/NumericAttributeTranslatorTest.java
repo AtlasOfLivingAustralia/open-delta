@@ -14,6 +14,8 @@
  ******************************************************************************/
 package au.org.ala.delta.translation.attribute;
 
+import au.org.ala.delta.model.Attribute;
+import au.org.ala.delta.model.Item;
 import junit.framework.TestCase;
 
 import org.junit.Before;
@@ -51,7 +53,7 @@ public class NumericAttributeTranslatorTest extends TestCase {
 	 * Tests a Real Numeric character is formatted correctly.
 	 */
 	@Test
-	public void testRealAttributeNoComments() {
+	public void testRealAttributeNoComments() throws Exception {
 		String attributeValue = "1.3";
 		String value = format(_realCharacter, attributeValue);
 		
@@ -62,7 +64,7 @@ public class NumericAttributeTranslatorTest extends TestCase {
 	 * Tests a Real Numeric character with comments is formatted correctly.
 	 */
 	@Test
-	public void testRealAttributeWithComments() {
+	public void testRealAttributeWithComments() throws Exception {
 		String attributeValue = "1.3<test>";
 		String value = format(_realCharacter, attributeValue);
 		
@@ -70,7 +72,7 @@ public class NumericAttributeTranslatorTest extends TestCase {
 	}
 	
 	@Test
-	public void testMoreComplexAttributes() {
+	public void testMoreComplexAttributes() throws Exception {
 
 		String[] inputs = {
 				"<comment 1>1.3<comment 2>", "<comment 1>1.3-2<comment 2>",
@@ -88,16 +90,26 @@ public class NumericAttributeTranslatorTest extends TestCase {
 	}
 	
 	@Test
-	public void zztestOmitUpperForCharacter() {
+	public void testOmitUpperForCharacter() throws Exception {
 		_translator = new NumericAttributeTranslator(_realCharacter, _typeSetter, _attributeFormatter, false, false, true);
 	
 		String[] inputs = {
-				"<comment 1>1.3(-2)<comment 2>", "<comment 1>1.3-2<comment 2>",
-				"<comment 1>1&2<comment 2>", "<comment 1>1<comment 2>/2<comment 3>"};
+				"(1-)2-3-4(-5)",
+                "(1-)2-3-4",
+				"(1-)2-3",
+                "(1-)2",
+                "2-3-4(-5)",
+                "2-3-4",
+                "2-3"};
 		
 		String[] expected = {
-				"<comment 1> 1.3 units <comment 2>", "<comment 1> 2 units <comment 2>",
-				"<comment 1> 1 and 2 units <comment 2>", "<comment 1> 1 units <comment 2>, or 2 units <comment 3>"};
+				"4(-5) units",
+		        "4 units",
+                "3 units",
+                "2 units",
+                "4(-5) units",
+                "4 units",
+                "3 units"};
 		
 		for (int i=0; i<inputs.length; i++) {
 			String formattedValue = format(_realCharacter, inputs[i]);
@@ -105,9 +117,15 @@ public class NumericAttributeTranslatorTest extends TestCase {
 		}
 	}
 	
-	private String format(au.org.ala.delta.model.Character character, String value) {
-		AttributeParser parser = new AttributeParser();
-		
-		return _translator.translate(parser.parse(value));
+	private String format(au.org.ala.delta.model.Character character, String value) throws Exception {
+		DefaultDataSetFactory factory = new DefaultDataSetFactory();
+        Item item = factory.createItem(1);
+
+        AttributeParser parser = new AttributeParser();
+
+        Attribute attribute = new DefaultDataSetFactory().createAttribute(character, item);
+        attribute.setValueFromString(value);
+
+        return _translator.translate(parser.toCommentedValues(attribute));
 	}
 }

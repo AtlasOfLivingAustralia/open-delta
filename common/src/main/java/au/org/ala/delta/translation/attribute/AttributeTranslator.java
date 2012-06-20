@@ -45,8 +45,8 @@ public abstract class AttributeTranslator {
 
 	public AttributeTranslator(AttributeFormatter formatter, boolean omitOr) {
 		_separators = new HashMap<String, String>();
-		_separators.put("&", "and");
-		_separators.put("-", "to");
+		_separators.put("&", Words.word(Word.AND));
+		_separators.put("-", Words.word(Word.TO));
 		_attributeFormatter = formatter;
 		_omitOr = omitOr;
 		_comma = Words.word(Word.COMMA);

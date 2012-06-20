@@ -26,7 +26,12 @@ public class PlainTextTypeSetter implements ItemListTypeSetter {
 
 	private PrintFile _printer;
 	private int _blankLinesBeforeItem;
-	
+
+
+    public PlainTextTypeSetter() {
+        this(null, 0);
+    }
+
 	public PlainTextTypeSetter(PrintFile output) {
 		this(output, 2);
 	}
