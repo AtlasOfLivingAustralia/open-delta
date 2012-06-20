@@ -116,6 +116,30 @@ public class NumericAttributeTranslatorTest extends TestCase {
 			assertEquals(expected[i], formattedValue);
 		}
 	}
+
+    /**
+     * CONFOR formats real numbers to 2 significant figures by default.
+     * @throws Exception if there is an error running the test.
+     */
+    @Test
+    public void testDecimalPlaces() throws Exception {
+
+        _translator = new NumericAttributeTranslator(_realCharacter, _typeSetter, _attributeFormatter, false, false, false);
+
+        String[] inputs = {
+                "(-0.000001-)2.0-33.3333-55555.00(-444444.4)"};
+
+        // The original CONFOR doesn't remove significant figures unless they are after the decimal point, so would
+        // actually produce (-0.000001-)2-33.333-55555(-444444).
+        String[] expected = {
+                "(-0.000001-)2-33.333-55555(-444440) units"};
+
+        for (int i=0; i<inputs.length; i++) {
+            String formattedValue = format(_realCharacter, inputs[i]);
+            assertEquals(expected[i], formattedValue);
+        }
+
+    }
 	
 	private String format(au.org.ala.delta.model.Character character, String value) throws Exception {
 		DefaultDataSetFactory factory = new DefaultDataSetFactory();

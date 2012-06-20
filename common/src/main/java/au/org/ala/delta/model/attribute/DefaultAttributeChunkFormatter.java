@@ -16,6 +16,8 @@ package au.org.ala.delta.model.attribute;
 
 import au.org.ala.delta.model.Attribute;
 
+import java.math.BigDecimal;
+
 public class DefaultAttributeChunkFormatter implements AttributeChunkFormatter {
 	
 	boolean _encloseInCommentBrackets = false;
@@ -52,13 +54,13 @@ public class DefaultAttributeChunkFormatter implements AttributeChunkFormatter {
 				dest = chunk.getStateId() + "";			
 				break;
 			case ChunkType.CHUNK_NUMBER:
-				dest = chunk.getNumber().toPlainString();
+				dest = formatNumber(chunk.getNumber());
 				break;
 			case ChunkType.CHUNK_EXLO_NUMBER:
-				dest = "(" + chunk.getNumber().toPlainString() + getRangeSeparator() + ")";
+				dest = "(" + formatNumber(chunk.getNumber()) + getRangeSeparator() + ")";
 				break;
 			case ChunkType.CHUNK_EXHI_NUMBER:
-				dest = "("+getRangeSeparator() + chunk.getNumber().toPlainString() + ")";
+				dest = "("+getRangeSeparator() + formatNumber(chunk.getNumber()) + ")";
 				break;
 			case ChunkType.CHUNK_VARIABLE:
 				dest = Attribute.VARIABLE;
@@ -93,4 +95,13 @@ public class DefaultAttributeChunkFormatter implements AttributeChunkFormatter {
 	protected String getRangeSeparator() {
 		return _rangeSeparator;
 	}
+
+    /**
+     * Turns the supplied BigDecimal into a String.
+     * @param number the number to format.
+     * @return a String representation of the supplied number.
+     */
+    public String formatNumber(BigDecimal number) {
+        return number.toPlainString();
+    }
 }

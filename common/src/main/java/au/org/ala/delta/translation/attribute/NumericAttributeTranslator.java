@@ -16,8 +16,7 @@ package au.org.ala.delta.translation.attribute;
 
 import au.org.ala.delta.model.NumericRange;
 import au.org.ala.delta.model.attribute.DefaultAttributeChunkFormatter;
-import au.org.ala.delta.model.attribute.DefaultParsedAttribute;
-import au.org.ala.delta.model.attribute.ParsedAttribute;
+import au.org.ala.delta.model.attribute.SignificantFiguresAttributeChunkFormatter;
 import au.org.ala.delta.model.impl.DefaultAttributeData;
 import org.apache.commons.lang.StringUtils;
 
@@ -29,6 +28,7 @@ import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.translation.ItemListTypeSetter;
 import au.org.ala.delta.translation.attribute.CommentedValueList.Values;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.List;
 
@@ -72,26 +72,30 @@ public class NumericAttributeTranslator extends AttributeTranslator {
 	@Override
 	public String translateValue(String value) {
         DefaultAttributeData attributeData = new DefaultAttributeData(_character);
+        String rangeSeparator = _typeSetter != null ? _typeSetter.rangeSeparator() : "-";
+        DefaultAttributeChunkFormatter formatter = new SignificantFiguresAttributeChunkFormatter(false, rangeSeparator);
         try {
             attributeData.setValueFromString(value);
 
             if (_omitLower) {
 
                 List<NumericRange> number = attributeData.getNumericValue();
-
-                if (number.size() > 0) {
-                    NumericRange range = number.get(0);
-
-
-                    StringBuilder result = new StringBuilder(range.getNormalRange().getMaximumNumber().toString());
-                    if (range.hasExtremeHigh()) {
-                        result.append("(").append(_typeSetter.rangeSeparator()).append(range.getExtremeHigh()).append(")");
-                    }
-                    return result.toString();
+                if (number.size() == 0) {
+                    return "";
                 }
+                NumericRange range = number.get(0);
+
+
+                StringBuilder result = new StringBuilder(formatter.formatNumber((BigDecimal) range.getNormalRange().getMaximumNumber()));
+                if (range.hasExtremeHigh()) {
+                    result.append("(").append(_typeSetter.rangeSeparator()).append(formatter.formatNumber((BigDecimal) range.getExtremeHigh())).append(")");
+                }
+                return result.toString();
+
             }
 
-            return attributeData.parsedAttribute().getAsText(new DefaultAttributeChunkFormatter(false, _typeSetter.rangeSeparator()));
+
+            return attributeData.parsedAttribute().getAsText(formatter);
 
         }
         catch (ParseException e) {
@@ -136,4 +140,5 @@ public class NumericAttributeTranslator extends AttributeTranslator {
 		}
 		return output.toString();
 	}
+
 }
