@@ -14,7 +14,10 @@
  ******************************************************************************/
 package au.org.ala.delta.translation.attribute;
 
+import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.NumericRange;
+import au.org.ala.delta.model.attribute.AttributeChunkFormatter;
+import au.org.ala.delta.model.attribute.DecimalPlacesAttributeChunkFormatter;
 import au.org.ala.delta.model.attribute.DefaultAttributeChunkFormatter;
 import au.org.ala.delta.model.attribute.SignificantFiguresAttributeChunkFormatter;
 import au.org.ala.delta.model.impl.DefaultAttributeData;
@@ -53,6 +56,9 @@ public class NumericAttributeTranslator extends AttributeTranslator {
 	/** True if OMIT LOWER FOR CHARACTERS was specified for the Character 
 	 * to be translated */
 	private boolean _omitLower;
+
+    /** The number of decimal places to use when formatting attributes */
+    private Integer _decimalPlaces;
 	
 	public NumericAttributeTranslator(
 			NumericCharacter<?> character, 
@@ -60,20 +66,21 @@ public class NumericAttributeTranslator extends AttributeTranslator {
 			AttributeFormatter formatter, 
 			boolean omitSpaceBeforeUnits,
 			boolean omitOr,
-			boolean omitLower) {
+			boolean omitLower,
+            Integer decimalPlaces) {
 		super(formatter, omitOr);
 		_character = character;
 		_formatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, true, false);
 		_typeSetter = typeSetter;
 		_omitSpaceBeforeUnits = omitSpaceBeforeUnits;
 		_omitLower = omitLower;
+        _decimalPlaces = decimalPlaces;
 	}
 	
 	@Override
 	public String translateValue(String value) {
         DefaultAttributeData attributeData = new DefaultAttributeData(_character);
-        String rangeSeparator = _typeSetter != null ? _typeSetter.rangeSeparator() : "-";
-        DefaultAttributeChunkFormatter formatter = new SignificantFiguresAttributeChunkFormatter(false, rangeSeparator);
+        DefaultAttributeChunkFormatter formatter = createAttributeChunkFormatter();
         try {
             attributeData.setValueFromString(value);
 
@@ -106,6 +113,24 @@ public class NumericAttributeTranslator extends AttributeTranslator {
 
 		return value;
 	}
+
+    private DefaultAttributeChunkFormatter createAttributeChunkFormatter() {
+
+        DefaultAttributeChunkFormatter formatter;
+        String rangeSeparator = _typeSetter != null ? _typeSetter.rangeSeparator() : "-";
+        if (_character.getCharacterType() == CharacterType.IntegerNumeric) {
+            formatter = new DefaultAttributeChunkFormatter(false, rangeSeparator);
+        }
+        else {
+            if (_decimalPlaces == null) {
+                formatter = new SignificantFiguresAttributeChunkFormatter(false, rangeSeparator);
+            }
+            else {
+                formatter = new DecimalPlacesAttributeChunkFormatter(false, rangeSeparator, _decimalPlaces);
+            }
+        }
+        return formatter;
+    }
 
 	@Override
 	public String rangeSeparator() {

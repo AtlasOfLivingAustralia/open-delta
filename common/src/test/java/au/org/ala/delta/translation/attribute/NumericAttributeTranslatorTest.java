@@ -46,7 +46,7 @@ public class NumericAttributeTranslatorTest extends TestCase {
 		_typeSetter = new PlainTextTypeSetter(null);
 		_attributeFormatter = new AttributeFormatter(false, true, CommentStrippingMode.RETAIN);
 		
-		_translator = new NumericAttributeTranslator(_realCharacter, _typeSetter, _attributeFormatter, false, false, false);
+		_translator = new NumericAttributeTranslator(_realCharacter, _typeSetter, _attributeFormatter, false, false, false, null);
 	}
 	
 	/**
@@ -91,7 +91,7 @@ public class NumericAttributeTranslatorTest extends TestCase {
 	
 	@Test
 	public void testOmitUpperForCharacter() throws Exception {
-		_translator = new NumericAttributeTranslator(_realCharacter, _typeSetter, _attributeFormatter, false, false, true);
+		_translator = new NumericAttributeTranslator(_realCharacter, _typeSetter, _attributeFormatter, false, false, true, null);
 	
 		String[] inputs = {
 				"(1-)2-3-4(-5)",
@@ -118,13 +118,14 @@ public class NumericAttributeTranslatorTest extends TestCase {
 	}
 
     /**
-     * CONFOR formats real numbers to 2 significant figures by default.
+     * CONFOR formats real numbers to 5 significant figures (sort of - only numbers after the decimal point
+     * are zeroed) by default.
      * @throws Exception if there is an error running the test.
      */
     @Test
-    public void testDecimalPlaces() throws Exception {
+    public void testSignificantFigureFormatting() throws Exception {
 
-        _translator = new NumericAttributeTranslator(_realCharacter, _typeSetter, _attributeFormatter, false, false, false);
+        _translator = new NumericAttributeTranslator(_realCharacter, _typeSetter, _attributeFormatter, false, false, false, null);
 
         String[] inputs = {
                 "(-0.000001-)2.0-33.3333-55555.00(-444444.4)"};
@@ -133,6 +134,24 @@ public class NumericAttributeTranslatorTest extends TestCase {
         // actually expect (-0.000001-)2-33.333-55555(-444444) rather than (-0.000001-)2-33.333-55555(-444440)
         String[] expected = {
                 "(-0.000001-)2-33.333-55555(-444444) units"};
+
+        for (int i=0; i<inputs.length; i++) {
+            String formattedValue = format(_realCharacter, inputs[i]);
+            assertEquals(expected[i], formattedValue);
+        }
+
+    }
+
+    @Test
+    public void testDecimalPlacesFormatting() throws Exception {
+
+        _translator = new NumericAttributeTranslator(_realCharacter, _typeSetter, _attributeFormatter, false, false, false, 2);
+
+        String[] inputs = {
+                "(-0.000001-)2.0-33.3333-55555.00(-444444.4)"};
+
+        String[] expected = {
+                "(-0.00-)2.00-33.33-55555.00(-444444.40) units"};
 
         for (int i=0; i<inputs.length; i++) {
             String formattedValue = format(_realCharacter, inputs[i]);

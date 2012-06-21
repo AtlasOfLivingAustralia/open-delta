@@ -17,6 +17,7 @@ package au.org.ala.delta.directives;
 import java.text.ParseException;
 import java.util.regex.Pattern;
 
+import au.org.ala.delta.directives.validation.DirectiveException;
 import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.directives.args.DirectiveArgument;
@@ -47,8 +48,8 @@ public abstract class AbstractCharacterListDirective<C extends AbstractDeltaCont
 				String[] bits = typeDescriptor.trim().split(",");
 				IntRange r = parseRange(bits[0]);
 				
-				for (int charIndex = r.getMinimumInteger(); charIndex <= r.getMaximumInteger(); ++charIndex) {
-					addArgument(args, charIndex, bits[1]);
+				for (int charNumber = r.getMinimumInteger(); charNumber <= r.getMaximumInteger(); ++charNumber) {
+					addArgument(args, charNumber, bits[1]);
 				}
 			}
 		}
@@ -64,9 +65,9 @@ public abstract class AbstractCharacterListDirective<C extends AbstractDeltaCont
 		
 	}
 
-	protected abstract void addArgument(DirectiveArguments args, int charIndex, String value);
+	protected abstract void addArgument(DirectiveArguments args, int charIndex, String value) throws DirectiveException;
 	
-	protected abstract T interpretRHS(C context, String rhs);
+	protected abstract T interpretRHS(C context, String rhs) throws DirectiveException;
 
 	protected abstract void processCharacter(C context, int charIndex, T rhs) throws ParseException;
 

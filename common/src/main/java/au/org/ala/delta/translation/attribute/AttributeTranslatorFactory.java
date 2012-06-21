@@ -52,7 +52,7 @@ public class AttributeTranslatorFactory {
 
 	public AttributeTranslator translatorFor(Character character) {
 		boolean omitOr = _context.isOrOmmitedForCharacter(character.getCharacterId());
-		
+
 		AttributeTranslator translator;
 		if (character instanceof MultiStateCharacter) {
 			translator = new MultiStateAttributeTranslator(
@@ -68,7 +68,8 @@ public class AttributeTranslatorFactory {
 					_attributeFormatter,
 					_context.getOmitSpaceBeforeUnits(),
 					_context.getOmitLowerForCharacter(character.getCharacterId()),
-					omitOr);
+					omitOr,
+                    _context.getDecimalPlaces(character.getCharacterId()));
 		}
 		else {
 			translator = new TextAttributeTranslator(_attributeFormatter, omitOr);

@@ -103,6 +103,7 @@ public class DeltaContext extends AbstractDeltaContext {
     private Map<Integer, Double> _absolueErrorInCharacterAttributes = new HashMap<Integer, Double>();
     private Map<Integer, Double> _percentageErrorInCharacterAttributes = new HashMap<Integer, Double>();
     protected Map<Integer, Double> _itemAbundances = new HashMap<Integer, Double>();
+    private Map<Integer, Integer> _decimalPlaces = new HashMap<Integer, Integer>();
 
     private Set<Integer> _omitLowerRangeCharacters = new HashSet<Integer>();
 
@@ -571,8 +572,7 @@ public class DeltaContext extends AbstractDeltaContext {
      * ATTRIBUTES and INSERT REDUNDANT VARIANT ATTRIBUTES directives. If neither
      * directive is given, the default is to output attributes as coded.
      * 
-     * @param b
-     *            true if redundant variant attributes should be omitted.
+     * @return true if redundant variant attributes should be omitted.
      */
     public Boolean getOmitRedundantVariantAttributes() {
         return _omitRedundantVariantAttributes;
@@ -925,6 +925,20 @@ public class DeltaContext extends AbstractDeltaContext {
             abundancy = 5d;
         }
         return abundancy;
+    }
+
+    public void addDecimalPlace(int charNumber, Integer decimalPlaces) {
+        _decimalPlaces.put(charNumber, decimalPlaces);
+    }
+
+    /**
+     * Returns the number of decimal places to use when formatting the Character identified by the supplied
+     * character number.
+     * @param charNumber the Character number of interest.
+     * @return the number of decimal places to format the character with, null if none has been specified.
+     */
+    public Integer getDecimalPlaces(int charNumber) {
+        return _decimalPlaces.get(charNumber);
     }
 
     public void setKeyCharacterListUsed(boolean keyCharacterListUsed) {
