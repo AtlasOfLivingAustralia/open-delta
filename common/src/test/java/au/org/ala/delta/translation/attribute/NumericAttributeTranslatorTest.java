@@ -129,10 +129,10 @@ public class NumericAttributeTranslatorTest extends TestCase {
         String[] inputs = {
                 "(-0.000001-)2.0-33.3333-55555.00(-444444.4)"};
 
-        // The original CONFOR doesn't remove significant figures unless they are after the decimal point, so would
-        // actually produce (-0.000001-)2-33.333-55555(-444444).
+        // The original CONFOR doesn't remove significant figures unless they are after the decimal point, so we
+        // actually expect (-0.000001-)2-33.333-55555(-444444) rather than (-0.000001-)2-33.333-55555(-444440)
         String[] expected = {
-                "(-0.000001-)2-33.333-55555(-444440) units"};
+                "(-0.000001-)2-33.333-55555(-444444) units"};
 
         for (int i=0; i<inputs.length; i++) {
             String formattedValue = format(_realCharacter, inputs[i]);
