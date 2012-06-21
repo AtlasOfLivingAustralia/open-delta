@@ -30,7 +30,7 @@ public class UseLastValueCoded extends AbstractNoArgDirective {
 	
 	@Override
 	public void process(DeltaContext context, DirectiveArguments directiveArguments) throws Exception {
-		context.treatVariableAsUnknown();
+		context.useLastValueCoded();
 	}
 	
 	@Override
