@@ -177,17 +177,17 @@ public class DefaultParsedAttribute implements ParsedAttribute {
 								prevNumb = aNumb;
 							} else if (charType.isMultistate()) {
 								int stateNo = Utils.strtol((substring(text, startPos, i - startPos + 1)));
-								int stateId = stateNo;
-								if (stateId <= 0) {
+
+								if (stateNo <= 0) {
 									throw DirectiveError.asException(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, i);
 								}
 								int numStates = ((MultiStateCharacter)_character).getNumberOfStates();
-								if (stateId > numStates) {
+								if (stateNo > numStates) {
 									throw DirectiveError.asException(DirectiveError.Error.STATE_NUMBER_GREATER_THAN_MAX, startPos, numStates);
 								}
 								if (isExclusive && hadState)
 									throw DirectiveError.asException(DirectiveError.Error.EXCLUSIVE_ERROR, startPos);
-								insert(end(), new AttrChunk(ChunkType.CHUNK_STATE, stateId));
+								insert(end(), new AttrChunk(ChunkType.CHUNK_STATE, stateNo));
 								hadState = true;
 							}
 							break;
@@ -566,13 +566,10 @@ public class DefaultParsedAttribute implements ParsedAttribute {
 	 * Mimics the behaviour of the c++ string::substr. Main differences from String.substring are: 1) It takes a start position and length instead of start position and end position 2) It is tolerant
 	 * of requests for a substring that go past the end of the string.
 	 * 
-	 * @param source
-	 *            the source string
-	 * @param startPos
-	 *            the start position in the source String
-	 * @param length
-	 *            the desired length for the substring.
-	 * @return
+	 * @param source the source string
+	 * @param beginIndex the start position in the source String
+	 * @param length the desired length for the substring.
+	 * @return a substring of <code>source</code> identified by <code>beginIndex</code> and <code>length</code>
 	 */
 	private String substring(String source, int beginIndex, int length) {
 
@@ -627,7 +624,7 @@ public class DefaultParsedAttribute implements ParsedAttribute {
 			for (AttrChunk chunk : this) {
 				int chunkType = chunk.getType();
 				if (chunkType == ChunkType.CHUNK_STATE) {
-					int stateId = chunk.getStateId();
+					int stateId = chunk.getStateNumber();
 					if (stateId <= 0) {
 						return false;
 					}
@@ -703,11 +700,11 @@ public class DefaultParsedAttribute implements ParsedAttribute {
 				pseudoValues[0] |= PSEUDO_UNKNOWN;
 				break;
 			case ChunkType.CHUNK_STATE:
-				stateIds.add(chunk.getStateId());
+				stateIds.add(chunk.getStateNumber());
 				if (isOrdered) {
 					if (inRange) {
 						int startState = rangeStart;
-						int endState = chunk.getStateId();
+						int endState = chunk.getStateNumber();
 						int aState = Math.min(startState, endState);
 						if (aState > 0) {
 							// a check to ensure the state IDs were valid
@@ -719,7 +716,7 @@ public class DefaultParsedAttribute implements ParsedAttribute {
 							inRange = false;
 						}
 					}
-					rangeStart = chunk.getStateId();
+					rangeStart = chunk.getStateNumber();
 				}
 				break;
 			case ChunkType.CHUNK_TO:
@@ -778,20 +775,20 @@ public class DefaultParsedAttribute implements ParsedAttribute {
 
 			textOnly = false;
 			if (chunk.getType() == ChunkType.CHUNK_STATE) {
-				if (chunk.getStateId() == stateId) {
+				if (chunk.getStateNumber() == stateId) {
 					return true;
 				}
 				if (isOrdered && checkRanges) {
 					if (inRange) {
 						int startState = rangeStart;
-						int endState = chunk.getStateId();
+						int endState = chunk.getStateNumber();
 						int testState = stateId;
 						if (startState > 0 && endState > 0 && testState > Math.min(startState, endState) && testState < Math.max(startState, endState)) {
 							return true;
 						}
 						inRange = false;
 					}
-					rangeStart = chunk.getStateId();
+					rangeStart = chunk.getStateNumber();
 				}
 			}
 			if (isOrdered && chunk.getType() == ChunkType.CHUNK_TO) {

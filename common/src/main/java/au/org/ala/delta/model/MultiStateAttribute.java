@@ -21,6 +21,11 @@ import java.util.Set;
 
 import au.org.ala.delta.model.impl.AttributeData;
 
+/**
+ * A MultiStateAttribute represents an attribute value for Characters of type CharacterType.UnorderedMultiState or
+ * CharacterType.OrderedMultiState.
+ * It contains methods for returning the Character states coded in the Attribute.
+ */
 public class MultiStateAttribute extends Attribute {
     
     public MultiStateAttribute(MultiStateCharacter character, AttributeData impl) {
@@ -32,6 +37,13 @@ public class MultiStateAttribute extends Attribute {
         return (MultiStateCharacter) super.getCharacter();
     }
 
+    /**
+     * Returns true if the supplied state number has been coded in this Attribute.
+     * If this Attribute is not coded but the supplied state number represents the associated Characters
+     * implicit value then this method returns true.
+     * @param stateNumber the state number to check.
+     * @return true if the supplied state is coded in this Attribute.
+     */
     public boolean isStatePresent(int stateNumber) {
         
         boolean statePresent = _impl.isStatePresent(stateNumber);
@@ -80,7 +92,10 @@ public class MultiStateAttribute extends Attribute {
         _impl.setPresentStateOrIntegerValues(states);
         notifyObservers();
     }
-    
+
+    /**
+     * @return a List of the Character states coded in this Attribute, in the order they were coded.
+     */
     public List<Integer> getPresentStatesAsList() {
     	List<Integer> presentStates;
         

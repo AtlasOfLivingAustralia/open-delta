@@ -427,7 +427,7 @@ public class TreeViewer extends AbstractDeltaView {
                 textField.setColumns(30);
             }
 
-            _validator = new TextComponentValidator(new AttributeValidator(_dataModel, attribute), this);
+            _validator = new TextComponentValidator(new AttributeValidator(_dataModel, attribute, new ControllingInfo()), this);
             getTextField().setInputVerifier(_validator);
             _valid = true;
 

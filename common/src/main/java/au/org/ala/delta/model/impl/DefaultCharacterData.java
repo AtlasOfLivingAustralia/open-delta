@@ -160,7 +160,7 @@ public class DefaultCharacterData implements CharacterData {
     }
 
     @Override
-    public void validateAttributeText(String text) {
+    public void validateAttributeText(String text, ControllingInfo controllingInfo) {
         throw new NotImplementedException();
     }
 

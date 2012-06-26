@@ -21,19 +21,10 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import au.org.ala.delta.editor.slotfile.*;
+import au.org.ala.delta.model.attribute.ChunkType;
 import org.apache.commons.lang.NotImplementedException;
 
-import au.org.ala.delta.editor.slotfile.Attribute;
-import au.org.ala.delta.editor.slotfile.CharType;
-import au.org.ala.delta.editor.slotfile.DeltaVOP;
-import au.org.ala.delta.editor.slotfile.TextType;
-import au.org.ala.delta.editor.slotfile.VOAnyDesc;
-import au.org.ala.delta.editor.slotfile.VOCharBaseDesc;
-import au.org.ala.delta.editor.slotfile.VOCharTextDesc;
-import au.org.ala.delta.editor.slotfile.VOControllingDesc;
-import au.org.ala.delta.editor.slotfile.VODeltaMasterDesc;
-import au.org.ala.delta.editor.slotfile.VOImageHolderDesc;
-import au.org.ala.delta.editor.slotfile.VOItemDesc;
 import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.CircularDependencyException;
@@ -230,9 +221,23 @@ public class VOCharacterAdaptor extends ImageHolderAdaptor implements CharacterD
     }
 
     @Override
-    public void validateAttributeText(String text) {
+    public void validateAttributeText(String text, ControllingInfo controlled) {
         synchronized (_vop) {
-            new Attribute(text, _charDesc);
+            Attribute attribute = new Attribute(text, _charDesc);
+            if (controlled.isInapplicable()) {
+                for (AttrChunk chunk : attribute)  {
+                    int chunkType = chunk.getType();
+                    if (chunkType != ChunkType.CHUNK_INAPPLICABLE &&
+                            chunkType != ChunkType.CHUNK_TEXT &&
+                            chunkType != ChunkType.CHUNK_LONGTEXT &&
+                            // If "Unknown or inapplicable, allow Unknown and OR.
+                            !((chunkType == ChunkType.CHUNK_UNKNOWN || chunkType == ChunkType.CHUNK_OR) && controlled.isStrictlyInapplicable())) {
+
+                        throw new Attribute.AttributeParseException(Attribute.AttributeParseError.EAP_IS_INAPPLICABLE, -1);
+                    }
+                }
+            }
+
         }
     }
 

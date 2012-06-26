@@ -51,8 +51,8 @@ public class DefaultAttributeChunkFormatter implements AttributeChunkFormatter {
 					dest = chunk.getString();
 				break;
 			case ChunkType.CHUNK_STATE:
-				dest = chunk.getStateId() + "";			
-				break;
+                dest = formatState(chunk);
+                break;
 			case ChunkType.CHUNK_NUMBER:
 				dest = formatNumber(chunk.getNumber());
 				break;
@@ -91,8 +91,12 @@ public class DefaultAttributeChunkFormatter implements AttributeChunkFormatter {
 
 		return dest;
 	}
-	
-	protected String getRangeSeparator() {
+
+    protected String formatState(AttrChunk chunk) {
+        return Integer.toString(chunk.getStateNumber());
+    }
+
+    protected String getRangeSeparator() {
 		return _rangeSeparator;
 	}
 

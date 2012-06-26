@@ -204,8 +204,8 @@ public abstract class Character implements Illustratable, Comparable<Character>,
         _impl = impl;
     }
 
-    public void validateAttributeText(String text) {
-        _impl.validateAttributeText(text);
+    public void validateAttributeText(String text, ControllingInfo controllingInfo) {
+        _impl.validateAttributeText(text, controllingInfo);
     }
     
     @Override

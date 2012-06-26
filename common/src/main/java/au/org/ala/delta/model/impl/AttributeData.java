@@ -23,6 +23,13 @@ import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.model.NumericRange;
 import au.org.ala.delta.model.attribute.ParsedAttribute;
 
+/**
+ * The AttributeData interface is used by the Attribute class (and subclasses) to access attribute data from
+ * storage.
+ * It's purpose is to provide the main model classes with access to both in-memory and on-disk data storage
+ * implementations.  (There is currently a fair bit of non data retrieval logic contained in the implementations
+ * of this interface due to the port that ideally could be refactored into the main Attribute classes).
+ */
 public interface AttributeData {
 	
 	public String getValueAsString();

@@ -14,7 +14,11 @@
  ******************************************************************************/
 package au.org.ala.delta.model.attribute;
 
-
+/**
+ * A ParsedAttribute represents an Attribute as a (read only) sequence of AttrChunks.
+ *
+ * @see AttrChunk
+ */
 public interface ParsedAttribute extends Iterable<AttrChunk> {
 
 	public String getAsText();

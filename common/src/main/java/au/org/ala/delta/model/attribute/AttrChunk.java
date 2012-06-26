@@ -16,13 +16,17 @@ package au.org.ala.delta.model.attribute;
 
 import java.math.BigDecimal;
 
-
+/**
+ * An AttrChunk represents an individual part of an Attribute.  Each AttrChunk consists of a type and a value.
+ * The valid types are defined by the ChunkType class.  The value may be a number (BigDecimal), String, or
+ * state number.
+ */
 public class AttrChunk {
 
-	private int _type;
-	private BigDecimal _numVal;
-	private String _strVal;
-	private int _stateVal;
+	protected int _type;
+    protected BigDecimal _numVal;
+    protected String _strVal;
+    protected int _stateNumber;
 
 	public AttrChunk() {
 		this(ChunkType.CHUNK_STOP, 0);
@@ -32,9 +36,9 @@ public class AttrChunk {
 		this(chunkType, 0);
 	}
 
-	public AttrChunk(int chunkType, int stateId) {
+	public AttrChunk(int chunkType, int stateNumber) {
 		_type = chunkType;
-		_stateVal = stateId;
+		_stateNumber = stateNumber;
 	}
 
 	public AttrChunk(int chunkType, BigDecimal src) {
@@ -60,17 +64,13 @@ public class AttrChunk {
 	public String getString() {
 		return _strVal;
 	}
-	
-	public void setString(String strVal) {
-		_strVal = strVal;		
-	}
 
 	public BigDecimal getNumber() {
 		return _numVal;
 	}
 
-	public int getStateId() {
-		return _stateVal;
+	public int getStateNumber() {
+		return _stateNumber;
 	}
 
 	public String getAsText(boolean encloseInCommentBrackets) {
@@ -79,14 +79,6 @@ public class AttrChunk {
 	
 	public String getAsText(AttributeChunkFormatter formatter) {
 		return formatter.formatChunk(this);
-	}
-
-	public void setStateId(int stateVal) {
-		_stateVal = stateVal;		
-	}
-
-	public void setNumber(BigDecimal d) {
-		_numVal = d;		
 	}
 	
 	public boolean isTextChunk() {		

@@ -58,7 +58,7 @@ public interface CharacterData extends Illustratable {
 	
 	void setUncodedImplicitState(int stateId);
 
-	void validateAttributeText(String text);
+	void validateAttributeText(String text, ControllingInfo controlled);
 	
 	ControllingInfo checkApplicability(Item item);
 	

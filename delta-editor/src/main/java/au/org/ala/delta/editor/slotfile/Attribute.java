@@ -27,7 +27,7 @@ import au.org.ala.delta.util.Utils;
 
 public class Attribute implements Iterable<AttrChunk> {
 
-	enum AttributeParseError {
+	public enum AttributeParseError {
 		EAP_NULL, EAP_BAD_STATE_NUMBER, //
 		EAP_UNMATCHED_CLOSEBRACK, //
 		EAP_MISSING_CLOSEBRACK, EAP_BADATTR_SYMBOL, //
