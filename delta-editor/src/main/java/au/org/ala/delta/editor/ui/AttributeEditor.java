@@ -14,9 +14,7 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.ui;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
@@ -42,6 +40,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import au.org.ala.delta.model.impl.ControllingInfo;
 import org.jdesktop.application.Application;
 
 import au.org.ala.delta.editor.EditorPreferences;
@@ -324,7 +323,9 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 			_item = item;
 			_inapplicable = false;
 			if (ch != null && item != null) {
-				_inapplicable = _character.checkApplicability(_item).isInapplicable();
+                ControllingInfo controlled = _character.checkApplicability(_item);
+				_inapplicable = controlled.isInapplicable();
+
 				Attribute attr = _item.getAttribute(_character);
 				if (attr != null) {
 					String value = _dataSet.displayTextFromAttributeValue(attr, attr.getValueAsString());
@@ -348,7 +349,7 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 					_characterDetailsTable.setModel(new CharacterModel(ch));
 					_characterDetailsTable.getColumnModel().getColumn(0).setCellRenderer(new CharacterRenderer());
 				}
-				AttributeValidator validator = new AttributeValidator(_dataSet, attr);
+				AttributeValidator validator = new AttributeValidator(_dataSet, attr, controlled);
 				RtfEditorValidator rtfValidator = new RtfEditorValidator(validator, this);
 				_textPane.setInputVerifier(rtfValidator);
 			} else {
@@ -497,7 +498,7 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 
 		private MultiStateCheckbox stateRenderer = new MultiStateCheckbox();
 
-		
+
 		@Override
 		public Component getTableCellRendererComponent(JTable table,
 				Object value, boolean isSelected, boolean hasFocus, int row,
