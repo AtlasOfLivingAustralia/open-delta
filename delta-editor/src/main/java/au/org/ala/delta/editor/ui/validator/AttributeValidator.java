@@ -67,24 +67,4 @@ public class AttributeValidator implements Validator {
 		return result;
 	}
 
-    /**
-     * Restricts the allowed attribute data to that suitable for an inapplicable Character attribute.
-     * @param attribute the attribute to check.
-     * @return the result of checking the edit.
-     */
-    private ValidationResult checkInapplicableEdit(ParsedAttribute attribute) {
-
-        for (AttrChunk chunk : attribute)  {
-            int chunkType = chunk.getType();
-            if (chunkType != ChunkType.CHUNK_INAPPLICABLE &&
-                chunkType != ChunkType.CHUNK_TEXT &&
-                chunkType != ChunkType.CHUNK_LONGTEXT &&
-                // If "Unknown or inapplicable, allow Unknown and OR.
-                !((chunkType == ChunkType.CHUNK_UNKNOWN || chunkType == ChunkType.CHUNK_OR) && _controlled.isStrictlyInapplicable())) {
-
-                    return ValidationResult.error(INAPPLICABLE_ERROR_CODE);
-            }
-        }
-        return new ValidationResult();
-    }
 }
