@@ -27,9 +27,7 @@ import au.org.ala.delta.model.impl.ControllingInfo;
  */
 public class AttributeValidator implements Validator {
 
-    private static final String INAPPLICABLE_ERROR_CODE = "EAP_IS_INAPPLICABLE";
-
-	/** The attribute we are validating the text for */
+    /** The attribute we are validating the text for */
 	private Attribute _attribute;	
 	private EditorViewModel _model;
     /** Whether or not this attribute has been found to be inapplicable */

@@ -78,6 +78,7 @@ public class RunDirectivesProgressDialog extends JDialog {
 	}
 
 	protected void createGUI() {
+        setTitle("Actions - Results");
 		lblDirectivesfilelabel = new JLabel("directivesFileLabel");
 		
 		progressBar = new JProgressBar();

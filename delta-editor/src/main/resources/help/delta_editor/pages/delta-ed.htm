@@ -28,8 +28,7 @@
 
 <hr class="margintp7">
 
-<h1 class="margint2">User’s Guide to the DELTA Editor (Demonstration)</h1>
-
+<h1 class="margint2">User’s Guide to the DELTA Editor</h1>
 
 <p class="revdate">11 January 2010</p>
 
@@ -343,6 +342,12 @@ exporting. Therefore, when you close the Editor later, you will be asked
 whether you want to save the changes, even if you have not explicitly altered
 the data. You should normally answer ‘Yes’.</p>
 
+<p><em>Please be aware that if you export the data set using Unix line separator characters, you may cause compatibility problems if
+    you later attempt to use the original DELTA Editor or IntKey programs.  In particular, the original Intkey cannot open
+    files containing the Unix line separator.  If you intend to use the original DELTA programs, please
+    select ‘Windows (legacy) (\r\n)‘ from the ‘Line separator‘ drop down list.</em></p>
+
+
 <h3><a name="_Printing_the_character"></a>Printing the character list</h3>
 
 <p style="page-break-after: avoid;">To format and print the character list, proceed as
@@ -361,6 +366,8 @@ Confor is then run, and a log of the run is displayed. This displays the names
 of the output files, ‘printcr.lst’ and ‘rtf\chars.rtf’, and would also show any
 error messages. Also displayed is a message asking whether you want to close
 the window (i.e. the log); click ‘Yes’.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-08.png" alt="Testdata.dlt - Actions dialogs Results." border="0"></p>
 
 <p>‘printcr.lst’ is a text file containing a more detailed log
 of the process. There is usually no need to look at it, but it may occasionally
