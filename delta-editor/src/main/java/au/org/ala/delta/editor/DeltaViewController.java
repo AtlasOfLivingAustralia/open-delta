@@ -35,6 +35,7 @@ import au.org.ala.delta.editor.model.EditorDataModel;
 import au.org.ala.delta.editor.ui.InternalFrameDataModelListener;
 import au.org.ala.delta.model.DeltaDataSetRepository;
 import au.org.ala.delta.ui.MessageDialogHelper;
+import org.jdesktop.application.ResourceMap;
 
 /**
  * The DeltaViewControllers is responsible for managing a single instance of the EditorDataModel
@@ -70,7 +71,9 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 	 * the close operations.
 	 */
 	private boolean _closingAll;
-	
+
+    private ResourceMap _resourceMap;
+
 	/**
 	 * Creates a new DeltaViewController.
 	 * 
@@ -89,6 +92,7 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 		_activeViews = new ArrayList<JInternalFrame>();
 		_models = new HashMap<DeltaView, DeltaViewModel>();
 		_observers = new ArrayList<DeltaViewStatusObserver>();
+        _resourceMap = deltaEditor.getContext().getResourceMap(DeltaEditor.class);
 	}
 
 	public void setNewDataSetName(String newDataSetName) {
@@ -263,16 +267,21 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 		File newFile = _deltaEditor.selectFile(false);
 		
 		if (newFile != null) {
-			if (newFile.exists()){
-				JOptionPane.showMessageDialog(_deltaEditor.getMainFrame(), "File already exists.");
-				return;
+
+            if (!newFile.getName().endsWith("."+DELTA_FILE_EXTENSION)) {
+                newFile = new File(newFile.getAbsolutePath()+"."+DELTA_FILE_EXTENSION);
+            }
+
+            if (newFile.exists()){
+				JOptionPane.showMessageDialog(_deltaEditor.getMainFrame(), _resourceMap.getString("DeltaEditor.fileExists"));
+				// Try again.
+                saveAs();
 			}
-			if (!newFile.getName().endsWith("."+DELTA_FILE_EXTENSION)) {
-				newFile = new File(newFile.getAbsolutePath()+"."+DELTA_FILE_EXTENSION);
-			}			
-			
-			_repository.saveAsName(_dataSet.getDeltaDataSet(), newFile.getAbsolutePath(), null);
-			EditorPreferences.addFileToMRU(newFile.getAbsolutePath());
+            else {
+
+                _repository.saveAsName(_dataSet.getDeltaDataSet(), newFile.getAbsolutePath(), null);
+                EditorPreferences.addFileToMRU(newFile.getAbsolutePath());
+            }
 			
 		}
 	}
