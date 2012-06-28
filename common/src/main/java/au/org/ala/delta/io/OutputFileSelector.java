@@ -14,20 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.io;
 
-import java.io.File;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-
 import au.org.ala.delta.DeltaContext.OutputFormat;
 import au.org.ala.delta.directives.validation.DirectiveError;
 import au.org.ala.delta.directives.validation.DirectiveException;
@@ -39,6 +25,19 @@ import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.translation.PrintFile;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+
+import java.io.File;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Manages CONFOR output files.
@@ -335,7 +334,15 @@ public class OutputFileSelector extends OutputFileManager {
 	public PrintFile getPrintFile() {
 		return _printFile;
 	}
-	
+
+    /**
+     * Currently used by the IndexWriter if unable to determine a file name for an Item (e.g. if there is no
+     * directives that specifiy item file names).
+     * @return the nane of the current print file, including the output directory, if specified.
+     */
+    public String getPrintFileName() {
+        return prependOutputDirectory(_printFileName);
+    }
 	
 	public boolean createNewFileIfRequired(Item item) {
 		

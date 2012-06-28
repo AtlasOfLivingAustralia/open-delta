@@ -14,6 +14,7 @@
  ******************************************************************************/
 package au.org.ala.delta.translation.naturallanguage;
 
+import au.org.ala.delta.io.OutputFileSelector;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.DeltaContext;
@@ -55,7 +56,11 @@ public class IndexWriter {
 	}
 	
 	private void writeItemIndexEntry(Item item) {
-		String outputFile = _context.getOutputFileSelector().getItemOutputFile(item.getItemNumber());
+        OutputFileSelector outputFileSelector = _context.getOutputFileSelector();
+        String outputFile = outputFileSelector.getItemOutputFile(item.getItemNumber());
+        if (StringUtils.isBlank(outputFile)) {
+            outputFile = outputFileSelector.getPrintFileName();
+        }
 		
 		StringBuilder indexEntry = new StringBuilder();
 		indexEntry.append("&#149;&nbsp;<a href=\"");
