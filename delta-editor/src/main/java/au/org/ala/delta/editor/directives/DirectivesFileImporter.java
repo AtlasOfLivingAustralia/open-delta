@@ -14,14 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.directives;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-
-import org.apache.commons.io.IOUtils;
-
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.slotfile.Directive;
 import au.org.ala.delta.editor.slotfile.directive.ConforDirType;
@@ -30,6 +22,13 @@ import au.org.ala.delta.editor.slotfile.directive.IntkeyDirType;
 import au.org.ala.delta.editor.slotfile.directive.KeyDirType;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
+import org.apache.commons.io.IOUtils;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 public class DirectivesFileImporter {
 	
@@ -67,7 +66,7 @@ public class DirectivesFileImporter {
 	 * If the import fails the directives file will not be updated.
 	 * @param fileInfo identifies the directives file to import into.
 	 * @param directivesReader a reader containing the raw directives data.
-	 * @param status
+	 * @param handler handler for directives as they are imported.
 	 * @return true if the import succeeded, false otherwise.
 	 */
 	public boolean importDirectivesFile(DirectiveFileInfo fileInfo, Reader directivesReader, DirectiveImportHandler handler) {
