@@ -14,46 +14,27 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.directives.ui;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.AbstractListModel;
-import javax.swing.ActionMap;
-import javax.swing.ButtonGroup;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListModel;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.SwingUtilities;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.TitledBorder;
-
-import org.jdesktop.application.Action;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ResourceMap;
-
 import au.org.ala.delta.editor.EditorPreferences;
 import au.org.ala.delta.editor.directives.DirectiveFileInfo;
 import au.org.ala.delta.editor.directives.ImportFileNameFilter;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
 import au.org.ala.delta.ui.MessageDialogHelper;
 import au.org.ala.delta.ui.util.IconHelper;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
+
+import javax.swing.*;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The ImportExportDialog is the user interface component that allows the user to: 1) In import mode: select a set of DELTA directive files to import into the DELTA Editor. 2) In export mode: export
@@ -672,9 +653,6 @@ public class ImportExportDialog extends JDialog {
 					b.append(String.format("0x%02x", (int) ch));
 				}
 
-//				if (i < _lineEnding.length() - 1) {
-//					b.append(", ");
-//				}
 			}
 
 			return b.toString();
