@@ -14,49 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.editor;
 
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
-import java.beans.PropertyVetoException;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.EventObject;
-import java.util.List;
-import java.util.prefs.PreferenceChangeEvent;
-import java.util.prefs.PreferenceChangeListener;
-
-import javax.swing.ActionMap;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.LookAndFeel;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.event.InternalFrameEvent;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.plaf.FontUIResource;
-import javax.swing.plaf.metal.MetalLookAndFeel;
-
-import org.jdesktop.application.Action;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ProxyActions;
-import org.jdesktop.application.Resource;
-import org.jdesktop.application.ResourceMap;
-import org.jdesktop.application.Task;
-import org.jdesktop.application.Task.BlockingScope;
-
 import au.org.ala.delta.editor.directives.DirectiveFilesInitialiser;
 import au.org.ala.delta.editor.directives.ExportController;
 import au.org.ala.delta.editor.directives.ImportController;
@@ -74,8 +31,34 @@ import au.org.ala.delta.ui.help.HelpController;
 import au.org.ala.delta.ui.util.IconHelper;
 import au.org.ala.delta.ui.util.UIUtils;
 import au.org.ala.delta.util.IProgressObserver;
-
 import com.l2fprod.common.swing.JFontChooser;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ProxyActions;
+import org.jdesktop.application.Resource;
+import org.jdesktop.application.ResourceMap;
+import org.jdesktop.application.Task;
+import org.jdesktop.application.Task.BlockingScope;
+
+import javax.swing.*;
+import javax.swing.event.InternalFrameEvent;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.plaf.FontUIResource;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.beans.PropertyVetoException;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.EventObject;
+import java.util.List;
+import java.util.prefs.PreferenceChangeEvent;
+import java.util.prefs.PreferenceChangeListener;
 
 /**
  * The main class for the DELTA Editor.
@@ -131,7 +114,10 @@ public class DeltaEditor extends InternalFrameApplication implements PreferenceC
 	private String newDataSetName;	
 	@Resource
 	private String unableToCloseMessage;
-	
+
+    /** Tracks the number of new datasets so a number can be added each time */
+    private int _newDataSetCount = 0;
+
 	private String[] _args;
 
 	public static void main(String[] args) {
@@ -608,6 +594,7 @@ public class DeltaEditor extends InternalFrameApplication implements PreferenceC
 	 */
 	private DeltaViewController createController(AbstractObservableDataSet dataSet) {
 		EditorDataModel model = new EditorDataModel(dataSet);
+        model.setName(newDataSetName());
 		model.addPropertyChangeListener(this);
 		DeltaViewController controller = new DeltaViewController(model, DeltaEditor.this, _dataSetRepository);
 		controller.setNewDataSetName(newDataSetName);
@@ -617,6 +604,22 @@ public class DeltaEditor extends InternalFrameApplication implements PreferenceC
 		_controllers.add(controller);
 		return controller;
 	}
+
+    /**
+     * Generates a unique name for a new data set.
+     * @return the name to use for the new data set.
+     */
+    private String newDataSetName() {
+        String name;
+        if (_newDataSetCount > 0) {
+            name = String.format("%s %d", newDataSetName, _newDataSetCount);
+        }
+        else {
+            name = newDataSetName;
+        }
+        _newDataSetCount++;
+        return name;
+    }
 
 	/**
 	 * Called when any view is closed. Does tidy up if there are no remaining views.
@@ -840,7 +843,6 @@ public class DeltaEditor extends InternalFrameApplication implements PreferenceC
 	public void newFile() {
 
 		AbstractObservableDataSet dataSet = (AbstractObservableDataSet) _dataSetRepository.newDataSet();
-
 		_activeController = createController(dataSet);
 
 		DirectiveFilesInitialiser initialiser = new DirectiveFilesInitialiser(this, _activeController.getModel()); 
@@ -855,9 +857,6 @@ public class DeltaEditor extends InternalFrameApplication implements PreferenceC
 		_activeController.closeAll();
 	}
 
-	/**
-	 * @param dataSet
-	 */
 	private boolean closeAll() {
 		_closingAll = true;
 		for (DeltaViewController controller : _controllers) {

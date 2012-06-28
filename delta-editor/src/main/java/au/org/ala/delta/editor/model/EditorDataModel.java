@@ -76,6 +76,9 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 	/** Keeps track of whether this data set has been modified */
 	private boolean _modified;
 
+    /** The temporary name assigned to a new dataset (that has yet to be saved) */
+    private String _tempName;
+
 	public EditorDataModel(AbstractObservableDataSet dataSet) {
 		super(dataSet);
 		_propertyChangeSupport = new PropertyChangeSupport(this);
@@ -83,6 +86,7 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 		_selectedState = -1;
 		_selectedCharacter = null;
 		_selectedItem = null;
+        _tempName = "";
 		EditorPreferences.addPreferencesChangeListener(this);
 	}
 
@@ -166,8 +170,8 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 	@Override
 	public String getName() {
 		String name = _wrappedDataSet.getName();
-		if (name == null) {
-			name = "";
+		if (StringUtils.isBlank(name)) {
+			name = _tempName;
 		}
 		return name;
 	}
@@ -176,7 +180,7 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 	public String getShortName() {
 		String name = _wrappedDataSet.getName();
 		if (name == null) {
-			name = "";
+			name = _tempName;
 		}
 		name = new File(name).getName();
 		return name;
@@ -214,11 +218,19 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 		return dataSetFolder;
 	}
 
+    /**
+     * This method only takes effect if this is a new DataSet, otherwise this method has no effect and the
+     * name will remain the filename.
+     * @param name the name for this dataset.
+     */
 	@Override
 	public void setName(String name) {
 
-		_wrappedDataSet.setName(name);
-		_propertyChangeSupport.firePropertyChange("name", null, name);
+        if (StringUtils.isEmpty(_wrappedDataSet.getName())) {
+            String oldName = _tempName;
+            _tempName = name;
+            _propertyChangeSupport.firePropertyChange("name", oldName, name);
+        }
 	}
 
 	@Override

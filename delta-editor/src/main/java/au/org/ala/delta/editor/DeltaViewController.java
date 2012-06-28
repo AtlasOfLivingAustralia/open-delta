@@ -209,7 +209,8 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 	 * Saves the model.
 	 */
 	public void save() {
-		if (StringUtils.isEmpty(_dataSet.getName())) {
+        String name = _dataSet.getName();
+        if (!new File(name).exists()) {
 			saveAs();
 		}
 		else {
@@ -271,7 +272,6 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 			}			
 			
 			_repository.saveAsName(_dataSet.getDeltaDataSet(), newFile.getAbsolutePath(), null);
-			_dataSet.setName(newFile.getAbsolutePath());
 			EditorPreferences.addFileToMRU(newFile.getAbsolutePath());
 			
 		}
