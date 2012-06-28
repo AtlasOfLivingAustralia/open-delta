@@ -78,7 +78,7 @@ Section -Main SEC0000
     Call CustomAddFiles
   
     ; Output sample dlt into sample subdirectory
-    File /r "${SAMPLE-DATASET-PATH}"
+    File /r /x ".svn" "${SAMPLE-DATASET-PATH}"
     
     ; Output JAR files to lib subdirectory
     SetOutPath "$INSTDIR\lib"
