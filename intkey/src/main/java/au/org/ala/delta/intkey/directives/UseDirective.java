@@ -129,9 +129,9 @@ public class UseDirective extends IntkeyDirective {
                                 Set<Integer> setStateValues = ParsingUtils.parseMultistateOrIntegerCharacterValue(charValue);
 
                                 for (int val : setStateValues) {
-                                    if (val < 0 || val > msCh.getNumberOfStates()) {
-                                        throw new IntkeyDirectiveParseException("UseDirective.InvalidStateValue", charValue, _charFormatter.formatCharacterDescription(ch), Integer.toString(
-                                                ch.getCharacterId(), msCh.getNumberOfStates()));
+                                    if (val < 1 || val > msCh.getNumberOfStates()) {
+                                        throw new IntkeyDirectiveParseException("UseDirective.InvalidStateValue", charValue, Integer.toString(ch.getCharacterId()),
+                                                _charFormatter.formatCharacterDescription(ch), msCh.getNumberOfStates());
                                     }
                                 }
 
@@ -221,7 +221,8 @@ public class UseDirective extends IntkeyDirective {
             for (int c : parsedCharacterNumbers) {
                 specifiedValues.add(rhs);
             }
-            //If a value was specified for the character number/range/keyword, add the subcommand to the string representation
+            // If a value was specified for the character number/range/keyword,
+            // add the subcommand to the string representation
             stringRepresentationBuilder.append(" ");
             stringRepresentationBuilder.append(subCmd);
         } else {
