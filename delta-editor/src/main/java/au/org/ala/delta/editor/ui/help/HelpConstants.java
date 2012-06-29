@@ -20,5 +20,7 @@ package au.org.ala.delta.editor.ui.help;
 public interface HelpConstants {
 	public static final String GRID_VIEW_HELP_KEY = "gridview";
 	public static final String TREE_VIEW_HELP_KEY = "treeview";
-	
+    public static final String ITEM_EDITOR_HELP_KEY = "the_item_editor";
+    public static final String CHARACTER_EDITOR_HELP_KEY = "the_character_editor";
+
 }

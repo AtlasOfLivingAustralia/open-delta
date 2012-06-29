@@ -52,8 +52,8 @@
 	<mapID target="root" url="pages/delta-ed.htm"/> 
 	<mapID target="characters" url="pages/delta-ed.htm#_The_Character_Editor" />
 	<mapID target="items" url="pages/delta-ed.htm#_The_Item_Editor" />
-	<mapID target="treeview" url="pages/delta-ed.htm#_The_tree-view_attribute_1" />
-	<mapID target="gridview" url="pages/delta-ed.htm#_The_grid-view_attribute" />
+	<mapID target="TreeViewer" url="pages/delta-ed.htm#_The_tree-view_attribute_1" />
+	<mapID target="MatrixViewer" url="pages/delta-ed.htm#_The_grid-view_attribute" />
 	<mapID target="editor.image.icon" url="images/Delta_blue_16.png"/>
 	
 	<mapID target="confor_directives" url="pages/delta-user-guide.htm#_3.5_Directives_(in" />

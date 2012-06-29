@@ -15,6 +15,7 @@
 package au.org.ala.delta.editor;
 
 import au.org.ala.delta.editor.ui.ReorderableList;
+import au.org.ala.delta.ui.help.HelpController;
 
 /**
  * This interface should be implemented by views of a DeltaDataSet.
@@ -30,4 +31,11 @@ public interface DeltaView {
 	public ReorderableList getCharacterListView();
 	public ReorderableList getItemListView();
 	public boolean canClose();
+
+    /**
+     * Gives the view the opportunity to create the appropriate associations with the HelpController to support
+     * context sensitive help.
+     * @param helpController handles Help notifications and actions.
+     */
+    public void registerHelp(HelpController helpController);
 }

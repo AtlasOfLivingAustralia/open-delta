@@ -14,13 +14,13 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.ui;
 
-import java.beans.PropertyVetoException;
+import au.org.ala.delta.editor.DeltaView;
+import au.org.ala.delta.ui.help.HelpController;
 
-import javax.swing.JInternalFrame;
+import javax.swing.*;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
-
-import au.org.ala.delta.editor.DeltaView;
+import java.beans.PropertyVetoException;
 
 /**
  * Doesn't do much - saves child classes from implementing DeltaView methods that they don't need.
@@ -55,7 +55,17 @@ public abstract class AbstractDeltaView extends JInternalFrame implements DeltaV
 		return true;
 	}
 
-	protected void setOwner(JInternalFrame owner) {
+    /**
+     * Default implementation that uses the class name as the help key.
+     *
+     * @param helpController handles Help notifications and actions.
+     */
+    @Override
+    public void registerHelp(HelpController helpController) {
+        helpController.setHelpKeyForComponent(this, getClass().getSimpleName());
+    }
+
+    protected void setOwner(JInternalFrame owner) {
 		_owner = owner;
 		if (_owner != null) {
 			addInternalFrameListener(new InternalFrameAdapter() {

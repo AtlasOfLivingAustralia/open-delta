@@ -21,7 +21,6 @@ import au.org.ala.delta.editor.model.EditorDataModel;
 import au.org.ala.delta.editor.slotfile.model.SlotFileRepository;
 import au.org.ala.delta.editor.support.InternalFrameApplication;
 import au.org.ala.delta.editor.ui.StatusBar;
-import au.org.ala.delta.editor.ui.help.HelpConstants;
 import au.org.ala.delta.editor.ui.image.ImageSettingsDialog;
 import au.org.ala.delta.editor.ui.util.MenuBuilder;
 import au.org.ala.delta.model.AbstractObservableDataSet;
@@ -81,6 +80,7 @@ public class DeltaEditor extends InternalFrameApplication implements PreferenceC
 
 	private boolean _saveEnabled;
 	private boolean _saveAsEnabled;
+    private boolean _viewSelected;
 
 	/** Flag to prevent concurrent modification exception on close all */
 	private boolean _closingAll;
@@ -130,7 +130,7 @@ public class DeltaEditor extends InternalFrameApplication implements PreferenceC
 		_saveEnabled = false;
 		_saveAsEnabled = false;
 		_closingAll = false;
-
+        _viewSelected = false;
 		_propertyChangeSupport = new PropertyChangeSupport(this);
 
 	}
@@ -500,17 +500,15 @@ public class DeltaEditor extends InternalFrameApplication implements PreferenceC
 	private void newMatrix() {
 
 		DeltaView matrixViewer = _activeController.createGridView();
-		newView(matrixViewer, HelpConstants.GRID_VIEW_HELP_KEY);
+		newView(matrixViewer);
 	}
 
 	private void newTree() {
 		DeltaView treeViewer = _activeController.createTreeView();
-		newView(treeViewer, HelpConstants.TREE_VIEW_HELP_KEY);
+		newView(treeViewer);
 	}
 
-	private void newView(DeltaView view, String helpKey) {
-
-		_helpController.setHelpKeyForComponent((JComponent) view, helpKey);
+	private void newView(DeltaView view) {
 		// TODO need to remove this dependency on JInternalFrame....
 		show((JInternalFrame) view);
 
@@ -596,7 +594,7 @@ public class DeltaEditor extends InternalFrameApplication implements PreferenceC
 		EditorDataModel model = new EditorDataModel(dataSet);
         model.setName(newDataSetName());
 		model.addPropertyChangeListener(this);
-		DeltaViewController controller = new DeltaViewController(model, DeltaEditor.this, _dataSetRepository);
+		DeltaViewController controller = new DeltaViewController(model, DeltaEditor.this, _dataSetRepository, _helpController);
 		controller.setNewDataSetName(newDataSetName);
 		controller.setCloseWithoutSavingMessage(closeWithoutSavingMessage);
 		controller.setUnableToCloseMessage(unableToCloseMessage);
@@ -647,6 +645,7 @@ public class DeltaEditor extends InternalFrameApplication implements PreferenceC
 		updateTitle();
 		setSaveEnabled(getCurrentDataSet().isModified());
 		setSaveAsEnabled(true);
+        setViewSelected(view != null);
 	}
 
 	/**
@@ -792,22 +791,22 @@ public class DeltaEditor extends InternalFrameApplication implements PreferenceC
 		createAboutBox();
 	}
 
-	@Action(enabledProperty = "saveAsEnabled")
+	@Action(enabledProperty = "viewSelected")
 	public void viewCharacterEditor() {
 		DeltaView editor = _activeController.createCharacterEditView();
-		newView(editor, "C");
+		newView(editor);
 	}
 
-	@Action(enabledProperty = "saveAsEnabled")
+	@Action(enabledProperty = "viewSelected")
 	public void viewTaxonEditor() {
 		DeltaView editor = _activeController.createItemEditView();
-		newView(editor, "T");
+		newView(editor);
 	}
 
 	@Action(enabledProperty = "saveAsEnabled")
 	public void viewActionSets() {
 		DeltaView actionSets = _activeController.createActionSetsView();
-		newView(actionSets, "A");
+		newView(actionSets);
 	}
 
 	@Action(enabledProperty = "saveAsEnabled")
@@ -819,13 +818,13 @@ public class DeltaEditor extends InternalFrameApplication implements PreferenceC
 	@Action
 	public void viewImageEditor() {
 		DeltaView editor = _activeController.createImageEditorView();
-		newView(editor, "I");
+		newView(editor);
 	}
 
 	@Action
 	public void viewDirectivesEditor() {
 		DeltaView editor = _activeController.createDirectivesEditorView();
-		newView(editor, "");
+		newView(editor);
 	}
 
 	@Action(enabledProperty = "saveAsEnabled")
@@ -904,6 +903,17 @@ public class DeltaEditor extends InternalFrameApplication implements PreferenceC
 	public boolean isSaveAsEnabled() {
 		return _saveAsEnabled;
 	}
+
+    public boolean isViewSelected() {
+        return _viewSelected;
+    }
+
+    public void setViewSelected(boolean viewSelected) {
+        boolean oldViewSelected = _viewSelected;
+        _viewSelected = viewSelected;
+        _propertyChangeSupport.firePropertyChange("viewSelected", oldViewSelected, _viewSelected);
+    }
+
 
 	/**
 	 * Updates the file menu when a value is added to the most recently used list.

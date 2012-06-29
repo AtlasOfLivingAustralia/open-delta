@@ -14,6 +14,17 @@
  ******************************************************************************/
 package au.org.ala.delta.editor;
 
+import au.org.ala.delta.editor.model.DeltaViewModel;
+import au.org.ala.delta.editor.model.EditorDataModel;
+import au.org.ala.delta.editor.ui.InternalFrameDataModelListener;
+import au.org.ala.delta.model.DeltaDataSetRepository;
+import au.org.ala.delta.ui.MessageDialogHelper;
+import au.org.ala.delta.ui.help.HelpController;
+import org.jdesktop.application.ResourceMap;
+
+import javax.swing.*;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
@@ -22,20 +33,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.swing.JInternalFrame;
-import javax.swing.JOptionPane;
-import javax.swing.event.InternalFrameAdapter;
-import javax.swing.event.InternalFrameEvent;
-
-import org.apache.commons.lang.StringUtils;
-
-import au.org.ala.delta.editor.model.DeltaViewModel;
-import au.org.ala.delta.editor.model.EditorDataModel;
-import au.org.ala.delta.editor.ui.InternalFrameDataModelListener;
-import au.org.ala.delta.model.DeltaDataSetRepository;
-import au.org.ala.delta.ui.MessageDialogHelper;
-import org.jdesktop.application.ResourceMap;
 
 /**
  * The DeltaViewControllers is responsible for managing a single instance of the EditorDataModel
@@ -74,18 +71,21 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 
     private ResourceMap _resourceMap;
 
+    private HelpController _helpController;
+
 	/**
 	 * Creates a new DeltaViewController.
 	 * 
-	 * @param dataSet
-	 *            The data set associated with the viewer
-	 * @param deltaEditor
-	 *            Reference to the instance of DeltaEditor that created the viewer
+	 * @param dataSet The data set associated with the viewer
+	 * @param deltaEditor Reference to the instance of DeltaEditor that created the viewer
+     * @param repository used to help with save/save as actions.
+     * @param helpController views register themselves with the help controller.
 	 */
-	public DeltaViewController(EditorDataModel dataSet, DeltaEditor deltaEditor, DeltaDataSetRepository repository) {
+	public DeltaViewController(EditorDataModel dataSet, DeltaEditor deltaEditor, DeltaDataSetRepository repository, HelpController helpController) {
 		_dataSet = dataSet;
 		_deltaEditor = deltaEditor;
 		_repository = repository;
+        _helpController = helpController;
 		_closingAll = false;
 		_newDataSetName = "";
 		_viewFactory = new DeltaViewFactory();
@@ -145,6 +145,7 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 	 * @param view the new view of the model.
 	 */
 	public void viewerOpened(DeltaView view, DeltaViewModel model) {
+        view.registerHelp(_helpController);
 		JInternalFrame frameView = (JInternalFrame)view;
 		_activeViews.add(frameView);
 		frameView.addVetoableChangeListener(this);
@@ -179,12 +180,18 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 		fireViewSelected((DeltaView)e.getInternalFrame());
 	}
 
+    @Override
+    public void internalFrameDeactivated(InternalFrameEvent e) {
+        if (selectedViewModel() == null) {
+            fireViewSelected(null);
+        }
+    }
+
 
 
 	/**
 	 * Asks the user whether they wish to save before closing.  If this method returns false
 	 * the close will be aborted.
-	 * @param model the model to be closed.
 	 * @return true if the close can proceed.
 	 */
 	private boolean confirmClose() {
