@@ -21,6 +21,7 @@ import java.awt.event.MouseListener;
 import javax.swing.BorderFactory;
 
 import au.org.ala.delta.model.image.ImageOverlay;
+import au.org.ala.delta.model.image.OverlayType;
 import au.org.ala.delta.ui.DashedLineBorder;
 import au.org.ala.delta.ui.image.OverlaySelectionObserver;
 import au.org.ala.delta.ui.image.SelectableOverlay;
@@ -89,7 +90,46 @@ public class SelectableTextOverlay extends RichTextLabel implements MouseListene
 
     @Override
     public void mouseClicked(MouseEvent e) {
+        // If this was a double click, need to treat the event as "select overlay / click ok"
+        boolean implicitOk = e.getClickCount() > 1;
+
+        if (implicitOk) {
+            setSelected(false);
+        }
+
         _support.fireOverlaySelected(this);
+
+        // If this was a double click, create a fake Ok button overlay (as there may not be a real Ok button
+        // displayed), then inform observers that it was selected.
+        if (implicitOk) {
+            SelectableOverlay fakeOkButtonOverlay = new SelectableOverlay() {
+
+                @Override
+                public boolean isSelected() {
+                    // TODO Auto-generated method stub
+                    return false;
+                }
+
+                @Override
+                public void setSelected(boolean selected) {
+                }
+
+                @Override
+                public ImageOverlay getImageOverlay() {
+                    return new ImageOverlay(OverlayType.OLOK);
+                }
+
+                @Override
+                public void addOverlaySelectionObserver(OverlaySelectionObserver observer) {
+                }
+
+                @Override
+                public void removeOverlaySelectionObserver(OverlaySelectionObserver observer) {
+                }
+            };
+
+            _support.fireOverlaySelected(fakeOkButtonOverlay);
+        }
     }
 
     @Override
