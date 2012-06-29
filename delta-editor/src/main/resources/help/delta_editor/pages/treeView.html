@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>The Tree View Attribute Editor</title>
+</head>
+<body>
+
+<h2><a name="_The_tree-view_attribute_1"></a>The tree-view attribute editor</h2>
+
+<p style="page-break-after: avoid;">The tree view attribute editor is the default means of
+    viewing the data. Here is an example.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-36.png" alt="sample.dlt - Attribute Edit (Trees)" border="0"></p>
+
+<p>The window is divided into four panes, which can be resized
+    by the user as desired by clicking on and dragging the boundaries between them.</p>
+
+<p><a name="itemTree"><i>The Item Tree (top-left pane).</i></a>
+    This contains a list of the names and numbers of all items
+    (taxa) in the data set. To select an item as the &#39;current&#39; item for the window,
+    click on it (i.e. on its name or number) with the left mouse button (item 3,
+    Anisopogon, is the currently selected item in the example above). To move an
+    item to a different position in the list, drag it with the left mouse button
+    (that is, move the mouse while holding down the button). To copy (or move) an
+    item, drag it with the right mouse button &#8211; a popup menu offers a choice
+    between copying or moving. Clicking the right mouse button opens a popup menu
+    with options for inserting, modifying or deleting items in the list.
+    Double-clicking on an item will open the item editor dialog.</p>
+
+<p>(The reader might wonder why this pane is called the item <i>tree</i> when it appears to be a simple <i>list</i> of items. In future versions of the
+    program, it will be possible to group items hierarchically. When that is
+    implemented, a tree structure will be used for navigating the hierarchy.)</p>
+
+<p><a name="characterTree"><i>The Character Tree (top-right pane).</i></a> The upper-level nodes of this tree consist of a list of
+    the feature descriptions of all characters in the data set. An icon to the left
+    of the feature description indicates the character type &#8211; whether <b>T</b>ext, <b>I</b>nteger numeric, <b>R</b>eal
+    numeric, <b>U</b>nordered multistate, or <b>O</b>rdered multistate. When a node is
+    expanded, it reveals either (for text and numeric characters, such as character
+    8 in the example above) a text box giving the value of that character for the
+    selected item (and possibly the units of measurement); or (for multistate
+    characters, such as characters 10 and 11 in the example above) a list of the
+    states defined for that character.</p>
+
+<p>To select a character as the &#39;current&#39; character for the
+    window, click on it (anywhere in its feature or state description) with the
+    left mouse button (character 11 is the currently selected character in the
+    example above). To move a character to a different position in the list, drag
+    its feature description with the left mouse button. To move a state within its
+    character, drag the state description with the left mouse button. Clicking the
+    right mouse button opens a popup menu with options for inserting, modifying or
+    deleting characters and their states. Double-clicking on a character will open
+    the character editor dialog.</p>
+
+<p>For multistate characters, a check box appears to the left
+    of each state description. If a tick is present in the box, it indicates that
+    the state applies to the currently selected item. A smaller, grey tick
+    indicates that the state is present by implication, rather than explicit coding
+    (see character 10 in the example). If the background colour of the box is
+    white, the application of that state to the currently selected item may be
+    toggled by clicking on the box.</p>
+
+<p>A white background in a character-value box, as in
+    characters 8 and 10 in the example, indicates that the attribute is &#39;simple&#39;,
+    and the value(s) can be edited <i>in situ</i>.
+    A grey background, as in character 11 in the example, indicates that the
+    attribute is &#39;complex&#39;, defined as follows.</p>
+
+<ul><li><i>Text characters</i>. The attribute has
+    embedded formatting information.</li>
+    <li><i>Numeric characters</i>. The attribute
+        includes comments, extreme values (enclosed in parentheses), or delimiters
+        other than &#39;&#8211;&#39; (&#39;to&#39;).</li>
+    <li><i>Multistate characters</i>. The attribute
+        includes comments, or delimiters other than &#39;/&#39; (&#39;or&#39;); or the states within
+        the attribute are not in ascending order.</li></ul>
+
+<p class="margint0">Complex attributes can be edited or entered only in the
+    complex-attribute editing pane &#8211; see below.</p>
+
+<p>If a character is inapplicable because of dependency
+    relationships, a diagonal red bar appears across both the &#39;type&#39; icon and the
+    state check boxes.</p>
+
+<p><a name="complexAttributeEditor"><i>The Complex-Attribute Editor (lower-left pane).</i></a>
+     This pane is a rich edit control &#8211; that is, it
+    allows display and editing of formatting marks. It contains the DELTA encoding
+    for the currently selected item and character, using the traditional DELTA
+    style. Angle brackets should appear around comments, but should <i>not</i> be placed around text attributes. A
+    toolbar above the pane provides controls for rendering portions of the text in
+    bold, italics, etc., and for undoing changes. Error checking is performed when
+    the input focus leaves the edit control.</p>
+
+<p><a name="stateListAttributeEditor"><i>The State List (bottom-right pane).</i></a>
+    If the currently selected character is a text or
+    numeric character, this pane contains only an icon denoting the character type,
+    and the units of measurement (if applicable). If the currently selected
+    character is a multistate character, it contains a list of the states of the
+    character, with a check box next to each. The appearance and method of use of
+    the check boxes is the same as in the character-tree pane. This pane is
+    provided so that the codings may be viewed and edited when the character is not
+    &#39;expanded&#39; in the character-tree pane.</p>
+
+</body>
+</html>

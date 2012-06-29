@@ -1,61 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!DOCTYPE map
-  PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp Map Version 1.0//EN"
-         "http://java.sun.com/products/javahelp/map_1_0.dtd">
+        PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp Map Version 1.0//EN"
+        "http://java.sun.com/products/javahelp/map_1_0.dtd">
 
 <map version="1.0">
     <!-- Table of contents -->
     <mapID target="introduction" url="pages/delta-ed.htm#_Introduction"/>
-<mapID target="notation" url="pages/delta-ed.htm#_Notation"/>
-<mapID target="experimenting_with_the" url="pages/delta-ed.htm#_Experimenting_with_the"/>
-<mapID target="opening_the_sample" url="pages/delta-ed.htm#_Opening_the_sample"/>
-<mapID target="making_a_copy" url="pages/delta-ed.htm#_Making_a_copy"/>
-<mapID target="exporting_to_delta" url="pages/delta-ed.htm#_Exporting_to_DELTA"/>
-<mapID target="printing_the_character" url="pages/delta-ed.htm#_Printing_the_character"/>
-<mapID target="producing_natural-language_descript" url="pages/delta-ed.htm#_Producing_natural-language_descript"/>
-<mapID target="generating_a_conventional" url="pages/delta-ed.htm#_Generating_a_conventional"/>
-<mapID target="generating_an_interactive" url="pages/delta-ed.htm#_Generating_an_interactive"/>
-<mapID target="creating_a_data" url="pages/delta-ed.htm#_Creating_a_Data"/>
-<mapID target="developing_a_character" url="pages/delta-ed.htm#_Developing_a_character"/>
-<mapID target="entering_characters" url="pages/delta-ed.htm#_Entering_characters"/>
-<mapID target="saving_the_data" url="pages/delta-ed.htm#_Saving_the_data"/>
-<mapID target="entering_taxon_names" url="pages/delta-ed.htm#_Entering_taxon_names"/>
-<mapID target="recording_simple_attributes" url="pages/delta-ed.htm#_Recording_simple_attributes"/>
-<mapID target="exporting_to_delta_1" url="pages/delta-ed.htm#_Exporting_to_DELTA_1"/>
-<mapID target="producing_output_via" url="pages/delta-ed.htm#_Producing_output_via"/>
-<mapID target="importing_delta_text" url="pages/delta-ed.htm#_Importing_DELTA_Text"/>
-<mapID target="saving_or_exporting" url="pages/delta-ed.htm#_Saving_or_Exporting"/>
-<mapID target="views_of_the" url="pages/delta-ed.htm#_Views_of_the"/>
-<mapID target="the_attribute_editors" url="pages/delta-ed.htm#_The_Attribute_Editors"/>
-<mapID target="the_tree-view_attribute_1" url="pages/delta-ed.htm#_The_tree-view_attribute_1"/>
-<mapID target="the_grid-view_attribute" url="pages/delta-ed.htm#_The_grid-view_attribute"/>
-<mapID target="using_the_%91enter%92" url="pages/delta-ed.htm#_Using_the_%91Enter%92"/>
-<mapID target="the_item_editor" url="pages/delta-ed.htm#_The_Item_Editor"/>
-<mapID target="the_character_editor" url="pages/delta-ed.htm#_The_Character_Editor"/>
-<mapID target="the_state_editor" url="pages/delta-ed.htm#_The_state_editor"/>
-<mapID target="the_notes_editor" url="pages/delta-ed.htm#_The_notes_editor"/>
-<mapID target="the_image-association_editor" url="pages/delta-ed.htm#_The_image-association_editor"/>
-<mapID target="the_controlling-attribute_editor" url="pages/delta-ed.htm#_The_controlling-attribute_editor"/>
-<mapID target="the_%91controlled-by%92_chooser" url="pages/delta-ed.htm#_The_%91Controlled-by%92_chooser"/>
-<mapID target="the_image_settings" url="pages/delta-ed.htm#_The_Image_Settings"/>
-<mapID target="images_windows_and" url="pages/delta-ed.htm#_Images_Windows_and"/>
-<mapID target="entering_special_symbols" url="pages/delta-ed.htm#_Entering_Special_Symbols"/>
-<mapID target="planned_major_enhancements" url="pages/delta-ed.htm#_Planned_Major_Enhancements"/>
-<mapID target="acknowledgements" url="pages/delta-ed.htm#_Acknowledgements"/>
-<mapID target="references" url="pages/delta-ed.htm#_References"/>
-    
-    
-    
-    
-    
-	<mapID target="root" url="pages/delta-ed.htm"/> 
-	<mapID target="characters" url="pages/delta-ed.htm#_The_Character_Editor" />
-	<mapID target="items" url="pages/delta-ed.htm#_The_Item_Editor" />
-	<mapID target="TreeViewer" url="pages/delta-ed.htm#_The_tree-view_attribute_1" />
-	<mapID target="MatrixViewer" url="pages/delta-ed.htm#_The_grid-view_attribute" />
-	<mapID target="editor.image.icon" url="images/Delta_blue_16.png"/>
-	
-	<mapID target="confor_directives" url="pages/delta-user-guide.htm#_3.5_Directives_(in" />
-	
+    <mapID target="notation" url="pages/delta-ed.htm#_Notation"/>
+    <mapID target="experimenting_with_the" url="pages/delta-ed.htm#_Experimenting_with_the"/>
+    <mapID target="opening_the_sample" url="pages/delta-ed.htm#_Opening_the_sample"/>
+    <mapID target="making_a_copy" url="pages/delta-ed.htm#_Making_a_copy"/>
+    <mapID target="exporting_to_delta" url="pages/delta-ed.htm#_Exporting_to_DELTA"/>
+    <mapID target="printing_the_character" url="pages/delta-ed.htm#_Printing_the_character"/>
+    <mapID target="producing_natural-language_descript" url="pages/delta-ed.htm#_Producing_natural-language_descript"/>
+    <mapID target="generating_a_conventional" url="pages/delta-ed.htm#_Generating_a_conventional"/>
+    <mapID target="generating_an_interactive" url="pages/delta-ed.htm#_Generating_an_interactive"/>
+    <mapID target="creating_a_data" url="pages/delta-ed.htm#_Creating_a_Data"/>
+    <mapID target="developing_a_character" url="pages/delta-ed.htm#_Developing_a_character"/>
+    <mapID target="entering_characters" url="pages/delta-ed.htm#_Entering_characters"/>
+    <mapID target="saving_the_data" url="pages/delta-ed.htm#_Saving_the_data"/>
+    <mapID target="entering_taxon_names" url="pages/delta-ed.htm#_Entering_taxon_names"/>
+    <mapID target="recording_simple_attributes" url="pages/delta-ed.htm#_Recording_simple_attributes"/>
+    <mapID target="exporting_to_delta_1" url="pages/delta-ed.htm#_Exporting_to_DELTA_1"/>
+    <mapID target="producing_output_via" url="pages/delta-ed.htm#_Producing_output_via"/>
+    <mapID target="importing_delta_text" url="pages/delta-ed.htm#_Importing_DELTA_Text"/>
+    <mapID target="saving_or_exporting" url="pages/delta-ed.htm#_Saving_or_Exporting"/>
+    <mapID target="views_of_the" url="pages/delta-ed.htm#_Views_of_the"/>
+    <mapID target="the_attribute_editors" url="pages/delta-ed.htm#_The_Attribute_Editors"/>
+    <mapID target="the_tree-view_attribute_1" url="pages/delta-ed.htm#_The_tree-view_attribute_1"/>
+    <mapID target="the_grid-view_attribute" url="pages/delta-ed.htm#_The_grid-view_attribute"/>
+    <mapID target="using_the_%91enter%92" url="pages/delta-ed.htm#_Using_the_%91Enter%92"/>
+    <mapID target="the_state_editor" url="pages/delta-ed.htm#_The_state_editor"/>
+    <mapID target="the_notes_editor" url="pages/delta-ed.htm#_The_notes_editor"/>
+    <mapID target="the_image-association_editor" url="pages/delta-ed.htm#_The_image-association_editor"/>
+    <mapID target="the_controlling-attribute_editor" url="pages/delta-ed.htm#_The_controlling-attribute_editor"/>
+    <mapID target="the_%91controlled-by%92_chooser" url="pages/delta-ed.htm#_The_%91Controlled-by%92_chooser"/>
+    <mapID target="the_image_settings" url="pages/delta-ed.htm#_The_Image_Settings"/>
+    <mapID target="images_windows_and" url="pages/delta-ed.htm#_Images_Windows_and"/>
+    <mapID target="entering_special_symbols" url="pages/delta-ed.htm#_Entering_Special_Symbols"/>
+    <mapID target="planned_major_enhancements" url="pages/delta-ed.htm#_Planned_Major_Enhancements"/>
+    <mapID target="acknowledgements" url="pages/delta-ed.htm#_Acknowledgements"/>
+    <mapID target="references" url="pages/delta-ed.htm#_References"/>
+
+
+    <mapID target="root" url="pages/delta-ed.htm"/>
+    <mapID target="characters" url="pages/delta-ed.htm#_The_Character_Editor"/>
+    <mapID target="items" url="pages/delta-ed.htm#_The_Item_Editor"/>
+    <mapID target="TreeViewer" url="pages/treeView.html"/>
+    <mapID target="MatrixViewer" url="pages/delta-ed.htm#_The_grid-view_attribute"/>
+    <mapID target="ItemEditor" url="pages/delta-ed.htm#_The_Item_Editor"/>
+    <mapID target="CharacterEditor" url="pages/delta-ed.htm#_The_Character_Editor"/>
+
+    <mapID target="editor.image.icon" url="images/Delta_blue_16.png"/>
+
+    <mapID target="confor_directives" url="pages/delta-user-guide.htm#_3.5_Directives_(in"/>
+
 </map>
