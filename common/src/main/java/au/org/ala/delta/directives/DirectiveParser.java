@@ -241,6 +241,7 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
                         }
 
                         executeDirective(d, dd, context);
+                        break;
                     } catch (Exception ex) {
                         handleDirectiveProcessingException(context, d, ex);
                     }

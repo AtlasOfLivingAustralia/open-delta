@@ -32,10 +32,10 @@ public class PrintFile {
 
     private int _printWidth = 80;
     /**
-     * The number of lines output on each page of the print file. A value of -1
+     * The number of lines output on each page of the print file. A value of 0
      * indicates that no paging should be done.
      */
-    private int _pageLength = -1;
+    private int _pageLength = 0;
     /**
      * A count of the number of lines in the current page of the print file content. 
      */

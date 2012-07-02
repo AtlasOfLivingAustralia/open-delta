@@ -73,6 +73,8 @@ import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.util.Utils;
 
 public class Key implements DirectiveParserObserver {
+    
+    private static final int TABULATED_KEY_MAX_NAME_SIZE = 27;
 
     private KeyContext _context;
     private boolean _inputFilesRead = false;
@@ -683,6 +685,8 @@ public class Key implements DirectiveParserObserver {
     }
 
     private void printTabularKey(TabularKey key, PrintFile printFile) {
+        int pageWidth = _context.getOutputFileManager().getOutputWidth();
+        
         ItemFormatter itemFormatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false, false);
 
         // Do a first pass of the data structure to get the counts for the
@@ -724,6 +728,9 @@ public class Key implements DirectiveParserObserver {
                 }
             }
         }
+        
+        // add 2 dividers to width of name. add 1 divider for each attribute column cell.
+        int maxAttrColumnsPerPage = (pageWidth - (TABULATED_KEY_MAX_NAME_SIZE + 2)) / (cellWidth + 1);
 
         StringBuilder builder = new StringBuilder();
 
@@ -751,6 +758,9 @@ public class Key implements DirectiveParserObserver {
                     previousRowAttributes = key.getRowAt(i - 1).getAllCharacterValuesUpToColumn(columnLimit);
                 }
             }
+            
+            int rowPageSpan = (int) Math.ceil(Integer.valueOf(rowAttributes.size()).doubleValue() / Integer.valueOf(maxAttrColumnsPerPage).doubleValue());
+            System.out.println(rowPageSpan);
 
             // Output the dividing line between the previous row and the current
             // row
@@ -789,15 +799,17 @@ public class Key implements DirectiveParserObserver {
             // the key, if it appears more than once
             builder.append("|");
             String formattedItemName = itemFormatter.formatItemDescription(it);
-            builder.append(formattedItemName);
+            //StringUtils.su
+            //builder.append(formattedItemName.substring(0, TABULATED_KEY_MAX_NAME_SIZE));
+            builder.append(StringUtils.substring(formattedItemName, 0, TABULATED_KEY_MAX_NAME_SIZE));
 
             int numItemOccurrences = itemOccurrences.get(it);
 
             if (numItemOccurrences > 1) {
-                builder.append(StringUtils.repeat(" ", 27 - formattedItemName.length() - Integer.toString(numItemOccurrences).length()));
+                builder.append(StringUtils.repeat(" ", TABULATED_KEY_MAX_NAME_SIZE - formattedItemName.length() - Integer.toString(numItemOccurrences).length()));
                 builder.append(numItemOccurrences);
             } else {
-                builder.append(StringUtils.repeat(" ", 27 - formattedItemName.length()));
+                builder.append(StringUtils.repeat(" ", TABULATED_KEY_MAX_NAME_SIZE - formattedItemName.length()));
             }
 
             builder.append("|");

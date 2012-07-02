@@ -59,7 +59,7 @@ public class OutputFileSelector extends OutputFileManager {
     }
 
     public static final int DEFAULT_PRINT_WIDTH = 80;
-    public static final int DEFAULT_PAGE_LENGTH = -1;
+    public static final int DEFAULT_PAGE_LENGTH = 0;
 
     private int _characterForOutputFiles = 0;
     private Map<String, String> _itemOutputFiles = new HashMap<String, String>();
@@ -81,7 +81,7 @@ public class OutputFileSelector extends OutputFileManager {
     private int _printWidth;
 
     /**
-     * The number of lines output on each page of the print file. A value of -1
+     * The number of lines output on each page of the print file. A value of 0
      * indicates that no paging should be done for the print file.
      */
     private int _printPageLength;

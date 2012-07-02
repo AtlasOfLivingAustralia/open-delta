@@ -13,6 +13,9 @@ public class KeyPageLengthDirective extends AbstractIntegerDirective {
 
     @Override
     protected void processInteger(DeltaContext context, int value) throws Exception {
+        if (value < 0) {
+            throw new IllegalArgumentException("Page length cannot be negative");
+        }
         context.getOutputFileSelector().setOutputPageLength(value);
     }
 
