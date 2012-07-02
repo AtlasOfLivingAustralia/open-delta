@@ -125,6 +125,12 @@ public class OutputFileManager {
     protected ParsingContext _context;
     /** Number of characters on a line of text written to the output file */
     protected int _outputWidth;
+
+    /**
+     * The number of lines output on each page of the print file. A value of -1
+     * indicates that no paging should be done for the print file.
+     */
+    private int _outputPageLength;
     protected PrintStream _defaultOut;
     protected PrintStream _defaultErr;
 
@@ -202,13 +208,13 @@ public class OutputFileManager {
     public void setErrorFileName(String errorFile) throws Exception {
         close(_outputFiles[OutputFileType.ERROR_FILE.ordinal()]);
         _outputFiles[OutputFileType.ERROR_FILE.ordinal()] = new TextOutputFile(errorFile);
-        _errorFile = new PrintFile(_outputFiles[OutputFileType.ERROR_FILE.ordinal()].getPrintStream(), _outputWidth);
+        _errorFile = new PrintFile(_outputFiles[OutputFileType.ERROR_FILE.ordinal()].getPrintStream(), _outputWidth, _outputPageLength);
     }
 
     public void setListingFileName(String listingFile) throws Exception {
         close(outputFile(OutputFileType.LISTING_FILE));
         _outputFiles[OutputFileType.LISTING_FILE.ordinal()] = new TextOutputFile(listingFile);
-        _listingFile = new PrintFile(_outputFiles[OutputFileType.LISTING_FILE.ordinal()].getPrintStream(), _outputWidth);
+        _listingFile = new PrintFile(_outputFiles[OutputFileType.LISTING_FILE.ordinal()].getPrintStream(), _outputWidth, _outputPageLength);
     }
 
     private void close(TextOutputFile file) {
@@ -220,7 +226,7 @@ public class OutputFileManager {
     public void setOutputFileName(String outputFile) throws Exception {
         close(outputFile(OutputFileType.OUTPUT_FILE));
         _outputFiles[OutputFileType.OUTPUT_FILE.ordinal()] = new TextOutputFile(outputFile);
-        _outputFile = new PrintFile(_outputFiles[OutputFileType.OUTPUT_FILE.ordinal()].getPrintStream(), _outputWidth);
+        _outputFile = new PrintFile(_outputFiles[OutputFileType.OUTPUT_FILE.ordinal()].getPrintStream(), _outputWidth, _outputPageLength);
     }
 
     public PrintFile getOutputFile() {
@@ -245,6 +251,14 @@ public class OutputFileManager {
 
     public int getOutputWidth() {
         return _outputWidth;
+    }
+    
+    public void setOutputPageLength(int value) {
+        _outputPageLength = value;
+    }
+
+    public int getOutputPageLength() {
+        return _outputPageLength;
     }
 
     protected PrintStream createPrintStream(File file) throws DirectiveException {

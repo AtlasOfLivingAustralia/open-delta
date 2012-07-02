@@ -4,16 +4,16 @@ import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.AbstractIntegerDirective;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 
-public class KeyPrintWidthDirective extends AbstractIntegerDirective {
+public class KeyPageLengthDirective extends AbstractIntegerDirective {
     
-    public KeyPrintWidthDirective() {
-        super("print", "width");
+    public KeyPageLengthDirective() {
+        super("page", "length");
         
     }
 
     @Override
     protected void processInteger(DeltaContext context, int value) throws Exception {
-        context.getOutputFileSelector().setOutputWidth(value);
+        context.getOutputFileSelector().setOutputPageLength(value);
     }
 
     @Override

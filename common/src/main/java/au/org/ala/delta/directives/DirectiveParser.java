@@ -78,7 +78,7 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
         FileInputStream fileIn = new FileInputStream(file);
         InputStreamReader reader = new InputStreamReader(fileIn, context.getFileEncoding());
         ParsingContext pc = context.newParsingContext();
-		pc.setFile(file);
+        pc.setFile(file);
         doParse(reader, context, pc);
         IOUtils.closeQuietly(reader);
     }
@@ -106,7 +106,6 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
         int ch = reader.read();
 
         while (ch >= 0) {
-
             if (ch == DIRECTIVE_DELIMITER && _blank.indexOf(prev) >= 0) {
 
                 // First test to see if this text is delimited...
@@ -116,6 +115,8 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
                     // Finish off any existing directive
                     if (currentDirective != null) {
                         executeDirective(currentDirective, currentData.toString(), context);
+                    } else if (!currentWords.isEmpty()) {
+                        handleUnrecognizedDirective(context, currentWords);
                     }
 
                     directiveText.setLength(0);
@@ -123,6 +124,7 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
                     // Start a potentially new directive
                     currentWords.clear();
                     currentWord = new StringBuilder();
+                    currentData = new StringBuilder();
                     currentDirective = null;
                     pc.setCurrentDirectiveStartLine(pc.getCurrentLine());
                     long offset = pc.getCurrentOffset() - 1;
@@ -220,10 +222,12 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
             int i = 0;
             List<String> controlWords = new ArrayList<String>();
 
+            DirectiveSearchResult result = null;
+
             while (i < data.length()) {
                 String word = readWord(data, i, true);
                 controlWords.add(word);
-                DirectiveSearchResult result = _registry.findDirective(controlWords);
+                result = _registry.findDirective(controlWords);
                 if (result.getResultType() == ResultType.Found) {
                     AbstractDirective d = result.getMatches().get(0);
 
@@ -240,51 +244,52 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
                     } catch (Exception ex) {
                         handleDirectiveProcessingException(context, d, ex);
                     }
-                } else if (result.getResultType() == ResultType.NotFound) {
-                    handleUnrecognizedDirective(context, controlWords);
                 }
                 i += word.length() + 1;
             }
+            if (result != null && result.getResultType() == ResultType.NotFound) {
+                handleUnrecognizedDirective(context, controlWords);
+            }
         }
     }
-    
+
     private void checkDirectivePrerequisites(@SuppressWarnings("rawtypes") AbstractDirective directive, C context) throws DirectiveException {
-    	// Check prerequisites
-    	@SuppressWarnings("unchecked")
-		List<Class<? extends AbstractDirective<C>>> r = directive.getPrerequisites();
-    	List<Class<? extends AbstractDirective<C>>> failed = new ArrayList<Class<? extends AbstractDirective<C>>>();
-    	for (Class<? extends AbstractDirective<C>> c : r) {
-    		if (!context.hasProcessedDirective(c)) {
-    			failed.add(c);
-    		}
-    	}
-    	
-    	if (failed.size() > 0) {
-    		StringBuilder b = new StringBuilder();
-    		int i = 0;
-    		for (Class<? extends AbstractDirective<C>> c : failed) {
-    			DirectiveSearchResult result = _registry.findDirectiveByClass(c);    			
-    			if (result.getResultType() == ResultType.Found) {    				
-    				b.append(result.getMatches().get(0).getName());
-    			}
-    			
-    			if (i < failed.size() - 1) {
-    				b.append(", ");
-    			}    			
-    			i++;
-    		}
-    	    throw DirectiveError.asException(au.org.ala.delta.directives.validation.DirectiveError.Error.FAILED_PREREQUISITES, 0, b.toString(), directive.getName());		
-    	}
-    	
+        // Check prerequisites
+        @SuppressWarnings("unchecked")
+        List<Class<? extends AbstractDirective<C>>> r = directive.getPrerequisites();
+        List<Class<? extends AbstractDirective<C>>> failed = new ArrayList<Class<? extends AbstractDirective<C>>>();
+        for (Class<? extends AbstractDirective<C>> c : r) {
+            if (!context.hasProcessedDirective(c)) {
+                failed.add(c);
+            }
+        }
+
+        if (failed.size() > 0) {
+            StringBuilder b = new StringBuilder();
+            int i = 0;
+            for (Class<? extends AbstractDirective<C>> c : failed) {
+                DirectiveSearchResult result = _registry.findDirectiveByClass(c);
+                if (result.getResultType() == ResultType.Found) {
+                    b.append(result.getMatches().get(0).getName());
+                }
+
+                if (i < failed.size() - 1) {
+                    b.append(", ");
+                }
+                i++;
+            }
+            throw DirectiveError.asException(au.org.ala.delta.directives.validation.DirectiveError.Error.FAILED_PREREQUISITES, 0, b.toString(), directive.getName());
+        }
+
     }
-    
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     protected void doProcess(C context, AbstractDirective directive, String directiveData) throws ParseException, Exception {
-    	checkDirectivePrerequisites(directive, context);
+        checkDirectivePrerequisites(directive, context);
         directive.parse(context, directiveData);
         DirectiveArguments args = directive.getDirectiveArgs();
         directive.process(context, args);
-        
+
         context.addProcessedDirective((Class<? extends AbstractDirective<?>>) directive.getClass());
     }
 

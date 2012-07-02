@@ -666,10 +666,11 @@ public class Key implements DirectiveParserObserver {
     private PrintFile getListingPrintFile() {
         KeyOutputFileManager outputFileManager = _context.getOutputFileManager();
         int outputWidth = outputFileManager.getOutputWidth();
+        int pageLength = outputFileManager.getOutputPageLength();
 
         PrintFile listingPrintFile = outputFileManager.getKeyListingFile();
         if (listingPrintFile == null) {
-            listingPrintFile = new PrintFile(outputFileManager.getDefaultOutputStream(), outputWidth);
+            listingPrintFile = new PrintFile(outputFileManager.getDefaultOutputStream(), outputWidth, pageLength);
         } else {
             // Only append the credits if we are not outputting to stdout.
             // The credits are always output to stdout when the application is

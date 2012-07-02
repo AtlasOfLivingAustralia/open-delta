@@ -31,6 +31,15 @@ import au.org.ala.delta.util.Utils;
 public class PrintFile {
 
     private int _printWidth = 80;
+    /**
+     * The number of lines output on each page of the print file. A value of -1
+     * indicates that no paging should be done.
+     */
+    private int _pageLength = -1;
+    /**
+     * A count of the number of lines in the current page of the print file content. 
+     */
+    private int _linesInCurrentPage = 0;
     private PrintStream _output;
     private int _paragraphIndent;
     private int _lineWrapIndent = 0;
@@ -74,6 +83,20 @@ public class PrintFile {
         _output = output;
         _printWidth = lineWidth;
         initialise();
+    }
+    
+    /**
+     * Creates a new Printer that will print to the supplied PrintStream.
+     * 
+     * @param output
+     *            the output stream to print to.
+     * @param lineWidth
+     *            the position at which line wrapping should occur. a lineWidth
+     *            of zero means no line wrapping.
+     */
+    public PrintFile(PrintStream output, int lineWidth, int pageLength) {
+        this(output, lineWidth);
+        _pageLength = pageLength;
     }
 
     private void initialise() {
@@ -178,6 +201,7 @@ public class PrintFile {
         }
         for (int i = 0; i < numLines; i++) {
             _output.println();
+            handleNewPageLine();
         }
     }
 
@@ -219,6 +243,16 @@ public class PrintFile {
 
         _output.println(text);
         _output.flush();
+        handleNewPageLine();
+    }
+    
+    private void handleNewPageLine() {
+        _linesInCurrentPage++;        
+        if (_pageLength > 0 && _linesInCurrentPage == _pageLength) {
+            _output.println("\f");
+            _output.flush();
+            _linesInCurrentPage = 0;
+        }
     }
 
     protected String pad(String value) {
@@ -280,15 +314,14 @@ public class PrintFile {
     private int findWrapPosition() {
         int wrappingPos = -1;
         int newLinePos = _outputBuffer.indexOf("\n");
-        if (newLinePos >=0 && newLinePos <= _printWidth) {
+        if (newLinePos >= 0 && newLinePos <= _printWidth) {
             wrappingPos = newLinePos;
             _outputBuffer.deleteCharAt(newLinePos);
-            if (newLinePos > 0 && _outputBuffer.charAt(newLinePos-1) == '\r') {
-                _outputBuffer.deleteCharAt(newLinePos-1);
+            if (newLinePos > 0 && _outputBuffer.charAt(newLinePos - 1) == '\r') {
+                _outputBuffer.deleteCharAt(newLinePos - 1);
                 wrappingPos--;
             }
-        }
-        else {
+        } else {
             int numSpaces = numLeadingSpaces(_outputBuffer);
             wrappingPos = findWrappingSpace();
             if (wrappingPos <= numSpaces) {
@@ -302,33 +335,30 @@ public class PrintFile {
                 }
             }
         }
-        
+
         return wrappingPos;
     }
-    
+
     private int findWrappingSpace() {
         int wrappingPos;
         if (_wrapAsGroupChar == null) {
             wrappingPos = _outputBuffer.lastIndexOf(" ", _printWidth);
-        }
-        else {
+        } else {
             int maxSpace = 0;
             int groupNest = 0;
             int maxGroupStart = 0;
-            for (int i=0; i<_printWidth; i++) {
+            for (int i = 0; i < _printWidth; i++) {
                 if (_wrapAsGroupChar[0] == _wrapAsGroupChar[1]) {
                     if (_outputBuffer.charAt(i) == _wrapAsGroupChar[0]) {
-                        groupNest = groupNest == 0 ? 1: 0;
+                        groupNest = groupNest == 0 ? 1 : 0;
                     }
-                }
-                else {
+                } else {
                     if (_outputBuffer.charAt(i) == _wrapAsGroupChar[0]) {
                         groupNest++;
                         maxGroupStart = i;
-                    }
-                    else if (_outputBuffer.charAt(i) == _wrapAsGroupChar[1]) {
-                        groupNest = Math.max(groupNest-1, 0);
-                        
+                    } else if (_outputBuffer.charAt(i) == _wrapAsGroupChar[1]) {
+                        groupNest = Math.max(groupNest - 1, 0);
+
                     }
                 }
                 if (_outputBuffer.charAt(i) == ' ') {
@@ -339,14 +369,12 @@ public class PrintFile {
             }
             if (groupNest > 0 && maxSpace == 0) {
                 wrappingPos = maxGroupStart;
-            }
-            else if (maxSpace > 0) {
-                wrappingPos = maxSpace+1;
-            }
-            else {
+            } else if (maxSpace > 0) {
+                wrappingPos = maxSpace + 1;
+            } else {
                 wrappingPos = _printWidth;
             }
-            
+
         }
         return wrappingPos;
     }
@@ -422,13 +450,13 @@ public class PrintFile {
 
     protected void newLine() {
         _output.println();
+        handleNewPageLine();
     }
 
     public void newParagraph() {
         writeFileHeader();
         newLine();
         indent();
-
     }
 
     private int bufferIndex() {
@@ -486,22 +514,25 @@ public class PrintFile {
             writeBlankLines(numTrailingBlanks, 0);
         }
     }
-    
+
     /**
-     * Output a pair of strings, separated by multiple instances of a supplied padding character. The padding character is used to ensure 
-     * that the content fills the print width exactly.
+     * Output a pair of strings, separated by multiple instances of a supplied
+     * padding character. The padding character is used to ensure that the
+     * content fills the print width exactly.
      * 
-     * E.g. 
-     * str1.........................str2
+     * E.g. str1.........................str2
      * 
-     * @param str1 The first string
-     * @param str2 The second string
-     * @param paddingChar the padding character
+     * @param str1
+     *            The first string
+     * @param str2
+     *            The second string
+     * @param paddingChar
+     *            the padding character
      */
     public void outputStringPairWithPaddingCharacter(String str1, String str2, char paddingChar) {
         indent();
         writeJustifiedText(str1, -1);
-        
+
         int currentLineLength = _outputBuffer.length();
         if (currentLineLength + str2.length() >= _printWidth) {
             _outputBuffer.append(StringUtils.repeat(Character.toString(paddingChar), _printWidth - currentLineLength));
@@ -509,11 +540,11 @@ public class PrintFile {
             currentLineLength = _outputBuffer.length();
             _outputBuffer.append(StringUtils.repeat(Character.toString(paddingChar), _printWidth - currentLineLength - str2.length()));
             _outputBuffer.append(str2);
-            printBufferLine(); 
+            printBufferLine();
         } else {
             _outputBuffer.append(StringUtils.repeat(Character.toString(paddingChar), _printWidth - currentLineLength - str2.length()));
             _outputBuffer.append(str2);
-            printBufferLine();           
+            printBufferLine();
         }
     }
 
@@ -559,6 +590,10 @@ public class PrintFile {
 
     public void setPrintWidth(int printWidth) {
         _printWidth = printWidth;
+    }
+    
+    public void setPageLength(int pageLength) {
+        _pageLength = pageLength;
     }
 
     public void setPrintStream(PrintStream stream) {
