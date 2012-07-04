@@ -45,12 +45,11 @@
 
 
     <mapID target="root" url="pages/delta-ed.htm"/>
-    <mapID target="characters" url="pages/delta-ed.htm#_The_Character_Editor"/>
-    <mapID target="items" url="pages/delta-ed.htm#_The_Item_Editor"/>
+    <mapID target="ItemEditor" url="pages/items.html"/>
     <mapID target="TreeViewer" url="pages/treeView.html"/>
-    <mapID target="MatrixViewer" url="pages/delta-ed.htm#_The_grid-view_attribute"/>
-    <mapID target="ItemEditor" url="pages/delta-ed.htm#_The_Item_Editor"/>
-    <mapID target="CharacterEditor" url="pages/delta-ed.htm#_The_Character_Editor"/>
+    <mapID target="MatrixViewer" url="pages/gridView.html"/>
+    <mapID target="CharacterEditor" url="pages/characters.html"/>
+    <mapID target="ImageSettingsDialog" url="pages/imageSettings.html"/>
 
     <mapID target="editor.image.icon" url="images/Delta_blue_16.png"/>
 

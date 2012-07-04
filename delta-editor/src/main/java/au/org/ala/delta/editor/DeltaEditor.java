@@ -21,7 +21,6 @@ import au.org.ala.delta.editor.model.EditorDataModel;
 import au.org.ala.delta.editor.slotfile.model.SlotFileRepository;
 import au.org.ala.delta.editor.support.InternalFrameApplication;
 import au.org.ala.delta.editor.ui.StatusBar;
-import au.org.ala.delta.editor.ui.image.ImageSettingsDialog;
 import au.org.ala.delta.editor.ui.util.MenuBuilder;
 import au.org.ala.delta.model.AbstractObservableDataSet;
 import au.org.ala.delta.model.DeltaDataSetRepository;
@@ -811,8 +810,8 @@ public class DeltaEditor extends InternalFrameApplication implements PreferenceC
 
 	@Action(enabledProperty = "saveAsEnabled")
 	public void viewImageSettings() {
-		ImageSettingsDialog dialog = new ImageSettingsDialog(getMainFrame(), getCurrentDataSet(), getCurrentDataSet().getImageSettings());
-		show(dialog);
+		DeltaView imageSettings = _activeController.createImageSettingsView();
+        newView(imageSettings);
 	}
 
 	@Action

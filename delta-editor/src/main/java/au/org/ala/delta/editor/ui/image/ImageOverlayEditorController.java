@@ -14,24 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.ui.image;
 
-import java.awt.Point;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.swing.ActionMap;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-
-import org.apache.commons.lang.StringUtils;
-import org.jdesktop.application.Action;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ResourceMap;
-
 import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.util.MenuBuilder;
@@ -47,6 +29,19 @@ import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.ImageSettings.ButtonAlignment;
 import au.org.ala.delta.model.image.OverlayLocation;
 import au.org.ala.delta.model.image.OverlayType;
+import org.apache.commons.lang.StringUtils;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Handles actions performed on an ImageEditorPanel. (add/delete/update overlays).
@@ -251,9 +246,7 @@ public class ImageOverlayEditorController {
 	@Action
 	public void displayImageSettings() {
 		DeltaEditor editor = (DeltaEditor)Application.getInstance();
-		ImageSettingsDialog dialog = new ImageSettingsDialog(
-				editor.getMainFrame(), editor.getCurrentDataSet(), _imageSettings);
-		editor.show(dialog);
+        editor.viewImageSettings();
 	}
 
 	@Action

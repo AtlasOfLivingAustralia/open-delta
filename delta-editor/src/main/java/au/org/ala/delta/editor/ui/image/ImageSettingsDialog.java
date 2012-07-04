@@ -14,50 +14,29 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.ui.image;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GraphicsEnvironment;
-import java.awt.Window;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-
-import javax.swing.ActionMap;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JColorChooser;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.SwingConstants;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.TitledBorder;
-
+import au.org.ala.delta.editor.model.EditorViewModel;
+import au.org.ala.delta.editor.ui.AbstractDeltaView;
+import au.org.ala.delta.model.image.ImageSettings;
+import au.org.ala.delta.model.image.ImageSettings.ButtonAlignment;
 import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
-import au.org.ala.delta.editor.model.EditorViewModel;
-import au.org.ala.delta.model.image.ImageSettings;
-import au.org.ala.delta.model.image.ImageSettings.ButtonAlignment;
+import javax.swing.*;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.TitledBorder;
+import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
 /**
  * Allows the user to edit image settings (fonts, defaults when creating new overlays and the image path).
  */
-public class ImageSettingsDialog extends JDialog {
+public class ImageSettingsDialog extends AbstractDeltaView {
 
 	private static final long serialVersionUID = 8761867230419524659L;
 
@@ -97,8 +76,8 @@ public class ImageSettingsDialog extends JDialog {
 	private JButton btnCancel;
 	private JButton btnApply;
 
-	public ImageSettingsDialog(Window parent, EditorViewModel model, ImageSettings settings) {
-		super(parent);
+	public ImageSettingsDialog(EditorViewModel model, ImageSettings settings) {
+		super();
 
 		_imageSettings = settings;
 		_model = model;
@@ -170,7 +149,6 @@ public class ImageSettingsDialog extends JDialog {
 	}
 
 	private void createUI() {
-		setTitle(_resources.getString("imageSettingsDialog.title"));
 		JPanel overlayDefaultsPanel = new JPanel();
 		String overlayDefaultsTitle = _resources.getString("imageSettingsOverlayDefaults.title");
 		overlayDefaultsPanel.setBorder(new TitledBorder(null, overlayDefaultsTitle, TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -591,6 +569,11 @@ public class ImageSettingsDialog extends JDialog {
 
 		_model.setImageSettings(_imageSettings);
 	}
+
+    @Override
+    public String getViewTitle() {
+        return _resources.getString("imageSettingsDialog.title");
+    }
 
 	static String[] fontFamilyNames = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
 

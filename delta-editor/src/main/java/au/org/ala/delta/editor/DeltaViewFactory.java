@@ -14,8 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.editor;
 
-import javax.swing.JInternalFrame;
-
 import au.org.ala.delta.editor.model.DeltaViewModel;
 import au.org.ala.delta.editor.ui.ActionSetsDialog;
 import au.org.ala.delta.editor.ui.CharacterEditor;
@@ -24,6 +22,9 @@ import au.org.ala.delta.editor.ui.ItemEditor;
 import au.org.ala.delta.editor.ui.MatrixViewer;
 import au.org.ala.delta.editor.ui.TreeViewer;
 import au.org.ala.delta.editor.ui.image.ImageEditor;
+import au.org.ala.delta.editor.ui.image.ImageSettingsDialog;
+
+import javax.swing.*;
 
 
 /**
@@ -62,5 +63,8 @@ public class DeltaViewFactory {
 	public DeltaView createActionSetsView(DeltaViewModel model) {
 		return new ActionSetsDialog(model);
 	}
-	
+
+    public DeltaView createImageSettingsView(DeltaViewModel model) {
+        return new ImageSettingsDialog(model, model.getImageSettings());
+    }
 }

@@ -19,7 +19,11 @@ import java.nio.charset.Charset;
 
 /**
  * To maintain compatibility with existing DELTA data sets, Strings stored in binary files will always
- * be stored using the Cp1252 character encoding. 
+ * be stored using the Cp1252 character encoding.
+ *
+ * Strings stored in the SlotFile are RTF encoded, allowing unicode code points to be represented as a
+ * character sequence, e.g. "\u1234".  Hence characters not representable in Cp1252 can be stored in the slot file,
+ * just not in a particularly efficient manner.
  */
 public class BinFileEncoding {
 

@@ -473,9 +473,7 @@ public class ImageDetailsPanel extends JPanel {
 	@Action
 	public void displayImageSettings() {
 		DeltaEditor editor = (DeltaEditor)Application.getInstance();
-		ImageSettingsDialog dialog = new ImageSettingsDialog(editor.getMainFrame(), 
-				_dataSet, _dataSet.getImageSettings());
-		editor.show(dialog);
+        editor.viewImageSettings();
 	}
 	
 	/**

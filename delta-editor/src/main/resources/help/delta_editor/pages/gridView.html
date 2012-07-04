@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>The Tree View Attribute Editor</title>
+</head>
+<body>
+
+<h1><a name="_The_grid-view_attribute"></a>The grid-view attribute editor</h1>
+
+<p style="page-break-after: avoid;">This view is similar to that
+    of a spreadsheet program. Here is an example.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-37.png" alt="sample.dlt - Attribute Edit (Grid)" border="0"></p>
+
+<p>The upper pane of this view is a grid displaying the data
+    matrix. The columns represent the characters of the data set and the rows
+    represent the items. The cells of the matrix display the attribute corresponding
+    to a given character (column) and item (row). For non-text characters, any
+    comments are removed from the attribute before display. This allows more of the
+    &#39;basic&#39; data to be displayed. When an attribute appears in grey text (as for
+    many of the entries in the column for character 10 in the example), it
+    indicates that the state shown is present implicitly, rather than by explicit
+    encoding. A grey background, as for character 11 of most taxa in the example,
+    indicates that the attribute is &#39;complex&#39; (see definition above) and can be
+    edited or entered only in the complex-attribute editing pane. A focus rectangle
+    indicates the currently selected attribute of the grid. Elements of the pane
+    may be resized by dragging their boundaries in the column or row headings (the
+    grey areas at the left and top).</p>
+
+<p>Characters and items may be re-ordered by dragging a feature
+    name or taxon name (that is, the grid&#39;s column or row headings, respectively)
+    to the desired position. Dragging with the right mouse button either moves or
+    copies the item (for rows) or character (for columns) &#8211; a popup menu offers the
+    choice &#39;Move here&#39; or &#39;Copy here&#39;. Clicking the right mouse button opens a
+    popup menu with options for inserting, modifying or deleting items or
+    characters. Double-clicking (with the left mouse button) on a character name
+    will open the character editor dialog. Double-clicking on an item name will
+    open the item editor dialog.</p>
+
+<p>To copy cells to the clipboard, select the cells you want,
+    and choose &#39;Edit &gt; Copy&#39; from the main menu. Note that the keyboard shortcut
+    is &#39;Ctrl+Ins&#39;, not the standard Windows &#39;Ctrl+C&#39;. The &#39;Paste&#39; option has not
+    been implemented, but the clipboard can be pasted into other programs such as
+    Excel or Word. When pasting into Excel, start a new sheet, select the whole
+    sheet, and format the cells as text (otherwise DELTA codes containing a slash
+    will be interpreted as dates). Select the top left cell, and paste.</p>
+
+<p>There are &#39;Print&#39;, &#39;Print Preview&#39;, and &#39;Print Setup&#39;
+    options in the &#39;File&#39; menu (in grid view only). If you want more control over
+    the layout, you can copy part of the grid and paste it into a word processor or
+    spreadsheet. In Word, paste into a table, or paste as text and then use &#39;Table
+    &gt; Convert &gt; Text to Table&#39;.</p>
+
+<p><a name="complexAttributeEditor"><i>The Complex-Attribute Editor (lower-left pane).</i></a>
+    This pane is a rich edit control &#8211; that is, it
+    allows display and editing of formatting marks. It contains the DELTA encoding
+    for the currently selected item and character, using the traditional DELTA
+    style. Angle brackets should appear around comments, but should <i>not</i> be placed around text attributes. A
+    toolbar above the pane provides controls for rendering portions of the text in
+    bold, italics, etc., and for undoing changes. Error checking is performed when
+    the input focus leaves the edit control.</p>
+
+<p><a name="stateListAttributeEditor"><i>The State List (bottom-right pane).</i></a>
+    If the currently selected character is a text or
+    numeric character, this pane contains only an icon denoting the character type,
+    and the units of measurement (if applicable). If the currently selected
+    character is a multistate character, it contains a list of the states of the
+    character, with a check box next to each. The appearance and method of use of
+    the check boxes is the same as in the character-tree pane. This pane is
+    provided so that the codings may be viewed and edited when the character is not
+    &#39;expanded&#39; in the character-tree pane.</p>
+
+
+</body>
+</html>

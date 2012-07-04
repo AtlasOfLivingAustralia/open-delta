@@ -1,7 +1,366 @@
 <html>
-<head/>
+<head>
+    <title>The Character Editor</title>
+</head>
 <body>
-<h1>Characters</h1>
+
+<h1><a name="_The_Character_Editor"></a>The Character Editor</h1>
+
+<p>This dialog is provided for the creation and modification of
+    characters and their associated states. It is opened either by choosing &#39;View
+    &gt; Character editor&#39; from the menu; by right-clicking the mouse in the upper
+    right pane (the Character Tree) of the Tree View window, and selecting &#39;Insert
+    new character at this position&#39; or &#39;Append new character to end of list&#39; from
+    the resulting menu; or by double-clicking on a feature description in either
+    the Tree or Grid View. Here is an example.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-39.png" alt="sample.dlt [2] - Character Edit." border="0"></p>
+
+<p style="page-break-after: avoid;">This is a relatively complex
+    dialog, with a number of components.</p>
+
+<p><i>The character number
+    selector</i>. At the upper-left of the dialog is a small up-down control
+    showing the number of the character being edited. The value shown here can be
+    changed to select a different character for editing. Alternatively, a character
+    can be selected from the character list by clicking the &#39;Select&#39; button.</p>
+
+<p><i>The character type
+    selector.</i> Just below the character number selector is a drop-down listbox
+    that indicates the character type. The type should be chosen for any newly
+    define character. It is not possible to freely reassign the type of a character
+    once it has been defined, provided no items are encoded for that character, and
+    no controlling attributes are defined by it.</p>
+
+<p><i>The mandatory
+    character checkbox</i>. This indicates whether the character is &#39;mandatory&#39;,
+    that is, must be recorded in every item.</p>
+
+<p><i>The exclusive
+    character checkbox</i>. This checkbox, which appears only for multistate
+    characters, indicates whether states of the character should be &#39;exclusive&#39;,
+    that is, whether only a single state of the character can be associated with
+    any given item.</p>
+
+<p><i>The feature
+    description editor.</i> This is located at the top centre of the dialog, and is
+    a rich edit control containing the &#39;feature&#39;, or basic description of the
+    character. As with &#39;conventional&#39; DELTA coding, the feature description should
+    usually begin with a lower-case letter.</p>
+
+<p><i>The language selector.</i>
+    This is at the upper-right of the dialog. It is intended to allow selection of
+    alternative languages. This feature has not yet been implemented.</p>
+
+<p><i>The wording variant
+    selector. </i>This is near the upper-right corner of the dialog. It is intended
+    to allow the used to select among alternate wordings of the character list for
+    different purposes (such as key generation vs. natural language descriptions).
+    This feature has not yet been implemented.</p>
+
+<p><i>The &#39;Help&#39; button</i>.
+    This is at the lower right of the dialog. It is currently not functional.</p>
+
+<p><i>The formatting toolbar</i>.
+    This is located at the bottom centre of the dialog. It provides buttons for
+    rendering text in bold, italics, etc., and for undoing editing operations. The
+    toolbar will operate with whichever rich edit control is currently active.</p>
+
+<p><i>The &#39;Done&#39; button.</i>
+    This is at the lower left of the dialog. It closes the dialog.</p>
+
+<p>In mid-dialog are a series of different controls, each
+    providing access to a different aspect of the character. These are selected via
+    a tab mechanism.</p>
+
+<h3><a name="_The_state_editor"></a>The state editor</h3>
+
+<p class="image"><img src="delta-ed_files/delta-ed-40.png" alt="'State editor' panel." border="0"></p>
+
+<p>This panel contains a list of currently defined states (on
+    the left), a rich edit control (on the right), and a check box and buttons (in
+    the middle). The user selects among states via the list control on the left.
+    The description of that state may then be edited in the rich editing control on
+    the right. Clicking the &#39;Add&#39; button indicates that a new state is to be
+    inserted above the currently selected state. Clicking the &#39;Delete&#39; button
+    deletes the currently selected state. New states may be appended to the list by
+    moving the list selection to the line below the last already-defined state,
+    then entering the new state description in the state description editor. Pressing
+    the &#39;Enter&#39; key while in the description editor will cause the selection to
+    move forward to the next state. This can be used to append a series of new
+    states to the character without having to repeatedly use the list box and add
+    button. States in the list control can be re-ordered via dragging-and-dropping.
+    The &#39;Implicit&#39; check box allows the specification of the currently selected
+    state as the &#39;implicit&#39; state. When the character is not recorded for a taxon,
+    the implicit state value is assumed. The name of the implicit state (if one
+    exists) will be shown in italics in the &#39;Defined states&#39; list; state 2 in the
+    figure above is implicit.</p>
+
+<h3><a name="_The_notes_editor"></a>The notes editor</h3>
+
+<p class="image"><img src="delta-ed_files/delta-ed-41.png" alt="'Notes editor' panel." border="0"></p>
+
+<p>This panel consists of a single, large, rich edit control.
+    Supplementary information about the character may be entered here.</p>
+
+<h3><a name="_The_image-association_editor"></a>The image-association editor</h3>
+
+<p class="image"><img src="delta-ed_files/delta-ed-42.png" alt="'Image-association' editor." border="0"></p>
+
+<p>The &#39;Images&#39; panel allows the association of images with the
+    character. On the left side of the panel is a list of the names of image files
+    associated with the character. (Note that the program stores only the names of
+    image files within the DELTA data file. It does not store copies of the images
+    themselves). <b>N.B. Although the Editor will accept blanks in image file
+        names, such names should be avoided, as they will not work with other DELTA
+        programs, which use blanks as delimiters.</b> The names within this list may be
+    re-ordered by dragging and dropping with the left mouse button. Clicking on the
+    list with the right mouse button opens a popup menu with options for inserting,
+    modifying or deleting images. Double-clicking (with the left mouse button) on
+    an image file name will cause that image to be displayed in a window of its
+    own.</p>
+
+<h3><a name="_The_controlling-attribute_editor"></a>The controlling-attribute
+    editor</h3>
+
+<p class="image"><img src="delta-ed_files/delta-ed-43.png" alt="'Controlling-attribute' editor." border="0"></p>
+
+<p>This panel is used for defining &#39;controlling attributes&#39;;
+    that is, combinations of one or more states within a character, which when
+    encoded for in a given item can make other &#39;dependent&#39; characters inapplicable.
+    It can also be used to define the associations between the controlling
+    attributes and the corresponding dependent characters.</p>
+
+<p>The example above is associated with a character that
+    encoded ligules as being present or absent. A controlling attribute<b> </b>(&#39;ligule: absent&#39;) is defined here,
+    and is used to make inapplicable another character dealing with ligule shape.</p>
+
+<p>The panel contains a drop-down list of controlling
+    attributes defined for this character in the upper left corner, a list box of
+    the character&#39;s states in the lower-left corner, and two lists to the right
+    containing characters within the data set. To define a new controlling
+    attribute, select &#39;[new]&#39;from the list of controlling attributes. Then use the
+    state list box to select those states that should constitute the new
+    controlling attribute (the selected states will appear in a bold font). When
+    all relevant states have been selected, click the &#39;Define&#39; button to define the
+    new controlling attribute. You will be given an opportunity to assign an
+    identifying label to the controlling attribute; by default, a label will be
+    generated from the character's feature and state descriptions. (However, note
+    that there is currently no provision for exporting custom labels to DELTA
+    format.)</p>
+
+<p>Characters are placed under (or removed from) the control of
+    a given controlling attribute by use of the two list boxes on the right side of
+    the panel. The list on the far right includes all characters in the data set.
+    They may be added to the &#39;inapplicable&#39; character list either by selecting them
+    and clicking the move (&#39;&lt;&lt;&#39;) button, or by dragging-and-dropping to the
+    other list. A similar procedure can be used to remove characters from the
+    &#39;inapplicable&#39; list.</p>
+
+<h3><a name="_The_&#39;Controlled-by&#39;_chooser"></a>The &#39;Controlled-by&#39; chooser</h3>
+
+<p class="image"><img src="delta-ed_files/delta-ed-44.png" alt="'Controlled-by' chooser." border="0"></p>
+
+<p>This panel provides an alternative way of associating
+    dependent characters with their controlling attributes. Note, however, that
+    controlling attributes cannot be <i>defined</i>
+    in this panel.</p>
+
+<p>The panel shows controlling attributes that control the
+    current character. On the right of the panel is a list of all controlling
+    attributes defined for the data set. On the left is a list showing those that
+    make the current character inapplicable. Controlling attributes may be moved to
+    (or from) the &#39;made inapplicable by&#39; list either by selecting them and clicking
+    the &#39;Move&#39; button, or by dragging-and-dropping them.</p>
+
+<p>The &#39;Edit&#39; button is not yet functional, but is intended to
+    take the user to a view where a given controlling attribute was defined.</p>
+
+<h2><a name="_The_Image_Settings"></a>The Image Settings Dialog</h2>
+
+<p style="page-break-after: avoid;">This dialog is provided to change settings related to
+    display of images and their text overlays. It is opened either by choosing
+    &#39;View &gt; Image settings&#39; from the menu; by clicking on the &#39;Settings&#39; button
+    of the images panel of the Item Editor or Character Editor windows; or by
+    right-clicking the mouse on an image file name in an images panel or a
+    displayed image and selecting &#39;Image settings&#39; from the resulting menu. Here is
+    an example.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-45.png" alt="'Image settings' dialog." border="0"></p>
+
+<p>The left portion of this dialog selects default
+    characteristics to be applied to newly created text overlays on images.
+    Changing these settings generally has no effect on existing overlays. An
+    exception is that changing &#39;Button alignment&#39; will affect existing push-button
+    overlays if those overlays are later edited or repositioned on their image. For
+    more detailed information on the meaning of these settings, see the section
+    below on Image Windows and Overlays.</p>
+
+<p class="MsoFooter">An edit control in the upper right portion of this dialog
+    contains the &#39;image path&#39;. This is a list of directories in which the program
+    will look for image or sound files. Multiple directories are separated with a
+    semicolon. For example, an image path of &#39;.;images;e:\&#39; will cause the program
+    to search for images in the current directory (that is, the directory in which
+    the &#39;.dlt&#39; file itself resides), the subdirectory &#39;images&#39; of the current
+    directory, and the root directory of the E: drive. Components of the image path
+    may be URL&#39;s, e.g., http://delta-intkey.com/angio/images. The &#39;Browse&#39; button
+    can be used to locate directories on the local machine to be added to the image
+    path. URL&#39;s must be entered manually.</p>
+
+<p class="MsoFooter">The lower left portion of the dialog provides a mechanism
+    for setting the fonts to be used for image overlays. The &#39;default&#39; font is used
+    for most text overlays. The &#39;feature&#39; font is used for the display of feature
+    description overlays; if it is not set explicitly, the &#39;default&#39; font is used.
+    The &#39;button&#39; font is used for the &#39;OK&#39;, &#39;Cancel&#39;, and &#39;Notes&#39; buttons. Changes
+    to these values will affect all existing overlays, as well as those yet to be
+    created. A sample of each font is displayed as changes are made.</p>
+
+<p>Note that changes made within this dialog do not take effect
+    immediately. You must click either the &#39;Apply&#39; button or &#39;OK&#39; button (which
+    also closes the dialog) for any changes to be applied.</p>
+
+<h2><a name="_Images_Windows_and"></a>Image Windows and Overlays</h2>
+
+<p style="page-break-after: avoid;">Character and taxon images are displayed in windows
+    that are meant to closely resemble the appearance they have within Intkey.
+    These images may have <i>overlays</i>
+    superimposed upon them. The editor provides facilities for adding, modifying,
+    and deleting these overlays. Here is an example of a character image, as
+    displayed in the editor.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-46.png" alt="Character 6 overlays." border="0"></p>
+
+<p>Note that the image window contains its own menu. The
+    &#39;Subject&#39; menu item allows the user to go to a different image attached to the
+    same taxon or character, based on the subject text of the image. The &#39;Control&#39;
+    menu provides options for going on to the next or previous image associated
+    with the current taxon or character, or for going on to the next taxon or
+    character. The &#39;Window&#39; menu provides options for controlling how the image and
+    its overlays are displayed, and for obtaining information about the image. </p>
+
+<p>The image above contains examples of the basic different
+    types of overlays: text boxes (which automatically become scrollable for large
+    amounts of text), push buttons, and &#39;hotspots&#39;. Overlays are inserted,
+    modified, or deleted by right clicking on the image or an existing overlay.
+    This will cause a popup-menu to appear, as seen below.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-47.png" alt="Character 9 overlays and menus." border="0"></p>
+
+<p>The range of overlay types that are available depends upon
+    the type of image being viewed. All image types allow for the creation of &#39;OK&#39;
+    and &#39;Cancel&#39; buttons, which can be used in Intkey to close the image window;
+    and for the creation of general-purpose &#39;text&#39; overlays, which may contain any
+    arbitrary text. Taxon images may also contain a text overlay to contain the
+    name of the taxon, and a &#39;Notes&#39; button which, when clicked, will cause notes
+    associated with the image to be displayed in a separate window. Similarly,
+    character images may contain a &#39;feature&#39; text overlay, which displays the
+    feature description of the character; and a &#39;Notes&#39; button which, when clicked,
+    will cause the character notes associated with the character to be displayed.</p>
+
+<p>Character images may contain several other types of overlay,
+    depending on the character type. Images associated with multistate characters
+    may contain &#39;state&#39; text overlays, which displays a state number and
+    description. When used in Intkey, these overlays may be selected by the user to
+    indicate the applicability of that state. The &#39;state&#39; overlays may also have
+    one or more &#39;hotspots&#39; associated with them — regions of the underlying image
+    that may also be used by an Intkey user to select the associated state.
+    Similarly, images associated with numeric characters may contain selectable
+    &#39;value&#39; overlays that contain a numeric value (or range of numeric values), and
+    these may also have associated hotspots. Images for numeric characters may, in
+    addition, contain an &#39;enter&#39; overlay in which an Intkey end-user may enter any
+    value, and a &#39;units&#39; overlay which displays the character&#39;s units of
+    measurement (if they have been defined).</p>
+
+<p>The basic overlays for a character image can be inserted in
+    a single step by selecting the option &#39;All usual overlays&#39;. This inserts the &#39;Feature
+    description&#39; box, &#39;State&#39; boxes (for a multistate character) or &#39;Enter&#39; and &#39;Units&#39;
+    boxes (for a numeric character), &#39;OK&#39; and &#39;Cancel&#39; buttons, a &#39;Notes&#39; button
+    (if there are notes for the character), and a hotspot for each character state.</p>
+
+<p>Once they have been created, overlays may be resized or
+    repositioned by use of the mouse (or similar pointing device). Click on a
+    overlay to select it. Its border will become thicker. (The innermost margin of
+    this border corresponds to the border of the &#39;normal&#39; overlay window.) When the
+    cursor is positioned over this border, it changes to a double-headed arrow,
+    indicating that the overlay window may be re-sized by holding down the left
+    mouse button and moving the mouse. (The &#39;OK&#39;, &#39;Cancel&#39;, and &#39;Notes&#39;
+    push-buttons are exceptions to this — they may be moved but not resized.) To
+    move the selected overlay window, but retain its size, position the cursor in
+    the middle of the window and hold down the left mouse button. The cursor will
+    change to a &#39;hand&#39;, and moving the cursor will move the window to a new
+    position. An overlay may not be positioned beyond the boundaries of the image
+    window. A &#39;selected&#39; overlay may be returned to its normal state by &#39;selecting&#39;
+    another overlay, or by clicking on some portion of the image where there is no
+    overlay.</p>
+
+<p>Double-clicking the left mouse button within a &#39;selected&#39;
+    overlay will open a dialog box for modification of the properties of the
+    overlay. The dialog may also be opened by right-clicking on the overlay and
+    selecting &#39;Edit overlay&#39; from the popup menu. A sample of such a dialog for a
+    &#39;state&#39; overlay appears as show here.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-48.png" alt="Modify state dialog." border="0"></p>
+
+<p>The four checkboxes along the left side of the dialog
+    control aspects of how the text within the overlay will be displayed. A tick in
+    the first checkbox indicates that the text should be centred (both vertically
+    and horizontally) within its border. The default behaviour is for text to begin
+    in the upper-left corner of its containing frame. Ticking the second checkbox
+    indicates that any comments within the state description text should be
+    displayed, with the surrounding angle brackets converted into parentheses. By
+    default, comments are removed from the text. A tick in the third checkbox
+    indicates whether the state description should be omitted entirely; the default
+    behaviour is to display the state description text. The fourth checkbox
+    indicates that the height of the frame containing the text should automatically
+    be adjusted to contain an integral number of lines. By default, the text boxes
+    may be of any height.</p>
+
+<p>Any text entered in the &#39;Additional Text&#39; area of the dialog
+    will be appended to the state description text. If the state description text
+    is omitted entirely, the text entered here will be displayed instead.</p>
+
+<p>In the central-right portion of the dialog are controls for
+    viewing and modifying the position of the upper-left corner of the overlay (&#39;X&#39;
+    and &#39;Y&#39;) and the overlay&#39;s width and height (&#39;W&#39; and &#39;H&#39;). These values are
+    expressed in <i>image units</i>, not pixels;
+    these are values in the range 0 to 1000, with a value of 1000 corresponding to
+    the width or height of the entire image. However, if the &#39;Use Integral Height&#39;
+    checkbox is ticked, the height value (&#39;H&#39;) is given in terms of lines of text.
+    The upper-left corner of the image is always taken as the origin (0,0), with
+    positive values to the right and downwards.</p>
+
+<p>Note that changes made within this dialog do not take effect
+    immediately. You must click either the &#39;Apply&#39; button or &#39;OK&#39; button (which
+    also closes the dialog) for any changes to be applied. The dialogs for
+    modifying other types of text overlays are quite similar to the &#39;state&#39; example
+    shown here, and differ only in minor details. A corresponding dialog for
+    &#39;button&#39; overlays allows only the button&#39;s position to be modified.</p>
+
+<p>A slightly different dialog is available for editing the
+    properties of hotspots. Here is an example.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-49.png" alt="'Modify hotspot' dialog." border="0"></p>
+
+<p>At the top of this dialog, a pair of radio buttons is used
+    to select whether the shape of the hotspot is rectangular or elliptical. To the
+    right centre are controls for viewing and modifying the position and extent of
+    the hotspot, just as for text overlays. To the left are controls that affect
+    how the hotspot boundaries appear. By default, the hotspots are invisible to
+    Intkey user, with only a change in cursor shape notifying them when the mouse
+    passes over a hotspot. If the &#39;Pop up&#39; option is selected, the outline of the
+    hotspot will become visible whenever the mouse passes over the hotspot or over
+    any other hotspot or &#39;state&#39; overlay associated with the same state as the
+    hotspot. The &#39;Use custom color&#39; option allows the designer to select the colour
+    that should be used in drawing the outline of a pop-up hotspot. By default, the
+    boundary lines are drawn by &#39;inverting&#39; the colours of the display. Note that
+    &#39;inverting&#39; the colours a second time restores the original colours. Hence when
+    hot-spot boundary lines drawn in this way exactly overlie one another, they
+    disappear from view. If the use of a custom colour is selected, the colour to
+    be used may be chosen from the dialog that appears when the &#39;Choose color&#39;
+    button is clicked.</p>
+
 </body>
+
+
 
 </html>
