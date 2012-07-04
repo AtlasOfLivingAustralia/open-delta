@@ -14,17 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.model;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.prefs.PreferenceChangeEvent;
-import java.util.prefs.PreferenceChangeListener;
-
-import org.apache.commons.lang.StringUtils;
-
 import au.org.ala.delta.editor.EditorPreferences;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
@@ -41,6 +30,16 @@ import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import au.org.ala.delta.util.Predicate;
 import au.org.ala.delta.util.Visitor;
+import org.apache.commons.lang.StringUtils;
+
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.prefs.PreferenceChangeEvent;
+import java.util.prefs.PreferenceChangeListener;
 
 /**
  * Provides the UI model with a backing DeltaDataSet. Each EditorDataModel is associated with a single view component. This class maintains a separate list of DeltaDataSetObservers to allow clean
@@ -226,7 +225,7 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 	@Override
 	public void setName(String name) {
 
-        if (StringUtils.isEmpty(_wrappedDataSet.getName())) {
+        if (StringUtils.isEmpty(_wrappedDataSet.getName()) || name.equals(_wrappedDataSet.getName())) {
             String oldName = _tempName;
             _tempName = name;
             _propertyChangeSupport.firePropertyChange("name", oldName, name);
