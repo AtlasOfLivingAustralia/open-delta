@@ -38,20 +38,26 @@ import au.org.ala.delta.intkey.ui.CharacterSelectionDialog;
 import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.AttributeFactory;
+import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterDependency;
+import au.org.ala.delta.model.IntegerAttribute;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.RealAttribute;
 import au.org.ala.delta.model.RealCharacter;
+import au.org.ala.delta.model.TextAttribute;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.impl.SimpleAttributeData;
+import au.org.ala.delta.util.Utils;
 
 public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
-    
+
     private static final String USE_DIRECTIVE_NAME = "USE";
     private static final String CHANGE_DIRECTIVE_NAME = "CHANGE";
 
@@ -61,7 +67,10 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
     private CharacterFormatter _charFormatter;
     private ItemFormatter _taxonFormatter;
 
-    public UseDirectiveInvocation(boolean change, boolean suppressAlreadySetWarning) {
+    private StringBuilder _stringRepresentationBuilder;
+    private List<String> _stringRepresentationParts;
+
+    public UseDirectiveInvocation(boolean change, boolean suppressAlreadySetWarning, List<String> stringRepresentationParts) {
         _change = change;
         _suppressAlreadySetWarning = suppressAlreadySetWarning;
 
@@ -72,10 +81,18 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
 
         _charFormatter = new CharacterFormatter(true, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REPLACE, true, false);
         _taxonFormatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false, false);
+
+        _stringRepresentationParts = stringRepresentationParts;
     }
 
     @Override
     public boolean execute(IntkeyContext context) {
+        _stringRepresentationBuilder = new StringBuilder();
+
+        String directiveName = _change ? CHANGE_DIRECTIVE_NAME : USE_DIRECTIVE_NAME;
+
+        _stringRepresentationBuilder.append(directiveName);
+        _stringRepresentationBuilder.append(" ");
 
         // Split up characters that have had their values specified and
         // those that
@@ -152,8 +169,6 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
         } else {
             Collections.sort(charsNoValues);
             while (!charsNoValues.isEmpty()) {
-                String directiveName = _change ? "CHANGE" : "USE";
-
                 CharacterSelectionDialog selectDlg = new CharacterSelectionDialog(UIUtils.getMainFrame(), charsNoValues, directiveName, context.getImageSettings(), context.displayNumbering(), context);
                 selectDlg.setVisible(true);
 
@@ -222,8 +237,44 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
             }
         }
 
+        // Finish building string representation of directive call
+        for (Character ch : charsNoValues) {
+            // Generate a string representation of the value set for the
+            // character
+            Attribute attr = _characterAttributes.get(ch);
+            String strRepresentation = Integer.toString(ch.getCharacterId()) + "," + formatAttributeValueForLog(attr);
+
+            int strRepIndex = _stringRepresentationParts.indexOf(Integer.toString(ch.getCharacterId()));
+            _stringRepresentationParts.remove(strRepIndex);
+            _stringRepresentationParts.add(strRepIndex, strRepresentation);
+        }
+
+        _stringRepresentationBuilder.append(StringUtils.join(_stringRepresentationParts, " "));
+
         context.specimenUpdateComplete();
         return true;
+    }
+
+    private String formatAttributeValueForLog(Attribute attr) {
+        if (attr instanceof TextAttribute) {
+            return ((TextAttribute) attr).getText();
+        } else if (attr instanceof MultiStateAttribute) {
+            return Utils.formatIntegersAsListOfRanges(((MultiStateAttribute) attr).getPresentStatesAsList(), "/", "-");
+        } else if (attr instanceof IntegerAttribute) {
+            Set<Integer> presentValues = ((IntegerAttribute) attr).getPresentValues();
+            List<Integer> presentValuesList = new ArrayList<Integer>(presentValues);
+            Collections.sort(presentValuesList);
+            return Utils.formatIntegersAsListOfRanges(presentValuesList, "/", "-");
+        } else if (attr instanceof RealAttribute) {
+            FloatRange range = ((RealAttribute) attr).getPresentRange();
+            StringBuilder builder = new StringBuilder();
+            builder.append(range.getMinimumFloat());
+            builder.append("-");
+            builder.append(range.getMaximumFloat());
+            return builder.toString();
+        } else {
+            throw new IllegalArgumentException("Unrecognised attribute type!");
+        }
     }
 
     public void addCharacterValue(au.org.ala.delta.model.Character ch, Attribute attr) {
@@ -331,11 +382,12 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
         // For each controlling character, set its value or prompt the user
         // for its value as appropriate
         for (MultiStateCharacter cc : controllingCharsList) {
-            //If the controlling character already has a value set for it in the specimen, do not modify it.
+            // If the controlling character already has a value set for it in
+            // the specimen, do not modify it.
             if (context.getSpecimen().hasValueFor(cc)) {
                 continue;
             }
-            
+
             Set<Integer> inapplicableStates = controllingCharInapplicableStates.get(cc);
 
             // states for the controlling character that will make dependent
@@ -461,11 +513,16 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
         } else {
             throw new IllegalArgumentException("Unrecognized character type");
         }
-        
+
         Attribute attr = AttributeFactory.newAttribute(ch, impl);
         attr.setSpecimenAttribute(true);
 
         return attr;
+    }
+
+    @Override
+    public String toString() {
+        return _stringRepresentationBuilder.toString();
     }
 
     /**

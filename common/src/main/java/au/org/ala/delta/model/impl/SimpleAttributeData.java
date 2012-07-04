@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.FloatRange;
 
@@ -43,7 +44,7 @@ public class SimpleAttributeData implements AttributeData {
 
     @Override
     public String getValueAsString() {
-        return _textValue;
+        throw new NotImplementedException();
     }
 
     @Override

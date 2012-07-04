@@ -15,12 +15,15 @@
 package au.org.ala.delta.intkey.directives;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.FloatRange;
+import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.UseDirectiveInvocation;
@@ -36,6 +39,7 @@ import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.impl.SimpleAttributeData;
+import au.org.ala.delta.util.Pair;
 
 /**
  * The USE directive - allow the user to enter information about a specimen
@@ -61,14 +65,14 @@ public class UseDirective extends IntkeyDirective {
     }
 
     protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data, boolean change) throws Exception {
-        StringBuilder stringRepresentationBuilder = new StringBuilder();
-        stringRepresentationBuilder.append(getControlWordsAsString());
-
         if (context.getDataset() != null) {
             boolean suppressAlreadySetWarning = false;
 
             List<Integer> characterNumbers = new ArrayList<Integer>();
             List<String> specifiedValues = new ArrayList<String>();
+            
+            //Use a linked hash map to maintain key ordering.
+            List<String> stringRepresentationParts = new ArrayList<String>();
 
             if (data != null && data.trim().length() > 0) {
                 List<String> subCommands = ParsingUtils.tokenizeDirectiveCall(data);
@@ -77,10 +81,8 @@ public class UseDirective extends IntkeyDirective {
                     // TODO need to handle additional undocumented flags
                     if (subCmd.equalsIgnoreCase(SUPPRESS_ALREADY_SET_WARNING_FLAG)) {
                         suppressAlreadySetWarning = true;
-                        stringRepresentationBuilder.append(" ");
-                        stringRepresentationBuilder.append(SUPPRESS_ALREADY_SET_WARNING_FLAG);
                     } else {
-                        parseSubcommands(subCmd, characterNumbers, specifiedValues, context, stringRepresentationBuilder);
+                        parseSubcommands(subCmd, characterNumbers, specifiedValues, context, stringRepresentationParts);
                     }
                 }
             } else {
@@ -103,8 +105,7 @@ public class UseDirective extends IntkeyDirective {
                 }
             }
 
-            UseDirectiveInvocation invoc = new UseDirectiveInvocation(change, suppressAlreadySetWarning);
-            invoc.setStringRepresentation(stringRepresentationBuilder.toString());
+            UseDirectiveInvocation invoc = new UseDirectiveInvocation(change, suppressAlreadySetWarning, stringRepresentationParts);
 
             for (int i = 0; i < characterNumbers.size(); i++) {
                 int charNum = characterNumbers.get(i);
@@ -195,8 +196,8 @@ public class UseDirective extends IntkeyDirective {
         }
     }
 
-    private void parseSubcommands(String subCmd, List<Integer> characterNumbers, List<String> specifiedValues, IntkeyContext context, StringBuilder stringRepresentationBuilder) throws Exception {
-
+    private void parseSubcommands(String subCmd, List<Integer> characterNumbers, List<String> specifiedValues, IntkeyContext context, List<String> stringRepresentationParts) throws Exception {
+        
         List<Integer> parsedCharacterNumbers;
 
         // switch
@@ -221,14 +222,13 @@ public class UseDirective extends IntkeyDirective {
             for (int c : parsedCharacterNumbers) {
                 specifiedValues.add(rhs);
             }
-            // If a value was specified for the character number/range/keyword,
-            // add the subcommand to the string representation
-            stringRepresentationBuilder.append(" ");
-            stringRepresentationBuilder.append(subCmd);
+            stringRepresentationParts.add(subCmd);
+            
         } else {
             parsedCharacterNumbers = parseLHS(subCmd, context);
             for (int c : parsedCharacterNumbers) {
                 specifiedValues.add(null);
+                stringRepresentationParts.add(Integer.toString(c));
             }
         }
         characterNumbers.addAll(parsedCharacterNumbers);
