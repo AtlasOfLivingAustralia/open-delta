@@ -2,11 +2,45 @@
         "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-    <title>The Action Sets Editor</title>
+    <title>The Action Set Editor</title>
 </head>
 <body>
 
-<h1>The Action Sets Editor</h1>
+<h1>The Action Set Editor</h1>
+
+The 'Action Set Editor' is a simple text editor designed to edit the contents of an action set.
+<p class="image"><img src="delta-ed_files/delta-ed-30.png" alt="Action Set Editor" border="0"></p>
+
+<h3>Action Set Contents</h3>
+The majority of the 'Action Set Editor' is used to display the contents of the action set.  Directives are displayed
+according to the following rules:
+<ul>
+    <li>Recognised directives are displayed in blue.</li>
+    <li>Comments are displayed in green and in italics.</li>
+    <li>Data passed to a directive is displayed in black.</li>
+</ul>
+
+In addition, hovering the mouse cursor over a recognised directive will display a tooltip window containing the
+documentation for the directive.
+
+<h3>The toolbar</h3>
+<ul>
+    <li><img src="delta-ed_files/showLineBreaksIcon.png" alt="Show line breaks"> Show white space -
+        Toggles the display of end of line and tab characters in the editor.</li>
+    <li><img src="delta-ed_files/showLineNumbersIcon.png" alt="Show line numbers"> Show line numbers -
+        Toggles the display of the line numbers in a column on the left of the editor.</li>
+    <li><img src="delta-ed_files/searchIcon.png" alt="Search"> Find / Replace -
+        Displays a dialog which provides find and replace functionality for the editor..</li>
+    <li><img src="delta-ed_files/goToLineIcon.png" alt="Go to line number"> Go to line number -
+        Displays a dialog which will move the cursor to a (user specified) line in the file.</li>
+    <li><img src="delta-ed_files/save-icon.png" alt="Save"> Save -
+        Saves changes made in the 'Action Set Editor' to the main DELTA data set.  Before saving the changes,
+    the editor will attempt to validate the changes.  The contents of the action set may also be reformatted at this time.
+    Please note that the save action must be performed using the toolbar icon, it is not available from the
+    main application menus.</li>
+
+</ul>
+
 
 </body>
 </html>
