@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>The Action Sets Dialog</title>
+</head>
+<body>
+
+<h1>The Action Sets Dialog</h1>
+<p>Action sets are sets of instructions that will be read and
+    processed by various programs, in order to produce output such as
+    natural-language descriptions, or to carry out pre-defined operations in the
+    interactive identification program, Intkey. Templates for various commonly used
+    action sets are automatically included when a new dataset is created as
+    described above. These templates are based on a subset of the action sets
+    included in the sample data supplied with the programs (see <a href="delta-ed.htm#_Experimenting_with_the">Experimenting with the Sample Data</a>). The
+    sample data contain references to taxon names and to character and state
+    numbers that will usually be inconsistent with or inappropriate for another
+    data set. Rather than deleting directives containing such information, they
+    have been turned into comments, in order to serve as examples.</p>
+
+<p class="image"><img src="delta-ed_files/delta-ed-29.png" alt="'Grevillea.dlt [2] - Actions' dialog." border="0"></p>
+
+<h3>Heading (Action set:)</h3>
+The &#39;Action set:&#39; label displays a description of the selected action set (or directive file).  This description is
+derived from the presence of a COMMENT or SHOW directive in the file contents.  It identifies the action set that
+the buttons on the right hand side of the screen will act upon.
+
+<h3>Tabs (Confor, Intkey, Dist, Key)</h3>
+The tabs below the heading label sort the action sets into groups defined by the DELTA program that will be
+used if the action set is activated by use of the 'Run' button.
+The behaviour of these programs are described in the <a href="delta-user-guide.htm">DELTA user guide</a>.
+
+<h3>The main table</h3>
+The action-set descriptions shown in the column labelled
+    &#39;Action&#39; are taken from a &#39;COMMENT&#39; or &#39;SHOW&#39; directive at the start of each
+    action set. The text in the &#39;File name&#39; column is the internal file name of the
+    action set, and also the name of the corresponding external file when the data
+    are exported to DELTA text files. The &#39;Imported/exported&#39; column show the date
+    and time when the action set was most recently imported from or exported to its
+    external counterpart.
+
+<p>The sets whose descriptions start with &#39;~&#39; are partial sets,
+    which are incapable of producing output by themselves, but are invoked by other
+    action sets.</p>
+
+<h3>The action buttons</h3>
+
+  <ul>
+    <li><em>Run</em> - executes the selected action set using the appropriate program.</li>
+    <li><em>Add</em> - creates a new action set and displays the <a href="actionSetEditor.html">Action Set Editor</a>
+        to allow it's contents to be edited..</li>
+    <li><em>Edit</em> - displays the <a href="actionSetEditor.html">Action Set Editor</a> to allow the contents of the
+    selected action set to be edited.</li>
+    <li><em>Delete</em> - removes the selected action set from the data set.</li>
+    <li><em>Done</em> - closes the Action Sets Dialog.</li>
+
+  </ul>
+
+
+
+</body>
+</html>

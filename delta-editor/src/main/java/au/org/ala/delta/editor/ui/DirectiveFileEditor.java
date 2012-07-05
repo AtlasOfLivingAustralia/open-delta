@@ -14,23 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.ui;
 
-import java.awt.BorderLayout;
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.io.StringReader;
-import java.text.ParseException;
-import java.util.List;
-
-import javax.swing.ActionMap;
-import javax.swing.JComponent;
-import javax.swing.JOptionPane;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-
-import org.apache.commons.lang.StringUtils;
-import org.jdesktop.application.Action;
-import org.jdesktop.application.Application;
-
 import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.editor.directives.DirectiveFileInfo;
 import au.org.ala.delta.editor.directives.DirectiveImportHandlerAdapter;
@@ -46,6 +29,19 @@ import au.org.ala.delta.editor.ui.validator.ValidationResult;
 import au.org.ala.delta.editor.ui.validator.Validator;
 import au.org.ala.delta.ui.codeeditor.CodeEditor;
 import au.org.ala.delta.ui.codeeditor.CodeTextArea;
+import org.apache.commons.lang.StringUtils;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import java.awt.*;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.io.StringReader;
+import java.text.ParseException;
+import java.util.List;
 
 /**
  * Provides a user interface that allows directive files to be edited.
@@ -67,7 +63,7 @@ public class DirectiveFileEditor extends AbstractDeltaView {
 
 	public DirectiveFileEditor(EditorViewModel model) {
 		super();
-		setName("ItemEditorDialog");
+		setName("DirectiveFileEditor");
 		_model = model;
 		_actions = Application.getInstance().getContext().getActionMap(this);
 		_messageHelper = new MessageDialogHelper();
@@ -143,7 +139,7 @@ public class DirectiveFileEditor extends AbstractDeltaView {
 
 	@Override
 	public String getViewTitle() {
-		return _model.getSelectedDirectiveFile().getShortFileName();
+		return _model.getSelectedDirectiveFile().getShortFileName()+" - %s";
 	}
 
 	@Override

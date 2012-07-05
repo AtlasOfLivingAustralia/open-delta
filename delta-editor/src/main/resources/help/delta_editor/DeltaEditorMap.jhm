@@ -50,7 +50,7 @@
     <mapID target="MatrixViewer" url="pages/gridView.html"/>
     <mapID target="CharacterEditor" url="pages/characters.html"/>
     <mapID target="ImageSettingsDialog" url="pages/imageSettings.html"/>
-
+    <mapID target="ActionSetsDialog" url="pages/actionSets.html"/>
     <mapID target="editor.image.icon" url="images/Delta_blue_16.png"/>
 
     <mapID target="confor_directives" url="pages/delta-user-guide.htm#_3.5_Directives_(in"/>
