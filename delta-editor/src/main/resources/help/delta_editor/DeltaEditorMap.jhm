@@ -52,7 +52,7 @@
     <mapID target="ImageSettingsDialog" url="pages/imageSettings.html"/>
     <mapID target="ActionSetsDialog" url="pages/actionSets.html"/>
     <mapID target="DirectiveFileEditor" url="pages/actionSetEditor.html"/>
-
+    <mapID target="ImageEditor" url="pages/imageEditor.html"/>
     <mapID target="editor.image.icon" url="images/Delta_blue_16.png"/>
 
     <mapID target="confor_directives" url="pages/delta-user-guide.htm#_3.5_Directives_(in"/>

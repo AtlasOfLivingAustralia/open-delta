@@ -1,65 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE toc
-  PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp TOC Version 1.0//EN"
-         "http://java.sun.com/products/javahelp/toc_1_0.dtd">
-<toc label="DELTA Editor Help">
-  <tocitem text="Delta Editor">
-    <tocitem text="The Character Editor" target="characters" />
-	<tocitem text="The Item Editor" target="items" />
-	<tocitem text="Confor Directives Reference" target="confor_directives" />
-  </tocitem>
-<tocitem text="Introduction" target="introduction">
-    <tocitem text="Notation" target="notation"/>
-</tocitem>
-<tocitem text="Experimenting with the sample data" target="experimenting_with_the">
-    <tocitem text="Opening the sample data" target="opening_the_sample"/>
-    <tocitem text="Making a copy of the data" target="making_a_copy"/>
-    <tocitem text="Exporting to DELTA text files" target="exporting_to_delta"/>
-    <tocitem text="Printing the character list" target="printing_the_character"/>
-    <tocitem text="Producing natural-language descriptions" target="producing_natural-language_descript"/>
-    <tocitem text="Generating a conventional key" target="generating_a_conventional"/>
-    <tocitem text="Generating an interactive key" target="generating_an_interactive"/>
-</tocitem>
-<tocitem text="Creating a data set" target="creating_a_data">
-    <tocitem text="Developing a character list: reproducibility" target="developing_a_character"/>
-    <tocitem text="Entering characters" target="entering_characters"/>
-    <tocitem text="Saving the data set" target="saving_the_data"/>
-    <tocitem text="Entering taxon names" target="entering_taxon_names"/>
-    <tocitem text="Recording simple attributes of taxa" target="recording_simple_attributes"/>
-    <tocitem text="Exporting to DELTA text files" target="exporting_to_delta_1"/>
-    <tocitem text="Producing output via action sets" target="producing_output_via"/>
-</tocitem>
-<tocitem text="Importing DELTA text files" target="importing_delta_text">
-</tocitem>
-<tocitem text="Saving or exporting a data set" target="saving_or_exporting">
-</tocitem>
-<tocitem text="Views of the data" target="views_of_the">
-</tocitem>
-<tocitem text="The attribute editors" target="the_attribute_editors">
-    <tocitem text="The tree-view attribute editor" target="the_tree-view_attribute_1"/>
-    <tocitem text="The grid-view attribute editor" target="the_grid-view_attribute"/>
-    <tocitem text="Using the ‘Enter’ key in attribute editing" target="using_the_%91enter%92"/>
-</tocitem>
-<tocitem text="The item editor" target="the_item_editor">
-</tocitem>
-<tocitem text="The character editor" target="the_character_editor">
-    <tocitem text="The state editor" target="the_state_editor"/>
-    <tocitem text="The notes editor" target="the_notes_editor"/>
-    <tocitem text="The image-association editor" target="the_image-association_editor"/>
-    <tocitem text="The controlling-attribute editor" target="the_controlling-attribute_editor"/>
-    <tocitem text="The ‘controlled-by’ chooser" target="the_%91controlled-by%92_chooser"/>
-</tocitem>
-<tocitem text="The image settings dialog" target="the_image_settings">
-</tocitem>
-<tocitem text="Image windows and overlays" target="images_windows_and">
-</tocitem>
-<tocitem text="Entering special symbols" target="entering_special_symbols">
-</tocitem>
-<tocitem text="Planned enhancements and known bugs" target="planned_major_enhancements">
-</tocitem>
-<tocitem text="Acknowledgements" target="acknowledgements">
-</tocitem>
-<tocitem text="References" target="references"/>
+        PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp TOC Version 1.0//EN"
+        "http://java.sun.com/products/javahelp/toc_2_0.dtd">
+<toc version="2.0" label="DELTA Editor Help" expand="none">
+    <tocitem text="Delta Editor" expand="none">
+        <tocitem text="User Guide" expand="false">
+            <tocitem text="Introduction" target="introduction">
+                <tocitem text="Notation" target="notation"/>
+            </tocitem>
+            <tocitem text="Experimenting with the sample data" target="experimenting_with_the">
+                <tocitem text="Opening the sample data" target="opening_the_sample"/>
+                <tocitem text="Making a copy of the data" target="making_a_copy"/>
+                <tocitem text="Exporting to DELTA text files" target="exporting_to_delta"/>
+                <tocitem text="Printing the character list" target="printing_the_character"/>
+                <tocitem text="Producing natural-language descriptions" target="producing_natural-language_descript"/>
+                <tocitem text="Generating a conventional key" target="generating_a_conventional"/>
+                <tocitem text="Generating an interactive key" target="generating_an_interactive"/>
+            </tocitem>
+            <tocitem text="Creating a data set" target="creating_a_data">
+                <tocitem text="Developing a character list: reproducibility" target="developing_a_character"/>
+                <tocitem text="Entering characters" target="entering_characters"/>
+                <tocitem text="Saving the data set" target="saving_the_data"/>
+                <tocitem text="Entering taxon names" target="entering_taxon_names"/>
+                <tocitem text="Recording simple attributes of taxa" target="recording_simple_attributes"/>
+                <tocitem text="Exporting to DELTA text files" target="exporting_to_delta_1"/>
+                <tocitem text="Producing output via action sets" target="producing_output_via"/>
+            </tocitem>
+            <tocitem text="Importing DELTA text files" target="importing_delta_text">
+            </tocitem>
+            <tocitem text="Saving or exporting a data set" target="saving_or_exporting">
+            </tocitem>
+            <tocitem text="Views of the data" target="views_of_the">
+            </tocitem>
+            <tocitem text="The attribute editors" target="the_attribute_editors">
+                <tocitem text="The tree-view attribute editor" target="the_tree-view_attribute_1"/>
+                <tocitem text="The grid-view attribute editor" target="the_grid-view_attribute"/>
+                <tocitem text="Using the ‘Enter’ key in attribute editing" target="using_the_%91enter%92"/>
+            </tocitem>
+            <tocitem text="The item editor" target="the_item_editor">
+            </tocitem>
+            <tocitem text="The character editor" target="the_character_editor">
+                <tocitem text="The state editor" target="the_state_editor"/>
+                <tocitem text="The notes editor" target="the_notes_editor"/>
+                <tocitem text="The image-association editor" target="the_image-association_editor"/>
+                <tocitem text="The controlling-attribute editor" target="the_controlling-attribute_editor"/>
+                <tocitem text="The ‘controlled-by’ chooser" target="the_%91controlled-by%92_chooser"/>
+            </tocitem>
+            <tocitem text="The image settings dialog" target="the_image_settings">
+            </tocitem>
+            <tocitem text="Image windows and overlays" target="images_windows_and">
+            </tocitem>
+            <tocitem text="Entering special symbols" target="entering_special_symbols">
+            </tocitem>
+            <tocitem text="Acknowledgements" target="acknowledgements">
+            </tocitem>
+            <tocitem text="References" target="references"/>
+        </tocitem>
+        <tocitem text="Confor Directives Reference" target="confor_directives"/>
+
+        <tocitem text="The Tree View Attribute Editor" target="TreeViewer"></tocitem>
+        <tocitem text="The Grid View Attribute Editor" target="MatrixViewer"></tocitem>
+        <tocitem text="The Character Editor" target="CharacterEditor"></tocitem>
+        <tocitem text="The Item Editor" target="ItemEditor"></tocitem>
+        <tocitem text="Action Sets" target="ActionSetsDialog"></tocitem>
+        <tocitem text="Action Sets" target="ActionSetsDialog"></tocitem>
+        <tocitem text="Action Set Editor" target="DirectivesFileEditor"></tocitem>
+        <tocitem text="Action Sets" target="ActionSetsDialog"></tocitem>
+        <tocitem text="The Image Settings Editor" target="ImageSettingsDialog"></tocitem>
+        <tocitem text="The Image Editor" target="ImageEditor"></tocitem>
+    </tocitem>
 
 </toc>
 
