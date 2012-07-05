@@ -44,7 +44,7 @@ public class SimpleAttributeData implements AttributeData {
 
     @Override
     public String getValueAsString() {
-        throw new NotImplementedException();
+        return _textValue;
     }
 
     @Override
