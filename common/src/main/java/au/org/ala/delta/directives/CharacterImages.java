@@ -14,16 +14,17 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
-import java.io.StringReader;
-import java.text.ParseException;
-import java.util.List;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.directives.args.ImageParser;
+import au.org.ala.delta.directives.validation.CharacterNumberValidator;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.image.ImageInfo;
 import au.org.ala.delta.model.image.ImageType;
+
+import java.io.StringReader;
+import java.text.ParseException;
+import java.util.List;
 
 /**
  * Processes the CHARACTER IMAGES directive.
@@ -36,7 +37,7 @@ public class CharacterImages extends AbstractImageDirective {
 	
 	@Override
 	protected ImageParser createParser(DeltaContext context, StringReader reader) {
-		return new ImageParser(context, reader, ImageType.IMAGE_CHARACTER);
+		return new ImageParser(context, reader, ImageType.IMAGE_CHARACTER, new CharacterNumberValidator(context));
 	}
 	
 	

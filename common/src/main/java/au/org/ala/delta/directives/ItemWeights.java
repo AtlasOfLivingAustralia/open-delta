@@ -14,19 +14,21 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
-import java.io.StringReader;
-import java.text.ParseException;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArgument;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.directives.args.IdValueListParser;
+import au.org.ala.delta.directives.validation.IdValidator;
+import au.org.ala.delta.directives.validation.ItemNumberValidator;
+
+import java.io.StringReader;
+import java.text.ParseException;
 
 
 /**
  * Processes the ITEM WEIGHTS directive.
- * @see http://delta-intkey.com/www/uguide.htm#_*ITEM_WEIGHTS_
+ * @link http://delta-intkey.com/www/uguide.htm#_*ITEM_WEIGHTS_
  */
 public class ItemWeights extends AbstractDirective<DeltaContext> {
 
@@ -54,7 +56,8 @@ public class ItemWeights extends AbstractDirective<DeltaContext> {
 
 	@Override
 	public void parse(DeltaContext context, String data) throws ParseException {
-		IdValueListParser parser = new IdValueListParser(context, new StringReader(data));
+        IdValidator itemValidator = new ItemNumberValidator(context);
+		IdValueListParser parser = new IdValueListParser(context, new StringReader(data), itemValidator);
 		parser.parse();
 		
 		_args = parser.getDirectiveArgs();

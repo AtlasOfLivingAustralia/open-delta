@@ -78,26 +78,30 @@ public class DirectiveArgParserFactory {
 			parser = new IdListParser(context, reader, new ItemNumberValidator(context));
 			break;
 		case DirectiveArgType.DIRARG_TEXTLIST:
+            parser = new IntegerTextListParser(context, reader, null);
+            break;
 		case DirectiveArgType.DIRARG_CHARTEXTLIST:
-			parser = new IntegerTextListParser(context, reader);
+			parser = new IntegerTextListParser(context, reader, new CharacterNumberValidator(context));
 			break;
 		case DirectiveArgType.DIRARG_CHARINTEGERLIST:
 		case DirectiveArgType.DIRARG_CHARREALLIST:
+            parser = new IdValueListParser(context, reader, new CharacterNumberValidator(context));
+            break;
 		case DirectiveArgType.DIRARG_ITEMREALLIST:
-			parser = new IdValueListParser(context, reader);
+			parser = new IdValueListParser(context, reader, new ItemNumberValidator(context));
 			break;
 		case DirectiveArgType.DIRARG_ITEMTEXTLIST:
 		case DirectiveArgType.DIRARG_ITEMFILELIST:
 			parser = new StringTextListParser(context, reader);
 			break;
 		case DirectiveArgType.DIRARG_ITEMCHARLIST:
-			parser = new IdWithIdListParser(context, reader);
+			parser = new IdWithIdListParser(context, reader, new ItemNumberValidator(context), new CharacterNumberValidator(context));
 			break;
 		case DirectiveArgType.DIRARG_KEYSTATE:
 			parser = new KeyStateParser(context, reader);
 			break;
 		case DirectiveArgType.DIRARG_CHARGROUPS:
-			parser = new IdSetParser(context, reader);
+			parser = new IdSetParser(context, reader, new CharacterNumberValidator(context));
 			break;
 		case DirectiveArgType.DIRARG_INTKEY_ONOFF:
 	        parser = new IntKeyOnOffParser(context, reader);
@@ -310,7 +314,7 @@ public class DirectiveArgParserFactory {
 		  
 		  skipWhitespace();
 		  if (Character.isDigit(_currentChar)) {
-			  return new Pair<String, IntRange>("", readIds());
+			  return new Pair<String, IntRange>("", readIds(null));
 		  }
 		  
 		  

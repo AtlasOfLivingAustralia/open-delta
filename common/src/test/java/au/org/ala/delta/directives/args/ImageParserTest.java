@@ -14,20 +14,18 @@
  ******************************************************************************/
 package au.org.ala.delta.directives.args;
 
-import java.io.StringReader;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
-
-import junit.framework.TestCase;
-
-import org.junit.Test;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.model.image.ImageInfo;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.ImageType;
 import au.org.ala.delta.model.image.OverlayLocation;
+import junit.framework.TestCase;
+import org.junit.Test;
+
+import java.io.StringReader;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Tests the ImageParser class.
@@ -39,7 +37,7 @@ public class ImageParserTest extends TestCase {
 
         StringReader reader = new StringReader(directiveArgs);
 
-        return new ImageParser(context, reader, imageType);
+        return new ImageParser(context, reader, imageType, null);
     }
 
     /**

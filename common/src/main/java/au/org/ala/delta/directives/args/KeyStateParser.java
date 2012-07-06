@@ -14,15 +14,16 @@
  ******************************************************************************/
 package au.org.ala.delta.directives.args;
 
-import java.io.Reader;
-import java.text.ParseException;
-
-import org.apache.commons.lang.math.IntRange;
-
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.validation.CharacterNumberValidator;
 import au.org.ala.delta.directives.validation.DirectiveError;
+import au.org.ala.delta.directives.validation.IdValidator;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.MutableDeltaDataSet;
+import org.apache.commons.lang.math.IntRange;
+
+import java.io.Reader;
+import java.text.ParseException;
 
 /**
  * Parses the KEY STATES directive.
@@ -30,10 +31,12 @@ import au.org.ala.delta.model.MutableDeltaDataSet;
 public class KeyStateParser extends DirectiveArgsParser {
 
 	private MutableDeltaDataSet _dataSet;
+    private IdValidator _validator;
 	
 	public KeyStateParser(DeltaContext context, Reader reader) {
 		super(context, reader);
 		_dataSet = context.getDataSet();
+        _validator = new CharacterNumberValidator(context);
 	}
 	
 	@Override
@@ -42,7 +45,7 @@ public class KeyStateParser extends DirectiveArgsParser {
 		readNext();
 		while (_currentInt >= 0) {
 			skipWhitespace();
-			IntRange charNums = readIds();
+			IntRange charNums = readIds(_validator);
 			
 			expect(',');
 			readNext();
@@ -109,7 +112,7 @@ public class KeyStateParser extends DirectiveArgsParser {
 	}
 	
 	private void parseOrderedMultistateChar(DirectiveArgument<Integer> arg) throws ParseException {
-		IntRange states = readIds();
+		IntRange states = readIds(null);
 		arg.add(states.getMinimumInteger());
 		arg.add(states.getMaximumInteger());
 	}

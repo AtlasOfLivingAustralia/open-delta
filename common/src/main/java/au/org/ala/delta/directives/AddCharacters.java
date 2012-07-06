@@ -14,15 +14,17 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
-import java.io.StringReader;
-import java.util.HashSet;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArgsParser;
 import au.org.ala.delta.directives.args.DirectiveArgument;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.directives.args.IdWithIdListParser;
+import au.org.ala.delta.directives.validation.CharacterNumberValidator;
+import au.org.ala.delta.directives.validation.ItemNumberValidator;
+
+import java.io.StringReader;
+import java.util.HashSet;
 
 public class AddCharacters extends AbstractCustomDirective {
 	
@@ -35,7 +37,8 @@ public class AddCharacters extends AbstractCustomDirective {
 	@Override
 	protected DirectiveArgsParser createParser(DeltaContext context,
 			StringReader reader) {
-		return new IdWithIdListParser(context, reader);
+
+		return new IdWithIdListParser(context, reader, new ItemNumberValidator(context), new CharacterNumberValidator(context));
 	}
 
 	@Override

@@ -14,11 +14,12 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
-import java.io.StringReader;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.ImageParser;
+import au.org.ala.delta.directives.validation.ItemNumberValidator;
 import au.org.ala.delta.model.image.ImageType;
+
+import java.io.StringReader;
 
 /**
  * Handles the TAXON IMAGES directive.
@@ -33,7 +34,7 @@ public class TaxonImages extends AbstractImageDirective {
 	
 	@Override
 	protected ImageParser createParser(DeltaContext context, StringReader reader) {
-		return new ImageParser(context, reader, ImageType.IMAGE_TAXON);
+		return new ImageParser(context, reader, ImageType.IMAGE_TAXON, new ItemNumberValidator(context));
 	}
 	
 	@Override

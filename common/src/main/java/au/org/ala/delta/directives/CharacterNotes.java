@@ -14,15 +14,16 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
-import java.io.StringReader;
-import java.text.ParseException;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArgsParser;
 import au.org.ala.delta.directives.args.DirectiveArgument;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.directives.args.IntegerTextListParser;
+import au.org.ala.delta.directives.validation.CharacterNumberValidator;
+
+import java.io.StringReader;
+import java.text.ParseException;
 
 /** 
  * Processes the CHARACTER NOTES directive.
@@ -41,7 +42,7 @@ public class CharacterNotes extends AbstractTextListDirective<Integer> {
 
 	@Override
 	public void parse(DeltaContext context, String data) throws ParseException {
-		DirectiveArgsParser parser = new IntegerTextListParser(context, new StringReader(data));
+		DirectiveArgsParser parser = new IntegerTextListParser(context, new StringReader(data), new CharacterNumberValidator(context));
 		
 		parser.parse();
 		

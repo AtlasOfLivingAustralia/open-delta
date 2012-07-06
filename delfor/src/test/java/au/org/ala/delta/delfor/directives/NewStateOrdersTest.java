@@ -14,17 +14,16 @@
  ******************************************************************************/
 package au.org.ala.delta.delfor.directives;
 
-import java.util.List;
-
-import junit.framework.TestCase;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import au.org.ala.delta.delfor.DelforContext;
 import au.org.ala.delta.delfor.format.FormattingAction;
 import au.org.ala.delta.editor.slotfile.model.SlotFileDataSet;
 import au.org.ala.delta.editor.slotfile.model.SlotFileRepository;
+import au.org.ala.delta.model.CharacterType;
+import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.List;
 
 /**
  * Tests the NewStateOrders class.
@@ -38,6 +37,11 @@ public class NewStateOrdersTest extends TestCase {
 	public void setUp() throws Exception {
 		SlotFileRepository dataSetRepository = new SlotFileRepository();
 		_dataSet = (SlotFileDataSet) dataSetRepository.newDataSet();
+
+        int numChars = 10;
+        for (int i=0; i<numChars; i++) {
+            _dataSet.addCharacter(CharacterType.UnorderedMultiState);
+        }
 		
 		_context = new DelforContext(_dataSet);
 	}

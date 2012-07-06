@@ -14,11 +14,13 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
-import java.util.HashSet;
-import java.util.List;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
+import au.org.ala.delta.directives.validation.CharacterNumberValidator;
+import au.org.ala.delta.directives.validation.IdValidator;
+
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * Implements the REPLACE SEMICOLON BY COMMA directive.
@@ -45,4 +47,9 @@ public class ReplaceSemicolonByComma extends AbstractCharacterSetDirective<Delta
 	public int getOrder() {
 		return 4;
 	}
+
+    @Override
+    protected IdValidator getValidator(DeltaContext context) {
+        return new CharacterNumberValidator(context);
+    }
 }

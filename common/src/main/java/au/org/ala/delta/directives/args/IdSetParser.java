@@ -14,20 +14,24 @@
  ******************************************************************************/
 package au.org.ala.delta.directives.args;
 
+import au.org.ala.delta.directives.AbstractDeltaContext;
+import au.org.ala.delta.directives.validation.IdValidator;
+
 import java.io.Reader;
 import java.text.ParseException;
 import java.util.List;
-
-import au.org.ala.delta.directives.AbstractDeltaContext;
 
 /**
  * The IdSetParser parses sets of linked values, for example
  * the LINKED CHARACTERS directive.
  */
 public class IdSetParser extends DirectiveArgsParser {
-	
-	public IdSetParser(AbstractDeltaContext context, Reader reader) {
+
+    private IdValidator _validator;
+
+	public IdSetParser(AbstractDeltaContext context, Reader reader, IdValidator validator) {
 		super(context, reader);
+        _validator = validator;
 	}
 	
 	@Override
@@ -47,7 +51,7 @@ public class IdSetParser extends DirectiveArgsParser {
 	}
 	
 	private void addSet() throws ParseException {
-		List<Integer> values = readSet();
+		List<Integer> values = readSet(_validator);
 		
 		if (values.size() > 0) {
 			_args.addDirectiveArgument(values);

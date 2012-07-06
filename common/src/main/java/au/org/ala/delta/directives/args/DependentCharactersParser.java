@@ -14,20 +14,22 @@
  ******************************************************************************/
 package au.org.ala.delta.directives.args;
 
+import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.validation.CharacterNumberValidator;
+import au.org.ala.delta.directives.validation.DirectiveError;
+import au.org.ala.delta.directives.validation.IdValidator;
+import au.org.ala.delta.model.CharacterDependency;
+import au.org.ala.delta.model.CharacterType;
+import au.org.ala.delta.model.DefaultDataSetFactory;
+import au.org.ala.delta.model.DeltaDataSetFactory;
+import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.MutableDeltaDataSet;
+
 import java.io.Reader;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-
-import au.org.ala.delta.DeltaContext;
-import au.org.ala.delta.directives.validation.DirectiveError;
-import au.org.ala.delta.model.CharacterDependency;
-import au.org.ala.delta.model.CharacterType;
-import au.org.ala.delta.model.DefaultDataSetFactory;
-import au.org.ala.delta.model.MutableDeltaDataSet;
-import au.org.ala.delta.model.DeltaDataSetFactory;
-import au.org.ala.delta.model.MultiStateCharacter;
 
 /**
  * Handles the DEPENDENT CHARACTERS directive.
@@ -37,6 +39,7 @@ public class DependentCharactersParser extends DirectiveArgsParser {
 	private MutableDeltaDataSet _dataSet;
 	private List<CharacterDependency> _dependencies;
 	private DeltaDataSetFactory _factory;
+    private IdValidator _validator;
 	
 	public DependentCharactersParser(DeltaContext context, Reader reader) {
 		super(context, reader);
@@ -51,7 +54,7 @@ public class DependentCharactersParser extends DirectiveArgsParser {
 	public void parse() throws ParseException {
 		_args = new DirectiveArguments();
 		_dependencies = new ArrayList<CharacterDependency>();
-		
+        _validator = new CharacterNumberValidator((DeltaContext)_context);
 		readNext();
 		skipWhitespace();
 		
@@ -76,7 +79,7 @@ public class DependentCharactersParser extends DirectiveArgsParser {
 		
 		expect(':');
 		
-		List<Integer> controlled = readSet();
+		List<Integer> controlled = readSet(_validator);
 
 		addDependency(charNum, states, controlled);
 	}

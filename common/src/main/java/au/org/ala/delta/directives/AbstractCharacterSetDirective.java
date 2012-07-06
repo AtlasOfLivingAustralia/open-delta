@@ -14,13 +14,14 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
-import java.io.StringReader;
-import java.text.ParseException;
-import java.util.List;
-
 import au.org.ala.delta.directives.args.DirectiveArgument;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.directives.args.IdSetParser;
+import au.org.ala.delta.directives.validation.IdValidator;
+
+import java.io.StringReader;
+import java.text.ParseException;
+import java.util.List;
 
 /**
  * An AbstractCharacterSetDirective is a directive that takes a space separated list of 
@@ -41,7 +42,7 @@ public abstract class AbstractCharacterSetDirective<C extends AbstractDeltaConte
 
 	@Override
 	public void parse(C context, String data) throws ParseException {
-		IdSetParser parser = new IdSetParser(context, new StringReader(data));
+		IdSetParser parser = new IdSetParser(context, new StringReader(data), getValidator(context));
 		parser.parse();
 		
 		args = parser.getDirectiveArgs();
@@ -58,4 +59,6 @@ public abstract class AbstractCharacterSetDirective<C extends AbstractDeltaConte
 	}
 
 	protected abstract void processCharacterSet(C context, List<Integer> characters);
+
+    protected abstract IdValidator getValidator(C context);
 }

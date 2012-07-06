@@ -1,20 +1,19 @@
 package au.org.ala.delta.key;
 
+import au.org.ala.delta.key.directives.KeyDirectiveParser;
+import au.org.ala.delta.model.MultiStateAttribute;
+import junit.framework.TestCase;
+import org.apache.commons.lang.ArrayUtils;
+import org.junit.Test;
+
 import java.io.File;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import junit.framework.TestCase;
-
-import org.apache.commons.lang.ArrayUtils;
-import org.junit.Test;
-
-import au.org.ala.delta.key.directives.KeyDirectiveParser;
-import au.org.ala.delta.model.MultiStateAttribute;
-
 public class TreatCharactersAsVariableTest extends TestCase {
+
 
     @Test
     public void testTreatCharactersAsVariable() throws Exception {
@@ -22,6 +21,8 @@ public class TreatCharactersAsVariableTest extends TestCase {
         File directivesFile = new File(directivesFileURL.toURI());
         
         KeyContext context = new KeyContext(directivesFile);
+        context.setMaximumNumberOfItems(100);
+        context.setNumberOfCharacters(100);
         
         KeyDirectiveParser parser = KeyDirectiveParser.createInstance();
         parser.parse(directivesFile, context);

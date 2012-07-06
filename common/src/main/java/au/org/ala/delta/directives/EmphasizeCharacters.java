@@ -14,16 +14,21 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
-import java.io.StringReader;
-import java.util.HashSet;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArgsParser;
 import au.org.ala.delta.directives.args.DirectiveArgument;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.directives.args.IdWithIdListParser;
+import au.org.ala.delta.directives.validation.CharacterNumberValidator;
+import au.org.ala.delta.directives.validation.ItemNumberValidator;
 
+import java.io.StringReader;
+import java.util.HashSet;
+
+/**
+ * Parses and processes the EMPHASIZE CHARACTERS directive.
+ */
 public class EmphasizeCharacters extends AbstractCustomDirective {
 	
 	public static final String[] CONTROL_WORDS = {"emphasize", "characters"};
@@ -36,7 +41,7 @@ public class EmphasizeCharacters extends AbstractCustomDirective {
 	@Override
 	protected DirectiveArgsParser createParser(DeltaContext context,
 			StringReader reader) {
-		return new IdWithIdListParser(context, reader);
+		return new IdWithIdListParser(context, reader, new ItemNumberValidator(context), new CharacterNumberValidator(context));
 	}
 
 	@Override

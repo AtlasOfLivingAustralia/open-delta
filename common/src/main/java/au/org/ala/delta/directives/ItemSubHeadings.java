@@ -14,14 +14,15 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
-import java.io.StringReader;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArgsParser;
 import au.org.ala.delta.directives.args.DirectiveArgument;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.directives.args.IntegerTextListParser;
+import au.org.ala.delta.directives.validation.CharacterNumberValidator;
+
+import java.io.StringReader;
 
 /**
  * This class parses the ITEM SUBHEADINGS directive.
@@ -40,7 +41,7 @@ public class ItemSubHeadings extends AbstractCustomDirective {
 	
 	@Override
 	protected DirectiveArgsParser createParser(DeltaContext context, StringReader reader) {
-		return new IntegerTextListParser(context, reader);
+		return new IntegerTextListParser(context, reader, new CharacterNumberValidator(context));
 	}
 	
 	@Override

@@ -14,15 +14,16 @@
  ******************************************************************************/
 package au.org.ala.delta.directives.args;
 
+import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.validation.IdValidator;
+import au.org.ala.delta.model.image.ImageInfo;
+import au.org.ala.delta.model.image.ImageOverlay;
+import au.org.ala.delta.model.image.ImageOverlayParser;
+
 import java.io.Reader;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-
-import au.org.ala.delta.DeltaContext;
-import au.org.ala.delta.model.image.ImageInfo;
-import au.org.ala.delta.model.image.ImageOverlay;
-import au.org.ala.delta.model.image.ImageOverlayParser;
 
 /**
  * Parses the arguments to the CHARACTER IMAGES, TAXON IMAGES directives.
@@ -32,12 +33,14 @@ public class ImageParser extends DirectiveArgsParser {
 	protected ImageOverlayParser _overlayParser;
 	protected int _imageType;
 	protected List<ImageInfo> _imageInfo;
+    protected IdValidator _validator;
 	
-	public ImageParser(DeltaContext context, Reader reader, int imageType) {
+	public ImageParser(DeltaContext context, Reader reader, int imageType, IdValidator validator) {
 		super(context, reader);
 		_overlayParser = new ImageOverlayParser();
 		_overlayParser.setColorsBGR(true);
 		_imageType = imageType;
+        _validator = validator;
 	}
 	
 	/**
@@ -94,7 +97,7 @@ public class ImageParser extends DirectiveArgsParser {
 		if (Character.isDigit(_currentChar)) {
 			reset();
 			
-			return readListId();
+			return readListId(_validator);
 		}
 		else {
 			reset();

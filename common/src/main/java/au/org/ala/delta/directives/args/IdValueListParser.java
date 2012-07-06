@@ -14,13 +14,13 @@
  ******************************************************************************/
 package au.org.ala.delta.directives.args;
 
+import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.validation.IdValidator;
+import org.apache.commons.lang.math.IntRange;
+
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.text.ParseException;
-
-import org.apache.commons.lang.math.IntRange;
-
-import au.org.ala.delta.DeltaContext;
 
 /**
  * The IdValueList parses directive arguments in the form:
@@ -33,9 +33,12 @@ import au.org.ala.delta.DeltaContext;
  * 
  */
 public class IdValueListParser extends DirectiveArgsParser {
-	
-	public IdValueListParser(DeltaContext context, Reader reader) {
+
+    private IdValidator _validator;
+
+    public IdValueListParser(DeltaContext context, Reader reader, IdValidator validator) {
 		super(context, reader);
+        _validator = validator;
 	}
 	
 	@Override
@@ -46,7 +49,7 @@ public class IdValueListParser extends DirectiveArgsParser {
 		skipWhitespace();
 		while (_currentInt > 0) {
 			
-			IntRange ids = readIds();
+			IntRange ids = readIds(_validator);
 			readValueSeparator();
 			BigDecimal value = readValue();
 			

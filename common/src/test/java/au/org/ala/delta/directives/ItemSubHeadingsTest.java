@@ -14,6 +14,10 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
+import au.org.ala.delta.model.CharacterType;
+import au.org.ala.delta.model.DefaultDataSetFactory;
+import au.org.ala.delta.model.impl.DefaultDataSet;
+import org.junit.Before;
 import org.junit.Test;
 
 import au.org.ala.delta.DeltaContext;
@@ -24,7 +28,30 @@ import junit.framework.TestCase;
  */
 public class ItemSubHeadingsTest extends TestCase {
 
-	/**
+    private DeltaContext _context;
+
+    @Before
+    public void setUp() {
+        DefaultDataSetFactory factory = new DefaultDataSetFactory();
+        DefaultDataSet dataSet = (DefaultDataSet)factory.createDataSet("test");
+
+        // Type of character doesn't matter for this test.
+        int charCount = 200;
+        for (int i=0; i<charCount; i++) {
+            dataSet.addCharacter(CharacterType.UnorderedMultiState);
+        }
+
+        int itemCount = 10;
+        for (int i=0; i<itemCount; i++) {
+            dataSet.addItem();
+        }
+
+        _context = new DeltaContext(dataSet);
+
+    }
+
+
+    /**
 	 * Tests processing of the directive with correct data.
 	 */
 	@Test
@@ -34,16 +61,14 @@ public class ItemSubHeadingsTest extends TestCase {
 
 		ItemSubHeadings directive = new ItemSubHeadings();
 
-		DeltaContext context = new DeltaContext();
+		directive.parseAndProcess(_context, data);
 
-		directive.parseAndProcess(context, data);
-
-		assertEquals("Transverse section of lamina.", context.getItemSubheading(87));
-		assertEquals("Leaf epidermis.", context.getItemSubheading(96));
-		assertEquals("Pollen ultrastructure.", context.getItemSubheading(124));
+		assertEquals("Transverse section of lamina.", _context.getItemSubheading(87));
+		assertEquals("Leaf epidermis.", _context.getItemSubheading(96));
+		assertEquals("Pollen ultrastructure.", _context.getItemSubheading(124));
 		for (int i = 1; i <= 124; i++) {
 			boolean expectedResult = (i == 87 || i == 96 || i == 124);
-			assertEquals(Integer.toString(i), expectedResult, context.getItemSubheading(i) != null);
+			assertEquals(Integer.toString(i), expectedResult, _context.getItemSubheading(i) != null);
 		}
 
 	}
@@ -59,16 +84,14 @@ public class ItemSubHeadingsTest extends TestCase {
 
 		ItemSubHeadings directive = new ItemSubHeadings();
 
-		DeltaContext context = new DeltaContext();
+		directive.parseAndProcess(_context, data);
 
-		directive.parseAndProcess(context, data);
-
-		assertEquals("Transverse section of lamina.", context.getItemSubheading(87));
-		assertEquals("Leaf epidermis.", context.getItemSubheading(96));
-		assertEquals("Pollen ultrastructure.", context.getItemSubheading(124));
+		assertEquals("Transverse section of lamina.", _context.getItemSubheading(87));
+		assertEquals("Leaf epidermis.", _context.getItemSubheading(96));
+		assertEquals("Pollen ultrastructure.", _context.getItemSubheading(124));
 		for (int i = 1; i <= 124; i++) {
 			boolean expectedResult = (i == 87 || i == 96 || i == 124);
-			assertEquals(Integer.toString(i), expectedResult, context.getItemSubheading(i) != null);
+			assertEquals(Integer.toString(i), expectedResult, _context.getItemSubheading(i) != null);
 		}
 
 	}
@@ -87,10 +110,8 @@ public class ItemSubHeadingsTest extends TestCase {
 
 			ItemSubHeadings directive = new ItemSubHeadings();
 
-			DeltaContext context = new DeltaContext();
-
 			try {
-				directive.parseAndProcess(context, data);
+				directive.parseAndProcess(_context, data);
 				fail("Invalid delimeter should have caused an exception");
 			} catch (Exception e) {
 			}

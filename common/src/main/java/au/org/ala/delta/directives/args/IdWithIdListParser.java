@@ -14,12 +14,12 @@
  ******************************************************************************/
 package au.org.ala.delta.directives.args;
 
-import java.io.Reader;
-import java.text.ParseException;
-
+import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.validation.IdValidator;
 import org.apache.commons.lang.math.IntRange;
 
-import au.org.ala.delta.DeltaContext;
+import java.io.Reader;
+import java.text.ParseException;
 
 /**
  * The IdWithIdListParser parses directive arguments in the form:
@@ -35,9 +35,13 @@ import au.org.ala.delta.DeltaContext;
  */
 public class IdWithIdListParser extends DirectiveArgsParser {
 
-	
-	public IdWithIdListParser(DeltaContext context, Reader reader) {
+    protected IdValidator _validator;
+    private IdValidator _listValidator;
+
+    public IdWithIdListParser(DeltaContext context, Reader reader, IdValidator idValidator, IdValidator idListValidator) {
 		super(context, reader);
+        _validator = idValidator;
+        _listValidator = idListValidator;
 	}
 	
 	@Override
@@ -70,7 +74,7 @@ public class IdWithIdListParser extends DirectiveArgsParser {
 		
 		while (_currentInt >=0 && _currentChar != '#') {
 			
-			IntRange ids = readIds();
+			IntRange ids = readIds(_listValidator);
 			for (int tmpId : ids.toArray()) {
 				arg.add(tmpId);
 			}
@@ -90,7 +94,7 @@ public class IdWithIdListParser extends DirectiveArgsParser {
 		if (Character.isDigit(_currentChar)) {
 			reset();
 			
-			return readListId();
+			return readListId(_validator);
 		}
 		else {
 			reset();

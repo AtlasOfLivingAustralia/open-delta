@@ -14,31 +14,29 @@
  ******************************************************************************/
 package au.org.ala.delta.key.directives.io;
 
+import au.org.ala.delta.DeltaContext.HeadingType;
+import au.org.ala.delta.directives.validation.DirectiveException;
+import au.org.ala.delta.io.BinaryKeyFile;
+import au.org.ala.delta.key.ItemsFileHeader;
+import au.org.ala.delta.key.KeyContext;
+import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.CharacterDependency;
+import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MultiStateAttribute;
+import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.MutableDeltaDataSet;
+import au.org.ala.delta.model.impl.ControllingInfo;
+import au.org.ala.delta.util.Utils;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.IntRange;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.IntRange;
-
-import au.org.ala.delta.DeltaContext.HeadingType;
-import au.org.ala.delta.directives.validation.DirectiveException;
-import au.org.ala.delta.io.BinaryKeyFile;
-import au.org.ala.delta.key.ItemsFileHeader;
-import au.org.ala.delta.key.KeyContext;
-import au.org.ala.delta.model.Attribute;
-import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.CharacterDependency;
-import au.org.ala.delta.model.MutableDeltaDataSet;
-import au.org.ala.delta.model.Item;
-import au.org.ala.delta.model.MultiStateAttribute;
-import au.org.ala.delta.model.MultiStateCharacter;
-import au.org.ala.delta.model.impl.ControllingInfo;
-import au.org.ala.delta.util.Utils;
 
 public class KeyItemsFileReader {
 
@@ -60,6 +58,8 @@ public class KeyItemsFileReader {
         _header = new ItemsFileHeader();
         List<Integer> headerInts = _keyItemsFile.readIntegerList(1, ItemsFileHeader.SIZE);
         _header.fromInts(headerInts);
+        _context.setMaximumNumberOfItems(_header.getNumberOfItems());
+        _context.setNumberOfCharacters(_header.getNumberOfCharacters());
     }
 
     public void readAll() {
@@ -83,7 +83,6 @@ public class KeyItemsFileReader {
         List<Integer> itemNameLengths = _keyItemsFile.readIntegerList(_header.getItemNameLengthsRecord(), _header.getNumberOfItems());
 
         int currentRecord = 2;
-
         for (int i = 0; i < _header.getNumberOfItems(); i++) {
             _keyItemsFile.seekToRecord(currentRecord);
 

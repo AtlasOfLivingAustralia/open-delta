@@ -14,19 +14,20 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
-import java.io.StringReader;
-import java.text.ParseException;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArgument;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.directives.args.IdValueListParser;
+import au.org.ala.delta.directives.validation.ItemNumberValidator;
+
+import java.io.StringReader;
+import java.text.ParseException;
 
 
 /**
  * Processes the ITEM ABUNDANCES directive.
- * @see http://delta-intkey.com/www/uguide.htm#_*ITEM_ABUNDANCES_
+ * @link http://delta-intkey.com/www/uguide.htm#_*ITEM_ABUNDANCES_
  */
 public class ItemAbundances extends AbstractDirective<DeltaContext> {
 
@@ -53,7 +54,7 @@ public class ItemAbundances extends AbstractDirective<DeltaContext> {
 
 	@Override
 	public void parse(DeltaContext context, String data) throws ParseException {
-		IdValueListParser parser = new IdValueListParser(context, new StringReader(data));
+		IdValueListParser parser = new IdValueListParser(context, new StringReader(data), new ItemNumberValidator(context));
 		parser.parse();
 		
 		_args = parser.getDirectiveArgs();

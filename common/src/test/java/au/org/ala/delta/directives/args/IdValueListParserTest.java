@@ -14,15 +14,13 @@
  ******************************************************************************/
 package au.org.ala.delta.directives.args;
 
+import au.org.ala.delta.DeltaContext;
+import junit.framework.TestCase;
+import org.junit.Test;
+
 import java.io.StringReader;
 import java.math.BigDecimal;
 import java.text.ParseException;
-
-import junit.framework.TestCase;
-
-import org.junit.Test;
-
-import au.org.ala.delta.DeltaContext;
 
 /**
  * Tests the IdValueListParser class.
@@ -35,7 +33,7 @@ public class IdValueListParserTest extends TestCase {
 		
 		StringReader reader = new StringReader(directiveArgs);
 		
-		return new IdValueListParser(context, reader);
+		return new IdValueListParser(context, reader, null);
 	}
 	
 	/**

@@ -13,22 +13,26 @@
  * rights and limitations under the License.
  ******************************************************************************/
 package au.org.ala.delta.directives.args;
-import java.io.Reader;
-import java.text.ParseException;
-
+import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.validation.IdValidator;
 import org.apache.commons.lang.math.IntRange;
 
-import au.org.ala.delta.DeltaContext;
+import java.io.Reader;
+import java.text.ParseException;
 
 
 public class IntegerTextListParser extends TextListParser<IntRange> {
 
-	public IntegerTextListParser(DeltaContext context, Reader reader) {
+    private IdValidator _validator;
+
+	public IntegerTextListParser(DeltaContext context, Reader reader, IdValidator validator) {
 		super(context, reader);
+        _validator = validator;
 	}
 	
-	public IntegerTextListParser(DeltaContext context, Reader reader, boolean cleanWhitespace) {
+	public IntegerTextListParser(DeltaContext context, Reader reader, boolean cleanWhitespace, IdValidator validator) {
 		super(context, reader, cleanWhitespace);
+        _validator = validator;
 	}
 	
 	@Override
@@ -47,7 +51,7 @@ public class IntegerTextListParser extends TextListParser<IntRange> {
 		expect(MARK_IDENTIFIER);
 		
 		readNext();
-		IntRange ids = readIds();
+		IntRange ids = readIds(_validator);
 		expect('.');
 	    readNext();  // consume the . character.
 	    return ids;

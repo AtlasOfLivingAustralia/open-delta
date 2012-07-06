@@ -14,18 +14,17 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
-import java.io.Reader;
-import java.io.StringReader;
-import java.text.ParseException;
-
-import org.apache.commons.lang.math.IntRange;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.directives.args.IntegerTextListParser;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.ImageSettings.FontInfo;
 import au.org.ala.delta.model.image.ImageSettings.OverlayFontType;
+import org.apache.commons.lang.math.IntRange;
+
+import java.io.Reader;
+import java.io.StringReader;
+import java.text.ParseException;
 
 
 public class OverlayFonts extends AbstractInternalDirective {
@@ -59,7 +58,7 @@ public class OverlayFonts extends AbstractInternalDirective {
 		private FontInfo _fontInfo;
 		
 		public FontInfoParser(DeltaContext context, Reader reader) {
-			super(context, reader);
+			super(context, reader, null);
 		}
 
 		@Override

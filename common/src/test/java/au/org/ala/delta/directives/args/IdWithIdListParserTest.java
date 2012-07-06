@@ -14,14 +14,12 @@
  ******************************************************************************/
 package au.org.ala.delta.directives.args;
 
-import java.io.StringReader;
-import java.text.ParseException;
-
+import au.org.ala.delta.DeltaContext;
 import junit.framework.TestCase;
-
 import org.junit.Test;
 
-import au.org.ala.delta.DeltaContext;
+import java.io.StringReader;
+import java.text.ParseException;
 
 /**
  * Tests the IdWithIdListParser class.
@@ -34,7 +32,7 @@ public class IdWithIdListParserTest extends TestCase {
 		
 		StringReader reader = new StringReader(directiveArgs);
 		
-		return new IdWithIdListParser(context, reader);
+		return new IdWithIdListParser(context, reader, null, null);
 	}
 	
 	/**

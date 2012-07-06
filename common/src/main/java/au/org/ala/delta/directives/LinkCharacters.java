@@ -14,11 +14,13 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
-import java.util.HashSet;
-import java.util.List;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
+import au.org.ala.delta.directives.validation.CharacterNumberValidator;
+import au.org.ala.delta.directives.validation.IdValidator;
+
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * The link characters directive specifies that a set of characters that should be placed in the same 
@@ -44,4 +46,9 @@ public class LinkCharacters extends AbstractCharacterSetDirective<DeltaContext> 
 	public int getOrder() {
 		return 4;
 	}
+
+    @Override
+    protected IdValidator getValidator(DeltaContext context) {
+        return new CharacterNumberValidator(context);
+    }
 }

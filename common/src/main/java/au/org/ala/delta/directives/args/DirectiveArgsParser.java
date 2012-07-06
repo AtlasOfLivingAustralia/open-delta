@@ -136,17 +136,13 @@ public abstract class DirectiveArgsParser extends AbstractStreamParser {
         }
     }
 
-	protected IntRange readIds() throws ParseException {
-		return readIds(null);
-	}
-	
-	protected List<Integer> readSet() throws ParseException {
+	protected List<Integer> readSet(IdValidator validator) throws ParseException {
 		List<Integer> values = new ArrayList<Integer>();
 		while (_currentInt > 0 && !Character.isWhitespace(_currentChar)) {
 			if (_currentChar == SET_VALUE_SEPARATOR) {
 				readNext();
 			}
-			IntRange ids = readIds();
+			IntRange ids = readIds(validator);
 			for (int i : ids.toArray()) {
 				values.add(i);
 			}
@@ -181,13 +177,15 @@ public abstract class DirectiveArgsParser extends AbstractStreamParser {
 	    return id.toString().trim();
 	}
 	
-	protected int readListId() throws ParseException {
+	protected int readListId(IdValidator validator) throws ParseException {
 		expect(MARK_IDENTIFIER);
 		
 		readNext();
 		
 		int id = readInteger();
-		
+		if (validator != null) {
+            validator.validateId(id);
+        }
 		expect('.');
 	    readNext();  // consume the . character.
 	    return id;

@@ -14,12 +14,12 @@
  ******************************************************************************/
 package au.org.ala.delta.directives.args;
 
+import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.model.image.ImageInfo;
+
 import java.io.Reader;
 import java.text.ParseException;
 import java.util.ArrayList;
-
-import au.org.ala.delta.DeltaContext;
-import au.org.ala.delta.model.image.ImageInfo;
 
 /**
  * Parses the arguments to the STARTUP IMAGES, CHARACTER KEY IMAGES and
@@ -28,7 +28,7 @@ import au.org.ala.delta.model.image.ImageInfo;
 public class NoIdImageParser extends ImageParser {
 	
 	public NoIdImageParser(DeltaContext context, Reader reader, int imageType) {
-		super(context, reader, imageType);
+		super(context, reader, imageType, null);
 	}
 	
 	@Override
