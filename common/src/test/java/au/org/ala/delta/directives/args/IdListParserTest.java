@@ -14,14 +14,13 @@
  ******************************************************************************/
 package au.org.ala.delta.directives.args;
 
-import java.io.StringReader;
-import java.text.ParseException;
-
+import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.validation.IdValidator;
 import junit.framework.TestCase;
-
 import org.junit.Test;
 
-import au.org.ala.delta.DeltaContext;
+import java.io.StringReader;
+import java.text.ParseException;
 
 /**
  * Tests the IdListParser class.
@@ -29,12 +28,12 @@ import au.org.ala.delta.DeltaContext;
 public class IdListParserTest extends TestCase {
 
 	
-	private IdListParser parserFor(String directiveArgs) {
+	private IdListParser parserFor(String directiveArgs, IdValidator validator) {
 		DeltaContext context = new DeltaContext();
 		
 		StringReader reader = new StringReader(directiveArgs);
 		
-		return new IdListParser(context, reader);
+		return new IdListParser(context, reader, validator);
 	}
 	
 	/**
@@ -45,7 +44,7 @@ public class IdListParserTest extends TestCase {
 	@Test
 	public void testCorrectlyFormattedValue() throws ParseException {
 		
-		IdListParser parser = parserFor("1-3 4 5");
+		IdListParser parser = parserFor("1-3 4 5", null);
 		
 		parser.parse();
 		
@@ -62,7 +61,7 @@ public class IdListParserTest extends TestCase {
 	
 	@Test
 	public void testIncorrectlyFormattedId() {
-		IdListParser parser = parserFor("1a");
+		IdListParser parser = parserFor("1a", null);
 		
 		try {
 			parser.parse();
@@ -75,7 +74,7 @@ public class IdListParserTest extends TestCase {
 	
 	@Test
 	public void testIncorrectlyFormattedRange() {
-		IdListParser parser = parserFor("12=13 14");
+		IdListParser parser = parserFor("12=13 14", null);
 		
 		try {
 			parser.parse();
@@ -88,7 +87,7 @@ public class IdListParserTest extends TestCase {
 	
 	@Test
 	public void testIncorrectlyFormattedSeparator() {
-		IdListParser parser = parserFor("12-13,14");
+		IdListParser parser = parserFor("12-13,14", null);
 		
 		try {
 			parser.parse();

@@ -14,16 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.directives;
 
-import java.io.Reader;
-import java.io.StringReader;
-import java.math.BigDecimal;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.IntRange;
-
 import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArgsParser;
@@ -40,11 +30,22 @@ import au.org.ala.delta.directives.args.NumericArgParser;
 import au.org.ala.delta.directives.args.PresetCharactersParser;
 import au.org.ala.delta.directives.args.StringTextListParser;
 import au.org.ala.delta.directives.args.TextArgParser;
+import au.org.ala.delta.directives.validation.CharacterNumberValidator;
 import au.org.ala.delta.directives.validation.DirectiveError;
+import au.org.ala.delta.directives.validation.ItemNumberValidator;
 import au.org.ala.delta.editor.slotfile.Directive;
 import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.util.Pair;
 import au.org.ala.delta.util.Utils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.IntRange;
+
+import java.io.Reader;
+import java.io.StringReader;
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DirectiveArgParserFactory {
 	
@@ -71,8 +72,10 @@ public class DirectiveArgParserFactory {
 			parser = new IntegerIdArgParser(context, reader);
 			break;
 		case DirectiveArgType.DIRARG_CHARLIST:
+            parser = new IdListParser(context, reader, new CharacterNumberValidator(context));
+            break;
 		case DirectiveArgType.DIRARG_ITEMLIST:
-			parser = new IdListParser(context, reader);
+			parser = new IdListParser(context, reader, new ItemNumberValidator(context));
 			break;
 		case DirectiveArgType.DIRARG_TEXTLIST:
 		case DirectiveArgType.DIRARG_CHARTEXTLIST:

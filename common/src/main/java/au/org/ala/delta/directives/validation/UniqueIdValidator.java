@@ -21,21 +21,21 @@ import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.directives.validation.DirectiveError.Error;
 
-public class UniqueIdValidator {
+public class UniqueIdValidator implements IdValidator {
 
 	private Set<Integer> _ids;
 	
 	public UniqueIdValidator() {
 		_ids = new HashSet<Integer>();
 	}
-	
-	public DirectiveError validateIds(IntRange ids, int position) {
-		for (int i : ids.toArray()) {
-			if (_ids.contains(i)) {
-				return new DirectiveError(Error.DUPLICATE_VALUE, position);
-			}
-			_ids.add(i);
+
+    @Override
+	public DirectiveError validateId(int id) {
+		if (_ids.contains(id)) {
+				return new DirectiveError(Error.DUPLICATE_VALUE, DirectiveError.UNKNOWN_POSITION);
 		}
+		_ids.add(id);
+
 		return null;
 	}
 	

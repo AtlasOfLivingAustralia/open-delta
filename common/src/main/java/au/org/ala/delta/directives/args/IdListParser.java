@@ -14,14 +14,12 @@
  ******************************************************************************/
 package au.org.ala.delta.directives.args;
 
-import java.io.Reader;
-import java.text.ParseException;
-
+import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.validation.IdValidator;
 import org.apache.commons.lang.math.IntRange;
 
-import au.org.ala.delta.DeltaContext;
-import au.org.ala.delta.directives.validation.DirectiveError;
-import au.org.ala.delta.directives.validation.UniqueIdValidator;
+import java.io.Reader;
+import java.text.ParseException;
 
 /**
  * The IdValueList parses directive arguments in the form:
@@ -35,11 +33,10 @@ import au.org.ala.delta.directives.validation.UniqueIdValidator;
  */
 public class IdListParser extends DirectiveArgsParser {
 	
-	private UniqueIdValidator _validator;
+	private IdValidator _validator;
 	
-	public IdListParser(DeltaContext context, Reader reader) {
+	public IdListParser(DeltaContext context, Reader reader, IdValidator validator) {
 		super(context, reader);
-		
 	}
 	
 	@Override
@@ -51,10 +48,8 @@ public class IdListParser extends DirectiveArgsParser {
 		skipWhitespace();
 		while (_currentInt > 0) {
 			
-			IntRange ids = readIds();
-			
-			//validate(ids);
-			
+			IntRange ids = readIds(_validator);
+
 			for (int id : ids.toArray()) {
 				_args.addDirectiveArgument(id);
 			}
@@ -62,12 +57,5 @@ public class IdListParser extends DirectiveArgsParser {
 			skipWhitespace();
 		}
 	}
-	
-	
-	private void validate(IntRange ids) {
-		DirectiveError error = _validator.validateIds(ids, _position);
-		if (error != null) {
-			_context.addError(error);
-		}
-	}
+
 }

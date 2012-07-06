@@ -14,18 +14,18 @@
  ******************************************************************************/
 package au.org.ala.delta.directives.args;
 
+import au.org.ala.delta.directives.AbstractDeltaContext;
+import au.org.ala.delta.directives.AbstractStreamParser;
+import au.org.ala.delta.directives.validation.DirectiveError;
+import au.org.ala.delta.directives.validation.IdValidator;
+import org.apache.commons.lang.math.IntRange;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.commons.lang.math.IntRange;
-
-import au.org.ala.delta.directives.AbstractDeltaContext;
-import au.org.ala.delta.directives.AbstractStreamParser;
-import au.org.ala.delta.directives.validation.DirectiveError;
 
 /**
  * The DirectiveArgsParser provides methods for parsing common formats
@@ -97,7 +97,7 @@ public abstract class DirectiveArgsParser extends AbstractStreamParser {
 	/**
 	 * Reads from the stream up the next character of the specified type or until the
 	 * end of the stream is reached.
-	 * @param character the character to read up to.
+	 * @param next the character to read up to.
 	 * @return the contents of the stream up to (but not including) the supplied character.
 	 * @throws Exception if there is an error reading from the stream.
 	 */
@@ -112,17 +112,30 @@ public abstract class DirectiveArgsParser extends AbstractStreamParser {
 		return text.toString();
 	}
 	
-	
+	protected IntRange readIds(IdValidator validator) throws ParseException {
+        int first = readInteger();
+        validateId(first, validator);
+        if (_currentChar == '-') {
+            readNext();
+            int last = readInteger();
+            validateId(last, validator);
+            return new IntRange(first, last);
+        }
+        return new IntRange(first);
+    }
+
+    private void validateId(int id, IdValidator validator) throws ParseException {
+        if (validator != null) {
+            DirectiveError result = validator.validateId(id);
+            if (result != null) {
+                result.setPosition(_position);
+                throw result.asException();
+            }
+        }
+    }
 
 	protected IntRange readIds() throws ParseException {
-		
-		int first = readInteger();
-		if (_currentChar == '-') {
-			readNext();
-			int last = readInteger();
-			return new IntRange(first, last);
-		}
-		return new IntRange(first);
+		return readIds(null);
 	}
 	
 	protected List<Integer> readSet() throws ParseException {

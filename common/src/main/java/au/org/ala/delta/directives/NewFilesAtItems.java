@@ -22,6 +22,7 @@ import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArgument;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.directives.args.IdListParser;
+import au.org.ala.delta.directives.validation.ItemNumberValidator;
 
 /**
  * Processes the NEW FILE AT ITEMS directive.
@@ -48,7 +49,7 @@ public class NewFilesAtItems extends AbstractDirective<DeltaContext> {
 	@Override
 	public void parse(DeltaContext context, String data) throws ParseException {
 		
-		IdListParser parser = new IdListParser(context, new StringReader(data));
+		IdListParser parser = new IdListParser(context, new StringReader(data), new ItemNumberValidator(context));
 		parser.parse();
 		_args = parser.getDirectiveArgs();
 	}

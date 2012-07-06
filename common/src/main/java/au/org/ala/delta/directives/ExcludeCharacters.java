@@ -19,6 +19,10 @@ import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.directives.validation.DirectiveException;
 
+/**
+ * Implements the EXCLUDE CHARACTERS directive.  Accepts a list of character numbers which are added to the
+ * Set of excluded characters maintained by the DeltaContext.
+ */
 public class ExcludeCharacters extends AbstractRangeListDirective<DeltaContext> {
 	
 	public static final String[] CONTROL_WORDS = {"exclude", "characters"};

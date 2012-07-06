@@ -22,6 +22,7 @@ import au.org.ala.delta.directives.args.DirectiveArgsParser;
 import au.org.ala.delta.directives.args.DirectiveArgument;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.directives.args.IdListParser;
+import au.org.ala.delta.directives.validation.CharacterNumberValidator;
 
 /**
  * Processes the EMPHASIZE FEATURES directive.
@@ -35,7 +36,7 @@ public class EmphasizeFeatures extends AbstractCustomDirective {
 	@Override
 	protected DirectiveArgsParser createParser(DeltaContext context,
 			StringReader reader) {
-		return new IdListParser(context, reader);
+		return new IdListParser(context, reader, new CharacterNumberValidator(context));
 	}
 
 	@Override

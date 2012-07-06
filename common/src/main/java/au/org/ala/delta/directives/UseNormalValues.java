@@ -14,14 +14,15 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
-import java.io.StringReader;
-import java.text.ParseException;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArgument;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.directives.args.IdListParser;
+import au.org.ala.delta.directives.validation.CharacterNumberValidator;
+
+import java.io.StringReader;
+import java.text.ParseException;
 
 public class UseNormalValues extends AbstractDirective<DeltaContext> {
 
@@ -43,7 +44,7 @@ public class UseNormalValues extends AbstractDirective<DeltaContext> {
 
 	@Override
 	public void parse(DeltaContext context, String data) throws ParseException {
-		IdListParser parser = new IdListParser(context, new StringReader(data));
+		IdListParser parser = new IdListParser(context, new StringReader(data), new CharacterNumberValidator(context));
 		parser.parse();
 		_args = parser.getDirectiveArgs();
 	}

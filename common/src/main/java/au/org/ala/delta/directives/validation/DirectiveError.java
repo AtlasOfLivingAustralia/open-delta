@@ -20,6 +20,8 @@ public class DirectiveError {
 
 	private static final String ERROR_BUNDLE = "au.org.ala.delta.resources.errors";
 
+    public static final int UNKNOWN_POSITION = -1;
+
 	public enum Error {
 		DIRECTIVE_OUT_OF_ORDER(2), EQUIVALENT_DIRECTIVE_USED(3),
 		EXPECTED_CHARACTER_NUMBER(8), STATE_NUMBER_EXPECTED(9),
