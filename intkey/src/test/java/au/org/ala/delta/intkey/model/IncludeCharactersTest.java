@@ -14,11 +14,16 @@
  ******************************************************************************/
 package au.org.ala.delta.intkey.model;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-import org.junit.Ignore;
+public class IncludeCharactersTest extends IntkeyDatasetTestCase {
 
-@Ignore
-public class IncludeCharactersTest extends TestCase {
-    //TODO
+    @Test
+    public void testIncludeCharacters() throws Exception {
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
+        context.setProcessingDirectivesFile(true);
+        IntkeyDataset ds = context.getDataset();
+        context.parseAndExecuteDirective("INCLUDE CHARACTERS 1-10");
+        assertEquals(10, context.getIncludedCharacters().size());
+    }
 }

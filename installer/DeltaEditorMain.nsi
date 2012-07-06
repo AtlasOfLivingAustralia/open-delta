@@ -121,8 +121,13 @@ Section -post SEC0001
     # File type associations
     WriteRegStr HKCR ".dlt" "" "OpenDelta.EditorDocument"    
     WriteRegStr HKCR "OpenDelta.EditorDocument" "" "OpenDelta Editor data file"
-    WriteRegStr HKCR "OpenDelta.EditorDocument\DefaultIcon" "" "$INSTDIR\DeltaEditor.exe,0"
-    WriteRegStr HKCR "OpenDelta.EditorDocument\shell\open\command" "" '"$INSTDIR\DeltaEditor.exe" "%1"'
+    WriteRegStr HKCR "OpenDelta.EditorDocument\DefaultIcon" "" "$INSTDIR\${DELTA-EDITOR-EXEOUTPUTNAME},0"
+    WriteRegStr HKCR "OpenDelta.EditorDocument\shell\open\command" "" '"$INSTDIR\${DELTA-EDITOR-EXEOUTPUTNAME}" "%1"'
+    
+    WriteRegStr HKCR ".ink" "" "OpenDelta.IntkeyDataset"    
+    WriteRegStr HKCR "OpenDelta.IntkeyDataset" "" "Intkey dataset"
+    WriteRegStr HKCR "OpenDelta.IntkeyDataset\DefaultIcon" "" "$INSTDIR\${INTKEY-EXEOUTPUTNAME},0"
+    WriteRegStr HKCR "OpenDelta.IntkeyDataset\shell\open\command" "" '"$INSTDIR\${INTKEY-EXEOUTPUTNAME}" "%1"'
         
     ${RefreshShellIcons}
     
@@ -179,6 +184,8 @@ Section -un.post UNSEC0001
     # File type associations
     DeleteRegKey HKCR ".dlt"
     DeleteRegKey HKCR "OpenDelta.EditorDocument" 
+    DeleteRegKey HKCR ".ink"
+    DeleteRegKey HKCR "OpenDelta.IntkeyDataset" 
     
     ${un.RefreshShellIcons}   
     

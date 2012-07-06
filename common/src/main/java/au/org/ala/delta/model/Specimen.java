@@ -137,16 +137,24 @@ public class Specimen {
                     for (int depCharId : cd.getDependentCharacterIds()) {
                         Character dependentChar = _dataset.getCharacter(depCharId);
 
+                        boolean specimenValueForDependantChar = hasValueFor(dependentChar);
+
                         if (cd.getStates().equals(msAttr.getPresentStates())) {
                             // character was inapplicable
-                            decrementInapplicabilityCount(dependentChar, false);
+                            
+                            //recursively decrement inapplicability count for dependant characters of this
+                            //(parent) dependant character if there is no specimen value set for this (parent)
+                            // dependant character. Otherwise, 
+                            decrementInapplicabilityCount(dependentChar, !specimenValueForDependantChar);
                         } else if (msAttr.getPresentStates().containsAll(cd.getStates())) {
                             // character was maybe inapplicable
-                            decrementMaybeInapplicableCount(dependentChar, false);
+                            decrementMaybeInapplicableCount(dependentChar, !specimenValueForDependantChar);
                         }
 
-                        //remove value for dependant character
-                        removeValueForCharacter(dependentChar);
+                        // remove value for dependant character
+                        if (specimenValueForDependantChar) {
+                            removeValueForCharacter(dependentChar);
+                        }
                     }
                 }
             }
@@ -205,7 +213,7 @@ public class Specimen {
                         // must
                         // be multistate
                         MultiStateAttribute msAttr = (MultiStateAttribute) oldValueForCharacter;
-                        
+
                         for (int depCharId : cd.getDependentCharacterIds()) {
                             Character dependentChar = _dataset.getCharacter(depCharId);
                             if (cd.getStates().equals(msAttr.getPresentStates())) {

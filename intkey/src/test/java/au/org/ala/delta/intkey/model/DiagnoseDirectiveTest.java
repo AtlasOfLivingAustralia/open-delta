@@ -3,12 +3,14 @@ package au.org.ala.delta.intkey.model;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import au.org.ala.delta.best.Best;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.util.Pair;
 
+@Ignore
 public class DiagnoseDirectiveTest extends IntkeyDatasetTestCase {
 
     @Test

@@ -240,7 +240,7 @@ public class DisplayCharacterOrderBestTest extends IntkeyDatasetTestCase {
 
     }
 
-    private void bestTestHelper(int index, int expectedCharNum, double expectedSeparation, List<Character> orderedChars, Map<Character, Double> separationMap) {
+    public static void bestTestHelper(int index, int expectedCharNum, double expectedSeparation, List<Character> orderedChars, Map<Character, Double> separationMap) {
 
         int actualCharNum = orderedChars.get(index).getCharacterId();
         String charFailureMessage = String.format("Index: %s, expected character: %s, actual character: %s.", index, expectedCharNum, actualCharNum);

@@ -14,8 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.intkey.directives;
 
-//TODO need error if no dataset loaded
-//TODO need to prompt if characters/keyword not supplied
 import java.util.ArrayList;
 import java.util.List;
 

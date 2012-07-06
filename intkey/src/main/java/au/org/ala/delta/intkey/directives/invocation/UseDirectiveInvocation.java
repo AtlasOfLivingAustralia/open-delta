@@ -31,6 +31,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.FloatRange;
 
 import au.org.ala.delta.intkey.directives.DirectivePopulator;
+import au.org.ala.delta.intkey.directives.UseDirective;
 import au.org.ala.delta.intkey.model.IntkeyCharacterOrder;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
@@ -93,6 +94,10 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
 
         _stringRepresentationBuilder.append(directiveName);
         _stringRepresentationBuilder.append(" ");
+        
+        if (_suppressAlreadySetWarning) {
+            _stringRepresentationBuilder.append(UseDirective.SUPPRESS_ALREADY_SET_WARNING_FLAG + " ");
+        }
 
         // Split up characters that have had their values specified and
         // those that

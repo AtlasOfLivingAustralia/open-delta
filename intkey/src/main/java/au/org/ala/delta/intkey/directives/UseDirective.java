@@ -50,7 +50,7 @@ import au.org.ala.delta.util.Pair;
 public class UseDirective extends IntkeyDirective {
 
     private static Pattern COMMA_SEPARATED_VALUE_PATTERN = Pattern.compile("^.+,.*$");
-    private static String SUPPRESS_ALREADY_SET_WARNING_FLAG = "/M";
+    public static String SUPPRESS_ALREADY_SET_WARNING_FLAG = "/M";
 
     private CharacterFormatter _charFormatter;
 

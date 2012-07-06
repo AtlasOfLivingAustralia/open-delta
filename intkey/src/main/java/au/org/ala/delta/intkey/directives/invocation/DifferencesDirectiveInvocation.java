@@ -139,9 +139,6 @@ public class DifferencesDirectiveInvocation extends IntkeyDirectiveInvocation {
 
             if (_includeSpecimen) {
                 builder.appendText(UIUtils.getResourceString("DifferencesDirective.Specimen"));
-                // TODO need to refactor specimen class to take attribute
-                // values directly.
-                //Attribute attr = DiffUtils.createAttributeForSpecimenValue(specimen, ch);
                 Attribute attr = specimen.getAttributeForCharacter(ch);
 
                 builder.increaseIndent();

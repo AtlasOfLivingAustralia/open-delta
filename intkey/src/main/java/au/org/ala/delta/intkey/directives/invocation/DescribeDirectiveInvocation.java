@@ -91,9 +91,6 @@ public class DescribeDirectiveInvocation extends IntkeyDirectiveInvocation {
             String currentItemSubheading = null;
 
             for (Character ch : _characters) {
-                // TODO need to refactor specimen class to take attribute
-                // values directly.
-                //Attribute attr = DiffUtils.createAttributeForSpecimenValue(specimen, ch);
                 Attribute attr = specimen.getAttributeForCharacter(ch);
                 currentItemSubheading = standardReportHandleAttribute(builder, attr, charactersItemSubheadingMap, currentItemSubheading, displayInapplicables, displayUnknowns, characterFormatter,
                         attributeFormatter);

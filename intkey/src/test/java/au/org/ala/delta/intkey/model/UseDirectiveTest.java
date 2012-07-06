@@ -782,15 +782,6 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
 
     @Test
     public void testAdvancedUse3() throws Exception {
-        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
-        context.setProcessingDirectivesFile(true);
-        IntkeyDataset ds = context.getDataset();
-        context.parseAndExecuteDirective("INCLUDE CHARACTERS 1-10");
-        assertEquals(10, context.getIncludedCharacters().size());
-    }
-
-    @Test
-    public void testAdvancedUse4() throws Exception {
         IntkeyDirectiveParser parser = IntkeyDirectiveParser.createInstance();
         DirectiveSearchResult result = parser.getDirectiveRegistry().findDirective("I");
         assertEquals(DirectiveSearchResult.ResultType.MoreSpecificityRequired, result.getResultType());
@@ -848,7 +839,7 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
 
         Specimen specimen = context.getSpecimen();
 
-        new UseDirective().parseAndProcess(context, "/M 2,1/2");
+        new UseDirective().parseAndProcess(context, "2,1/2");
 
         List<au.org.ala.delta.model.Character> availableCharacters = context.getAvailableCharacters();
         assertTrue(availableCharacters.contains(charSeedInShell));
