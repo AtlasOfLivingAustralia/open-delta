@@ -34,9 +34,10 @@ public class DefineButtonDirective extends IntkeyDirective {
 
     @Override
     protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
+        
         List<String> tokens = ParsingUtils.tokenizeDirectiveCall(data);
-
-        if (tokens.isEmpty()) {
+        //Need to prompt if no tokens, or data starts with a wildcard
+        if (tokens.isEmpty() || data.toUpperCase().startsWith(IntkeyDirectiveArgument.DEFAULT_DIALOG_WILDCARD)) {
             List<Object> buttonDefinitionValues = context.getDirectivePopulator().promptForButtonDefinition();
 
             if (buttonDefinitionValues == null) {

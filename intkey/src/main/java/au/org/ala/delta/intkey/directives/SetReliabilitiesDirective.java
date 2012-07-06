@@ -46,9 +46,33 @@ public class SetReliabilitiesDirective extends IntkeyDirective {
 
         Map<Character, Float> reliabilitiesMap = new HashMap<Character, Float>();
 
-        if (data == null) {
-            List<String> selectedKeywords = new ArrayList<String>();
-            List<Character> characters = context.getDirectivePopulator().promptForCharactersByKeyword(getControlWordsAsString(), true, false, selectedKeywords);
+        if (data == null || data.toUpperCase().startsWith(IntkeyDirectiveArgument.DEFAULT_DIALOG_WILDCARD) || data.toUpperCase().startsWith(IntkeyDirectiveArgument.KEYWORD_DIALOG_WILDCARD)
+                || data.toUpperCase().startsWith(IntkeyDirectiveArgument.LIST_DIALOG_WILDCARD)) {
+            SelectionMode selectionMode = context.displayKeywords() ? SelectionMode.KEYWORD : SelectionMode.LIST;
+
+            if (data.startsWith(IntkeyDirectiveArgument.DEFAULT_DIALOG_WILDCARD)) {
+                // do nothing - default selection mode is already set above.
+            } else if (data.startsWith(IntkeyDirectiveArgument.KEYWORD_DIALOG_WILDCARD)) {
+                selectionMode = SelectionMode.KEYWORD;
+            } else if (data.startsWith(IntkeyDirectiveArgument.LIST_DIALOG_WILDCARD)) {
+                selectionMode = SelectionMode.LIST;
+            }
+
+            List<Character> characters;
+            List<String> selectedKeywords = new ArrayList<String>(); // not
+                                                                     // used,
+                                                                     // but
+                                                                     // needs to
+                                                                     // be
+                                                                     // supplied
+                                                                     // as an
+                                                                     // argument
+            if (selectionMode == SelectionMode.KEYWORD) {
+                characters = context.getDirectivePopulator().promptForCharactersByKeyword(getControlWordsAsString(), true, false, selectedKeywords);
+            } else {
+                characters = context.getDirectivePopulator().promptForCharactersByList(getControlWordsAsString(), false, selectedKeywords);
+            }
+            
             Float reliability = Float.parseFloat(context.getDirectivePopulator().promptForString("Enter reliability value", null, getControlWordsAsString()));
             for (Character ch : characters) {
                 reliabilitiesMap.put(ch, reliability);

@@ -39,7 +39,7 @@ public class FileArgument extends IntkeyDirectiveArgument<File> {
 
         File file = null;
 
-        if (filePath == null || filePath.equals(DEFAULT_DIALOG_WILDCARD)) {
+        if (filePath == null || filePath.startsWith(DEFAULT_DIALOG_WILDCARD)) {
             try {
                 file = context.getDirectivePopulator().promptForFile(_fileExtensions, getPromptText(), _createFileIfNonExistant);
             } catch (IOException ex) {

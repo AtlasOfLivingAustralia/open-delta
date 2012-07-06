@@ -438,7 +438,7 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
     }
 
     /**
-     * Test that when a character is made inapplicable my multiple controlling
+     * Test that when a character is made inapplicable by multiple controlling
      * characters, it says marked as inapplicable until the values of all
      * controlling characters are deleted or changed such that the character is
      * no longer inapplicable
@@ -502,6 +502,8 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
         assertFalse(availableCharacters.contains(charAvgThickness));
         assertFalse(specimen.hasValueFor(charSeedInShell));
         assertFalse(specimen.hasValueFor(charAvgThickness));
+        assertTrue(specimen.isCharacterInapplicable(charSeedInShell));
+        assertTrue(specimen.isCharacterInapplicable(charAvgThickness));
 
         new UseDirective().parseAndProcess(context, "/M 2,1");
 
@@ -510,6 +512,8 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
         assertTrue(availableCharacters.contains(charAvgThickness));
         assertFalse(specimen.hasValueFor(charSeedInShell));
         assertFalse(specimen.hasValueFor(charAvgThickness));
+        assertFalse(specimen.isCharacterInapplicable(charSeedInShell));
+        assertFalse(specimen.isCharacterInapplicable(charAvgThickness));
     }
 
     /**
@@ -754,6 +758,7 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
         // successful
     }
 
+    // The following 4 tests test specific aspects of directive parsing.
     @Test
     public void testAdvancedUse1() throws Exception {
         IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
@@ -789,6 +794,152 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
         IntkeyDirectiveParser parser = IntkeyDirectiveParser.createInstance();
         DirectiveSearchResult result = parser.getDirectiveRegistry().findDirective("I");
         assertEquals(DirectiveSearchResult.ResultType.MoreSpecificityRequired, result.getResultType());
+    }
+    
+    /**
+     * Test that if a controlling character is set again to its current value, the values of its dependents
+     * characters are not removed from the specimen.
+     * @throws Exception
+     */
+    @Test
+    public void testReSetControllingCharacter() throws Exception {
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
+        context.setProcessingDirectivesFile(true);
+        IntkeyDataset ds = context.getDataset();
+        context.parseAndExecuteDirective("Use 32,1");
+        context.parseAndExecuteDirective("Use 38,5");
+        context.parseAndExecuteDirective("Use 32,1");
+        assertTrue(context.getSpecimen().hasValueFor(ds.getCharacter(38)));
+    }
+    
+    @Test
+    public void testMaybeInapplicable() throws Exception {
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
+        context.setProcessingDirectivesFile(true);
+        IntkeyDataset ds = context.getDataset();
+        context.parseAndExecuteDirective("Use 32,1/2");
+        assertTrue(context.getSpecimen().isCharacterMaybeInapplicable(ds.getCharacter(38)));
+    }
+    
+    /**
+     * Test setting the value of a controlling character such that it's dependant character is maybe inapplicable.
+     * The value set for this dependant character should not be removed as a result.
+     */
+    @Test
+    public void testMaybeInapplicableDependantCharacterSet() throws Exception {
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
+        context.setProcessingDirectivesFile(true);
+        IntkeyDataset ds = context.getDataset();
+        context.parseAndExecuteDirective("Use 32,1");
+        context.parseAndExecuteDirective("Use 38,5");
+        context.parseAndExecuteDirective("Use 32,1/2");
+        assertTrue(context.getSpecimen().isCharacterMaybeInapplicable(ds.getCharacter(38)));
+        assertTrue(context.getSpecimen().hasValueFor(ds.getCharacter(38)));
+    }    
+    
+    @Test
+    public void testMaybeInapplicableHierarchy() throws Exception {
+        IntkeyContext context = loadDataset("/dataset/controlling_characters_simple/intkey.ink");
+        IntkeyDataset ds = context.getDataset();
+
+        UnorderedMultiStateCharacter charSeedPresence = (UnorderedMultiStateCharacter) ds.getCharacter(2);
+        UnorderedMultiStateCharacter charSeedInShell = (UnorderedMultiStateCharacter) ds.getCharacter(3);
+        RealCharacter charAvgThickness = (RealCharacter) ds.getCharacter(4);
+
+        Specimen specimen = context.getSpecimen();
+
+        new UseDirective().parseAndProcess(context, "/M 2,1/2");
+
+        List<au.org.ala.delta.model.Character> availableCharacters = context.getAvailableCharacters();
+        assertTrue(availableCharacters.contains(charSeedInShell));
+        assertTrue(availableCharacters.contains(charAvgThickness));
+        assertFalse(specimen.hasValueFor(charSeedInShell));
+        assertFalse(specimen.hasValueFor(charAvgThickness));
+        assertFalse(specimen.isCharacterInapplicable(charSeedInShell));
+        assertFalse(specimen.isCharacterInapplicable(charAvgThickness));
+        assertTrue(specimen.isCharacterMaybeInapplicable(charSeedInShell));
+        assertTrue(specimen.isCharacterMaybeInapplicable(charAvgThickness));
+    }
+    
+    
+    /**
+     * Test that when a character is re-used with the same value, it is returned as the last
+     * element of the list of used characters.
+     */
+    @Test
+    public void testReUsedCharacterSameValueOrdering() throws Exception {
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
+        context.setProcessingDirectivesFile(true);
+        IntkeyDataset ds = context.getDataset();
+        context.parseAndExecuteDirective("Use 1,1");
+        context.parseAndExecuteDirective("Use 2,1");
+        context.parseAndExecuteDirective("Use 1,1");
+        Specimen specimen = context.getSpecimen();
+        assertEquals(2, specimen.getUsedCharacters().size());
+        assertEquals(ds.getCharacter(2), specimen.getUsedCharacters().get(0));
+        assertEquals(ds.getCharacter(1), specimen.getUsedCharacters().get(1));
+    }
+    
+    /**
+     * Set first setting a character to inapplicable, then to maybe inapplicable
+     */
+    @Test
+    public void testSetInapplicableThenMaybeInapplicable() throws Exception {
+        IntkeyContext context = loadDataset("/dataset/controlling_characters_multiple_controlling/intkey.ink");
+        context.setProcessingDirectivesFile(true);
+        IntkeyDataset ds = context.getDataset();
+        
+        Character charThree = ds.getCharacter(3);
+        
+        context.parseAndExecuteDirective("Use 1,1/2");
+        context.parseAndExecuteDirective("Use 2,2");
+        Specimen specimen = context.getSpecimen();
+        assertTrue(specimen.isCharacterInapplicable(charThree));
+        assertFalse(specimen.isCharacterMaybeInapplicable(charThree));
+        assertFalse(context.getAvailableCharacters().contains(charThree));
+        
+        context.parseAndExecuteDirective("Use /M 2,1/2");
+        context.calculateBestOrSeparateCharacters();
+        assertFalse(specimen.isCharacterInapplicable(charThree));
+        assertTrue(specimen.isCharacterMaybeInapplicable(charThree));
+        assertTrue(context.getAvailableCharacters().contains(charThree));
+        //All taxa should be available again
+        assertEquals(7, context.getAvailableTaxa().size());
+    }
+    
+    /**
+     * Set first setting a character to maybe inapplicable, then applicable
+     */
+    @Test
+    public void testSetMaybeInapplicableThenInapplicable() throws Exception {
+        IntkeyContext context = loadDataset("/dataset/controlling_characters_multiple_controlling/intkey.ink");
+        context.setProcessingDirectivesFile(true);
+        IntkeyDataset ds = context.getDataset();
+        Specimen specimen = context.getSpecimen();
+        
+        Character charThree = ds.getCharacter(3);
+        Item taxon2 = ds.getItem(2);
+        Item taxon6 = ds.getItem(6);
+        Item taxon7 = ds.getItem(7);
+        
+        context.parseAndExecuteDirective("Use 1,1/2");
+        context.parseAndExecuteDirective("Use 2,1/2");
+        assertFalse(specimen.isCharacterInapplicable(charThree));
+        assertTrue(specimen.isCharacterMaybeInapplicable(charThree));
+        assertTrue(context.getAvailableCharacters().contains(charThree));
+        //All taxa should be available
+        assertEquals(7, context.getAvailableTaxa().size());
+        
+        context.parseAndExecuteDirective("Use /M 2,2");
+        context.calculateBestOrSeparateCharacters();
+        assertTrue(specimen.isCharacterInapplicable(charThree));
+        assertFalse(specimen.isCharacterMaybeInapplicable(charThree));
+        assertFalse(context.getAvailableCharacters().contains(charThree));
+        //3 taxa should be available
+        assertEquals(3, context.getAvailableTaxa().size());
+        assertTrue(context.getAvailableTaxa().contains(taxon2));
+        assertTrue(context.getAvailableTaxa().contains(taxon6));
+        assertTrue(context.getAvailableTaxa().contains(taxon7));
     }
 
     // USE CC

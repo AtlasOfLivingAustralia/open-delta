@@ -70,34 +70,57 @@ public class UseDirective extends IntkeyDirective {
 
             List<Integer> characterNumbers = new ArrayList<Integer>();
             List<String> specifiedValues = new ArrayList<String>();
-            
-            //Use a linked hash map to maintain key ordering.
+
+            // Use a linked hash map to maintain key ordering.
             List<String> stringRepresentationParts = new ArrayList<String>();
 
-            if (data != null && data.trim().length() > 0) {
-                List<String> subCommands = ParsingUtils.tokenizeDirectiveCall(data);
+            // Selection mode to use if prompting for characters
+            SelectionMode selectionMode = context.displayKeywords() ? SelectionMode.KEYWORD : SelectionMode.LIST;
 
-                for (String subCmd : subCommands) {
-                    // TODO need to handle additional undocumented flags
-                    if (subCmd.equalsIgnoreCase(SUPPRESS_ALREADY_SET_WARNING_FLAG)) {
-                        suppressAlreadySetWarning = true;
-                    } else {
-                        parseSubcommands(subCmd, characterNumbers, specifiedValues, context, stringRepresentationParts);
+            boolean needToPrompt = true;
+            if (data != null && data.trim().length() > 0) {
+                // Need to prompt for characters if data starts with a wildcard
+                if (data.toUpperCase().startsWith(IntkeyDirectiveArgument.KEYWORD_DIALOG_WILDCARD)) {
+                    selectionMode = SelectionMode.KEYWORD;
+                } else if (data.toUpperCase().startsWith(IntkeyDirectiveArgument.LIST_DIALOG_WILDCARD)) {
+                    selectionMode = SelectionMode.LIST;
+                } else if (data.toUpperCase().startsWith(IntkeyDirectiveArgument.DEFAULT_DIALOG_WILDCARD)) {
+                    // Do nothing, use default selection mode as set above
+                } else {
+                    needToPrompt = false;
+                    List<String> subCommands = ParsingUtils.tokenizeDirectiveCall(data);
+
+                    for (String subCmd : subCommands) {
+                        // TODO need to handle additional undocumented flags
+                        if (subCmd.equalsIgnoreCase(SUPPRESS_ALREADY_SET_WARNING_FLAG)) {
+                            suppressAlreadySetWarning = true;
+                        } else {
+                            parseSubcommands(subCmd, characterNumbers, specifiedValues, context, stringRepresentationParts);
+                        }
                     }
                 }
-            } else {
+            }
+
+            if (needToPrompt) {
                 // No characters specified, prompt the user to select characters
 
-                String directiveName = change ? directiveName = StringUtils.join(new ChangeDirective().getControlWords(), " ").toUpperCase() : StringUtils.join(_controlWords, " ").toUpperCase();
+                String directiveName = change ? StringUtils.join(new ChangeDirective().getControlWords(), " ").toUpperCase() : StringUtils.join(_controlWords, " ").toUpperCase();
                 List<String> selectedKeywords = new ArrayList<String>(); // Not
                                                                          // interested
                                                                          // in
                                                                          // this.
-                List<Character> selectedCharacters = context.getDirectivePopulator().promptForCharactersByKeyword(directiveName, true, false, selectedKeywords);
+                List<Character> selectedCharacters;
+                if (selectionMode == SelectionMode.KEYWORD) {
+                    selectedCharacters = context.getDirectivePopulator().promptForCharactersByKeyword(directiveName, true, false, selectedKeywords);
+                } else {
+                    selectedCharacters = context.getDirectivePopulator().promptForCharactersByList(directiveName, false, selectedKeywords);
+                }
+
                 if (selectedCharacters.size() > 0) {
                     for (Character ch : selectedCharacters) {
                         characterNumbers.add(ch.getCharacterId());
                         specifiedValues.add(null);
+                        stringRepresentationParts.add(Integer.toString(ch.getCharacterId()));
                     }
                 } else {
                     // User has hit cancel, nothing to execute
@@ -116,9 +139,8 @@ public class UseDirective extends IntkeyDirective {
                     throw new IntkeyDirectiveParseException("UseDirective.InvalidCharacterNumber", ex, charNum, context.getDataset().getNumberOfCharacters());
                 }
 
-                // Parse the supplied value for each character, or prompt for
-                // one if no value was supplied
-
+                // Parse the supplied value for each character, if one was supplied. If one was no supplied, the user will be prompted to enter 
+                // a value - this is done in UseDirectiveInvocation
                 String charValue = specifiedValues.get(i);
 
                 if (charValue != null) {
@@ -197,7 +219,7 @@ public class UseDirective extends IntkeyDirective {
     }
 
     private void parseSubcommands(String subCmd, List<Integer> characterNumbers, List<String> specifiedValues, IntkeyContext context, List<String> stringRepresentationParts) throws Exception {
-        
+
         List<Integer> parsedCharacterNumbers;
 
         // switch
@@ -219,11 +241,16 @@ public class UseDirective extends IntkeyDirective {
             }
 
             parsedCharacterNumbers = parseLHS(lhs, context);
-            for (int c : parsedCharacterNumbers) {
-                specifiedValues.add(rhs);
+
+            // ignore the right hand side if it is a wildcard - user will be
+            // prompted to enter the value later.
+            if (!rhs.startsWith(IntkeyDirectiveArgument.DEFAULT_DIALOG_WILDCARD)) {
+                for (int c : parsedCharacterNumbers) {
+                    specifiedValues.add(rhs);
+                }
             }
             stringRepresentationParts.add(subCmd);
-            
+
         } else {
             parsedCharacterNumbers = parseLHS(subCmd, context);
             for (int c : parsedCharacterNumbers) {

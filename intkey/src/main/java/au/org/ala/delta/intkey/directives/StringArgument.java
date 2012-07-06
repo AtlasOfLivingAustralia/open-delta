@@ -46,7 +46,7 @@ public class StringArgument extends IntkeyDirectiveArgument<String> {
     public String parseInput(Queue<String> inputTokens, IntkeyContext context, String directiveName, StringBuilder stringRepresentationBuilder) throws IntkeyDirectiveParseException {
         String argumentValue = null;
         String token = inputTokens.peek();
-        if (token == null || token.equals(DEFAULT_DIALOG_WILDCARD)) {
+        if (token == null || token.startsWith(DEFAULT_DIALOG_WILDCARD)) {
             argumentValue = context.getDirectivePopulator().promptForString(_promptText, _initialValue, directiveName);
         } else if (_spaceDelimited) {
             inputTokens.poll();

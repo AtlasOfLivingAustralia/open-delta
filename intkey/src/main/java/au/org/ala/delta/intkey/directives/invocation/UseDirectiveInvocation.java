@@ -97,19 +97,19 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
         // Split up characters that have had their values specified and
         // those that
         // haven't. They need to be processed differently.
-        List<au.org.ala.delta.model.Character> charsWithValues = new ArrayList<au.org.ala.delta.model.Character>();
-        List<au.org.ala.delta.model.Character> charsNoValues = new ArrayList<au.org.ala.delta.model.Character>();
+        List<au.org.ala.delta.model.Character> charsWithValuesSpecified = new ArrayList<au.org.ala.delta.model.Character>();
+        List<au.org.ala.delta.model.Character> charsNoValuesSpecified = new ArrayList<au.org.ala.delta.model.Character>();
 
         for (au.org.ala.delta.model.Character ch : _characterAttributes.keySet()) {
             if (_characterAttributes.get(ch) == null) {
-                charsNoValues.add(ch);
+                charsNoValuesSpecified.add(ch);
             } else {
-                charsWithValues.add(ch);
+                charsWithValuesSpecified.add(ch);
             }
         }
 
         // Process characters with values specified first
-        for (au.org.ala.delta.model.Character ch : charsWithValues) {
+        for (au.org.ala.delta.model.Character ch : charsWithValuesSpecified) {
             if (checkCharacterUsable(ch, context, !_suppressAlreadySetWarning && !_change)) {
                 // halt execution if values not sucessfully set for all
                 // controlling characters
@@ -129,8 +129,8 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
             }
         }
 
-        if (charsNoValues.size() == 1) {
-            au.org.ala.delta.model.Character ch = charsNoValues.get(0);
+        if (charsNoValuesSpecified.size() == 1) {
+            au.org.ala.delta.model.Character ch = charsNoValuesSpecified.get(0);
             if (checkCharacterUsable(ch, context, !_suppressAlreadySetWarning && !_change)) {
 
                 // halt execution if values not sucessfully set for all
@@ -167,9 +167,11 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
                 }
             }
         } else {
-            Collections.sort(charsNoValues);
-            while (!charsNoValues.isEmpty()) {
-                CharacterSelectionDialog selectDlg = new CharacterSelectionDialog(UIUtils.getMainFrame(), charsNoValues, directiveName, context.getImageSettings(), context.displayNumbering(), context);
+            List<Character> charsNoValuesCopy = new ArrayList<Character>(charsNoValuesSpecified);
+            Collections.sort(charsNoValuesCopy);
+            while (!charsNoValuesCopy.isEmpty()) {
+                CharacterSelectionDialog selectDlg = new CharacterSelectionDialog(UIUtils.getMainFrame(), charsNoValuesCopy, directiveName, context.getImageSettings(), context.displayNumbering(),
+                        context);
                 selectDlg.setVisible(true);
 
                 List<au.org.ala.delta.model.Character> selectedCharacters = selectDlg.getSelectedCharacters();
@@ -204,7 +206,7 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
                         IntkeyDataset dataset = context.getDataset();
                         Map<MultiStateCharacter, Set<Integer>> charDeps = getAllControllingCharacterDependencies(ch, dataset);
                         for (MultiStateCharacter controllingChar : charDeps.keySet()) {
-                            charsNoValues.remove(controllingChar);
+                            charsNoValuesCopy.remove(controllingChar);
                         }
 
                         // second call to checkCharacterUsable() to ensure
@@ -230,7 +232,7 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
                             _characterAttributes.put(ch, attr);
                             setValueForCharacter(ch, attr, context);
 
-                            charsNoValues.remove(ch);
+                            charsNoValuesCopy.remove(ch);
                         }
                     }
                 }
@@ -238,7 +240,7 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
         }
 
         // Finish building string representation of directive call
-        for (Character ch : charsNoValues) {
+        for (Character ch : charsNoValuesSpecified) {
             // Generate a string representation of the value set for the
             // character
             Attribute attr = _characterAttributes.get(ch);
@@ -268,9 +270,16 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
         } else if (attr instanceof RealAttribute) {
             FloatRange range = ((RealAttribute) attr).getPresentRange();
             StringBuilder builder = new StringBuilder();
-            builder.append(range.getMinimumFloat());
-            builder.append("-");
-            builder.append(range.getMaximumFloat());
+            float min = range.getMinimumFloat();
+            float max = range.getMaximumFloat();
+
+            if (min == max) {
+                builder.append(min);
+            } else {
+                builder.append(min);
+                builder.append("-");
+                builder.append(max);
+            }
             return builder.toString();
         } else {
             throw new IllegalArgumentException("Unrecognised attribute type!");
@@ -303,7 +312,7 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
         }
     }
 
-    private boolean checkCharacterUsable(au.org.ala.delta.model.Character ch, IntkeyContext context, boolean warnAlreadySet) {
+    private boolean checkCharacterUsable(au.org.ala.delta.model.Character ch, IntkeyContext context, boolean warnAlreadySetOrMaybeInapplicable) {
         CharacterFormatter formatter = new CharacterFormatter(true, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REPLACE, true, false);
 
         // is character fixed?
@@ -319,12 +328,30 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
         }
 
         // is character already used?
-        if (warnAlreadySet) {
+        if (warnAlreadySetOrMaybeInapplicable) {
             if (context.getSpecimen().hasValueFor(ch)) {
                 if (context.isProcessingDirectivesFile()) {
                     return true;
                 } else {
                     String msg = UIUtils.getResourceString("UseDirective.CharacterAlreadyUsed", formatter.formatCharacterDescription(ch));
+                    String title = UIUtils.getResourceString("Intkey.informationDlgTitle");
+                    int choice = JOptionPane.showConfirmDialog(UIUtils.getMainFrame(), msg, title, JOptionPane.YES_NO_OPTION);
+                    if (choice == JOptionPane.YES_OPTION) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        // is character maybe inapplicable?
+        if (warnAlreadySetOrMaybeInapplicable) {
+            if (context.getSpecimen().isCharacterMaybeInapplicable(ch)) {
+                if (context.isProcessingDirectivesFile()) {
+                    return true;
+                } else {
+                    String msg = UIUtils.getResourceString("UseDirective.CharacterMaybeInapplicable", formatter.formatCharacterDescription(ch));
                     String title = UIUtils.getResourceString("Intkey.informationDlgTitle");
                     int choice = JOptionPane.showConfirmDialog(UIUtils.getMainFrame(), msg, title, JOptionPane.YES_NO_OPTION);
                     if (choice == JOptionPane.YES_OPTION) {

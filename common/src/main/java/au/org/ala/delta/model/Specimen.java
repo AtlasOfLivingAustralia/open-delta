@@ -28,7 +28,9 @@ public class Specimen {
 
     private DeltaDataSet _dataset;
 
-    // If true, all character dependencies are ignored.
+    // If true, all character dependencies are ignored. This value is set to
+    // true by KEY - it generates a key without regard for
+    // character dependencies.
     boolean _ignoreCharacterDependencies;
 
     boolean _matchInapplicables;
@@ -47,6 +49,16 @@ public class Specimen {
      */
     private Map<Character, Integer> _characterInapplicabilityCounts;
 
+    /**
+     * Keeps a count of the number of times a character has been deemed
+     * "maybe inapplicable" - i.e. a controlling character has been set with
+     * state values that make the character inapplicable, but has also been set
+     * with other state values. This is needed because a character can have more
+     * that one character controlling it. If there is no entry for a character
+     * in this map, or its entry is zero, then is it not inapplicable
+     */
+    private Map<Character, Integer> _characterMaybeInapplicableCounts;
+
     private Map<Item, Set<Character>> _taxonDifferences;
 
     public Specimen(DeltaDataSet dataset, boolean ignoreCharacterDependencies, boolean matchInapplicables, boolean matchUnknowns, MatchType matchType) {
@@ -55,9 +67,10 @@ public class Specimen {
         _dataset = dataset;
 
         _characterInapplicabilityCounts = new HashMap<Character, Integer>();
+        _characterMaybeInapplicableCounts = new HashMap<Character, Integer>();
 
         _ignoreCharacterDependencies = ignoreCharacterDependencies;
-        
+
         _matchInapplicables = matchInapplicables;
         _matchUnknowns = matchUnknowns;
         _matchType = matchType;
@@ -110,7 +123,8 @@ public class Specimen {
 
             // If this is a controlling character, also need to remove values
             // for
-            // any dependent characters
+            // any dependent characters, and update inapplicable/maybe
+            // inapplicable count
             if (!_ignoreCharacterDependencies) {
                 for (CharacterDependency cd : ch.getDependentCharacters()) {
                     // This is a controlling character, so that value to remove
@@ -118,16 +132,21 @@ public class Specimen {
                     // be multistate
                     MultiStateAttribute msAttr = (MultiStateAttribute) attrToRemove;
 
-                    for (int dependentCharId : cd.getDependentCharacterIds()) {
-                        Character dependentCharacter = _dataset.getCharacter(dependentCharId);
-                        removeValueForCharacter(dependentCharacter);
+                    // Update inapplicable/maybe inapplicable state for
+                    // dependant characters
+                    for (int depCharId : cd.getDependentCharacterIds()) {
+                        Character dependentChar = _dataset.getCharacter(depCharId);
 
-                        // If this character was inapplicable due to its value,
-                        // update the inapplicablity count for it
-                        // and its dependants
-                        if (cd.getStates().containsAll(msAttr.getPresentStates())) {
-                            processPreviouslyInapplicableCharacter(dependentCharacter);
+                        if (cd.getStates().equals(msAttr.getPresentStates())) {
+                            // character was inapplicable
+                            decrementInapplicabilityCount(dependentChar, false);
+                        } else if (msAttr.getPresentStates().containsAll(cd.getStates())) {
+                            // character was maybe inapplicable
+                            decrementMaybeInapplicableCount(dependentChar, false);
                         }
+
+                        //remove value for dependant character
+                        removeValueForCharacter(dependentChar);
                     }
                 }
             }
@@ -152,15 +171,54 @@ public class Specimen {
             throw new IllegalArgumentException(String.format("Cannot set character %s - this character is inapplicable", ch.toString()));
         }
 
-        // do nothing if the supplied value is identical to the current value
-        // for
-        // the character.
-        if (hasValueFor(ch) && getAttributeForCharacter(ch).equals(attr)) {
-            return;
-        }
+        // if the supplied value is identical to the current value for the
+        // character, simply
+        // remove and re-add the current value to the map. As this is a
+        // LinkedHashMap, this will have the
+        // effect of putting this value last in the result of
+        // getUsedCharacters(). No other action is required.
+        // if (hasValueFor(ch) && getAttributeForCharacter(ch).equals(attr)) {
+        // Attribute currentValue = getAttributeForCharacter(ch);
+        // _characterValues.remove(ch);
+        // _characterValues.put(ch, currentValue);
+        // return;
+        // }
 
         if (hasValueFor(ch)) {
-            removeValueForCharacter(ch);
+            Attribute oldValueForCharacter = _characterValues.get(ch);
+            if (oldValueForCharacter != null) {
+                // Remove as this will force the LinkedHashMap to return this
+                // value last when
+                // listing its keys. The keyset from the LinkedHashMap is used
+                // in
+                // getUsedCharacters()
+                updateDifferencesTable(oldValueForCharacter, true);
+                _characterValues.remove(ch);
+
+                // update any characters that were made inapplicable or maybe
+                // inapplicable by the old value set for this character.
+                if (!_ignoreCharacterDependencies) {
+
+                    for (CharacterDependency cd : ch.getDependentCharacters()) {
+                        // This is a controlling character, so that value to
+                        // remove
+                        // must
+                        // be multistate
+                        MultiStateAttribute msAttr = (MultiStateAttribute) oldValueForCharacter;
+                        
+                        for (int depCharId : cd.getDependentCharacterIds()) {
+                            Character dependentChar = _dataset.getCharacter(depCharId);
+                            if (cd.getStates().equals(msAttr.getPresentStates())) {
+                                // character was inapplicable
+                                decrementInapplicabilityCount(dependentChar, true);
+                            } else if (msAttr.getPresentStates().containsAll(cd.getStates())) {
+                                // character was maybe inapplicable
+                                decrementMaybeInapplicableCount(dependentChar, true);
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         // if there are controlling characters, check that their values have
@@ -183,11 +241,15 @@ public class Specimen {
                 // multistate value
                 MultiStateAttribute msAttr = (MultiStateAttribute) attr;
 
-                if (cd.getStates().containsAll(msAttr.getPresentStates())) {
-                    for (int depCharId : cd.getDependentCharacterIds()) {
-                        Character dependentChar = _dataset.getCharacter(depCharId);
+                for (int depCharId : cd.getDependentCharacterIds()) {
+                    Character dependentChar = _dataset.getCharacter(depCharId);
+                    if (cd.getStates().equals(msAttr.getPresentStates())) {
+                        // character is inapplicable
                         removeValueForCharacter(dependentChar);
-                        processNewlyInapplicableCharacter(dependentChar);
+                        incrementInapplicabilityCount(dependentChar);
+                    } else if (msAttr.getPresentStates().containsAll(cd.getStates())) {
+                        // character is maybe inapplicable
+                        incrementMaybeInapplicableCount(dependentChar);
                     }
                 }
             }
@@ -196,7 +258,18 @@ public class Specimen {
         updateDifferencesTable(attr, false);
     }
 
-    private void processPreviouslyInapplicableCharacter(Character ch) {
+    /**
+     * Decrement the inapplicability count for the supplied character, and
+     * optionally for its dependant characters
+     * 
+     * @param ch
+     *            the character in question
+     * @param recurse
+     *            if true, also decrement inapplicability count for dependant
+     *            characters
+     * 
+     */
+    private void decrementInapplicabilityCount(Character ch, boolean recurse) {
         if (_characterInapplicabilityCounts.containsKey(ch)) {
             int newCount = _characterInapplicabilityCounts.get(ch) - 1;
 
@@ -209,16 +282,22 @@ public class Specimen {
             throw new IllegalStateException(String.format("Character %s not inapplicable", ch.getCharacterId()));
         }
 
-        if (!_ignoreCharacterDependencies) {
+        if (!_ignoreCharacterDependencies && recurse) {
             for (CharacterDependency cd : ch.getDependentCharacters()) {
                 for (int depCharId : cd.getDependentCharacterIds()) {
-                    processPreviouslyInapplicableCharacter(_dataset.getCharacter(depCharId));
+                    decrementInapplicabilityCount(_dataset.getCharacter(depCharId), recurse);
                 }
             }
         }
     }
 
-    private void processNewlyInapplicableCharacter(Character ch) {
+    /**
+     * Increment the inapplicability count for the supplied character and any
+     * dependant characters
+     * 
+     * @param ch
+     */
+    private void incrementInapplicabilityCount(Character ch) {
         if (_characterInapplicabilityCounts.containsKey(ch)) {
             _characterInapplicabilityCounts.put(ch, _characterInapplicabilityCounts.get(ch) + 1);
         } else {
@@ -228,7 +307,57 @@ public class Specimen {
         if (!_ignoreCharacterDependencies) {
             for (CharacterDependency cd : ch.getDependentCharacters()) {
                 for (int depCharId : cd.getDependentCharacterIds()) {
-                    processNewlyInapplicableCharacter(_dataset.getCharacter(depCharId));
+                    incrementInapplicabilityCount(_dataset.getCharacter(depCharId));
+                }
+            }
+        }
+    }
+
+    /**
+     * Decrement the maybe inapplicable count for the supplied character BUT NOT
+     * FOR ANY DEPENDANT CHARACTERS
+     * 
+     * @param ch
+     */
+    private void decrementMaybeInapplicableCount(Character ch, boolean recurse) {
+        if (_characterMaybeInapplicableCounts.containsKey(ch)) {
+            int newCount = _characterMaybeInapplicableCounts.get(ch) - 1;
+
+            if (newCount == 0) {
+                _characterMaybeInapplicableCounts.remove(ch);
+            } else {
+                _characterMaybeInapplicableCounts.put(ch, newCount);
+            }
+        } else {
+            throw new IllegalStateException(String.format("Character %s not maybe inapplicable", ch.getCharacterId()));
+        }
+
+        if (!_ignoreCharacterDependencies && recurse) {
+            for (CharacterDependency cd : ch.getDependentCharacters()) {
+                for (int depCharId : cd.getDependentCharacterIds()) {
+                    decrementMaybeInapplicableCount(_dataset.getCharacter(depCharId), recurse);
+                }
+            }
+        }
+    }
+
+    /**
+     * Increment the maybe inapplicable count for the supplied character and any
+     * dependant characters
+     * 
+     * @param ch
+     */
+    private void incrementMaybeInapplicableCount(Character ch) {
+        if (_characterMaybeInapplicableCounts.containsKey(ch)) {
+            _characterMaybeInapplicableCounts.put(ch, _characterMaybeInapplicableCounts.get(ch) + 1);
+        } else {
+            _characterMaybeInapplicableCounts.put(ch, 1);
+        }
+
+        if (!_ignoreCharacterDependencies) {
+            for (CharacterDependency cd : ch.getDependentCharacters()) {
+                for (int depCharId : cd.getDependentCharacterIds()) {
+                    incrementMaybeInapplicableCount(_dataset.getCharacter(depCharId));
                 }
             }
         }
@@ -285,5 +414,13 @@ public class Specimen {
 
     public boolean isCharacterInapplicable(Character ch) {
         return _characterInapplicabilityCounts.containsKey(ch) && _characterInapplicabilityCounts.get(ch) > 0;
+    }
+
+    public boolean isCharacterMaybeInapplicable(Character ch) {
+        // Inapplicable trumps maybe inapplicable, so if a character has been
+        // made inapplicable by one of its controlling characters, it should be
+        // considered inapplicable instead of
+        // maybe inapplicable
+        return !isCharacterInapplicable(ch) && _characterMaybeInapplicableCounts.containsKey(ch) && _characterMaybeInapplicableCounts.get(ch) > 0;
     }
 }

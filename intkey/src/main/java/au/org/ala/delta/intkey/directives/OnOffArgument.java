@@ -31,7 +31,7 @@ public class OnOffArgument extends IntkeyDirectiveArgument<Boolean> {
     public Boolean parseInput(Queue<String> inputTokens, IntkeyContext context, String directiveName, StringBuilder stringRepresentationBuilder) throws IntkeyDirectiveParseException {
         String token = inputTokens.poll();
 
-        if (token == null || token.equals(DEFAULT_DIALOG_WILDCARD)) {
+        if (token == null || token.startsWith(DEFAULT_DIALOG_WILDCARD)) {
             return context.getDirectivePopulator().promptForOnOffValue(directiveName, getInitialValue());
         } else {
             if (token.equalsIgnoreCase(ON_VALUE)) {

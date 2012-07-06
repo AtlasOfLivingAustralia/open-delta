@@ -47,7 +47,7 @@ public class SetMatchDirective extends IntkeyDirective {
         boolean matchInapplicables = false;
         MatchType matchType = MatchType.EXACT;
 
-        if (data == null || data.startsWith(IntkeyDirectiveArgument.DEFAULT_DIALOG_WILDCARD)) {
+        if (data == null || data.toUpperCase().startsWith(IntkeyDirectiveArgument.DEFAULT_DIALOG_WILDCARD)) {
             List<Object> matchSettings = context.getDirectivePopulator().promptForMatchSettings();
             if (matchSettings == null) {
                 // Null list indicates that the user cancelled the operation

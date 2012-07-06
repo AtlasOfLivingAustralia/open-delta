@@ -810,7 +810,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             public void actionPerformed(ActionEvent arg0) {
                 String cmdStr = _txtFldCmdBar.getText();
 
-                cmdStr = cmdStr.toLowerCase().trim();
+                cmdStr = cmdStr.trim();
                 if (_cmdMenus.containsKey(cmdStr)) {
                     JMenu cmdMenu = _cmdMenus.get(cmdStr);
                     cmdMenu.doClick();

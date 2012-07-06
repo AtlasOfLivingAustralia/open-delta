@@ -385,13 +385,13 @@ public class DiffUtils {
     }
 
     /**
-     * Compare a multistate specimen value with a multistate attribute. Both
+     * Compare two multistate values. Both
      * values must correspond to the same character
      * 
-     * @param specimen
-     *            the specimen
-     * @param val
-     *            the specimen value
+     * @param attr1
+     *            first multistate value
+     * @param attr2
+     *            second multistate value
      * @param attr
      *            the attribute
      * @param matchUnknowns
@@ -418,13 +418,13 @@ public class DiffUtils {
     }
 
     /**
-     * Compare an integer specimen value with an integer attribute. Both values
+     * Compare two integer values. Both values
      * must correspond to the same character
      * 
-     * @param specimen
-     *            the specimen
-     * @param val
-     *            the specimen value
+     * @param attr1
+     *            first integer value
+     * @param attr2
+     *            second integer value
      * @param attr
      *            the attribute
      * @param matchUnknowns
@@ -486,13 +486,13 @@ public class DiffUtils {
     }
 
     /**
-     * Compare a real specimen value with a real attribute. Both values must
+     * Compare two real values. Both values must
      * correspond to the same character
      * 
-     * @param specimen
-     *            the specimen
-     * @param val
-     *            the specimen value
+     * @param attr1
+     *            first real value
+     * @param attr2
+     *            second real value
      * @param attr
      *            the attribute
      * @param matchUnknowns
@@ -549,7 +549,7 @@ public class DiffUtils {
     }
 
     /**
-     * Compare a real specimen value with a real attribute. Both values must
+     * Compare two text values. Both values must
      * correspond to the same character The following rules apply:
      * 
      * 1. MATCH INAPPLICABLE and MATCH UNKNOWN are ignored. Inapplicables and
@@ -559,10 +559,10 @@ public class DiffUtils {
      * text. For MATCH OVERLAP, the presence of any sub-string will result in a
      * match.
      * 
-     * @param specimen
-     *            the specimen
-     * @param val
-     *            the specimen value
+     * @param attr1
+     *            first text value
+     * @param attr2
+     *            second text value
      * @param attr
      *            the attribute
      * @param matchUnknowns

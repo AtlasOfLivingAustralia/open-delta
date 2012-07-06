@@ -42,25 +42,38 @@ public class DefineNamesDirective extends IntkeyDirective {
 
     @Override
     protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
-        // Taxon names are separated by newlines or by commas
-        List<String> tokens = new StrTokenizer(data, StrMatcher.charSetMatcher(new char[] { '\n', '\r', ',' })).getTokenList();
-
         String keyword = null;
         List<String> names = new ArrayList<String>();
 
-        if (!tokens.isEmpty()) {
-            String firstToken = tokens.get(0);
+        // Need to prompt if data starts with a wildcard - don't bother
+        // tokenizing
+        if (!data.toUpperCase().startsWith(IntkeyDirectiveArgument.DEFAULT_DIALOG_WILDCARD)) {
+            // Taxon names are separated by newlines or by commas
+            List<String> tokens = new StrTokenizer(data, StrMatcher.charSetMatcher(new char[] { '\n', '\r', ',' })).getTokenList();
 
-            // The keyword (which may quoted) and first taxon name may be
-            // separated by a space
-            List<String> splitFirstToken = new StrTokenizer(firstToken, StrMatcher.charSetMatcher(new char[] { ' ' }), StrMatcher.quoteMatcher()).getTokenList();
-            keyword = splitFirstToken.get(0);
-            if (splitFirstToken.size() > 1) {
-                names.add(StringUtils.join(splitFirstToken.subList(1, splitFirstToken.size()), " "));
-            }
+            if (!tokens.isEmpty()) {
+                String firstToken = tokens.get(0);
 
-            for (int i = 1; i < tokens.size(); i++) {
-                names.add(tokens.get(i).trim());
+                // The keyword (which may quoted) and first taxon name may be
+                // separated by a space
+                List<String> splitFirstToken = new StrTokenizer(firstToken, StrMatcher.charSetMatcher(new char[] { ' ' }), StrMatcher.quoteMatcher()).getTokenList();
+
+                keyword = splitFirstToken.get(0);
+
+                if (splitFirstToken.size() > 1) {
+                    names.add(StringUtils.join(splitFirstToken.subList(1, splitFirstToken.size()), " "));
+                }
+
+                for (int i = 1; i < tokens.size(); i++) {
+                    names.add(tokens.get(i).trim());
+                }
+                
+                //If first name begins with a wildcard, we need to prompt for names. Clear out the names list if this is the case.
+                if (!names.isEmpty()) {
+                    if (names.get(0).toUpperCase().startsWith(IntkeyDirectiveArgument.DEFAULT_DIALOG_WILDCARD)) {
+                        names.clear();
+                    }
+                }
             }
         }
 
@@ -85,7 +98,13 @@ public class DefineNamesDirective extends IntkeyDirective {
         }
 
         if (taxa.isEmpty()) {
-            taxa = context.getDirectivePopulator().promptForTaxaByList(directiveName, false, false, false, false, null, null);
+            List<String> selectedKeywords = new ArrayList<String>(); // Not
+                                                                     // used,
+                                                                     // but
+                                                                     // required
+                                                                     // as an
+                                                                     // argument
+            taxa = context.getDirectivePopulator().promptForTaxaByList(directiveName, false, false, false, false, null, selectedKeywords);
             if (taxa == null || taxa.isEmpty()) {
                 // cancelled
                 return null;

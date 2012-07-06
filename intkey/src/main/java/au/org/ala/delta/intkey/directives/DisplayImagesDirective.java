@@ -39,7 +39,7 @@ public class DisplayImagesDirective extends IntkeyDirective {
         
         DisplayImagesDirectiveInvocation invoc = new DisplayImagesDirectiveInvocation();
 
-        if (StringUtils.isEmpty(data) || data.startsWith(IntkeyDirectiveArgument.DEFAULT_DIALOG_WILDCARD)) {
+        if (StringUtils.isEmpty(data) || data.toUpperCase().startsWith(IntkeyDirectiveArgument.DEFAULT_DIALOG_WILDCARD)) {
             Pair<ImageDisplayMode, DisplayImagesReportType> settings = context.getDirectivePopulator().promptForImageDisplaySettings();
 
             if (settings == null) {
