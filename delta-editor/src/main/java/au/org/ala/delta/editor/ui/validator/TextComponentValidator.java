@@ -14,24 +14,17 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.ui.validator;
 
-import java.awt.Dimension;
-import java.awt.Point;
+import au.org.ala.delta.ui.util.IconHelper;
+
+import javax.swing.*;
+import javax.swing.text.JTextComponent;
+import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-
-import javax.swing.BorderFactory;
-import javax.swing.InputVerifier;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.UIManager;
-import javax.swing.text.JTextComponent;
-
-import au.org.ala.delta.ui.util.IconHelper;
 
 /**
  * Provides basic indications on a JTextComponent that the component's text is invalid.
@@ -185,7 +178,7 @@ public class TextComponentValidator extends InputVerifier {
 		updateTextStyles(component, result);
 		if (!result.isValid()) {
 			_errorMessageDisplay.setMessage(result.getMessage());
-			_errorMessageDisplay.showAbove(component);
+            displayMessage(component);
 			ErrorDisplayHider hider = new ErrorDisplayHider(component);
 			component.addKeyListener(hider);
 			
@@ -201,7 +194,16 @@ public class TextComponentValidator extends InputVerifier {
 		}
 		return valid;
 	}
-	
+
+    protected void displayMessage(JComponent component) {
+        System.out.println(component.getParent());
+        if (component.getParent() instanceof JViewport) {
+            _errorMessageDisplay.showAbove((JViewport)component.getParent());
+        }
+        else {
+            _errorMessageDisplay.showAbove(component);
+        }
+    }
 	/**
 	 * Retrieves the value to validate from the supplied component.
 	 * @param component

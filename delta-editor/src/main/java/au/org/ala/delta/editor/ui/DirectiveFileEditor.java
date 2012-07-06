@@ -213,7 +213,6 @@ public class DirectiveFileEditor extends AbstractDeltaView {
 		public void handleDirectiveProcessingException(ImportContext context, AbstractDirective<ImportContext> d,
 				Exception ex) {
 			if (ex instanceof ParseException) {
-				context.getCurrentParsingContext().getCurrentDirectiveStartLine();
 				int location = directiveIndex(context);
 				ParseException pe = (ParseException)ex;
 
