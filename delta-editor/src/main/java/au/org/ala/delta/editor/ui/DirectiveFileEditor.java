@@ -15,6 +15,7 @@
 package au.org.ala.delta.editor.ui;
 
 import au.org.ala.delta.directives.AbstractDirective;
+import au.org.ala.delta.directives.ParsingContext;
 import au.org.ala.delta.editor.directives.DirectiveFileInfo;
 import au.org.ala.delta.editor.directives.DirectiveImportHandlerAdapter;
 import au.org.ala.delta.editor.directives.DirectivesFileExporter;
@@ -196,7 +197,8 @@ public class DirectiveFileEditor extends AbstractDeltaView {
 		@Override
 		public void handleUnrecognizedDirective(ImportContext context, List<String> controlWords) {
 			String directive = StringUtils.join(controlWords.toArray(), ' ');
-			int location = directiveIndex(directive);
+
+			int location = getText().indexOf(directive);
 			if (location >= 0) {
 				_result = ValidationResult.error("UNRECOGNISED_DIRECTIVE", location);
 			}
@@ -211,24 +213,28 @@ public class DirectiveFileEditor extends AbstractDeltaView {
 		public void handleDirectiveProcessingException(ImportContext context, AbstractDirective<ImportContext> d,
 				Exception ex) {
 			if (ex instanceof ParseException) {
-				String directive = d.getName();
-				int location = directiveIndex(directive);
+				context.getCurrentParsingContext().getCurrentDirectiveStartLine();
+				int location = directiveIndex(context);
 				ParseException pe = (ParseException)ex;
-				location += directive.length();
-				String text = getText();
-				while (Character.isWhitespace(text.charAt(location))) {
-					location ++;
-				}
-				
+
 				location += pe.getErrorOffset();
 				_result = ValidationResult.error("DIRECTIVE_PARSE_ERROR", location);
 				_result.setMessageArgs(ex.getMessage());
 			}
 		}
 		
-		private int directiveIndex(String directive) {
-			String text = getText();
-			return text.indexOf(directive);
+		private int directiveIndex(ImportContext context) {
+			ParsingContext pc = context.getCurrentParsingContext();
+            int line = (int)pc.getCurrentDirectiveStartLine();
+            String text = getText();
+            int lineCount = 1;
+            int index = 0;
+            while(lineCount < line) {
+                index = text.indexOf('\n', index+1);
+                lineCount ++;
+            }
+            long offset = index+pc.getDirectiveEndOffset()+1;
+            return (int)offset;
 		}
 		
 	}
@@ -251,6 +257,7 @@ public class DirectiveFileEditor extends AbstractDeltaView {
 			CodeTextArea textArea = (CodeTextArea)component;
 			if (!validationResult.isValid()) {
 				int pos = validationResult.getInvalidCharacterPosition();
+
 				if (pos >= 0) {
 					String text = getText();
 					int nextSpace = text.indexOf(' ', pos);
