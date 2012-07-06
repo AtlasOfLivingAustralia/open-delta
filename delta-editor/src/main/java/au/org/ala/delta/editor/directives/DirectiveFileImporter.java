@@ -14,16 +14,16 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.directives;
 
-import java.text.ParseException;
-import java.util.Arrays;
-import java.util.List;
-
 import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.directives.DirectiveParser;
 import au.org.ala.delta.directives.ItemDescriptions;
 import au.org.ala.delta.editor.slotfile.Directive;
 import au.org.ala.delta.editor.slotfile.DirectiveArgType;
 import au.org.ala.delta.editor.slotfile.DirectiveInstance;
+
+import java.text.ParseException;
+import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -58,7 +58,7 @@ public class DirectiveFileImporter extends DirectiveParser<ImportContext> {
 	@Override
 	protected void handleDirectiveProcessingException(ImportContext context, AbstractDirective<ImportContext> d, Exception ex) {
 		_importFailed = true;
-		ex.printStackTrace();
+
 		_handler.handleDirectiveProcessingException(context, d, ex);
 	}
 	

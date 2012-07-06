@@ -16,6 +16,8 @@ package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
+import au.org.ala.delta.directives.validation.CharacterNumberValidator;
+import au.org.ala.delta.directives.validation.IdValidator;
 
 public class CharactersForSynonymy extends AbstractRangeListDirective<DeltaContext> {
 
@@ -38,4 +40,9 @@ public class CharactersForSynonymy extends AbstractRangeListDirective<DeltaConte
 	public int getOrder() {
 		return 4;
 	}
+
+    @Override
+    protected IdValidator createValidator(DeltaContext context) {
+        return new CharacterNumberValidator(context);
+    }
 }

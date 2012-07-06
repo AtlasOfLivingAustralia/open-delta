@@ -16,6 +16,8 @@ package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
+import au.org.ala.delta.directives.validation.CharacterNumberValidator;
+import au.org.ala.delta.directives.validation.IdValidator;
 
 /**
  * Implements the ALTERNATE COMMA directive.
@@ -40,5 +42,10 @@ public class AlternateComma extends AbstractRangeListDirective<DeltaContext> {
 	public int getOrder() {
 		return 4;
 	}
+
+    @Override
+    protected IdValidator createValidator(DeltaContext context) {
+        return new CharacterNumberValidator(context);
+    }
 	
 }

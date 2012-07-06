@@ -14,12 +14,14 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
+import au.org.ala.delta.directives.validation.CharacterNumberValidator;
+import au.org.ala.delta.directives.validation.IdValidator;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Implements the INCLUDE Characters directive.
@@ -64,5 +66,10 @@ public class IncludeCharacters extends AbstractRangeListDirective<DeltaContext> 
 	public int getOrder() {
 		return 4;
 	}
-	
+
+
+    @Override
+    protected IdValidator createValidator(DeltaContext context) {
+        return new CharacterNumberValidator(context);
+    }
 }

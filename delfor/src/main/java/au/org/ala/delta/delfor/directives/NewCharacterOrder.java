@@ -14,16 +14,18 @@
  ******************************************************************************/
 package au.org.ala.delta.delfor.directives;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import au.org.ala.delta.delfor.DelforContext;
 import au.org.ala.delta.delfor.format.CharacterReorderer;
 import au.org.ala.delta.directives.AbstractRangeListDirective;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
+import au.org.ala.delta.directives.validation.CharacterNumberValidator;
 import au.org.ala.delta.directives.validation.DirectiveError;
 import au.org.ala.delta.directives.validation.DirectiveException;
+import au.org.ala.delta.directives.validation.IdValidator;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Processes the NEW CHARACTER ORDER directive.
@@ -73,4 +75,9 @@ public class NewCharacterOrder extends AbstractRangeListDirective<DelforContext>
 	public int getOrder() {
 		return 4;
 	}
+
+    @Override
+    protected IdValidator createValidator(DelforContext context) {
+        return new CharacterNumberValidator(context);
+    }
 }

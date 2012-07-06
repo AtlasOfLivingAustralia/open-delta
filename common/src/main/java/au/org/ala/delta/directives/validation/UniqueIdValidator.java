@@ -14,13 +14,15 @@
  ******************************************************************************/
 package au.org.ala.delta.directives.validation;
 
+import au.org.ala.delta.directives.validation.DirectiveError.Error;
+
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.lang.math.IntRange;
-
-import au.org.ala.delta.directives.validation.DirectiveError.Error;
-
+/**
+ * The UniqueIdValidator keeps track of ids that have been passed to the validateId method and will return
+ * an error if a duplicate is found.
+ */
 public class UniqueIdValidator implements IdValidator {
 
 	private Set<Integer> _ids;

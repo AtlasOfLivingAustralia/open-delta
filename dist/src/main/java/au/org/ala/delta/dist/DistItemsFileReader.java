@@ -14,22 +14,22 @@
  ******************************************************************************/
 package au.org.ala.delta.dist;
 
-import java.math.BigInteger;
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.util.List;
-
 import au.org.ala.delta.dist.io.DistItemsFile;
 import au.org.ala.delta.io.BinaryKeyFileEncoder;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterType;
-import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.util.Pair;
+
+import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.util.List;
 
 /**
  * Reads the DIST items file and constructs a DeltaDataSet from it.
@@ -59,7 +59,8 @@ public class DistItemsFileReader {
 		List<Integer> states = _itemsFile.readNumbersOfStates();
 		List<Float> weights = _itemsFile.readCharacterWeights();
 		List<Boolean> charMask = _itemsFile.readCharacterMask();
-		
+
+        _context.setNumberOfCharacters(_itemsFile.getNumberOfCharacters());
 		for (int i=0; i<_itemsFile.getNumberOfCharacters(); i++) {
 			CharacterType type = _encoder.typeFromInt(charTypes.get(i));
 			type = effectiveType(type);
@@ -72,6 +73,7 @@ public class DistItemsFileReader {
 				_context.excludeCharacter(i+1);
 			}
 		}
+
 		
 	}
 	
@@ -96,6 +98,7 @@ public class DistItemsFileReader {
 	
 	
 	private void createItems() {
+        _context.setMaximumNumberOfItems(_itemsFile.getNumberOfItems());
 		for (int i=1; i<=_itemsFile.getNumberOfItems(); i++) {
 			
 			Item item = _dataSet.addItem();
@@ -105,6 +108,7 @@ public class DistItemsFileReader {
 			
 			decodeAttributes(item, itemData.getSecond());
 		}
+
 	}
 	
 	private void decodeAttributes(Item item, ByteBuffer attributeData) {

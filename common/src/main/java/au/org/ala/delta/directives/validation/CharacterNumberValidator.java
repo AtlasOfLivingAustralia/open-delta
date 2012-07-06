@@ -20,7 +20,7 @@ public class CharacterNumberValidator extends UniqueIdValidator {
             return new DirectiveError(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, DirectiveError.UNKNOWN_POSITION);
         }
         else if (id > _context.getNumberOfCharacters()) {
-            return new DirectiveError(DirectiveError.Error.CHARACTER_NUMBER_TOO_HIGH, DirectiveError.UNKNOWN_POSITION);
+            return new DirectiveError(DirectiveError.Error.CHARACTER_NUMBER_TOO_HIGH, DirectiveError.UNKNOWN_POSITION, _context.getNumberOfCharacters());
         }
 
         return super.validateId(id);

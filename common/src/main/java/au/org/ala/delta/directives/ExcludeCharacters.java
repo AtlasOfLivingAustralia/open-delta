@@ -17,7 +17,9 @@ package au.org.ala.delta.directives;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
+import au.org.ala.delta.directives.validation.CharacterNumberValidator;
 import au.org.ala.delta.directives.validation.DirectiveException;
+import au.org.ala.delta.directives.validation.IdValidator;
 
 /**
  * Implements the EXCLUDE CHARACTERS directive.  Accepts a list of character numbers which are added to the
@@ -51,4 +53,9 @@ public class ExcludeCharacters extends AbstractRangeListDirective<DeltaContext> 
 	public int getOrder() {
 		return 4;
 	}
+
+    @Override
+    protected IdValidator createValidator(DeltaContext context) {
+        return new CharacterNumberValidator(context);
+    }
 }

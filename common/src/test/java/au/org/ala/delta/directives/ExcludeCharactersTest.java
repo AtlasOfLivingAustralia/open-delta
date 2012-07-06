@@ -1,6 +1,8 @@
 package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.validation.DirectiveError;
+import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DefaultDataSetFactory;
 import au.org.ala.delta.model.impl.DefaultDataSet;
@@ -66,9 +68,14 @@ public class ExcludeCharactersTest extends TestCase {
     @Test
     public void testExcludeCharactersWithOutOfRangeCharacter() throws Exception {
         String data = "11";
-
-        _excludeCharacters.parseAndProcess(_context, data);
-
+        try {
+            _excludeCharacters.parseAndProcess(_context, data);
+            fail("Validation exception should have been thrown");
+        }
+        catch (DirectiveException e) {
+            assertEquals(DirectiveError.Error.CHARACTER_NUMBER_TOO_HIGH.getErrorNumber(), e.getError().getErrorNumber());
+            assertEquals(1, e.getError().getPosition());
+        }
     }
 
 }

@@ -23,7 +23,7 @@ public class ItemNumberValidator extends UniqueIdValidator {
             return new DirectiveError(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, DirectiveError.UNKNOWN_POSITION);
         }
         else if (id > _context.getMaximumNumberOfItems()) {
-            return new DirectiveError(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, DirectiveError.UNKNOWN_POSITION);
+            return new DirectiveError(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, DirectiveError.UNKNOWN_POSITION, _context.getMaximumNumberOfItems());
         }
 
         return super.validateId(id);

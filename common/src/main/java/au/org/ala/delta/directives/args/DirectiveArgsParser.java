@@ -113,22 +113,24 @@ public abstract class DirectiveArgsParser extends AbstractStreamParser {
 	}
 	
 	protected IntRange readIds(IdValidator validator) throws ParseException {
+        int startPos = _position;
         int first = readInteger();
-        validateId(first, validator);
+        validateId(first, validator, startPos);
         if (_currentChar == '-') {
             readNext();
+            startPos = _position;
             int last = readInteger();
-            validateId(last, validator);
+            validateId(last, validator, startPos);
             return new IntRange(first, last);
         }
         return new IntRange(first);
     }
 
-    private void validateId(int id, IdValidator validator) throws ParseException {
+    private void validateId(int id, IdValidator validator, int parsePosition) throws ParseException {
         if (validator != null) {
             DirectiveError result = validator.validateId(id);
             if (result != null) {
-                result.setPosition(_position);
+                result.setPosition(parsePosition);
                 throw result.asException();
             }
         }

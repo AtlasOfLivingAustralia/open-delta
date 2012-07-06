@@ -14,18 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta;
 
-import java.io.PrintStream;
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.directives.DirectiveParserObserver;
 import au.org.ala.delta.directives.ParsingContext;
@@ -42,6 +30,18 @@ import au.org.ala.delta.model.image.ImageInfo;
 import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.util.Functor;
+
+import java.io.PrintStream;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Context associated with a set of DELTA input files.
@@ -159,19 +159,19 @@ public class DeltaContext extends AbstractDeltaContext {
     	_defaultErr = err;
     	_variables = new HashMap<String, Object>();
 
-           _variables.put("DATEFORMAT", "dd-MMM-yyyy");
-           _variables.put("TIMEFORMAT", "HH:mm");
+        _variables.put("DATEFORMAT", "dd-MMM-yyyy");
+        _variables.put("TIMEFORMAT", "HH:mm");
 
-           _variables.put("DATE", new Functor() {
+        _variables.put("DATE", new Functor() {
                @Override
                public Object invoke(DeltaContext context) {
                    String dateFormat = (String) context.getVariable("DATEFORMAT", "dd-MMM-yyyy");
                    SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
                    return sdf.format(new Date());
                }
-           });
+        });
 
-           _variables.put("TIME", new Functor() {
+        _variables.put("TIME", new Functor() {
 
                @Override
                public Object invoke(DeltaContext context) {
@@ -179,13 +179,15 @@ public class DeltaContext extends AbstractDeltaContext {
                    SimpleDateFormat sdf = new SimpleDateFormat(timeFormat);
                    return sdf.format(new Date());
                }
-           });
+        });
 
-           _dataSet = dataSet;
+        _dataSet = dataSet;
+        _maxNumberOfItems = dataSet.getMaximumNumberOfItems();
+        _numberOfCharacters = dataSet.getNumberOfCharacters();
 
-           createOutputFileManager();
-           _outputFileSelector.setOutputFormat(_outputFormat);
-           _outputFileSelector.setPrintStream(out);
+        createOutputFileManager();
+        _outputFileSelector.setOutputFormat(_outputFormat);
+        _outputFileSelector.setPrintStream(out);
 
     }
 

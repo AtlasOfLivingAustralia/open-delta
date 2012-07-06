@@ -14,12 +14,14 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
+import au.org.ala.delta.directives.validation.IdValidator;
+import au.org.ala.delta.directives.validation.ItemNumberValidator;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Implements the INCLUDE ITEMS directive.
@@ -64,4 +66,8 @@ public class IncludeItems extends AbstractRangeListDirective<DeltaContext> {
 		return 4;
 	}
 
+    @Override
+    protected IdValidator createValidator(DeltaContext context) {
+        return new ItemNumberValidator(context);
+    }
 }

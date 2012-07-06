@@ -26,7 +26,7 @@ import au.org.ala.delta.directives.validation.CharacterNumberValidator;
 
 /**
  * Processes the EMPHASIZE FEATURES directive.
- * @see http://delta-intkey.com/www/uguide.htm#_*EMPHASIZE_FEATURES_
+ * @link http://delta-intkey.com/www/uguide.htm#_*EMPHASIZE_FEATURES_
  */
 public class EmphasizeFeatures extends AbstractCustomDirective {
 	public EmphasizeFeatures() {

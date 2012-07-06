@@ -14,23 +14,26 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
-import java.text.ParseException;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.IntRange;
-
 import au.org.ala.delta.directives.args.DirectiveArgument;
 import au.org.ala.delta.directives.args.DirectiveArguments;
+import au.org.ala.delta.directives.args.IdListParser;
 import au.org.ala.delta.directives.validation.DirectiveException;
-import au.org.ala.delta.util.IntegerFunctor;
+import au.org.ala.delta.directives.validation.IdValidator;
 
+import java.io.StringReader;
+import java.text.ParseException;
+
+/**
+ * Base class for directives that accept a space separated list of numbers.
+ * @param <C> the type of context the directive executes in.
+ */
 public abstract class AbstractRangeListDirective<C extends AbstractDeltaContext> extends AbstractDirective<C> {
 
 	protected DirectiveArguments _args;
-	
+
 	protected AbstractRangeListDirective(String ...controlWords) {
 		super(controlWords);
-	}
+    }
 	
 	@Override
 	public DirectiveArguments getDirectiveArgs() {
@@ -42,21 +45,10 @@ public abstract class AbstractRangeListDirective<C extends AbstractDeltaContext>
 	@Override
 	public void parse(C context, String data) throws ParseException {
 		_args = new DirectiveArguments();
-		// data is a space or newline separate list of ranges...
-		data = data.trim();
-		if (StringUtils.isNotBlank(data)) {
-			String[] ranges = data.split("\\s+");
-			
-			for (String range : ranges) {
-				IntRange r = parseRange(range);
-				forEach(r, context, new IntegerFunctor<C>() {
-					@Override
-					public void invoke(C context, int number) {
-						_args.addDirectiveArgument(number);
-					}
-				});
-			}
-		}
+
+        IdListParser parser = new IdListParser(context, new StringReader(data), createValidator(context));
+        parser.parse();
+        _args = parser.getDirectiveArgs();
 	}
 
 	@Override
@@ -68,6 +60,20 @@ public abstract class AbstractRangeListDirective<C extends AbstractDeltaContext>
 		
 	}
 
+    /**
+     * Subclasses should override this method to do something with the number - normally this involves configuration
+     * of the context.
+     * @param context the current parsing / dataset context.
+     * @param number the number to process.
+     * @throws DirectiveException if there is an error.
+     */
 	protected abstract void processNumber(C context, int number) throws DirectiveException;
+
+    /**
+     * Subclasses should override this method to create a validator appropriate for the directive type.
+     * @param context the current parsing/processing context.
+     * @return either an appropriate instance of IdValidator or null if validation is not required.
+     */
+    protected abstract IdValidator createValidator(C context);
 
 }

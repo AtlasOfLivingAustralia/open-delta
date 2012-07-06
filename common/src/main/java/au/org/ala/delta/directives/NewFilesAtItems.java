@@ -14,9 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
-import java.io.StringReader;
-import java.text.ParseException;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArgument;
@@ -24,9 +21,12 @@ import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.directives.args.IdListParser;
 import au.org.ala.delta.directives.validation.ItemNumberValidator;
 
+import java.io.StringReader;
+import java.text.ParseException;
+
 /**
  * Processes the NEW FILE AT ITEMS directive.
- * @see http://http://delta-intkey.com/www/uguide.htm#_*NEW_FILES_AT
+ * @link http://delta-intkey.com/www/uguide.htm#_*NEW_FILES_AT
  */
 public class NewFilesAtItems extends AbstractDirective<DeltaContext> {
 

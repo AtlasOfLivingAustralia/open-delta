@@ -14,12 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.directives;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-
-import org.junit.Test;
-
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
 import au.org.ala.delta.editor.slotfile.model.SlotFileDataSet;
@@ -28,13 +22,17 @@ import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
+import org.junit.Test;
+
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Tests the ImportController class. 
  */
 public class ImportControllerTest extends AbstractImportControllerTest {
 
-	
 	
 	protected void createDataSet() throws Exception {
 		_dataSet = (SlotFileDataSet)_repository.newDataSet();
@@ -100,7 +98,17 @@ public class ImportControllerTest extends AbstractImportControllerTest {
 	
 	@Test
 	public void testToIntImport() throws Exception {
-		String toIntPath = "/au/org/ala/delta/editor/directives/expected_results";
+
+        int numChars = 89;
+        for (int i=0; i<numChars; i++) {
+            _dataSet.addCharacter(CharacterType.UnorderedMultiState);
+        }
+        // Recreate the importer after adding characters to the model as this will update the chars and items
+        // in the context.
+        importer = new ImportController(_helper, _model);
+
+
+        String toIntPath = "/au/org/ala/delta/editor/directives/expected_results";
 		File datasetDirectory = new File(getClass().getResource(toIntPath).toURI());
 		DirectiveFileInfo toint = new DirectiveFileInfo("toint", DirectiveType.CONFOR);
 		
