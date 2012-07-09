@@ -22,6 +22,7 @@ import java.io.PrintStream;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -73,7 +74,7 @@ import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.util.Utils;
 
 public class Key implements DirectiveParserObserver {
-    
+
     private static final int TABULATED_KEY_MAX_NAME_SIZE = 27;
 
     private KeyContext _context;
@@ -88,7 +89,7 @@ public class Key implements DirectiveParserObserver {
     private ItemFormatter _itemFormatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false, false);
 
     private PrintStream _defaultOutputStream;
-    
+
     /**
      * @param args
      *            specifies the name of the input file to use.
@@ -685,8 +686,6 @@ public class Key implements DirectiveParserObserver {
     }
 
     private void printTabularKey(TabularKey key, PrintFile printFile) {
-        int pageWidth = _context.getOutputFileManager().getOutputWidth();
-        
         ItemFormatter itemFormatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false, false);
 
         // Do a first pass of the data structure to get the counts for the
@@ -728,9 +727,6 @@ public class Key implements DirectiveParserObserver {
                 }
             }
         }
-        
-        // add 2 dividers to width of name. add 1 divider for each attribute column cell.
-        int maxAttrColumnsPerPage = (pageWidth - (TABULATED_KEY_MAX_NAME_SIZE + 2)) / (cellWidth + 1);
 
         StringBuilder builder = new StringBuilder();
 
@@ -758,9 +754,6 @@ public class Key implements DirectiveParserObserver {
                     previousRowAttributes = key.getRowAt(i - 1).getAllCharacterValuesUpToColumn(columnLimit);
                 }
             }
-            
-            int rowPageSpan = (int) Math.ceil(Integer.valueOf(rowAttributes.size()).doubleValue() / Integer.valueOf(maxAttrColumnsPerPage).doubleValue());
-            System.out.println(rowPageSpan);
 
             // Output the dividing line between the previous row and the current
             // row
@@ -799,8 +792,6 @@ public class Key implements DirectiveParserObserver {
             // the key, if it appears more than once
             builder.append("|");
             String formattedItemName = itemFormatter.formatItemDescription(it);
-            //StringUtils.su
-            //builder.append(formattedItemName.substring(0, TABULATED_KEY_MAX_NAME_SIZE));
             builder.append(StringUtils.substring(formattedItemName, 0, TABULATED_KEY_MAX_NAME_SIZE));
 
             int numItemOccurrences = itemOccurrences.get(it);
@@ -859,7 +850,66 @@ public class Key implements DirectiveParserObserver {
             }
         }
 
-        printFile.outputLine(builder.toString());
+        printPagedTabularKey(builder.toString(), cellWidth, printFile);
+    }
+
+    // If the tabular key is to wide to fit within the page width, it needs to
+    // be spread across multiple "pages".
+    // The taxon name column is repeated each time.
+    private void printPagedTabularKey(String tabularKey, int cellWidth, PrintFile printFile) {
+        int pageWidth = _context.getOutputFileManager().getOutputWidth();
+        pageWidth = pageWidth == 0 ? PrintFile.DEFAULT_PRINT_WIDTH : pageWidth;
+
+        // add 2 dividers to width of name.
+        int endTaxonNamesColumn = TABULATED_KEY_MAX_NAME_SIZE + 2;
+
+        // add 1 divider for each attribute column cell.
+        int maxAttrValuesPerPage = (pageWidth - (endTaxonNamesColumn)) / (cellWidth + 1);
+
+        List<String> taxonNameColumnPieces = new ArrayList<String>();
+        List<List<String>> allAttributeColumnsPieces = new ArrayList<List<String>>();
+        int maxNumberOfAttrColumnsPieces = 0;
+
+        List<String> tabularKeyLines = Arrays.asList(StringUtils.split(tabularKey, '\n'));
+
+        for (String line : tabularKeyLines) {
+            taxonNameColumnPieces.add(line.substring(0, endTaxonNamesColumn));
+
+            List<String> lineAttributeColumnsPieces = new ArrayList<String>();
+
+            int pieceStartIndex = endTaxonNamesColumn;
+            int pieceEndIndex = Math.min(endTaxonNamesColumn + ((cellWidth + 1) * maxAttrValuesPerPage), line.length());
+
+            while (pieceStartIndex < line.length()) {
+                String piece = line.substring(pieceStartIndex, pieceEndIndex);
+                lineAttributeColumnsPieces.add(piece);
+
+                pieceStartIndex = pieceEndIndex;
+                pieceEndIndex = Math.min(pieceEndIndex + ((cellWidth + 1) * maxAttrValuesPerPage), line.length());
+            }
+
+            allAttributeColumnsPieces.add(lineAttributeColumnsPieces);
+            maxNumberOfAttrColumnsPieces = Math.max(maxNumberOfAttrColumnsPieces, lineAttributeColumnsPieces.size());
+        }
+
+        for (int i = 0; i < maxNumberOfAttrColumnsPieces; i++) {
+            if (i > 0) {
+                printFile.writeBlankLines(1, 0);
+                printFile.outputLine(_context.getHeading(HeadingType.HEADING));
+                printFile.outputLine(StringUtils.repeat("*", _context.getOutputFileSelector().getOutputWidth()));
+                printFile.writeBlankLines(1, 0);
+            }
+
+            for (int j = 0; j < taxonNameColumnPieces.size(); j++) {
+                List<String> lineAttributeColumnsPieces = allAttributeColumnsPieces.get(j);
+
+                if (lineAttributeColumnsPieces.size() >= i + 1) {
+                    printFile.outputLine(taxonNameColumnPieces.get(j) + lineAttributeColumnsPieces.get(i));
+                } else {
+                    printFile.outputLine(taxonNameColumnPieces.get(j));
+                }
+            }
+        }
     }
 
     private void printBracketedKey(BracketedKey bracketedKey, boolean displayCharacterNumbers, PrintFile printFile) {

@@ -29,8 +29,10 @@ import au.org.ala.delta.util.Utils;
  * methods for line wrapping and formatting the output.
  */
 public class PrintFile {
+    
+    public static final int DEFAULT_PRINT_WIDTH = 80;
 
-    private int _printWidth = 80;
+    private int _printWidth = DEFAULT_PRINT_WIDTH;
     /**
      * The number of lines output on each page of the print file. A value of 0
      * indicates that no paging should be done.
