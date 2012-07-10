@@ -91,7 +91,6 @@ public abstract class IntkeyDirective extends AbstractDirective<IntkeyContext> {
             // issue with either the files being missing, or not loadable
             if (context.getDataset() == null) {
                 String message = UIUtils.getResourceString("DirectiveCallNoDatasetLoaded.error", getControlWordsAsString());
-                context.getUI().displayErrorMessage(message);
                 throw new RuntimeException(message);
             }
         }

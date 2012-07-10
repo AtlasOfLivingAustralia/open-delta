@@ -42,6 +42,7 @@ import au.org.ala.delta.best.DiagType;
 import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.intkey.IntkeyUI;
 import au.org.ala.delta.intkey.directives.DirectivePopulator;
+import au.org.ala.delta.intkey.directives.IntkeyDirectiveParseException;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParser;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocationException;
@@ -404,7 +405,7 @@ public class IntkeyContext extends AbstractDeltaContext {
             parser.parse(directivesFile, IntkeyContext.this);
         } catch (Exception ex) {
             Logger.log(ex.getMessage());
-            _appUI.displayErrorMessage(String.format("Error reading file '%s'", directivesFile.getAbsolutePath()));
+            _appUI.displayErrorMessage(String.format("Error reading file '%s' - %s", directivesFile.getAbsolutePath(), ex.getMessage()));
         }
 
         _processingDirectivesFile = oldProcessingInputFile;
@@ -485,8 +486,15 @@ public class IntkeyContext extends AbstractDeltaContext {
         try {
             _directiveParser.parse(new StringReader(command), this);
         } catch (Exception ex) {
-            _appUI.displayErrorMessage(String.format("Exception thrown while processing directive \"%s\"", command));
-            ex.printStackTrace();
+            String msg;
+            if (ex instanceof IntkeyDirectiveParseException) {
+                msg = ex.getMessage();
+            } else {
+                msg = String.format("Error occurred while processing '%s' command: %s", command.toUpperCase(), ex.getMessage());
+            }
+            _appUI.displayErrorMessage(msg);
+            Logger.error(msg);
+            Logger.error(ex);
         }
     }
 
@@ -874,14 +882,15 @@ public class IntkeyContext extends AbstractDeltaContext {
             retList.add(TAXON_KEYWORD_ELIMINATED);
         }
 
-        //Include "remaining" keyword if there are remaining taxa
+        // Include "remaining" keyword if there are remaining taxa
         if (remainingTaxaCount > 0) {
             retList.add(TAXON_KEYWORD_REMAINING);
         }
 
         retList.add(TAXON_KEYWORD_NONE);
-        
-        //Include the "specimen" keyword if desired, and the specimen is not empty.
+
+        // Include the "specimen" keyword if desired, and the specimen is not
+        // empty.
         if (includeSpecimen && !_specimen.getUsedCharacters().isEmpty()) {
             retList.add(SPECIMEN_KEYWORD);
         }

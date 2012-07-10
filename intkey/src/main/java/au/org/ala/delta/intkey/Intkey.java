@@ -1600,18 +1600,17 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     private void executeDirective(AbstractDirective<IntkeyContext> dir, String data) {
         try {
             dir.parseAndProcess(_context, data);
-        } catch (IntkeyDirectiveParseException ex) {
-            ex.printStackTrace();
-            String msg = ex.getMessage();
-            JOptionPane.showMessageDialog(UIUtils.getMainFrame(), msg, "Error", JOptionPane.ERROR_MESSAGE);
-            Logger.error(msg);
         } catch (Exception ex) {
-            ex.printStackTrace();
-            String msg = String.format("Error occurred while processing '%s' command: %s", StringUtils.join(dir.getControlWords(), " ").toUpperCase(), ex.getMessage());
-            JOptionPane.showMessageDialog(UIUtils.getMainFrame(), msg, "Error", JOptionPane.ERROR_MESSAGE);
-            Logger.error(msg);
             Logger.error(ex);
-        }
+            String msg;
+            if (ex instanceof IntkeyDirectiveParseException) {
+                msg = ex.getMessage();
+            } else {
+                msg = String.format("Error occurred while processing '%s' command: %s", data.toUpperCase(), ex.getMessage());
+            }
+            displayErrorMessage(msg);
+            Logger.error(msg);
+        } 
     }
 
     private void taxonSelectionChanged() {

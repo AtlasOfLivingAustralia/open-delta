@@ -105,7 +105,7 @@ public class BracketedTaxonListArgument extends AbstractTaxonListArgument<Pair<L
                         token = inputTokens.poll();
 
                     } catch (IllegalArgumentException ex) {
-                        throw new IntkeyDirectiveParseException(String.format("Unrecognized taxon keyword %s", token), ex);
+                        throw new IntkeyDirectiveParseException(String.format("Unrecognized taxon keyword %s", token));
                     }
                 }
 

@@ -73,6 +73,11 @@ public class SetReliabilitiesDirective extends IntkeyDirective {
                 characters = context.getDirectivePopulator().promptForCharactersByList(getControlWordsAsString(), false, selectedKeywords);
             }
             
+            if (characters == null) {
+                // cancelled
+                return null;
+            }
+            
             Float reliability = Float.parseFloat(context.getDirectivePopulator().promptForString("Enter reliability value", null, getControlWordsAsString()));
             for (Character ch : characters) {
                 reliabilitiesMap.put(ch, reliability);

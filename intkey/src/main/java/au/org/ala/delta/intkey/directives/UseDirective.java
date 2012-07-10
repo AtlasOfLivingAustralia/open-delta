@@ -116,7 +116,7 @@ public class UseDirective extends IntkeyDirective {
                     selectedCharacters = context.getDirectivePopulator().promptForCharactersByList(directiveName, false, selectedKeywords);
                 }
 
-                if (selectedCharacters.size() > 0) {
+                if (selectedCharacters != null && selectedCharacters.size() > 0) {
                     for (Character ch : selectedCharacters) {
                         characterNumbers.add(ch.getCharacterId());
                         specifiedValues.add(null);
@@ -136,7 +136,7 @@ public class UseDirective extends IntkeyDirective {
                 try {
                     ch = context.getDataset().getCharacter(charNum);
                 } catch (IllegalArgumentException ex) {
-                    throw new IntkeyDirectiveParseException("UseDirective.InvalidCharacterNumber", ex, charNum, context.getDataset().getNumberOfCharacters());
+                    throw new IntkeyDirectiveParseException("UseDirective.InvalidCharacterNumber", charNum, context.getDataset().getNumberOfCharacters());
                 }
 
                 // Parse the supplied value for each character, if one was supplied. If one was no supplied, the user will be prompted to enter 
@@ -164,7 +164,7 @@ public class UseDirective extends IntkeyDirective {
                                 attr.setSpecimenAttribute(true);
                                 invoc.addCharacterValue(ch, attr);
                             } catch (IllegalArgumentException ex) {
-                                throw new IntkeyDirectiveParseException("UseDirective.InvalidStateValue", ex, charValue, Integer.toString(ch.getCharacterId()),
+                                throw new IntkeyDirectiveParseException("UseDirective.InvalidStateValue", charValue, Integer.toString(ch.getCharacterId()),
                                         _charFormatter.formatCharacterDescription(ch), msCh.getNumberOfStates());
                             }
                         } else if (ch instanceof IntegerCharacter) {

@@ -165,25 +165,14 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
     }
 
     @Override
-    protected void handleDirectiveProcessingException(IntkeyContext context, AbstractDirective<IntkeyContext> d, Exception ex) {
-        ex.printStackTrace();
-        String msg;
-        if (ex instanceof IntkeyDirectiveParseException) {
-            msg = ex.getMessage();
-        } else {
-            msg = String.format("Error occurred while processing '%s' command: %s", StringUtils.join(d.getControlWords(), " ").toUpperCase(), ex.getMessage());
-            Logger.error(ex);
-        }
+    protected void handleDirectiveProcessingException(IntkeyContext context, AbstractDirective<IntkeyContext> d, Exception ex) throws DirectiveException {
 
-        Logger.log(msg);
-
-        if (!context.isProcessingDirectivesFile()) {
-            context.getUI().displayErrorMessage(msg);
-        }
-        
-        if (ex instanceof RuntimeException) {
-        	// this will cause the directive parsing loop to halt, preventing multiple errors of the same type
-        	throw (RuntimeException) ex;
+        // this will cause the directive parsing loop to halt, preventing
+        // multiple errors of the same type
+        if (ex instanceof DirectiveException) {
+            throw (DirectiveException) ex;
+        } else if (ex instanceof RuntimeException) {
+            throw new RuntimeException(ex);
         }
     }
 

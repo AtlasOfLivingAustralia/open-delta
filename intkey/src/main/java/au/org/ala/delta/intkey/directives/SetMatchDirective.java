@@ -35,7 +35,7 @@ public class SetMatchDirective extends IntkeyDirective {
     private static final String INAPPLICABLES_WORD = "inapplicables";
 
     public SetMatchDirective() {
-        super(false, "set", "match");
+        super(true, "set", "match");
     }
 
     @Override

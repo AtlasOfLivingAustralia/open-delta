@@ -76,7 +76,7 @@ public class TaxonListArgument extends AbstractTaxonListArgument<List<Item>> {
                         token = inputTokens.poll();
 
                     } catch (IllegalArgumentException ex) {
-                        throw new IntkeyDirectiveParseException(String.format("Unrecognized taxon keyword %s", token), ex);
+                        throw new IntkeyDirectiveParseException(String.format("Unrecognized taxon keyword %s", token));
                     }
                 }
 

@@ -52,7 +52,7 @@ public class FileArgument extends IntkeyDirectiveArgument<File> {
                 try {
                     file.createNewFile();
                 } catch (IOException ex) {
-                    throw new IntkeyDirectiveParseException(String.format("Error creating file %s", file.getAbsolutePath()), ex);
+                    throw new IntkeyDirectiveParseException(String.format("Error creating file %s", file.getAbsolutePath()));
                 }
             }
         }

@@ -39,7 +39,7 @@ public class IntegerArgument extends IntkeyDirectiveArgument<Integer> {
                 stringRepresentationBuilder.append(parsedInteger);
                 return parsedInteger;
             } catch (NumberFormatException ex) {
-                throw new IntkeyDirectiveParseException("Integer value required", ex);
+                throw new IntkeyDirectiveParseException("Integer value required");
             }
         }
         return null;

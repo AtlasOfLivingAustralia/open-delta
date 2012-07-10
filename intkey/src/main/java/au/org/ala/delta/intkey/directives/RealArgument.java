@@ -39,7 +39,7 @@ public class RealArgument extends IntkeyDirectiveArgument<Double> {
                 stringRepresentationBuilder.append(parsedDouble);
                 return parsedDouble;
             } catch (NumberFormatException ex) {
-                throw new IntkeyDirectiveParseException("Real value required", ex);
+                throw new IntkeyDirectiveParseException("Real value required");
             }
         }
         return null;
