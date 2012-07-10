@@ -30,7 +30,7 @@ public class PreferencesDirective extends NewIntkeyDirective {
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new FileArgument("file", "Files (*.prf)", null, Arrays.asList(new String[] { "prf" }), true));
+        arguments.add(new FileArgument("file", "Files (*.prf)", null, Arrays.asList(new String[] { "prf" }), false));
         return arguments;
     }
 

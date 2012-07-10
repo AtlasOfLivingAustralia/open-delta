@@ -309,6 +309,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     public synchronized void executePreferencesFileDirectives() {
         if (_preferencesFile != null) {
             processDirectivesFile(_preferencesFile);
+            updateUI();
         }
     }
 
@@ -320,6 +321,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         _processingInputFile = true;
         processDirectivesFile(directivesFile);
         _processingInputFile = oldProcessingInputFile;
+        updateUI();
     }
 
     /**
