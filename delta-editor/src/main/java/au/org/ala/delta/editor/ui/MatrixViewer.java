@@ -14,12 +14,25 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.ui;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Toolkit;
+import au.org.ala.delta.editor.EditorPreferences;
+import au.org.ala.delta.editor.model.EditorViewModel;
+import au.org.ala.delta.editor.ui.dnd.DropIndicationTable;
+import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.observer.AbstractDataSetObserver;
+import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.Resource;
+import org.jdesktop.application.ResourceMap;
+import org.jdesktop.application.Task;
+import org.jdesktop.application.Task.BlockingScope;
+
+import javax.swing.*;
+import javax.swing.border.LineBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableCellRenderer;
+import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.AdjustmentEvent;
@@ -32,31 +45,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-
-import javax.swing.ActionMap;
-import javax.swing.DropMode;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.border.LineBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.TableCellRenderer;
-
-import org.jdesktop.application.Action;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.Resource;
-import org.jdesktop.application.ResourceMap;
-import org.jdesktop.application.Task;
-import org.jdesktop.application.Task.BlockingScope;
-
-import au.org.ala.delta.editor.EditorPreferences;
-import au.org.ala.delta.editor.model.EditorViewModel;
-import au.org.ala.delta.editor.ui.dnd.DropIndicationTable;
-import au.org.ala.delta.model.Item;
-import au.org.ala.delta.model.observer.AbstractDataSetObserver;
-import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 
 /**
  * The MatrixViewer presents the attributes of the data set in a tabular format.
@@ -204,7 +192,7 @@ public class MatrixViewer extends AbstractDeltaView {
 
 			@Override
 			public void adjustmentValueChanged(AdjustmentEvent e) {
-				fixedScrollPane.getViewport().setViewPosition(scrollpane.getViewport().getViewPosition());
+                fixedScrollPane.getViewport().setViewPosition(new Point(0, scrollpane.getViewport().getViewPosition().y));
 			}
 		});
 
@@ -214,7 +202,8 @@ public class MatrixViewer extends AbstractDeltaView {
 
 			@Override
 			public void adjustmentValueChanged(AdjustmentEvent e) {
-				scrollpane.getViewport().setViewPosition(fixedScrollPane.getViewport().getViewPosition());
+                int currentX = scrollpane.getViewport().getViewPosition().x;
+				scrollpane.getViewport().setViewPosition(new Point(currentX, fixedScrollPane.getViewport().getViewPosition().y));
 
 			}
 		});
