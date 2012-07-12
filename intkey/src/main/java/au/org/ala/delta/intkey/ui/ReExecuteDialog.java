@@ -28,6 +28,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
@@ -43,13 +44,14 @@ import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
+import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class ReExecuteDialog extends JDialog {
     /**
      * 
      */
     private static final long serialVersionUID = 5026213030206139590L;
-    
+
     private JPanel _pnlButtons;
     private JButton _btnExecute;
     private JButton _btnCancel;
@@ -58,17 +60,21 @@ public class ReExecuteDialog extends JDialog {
     private JList _listDirectives;
 
     private IntkeyDirectiveInvocation _directiveToExecute = null;
-    
+    private IntkeyContext _context;
+
     @Resource
     String windowTitle;
 
-    public ReExecuteDialog(Frame owner, List<IntkeyDirectiveInvocation> directives) {
+    @Resource
+    String editPrompt;
+
+    public ReExecuteDialog(Frame owner, List<IntkeyDirectiveInvocation> directives, IntkeyContext context) {
         super(owner, true);
-        
+
         ActionMap actionMap = Application.getInstance().getContext().getActionMap(this);
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(ReExecuteDialog.class);
         resourceMap.injectFields(this);
-        
+
         setResizable(false);
         setSize(new Dimension(450, 300));
         setLocationRelativeTo(owner);
@@ -82,28 +88,24 @@ public class ReExecuteDialog extends JDialog {
 
         _btnExecute = new JButton("Execute");
         _btnExecute.setAction(actionMap.get("reExecuteDialog_Execute"));
-        
-        _btnExecute.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                IntkeyDirectiveInvocation selectedDirective = (IntkeyDirectiveInvocation) _listDirectives.getSelectedValue();
-                _directiveToExecute = selectedDirective;
-                ReExecuteDialog.this.setVisible(false);
-            }
-        });
-        //execute button only become enabled when a directive from the list is
-        //selected
+
+        // execute button only become enabled when a directive from the list is
+        // selected
         _btnExecute.setEnabled(false);
+
         _pnlButtons.add(_btnExecute);
 
         _btnCancel = new JButton("Cancel");
         _btnCancel.setAction(actionMap.get("reExecuteDialog_Cancel"));
-        
+
         _pnlButtons.add(_btnCancel);
 
         _btnEdit = new JButton("Edit");
         _btnEdit.setAction(actionMap.get("reExecuteDialog_Edit"));
+        // execute button only become enabled when a directive from the list is
+        // selected
         _btnEdit.setEnabled(false);
-        
+
         _pnlButtons.add(_btnEdit);
 
         _scrollPane = new JScrollPane();
@@ -124,36 +126,46 @@ public class ReExecuteDialog extends JDialog {
 
         _listDirectives.setModel(listModel);
         _listDirectives.addListSelectionListener(new ListSelectionListener() {
-            
+
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 if (_listDirectives.getSelectedIndex() != -1) {
                     _btnExecute.setEnabled(true);
+                    _btnEdit.setEnabled(true);
                 } else {
                     _btnExecute.setEnabled(false);
+                    _btnEdit.setEnabled(false);
                 }
             }
         });
+
+        _context = context;
     }
 
     public IntkeyDirectiveInvocation getDirectiveToExecute() {
         return _directiveToExecute;
     }
-    
+
     @Action
     public void reExecuteDialog_Execute() {
-        // TODO
+        IntkeyDirectiveInvocation selectedDirective = (IntkeyDirectiveInvocation) _listDirectives.getSelectedValue();
+        _context.executeDirective(selectedDirective);
+        this.setVisible(false);
     }
-    
+
     @Action
     public void reExecuteDialog_Cancel() {
         this.setVisible(false);
     }
-    
+
     @Action
     public void reExecuteDialog_Edit() {
-        // TODO
+        IntkeyDirectiveInvocation selectedDirective = (IntkeyDirectiveInvocation) _listDirectives.getSelectedValue();
+        String editedDirective = JOptionPane.showInputDialog(this, editPrompt, selectedDirective.toString());
+        if (editedDirective != null) {
+            _context.parseAndExecuteDirective(editedDirective);
+            this.setVisible(false);
+        }
     }
-    
 
 }

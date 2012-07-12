@@ -1405,12 +1405,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Action
     public void mnuItReExecute() {
-        ReExecuteDialog dlg = new ReExecuteDialog(getMainFrame(), _context.getExecutedDirectives());
+        ReExecuteDialog dlg = new ReExecuteDialog(getMainFrame(), _context.getExecutedDirectives(), _context);
         dlg.setVisible(true);
-        IntkeyDirectiveInvocation directive = dlg.getDirectiveToExecute();
-        if (directive != null) {
-            _context.executeDirective(directive);
-        }
     }
 
     // ============================= Window menu actions
