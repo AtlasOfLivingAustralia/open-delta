@@ -16,7 +16,6 @@ package au.org.ala.delta.intkey.directives.invocation;
 
 import java.awt.Color;
 import java.net.URL;
-import java.text.MessageFormat;
 import java.util.List;
 
 import au.org.ala.delta.intkey.model.DisplayImagesReportType;
@@ -85,9 +84,12 @@ public class DisplayImagesDirectiveInvocation extends IntkeyDirectiveInvocation 
         List<Character> characters = context.getDataset().getCharactersAsList();
         List<Item> taxa = context.getDataset().getItemsAsList();
 
+        int imgCount = 0;
+
         for (Character ch : characters) {
             List<Image> images = ch.getImages();
             for (Image image : images) {
+                imgCount++;
                 String fileName = image.getFileName();
                 URL fileURL = imgSettings.findFileOnResourcePath(fileName, true);
                 if (fileURL == null) {
@@ -99,6 +101,7 @@ public class DisplayImagesDirectiveInvocation extends IntkeyDirectiveInvocation 
         for (Item taxon : taxa) {
             List<Image> images = taxon.getImages();
             for (Image image : images) {
+                imgCount++;
                 String fileName = image.getFileName();
                 URL fileURL = imgSettings.findFileOnResourcePath(fileName, true);
                 if (fileURL == null) {
@@ -106,30 +109,52 @@ public class DisplayImagesDirectiveInvocation extends IntkeyDirectiveInvocation 
                 }
             }
         }
+
+        // Display message if there are no images
+        if (imgCount == 0) {
+            builder.appendText(UIUtils.getResourceString("MissingImageList.NoImages"));
+        }
     }
 
     private void generateCharacterImageList(IntkeyContext context, RTFBuilder builder) {
         List<Character> characters = context.getDataset().getCharactersAsList();
 
+        int imgCount = 0;
+
         for (Character ch : characters) {
             List<Image> images = ch.getImages();
             for (Image image : images) {
+                imgCount++;
                 String fileName = image.getFileName();
                 builder.appendText(fileName);
             }
+        }
+
+        // Display message if there are no images
+        if (imgCount == 0) {
+            builder.setTextColor(Color.RED);
+            builder.appendText(UIUtils.getResourceString("CharacterImageList.NoImages"));
         }
     }
 
     private void generateTaxonImageList(IntkeyContext context, RTFBuilder builder) {
         List<Item> taxa = context.getDataset().getItemsAsList();
 
+        int imgCount = 0;
+
         for (Item taxon : taxa) {
             List<Image> images = taxon.getImages();
             for (Image image : images) {
+                imgCount++;
                 String fileName = image.getFileName();
                 builder.appendText(fileName);
             }
         }
-    }
 
+        // Display message if there are no images
+        if (imgCount == 0) {
+            builder.setTextColor(Color.RED);
+            builder.appendText(UIUtils.getResourceString("TaxonImageList.NoImages"));
+        }
+    }
 }
