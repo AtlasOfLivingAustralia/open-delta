@@ -16,19 +16,24 @@ package au.org.ala.delta.ui.image;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Cursor;
 import java.awt.Window;
+import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 
 import org.jdesktop.application.Action;
 
+import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.ui.image.ImagePanel.ScalingMode;
@@ -36,16 +41,19 @@ import au.org.ala.delta.ui.image.ImagePanel.ScalingMode;
 public class MultipleImageViewer extends JPanel {
 
     private static final long serialVersionUID = 6901754518169951771L;
-    private int _selectedIndex;
     private CardLayout _layout;
     private ScalingMode _scalingMode;
     private List<ImageViewer> _imageViewers;
-    private Map<String, ImageViewer> _imageViewerMap;
-    private List<String> _imageIds;
+    private Map<String, ImageViewer> _idToViewerMap;
+    private Map<String, Image> _idToImageMap;
     private ImageSettings _imageSettings;
     private JPanel _contentPanel;
     private boolean _hideHotSpots;
     private boolean _hideTextOverlays;
+
+    private OverlaySelectionObserver _observer;
+    private ImageViewer _visibleViewer;
+    private Image _visibleImage;
 
     public MultipleImageViewer(ImageSettings imageSettings) {
         _imageSettings = imageSettings;
@@ -55,84 +63,56 @@ public class MultipleImageViewer extends JPanel {
         this.setLayout(new BorderLayout());
         this.add(_contentPanel, BorderLayout.CENTER);
         _imageViewers = new ArrayList<ImageViewer>();
-        _imageViewerMap = new HashMap<String, ImageViewer>();
-        _imageIds = new ArrayList<String>();
+        _idToViewerMap = new HashMap<String, ImageViewer>();
+        _idToImageMap = new HashMap<String, Image>();
 
-        _selectedIndex = 0;
         _scalingMode = ScalingMode.FIXED_ASPECT_RATIO;
     }
 
-    public void addImageViewer(ImageViewer viewer) {
+    /**
+     * Set the observer that will be added to each instance of ImageViewer that
+     * is created by this MultipleImageViewer. This must be set before any
+     * images are shown by the MultipleImageViewer.
+     * 
+     * @param observer
+     */
+    public void setObserver(OverlaySelectionObserver observer) {
+        _observer = observer;
+    }
+
+    public void addImage(String imageId, Image image, BufferedImage bufferedImage, URL imageFileLocation, String imageType) {
+        ImageViewer viewer = new ImageViewer(image, _imageSettings, bufferedImage, imageFileLocation, imageType);
+        if (_observer != null) {
+            viewer.addOverlaySelectionObserver(_observer);
+        }
+
+        _idToViewerMap.put(imageId, viewer);
+        _idToImageMap.put(imageId, image);
+
         _imageViewers.add(viewer);
-        String imageId = viewer.getViewedImage().getFileName();
-        _imageViewerMap.put(imageId, viewer);
-        _imageIds.add(imageId);
-        _contentPanel.add(viewer, imageId);
-    }
-
-    /**
-     * Displays the next image of the current subject (Character or Item)
-     */
-    public void nextImage() {
-        int nextIndex = _selectedIndex + 1;
-        if (nextIndex < _imageViewers.size()) {
-            _layout.next(_contentPanel);
-            _selectedIndex = nextIndex;
-        }
-    }
-
-    /**
-     * Displays the previous image of the current subject (Character or Item)
-     */
-    public void previousImage() {
-        int prevIndex = _selectedIndex - 1;
-        if (prevIndex >= 0) {
-            _layout.previous(_contentPanel);
-            _selectedIndex = prevIndex;
-        }
+        _contentPanel.add(viewer, image.getFileName());
     }
 
     public void showImage(String imageId) {
-        ImageViewer viewer = _imageViewerMap.get(imageId);
-        _selectedIndex = _imageViewers.indexOf(viewer);
+        if (!_idToViewerMap.containsKey(imageId)) {
+            throw new IllegalArgumentException("Image " + imageId + " not present in MultipleImageViewer");
+        }
+
+        _visibleViewer = _idToViewerMap.get(imageId);
+        _visibleImage = _idToImageMap.get(imageId);
+
         _layout.show(_contentPanel, imageId);
     }
 
-    public void showImage(int imageIndex) {
-        if (imageIndex < 0 || imageIndex > _imageViewers.size() - 1) {
-            throw new IllegalArgumentException("Invalid image index");
-        }
-
-        String imageId = _imageIds.get(imageIndex);
-        showImage(imageId);
+    public boolean hasImage(String imageId) {
+        return _idToViewerMap.containsKey(imageId);
     }
 
-    public int getNumberImages() {
-        return _imageViewers.size();
-    }
-
-    public int getIndexCurrentlyViewedImage() {
-        return _selectedIndex;
-    }
-
-    public boolean atFirstImage() {
-        return _selectedIndex == 0;
-    }
-
-    public boolean atLastImage() {
-        return _selectedIndex == _imageViewers.size() - 1;
-    }
-
-    public void replaySound() {
-        List<ImageOverlay> sounds = getVisibleViewer().getViewedImage().getSounds();
+    public void replaySound() throws Exception {
+        List<ImageOverlay> sounds = getVisibleImage().getSounds();
         for (ImageOverlay sound : sounds) {
-            try {
-                URL soundUrl = _imageSettings.findFileOnResourcePath(sound.overlayText, false);
-                AudioPlayer.playClip(soundUrl);
-            } catch (Exception e) {
-                // TODO _messageHelper.errorPlayingSound(sound.overlayText);
-                e.printStackTrace();
-            }
+            URL soundUrl = _imageSettings.findFileOnResourcePath(sound.overlayText, false);
+            AudioPlayer.playClip(soundUrl);
         }
     }
 
@@ -199,11 +179,11 @@ public class MultipleImageViewer extends JPanel {
     }
 
     public ImageViewer getVisibleViewer() {
-        if (_selectedIndex < _imageViewers.size()) {
-            return _imageViewers.get(_selectedIndex);
-        } else {
-            return null;
-        }
+        return _visibleViewer;
+    }
+
+    public Image getVisibleImage() {
+        return _visibleImage;
     }
 
 }

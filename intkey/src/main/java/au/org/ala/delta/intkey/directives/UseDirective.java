@@ -77,26 +77,30 @@ public class UseDirective extends IntkeyDirective {
             // Selection mode to use if prompting for characters
             SelectionMode selectionMode = context.displayKeywords() ? SelectionMode.KEYWORD : SelectionMode.LIST;
 
-            boolean needToPrompt = true;
+            boolean needToPrompt = false;
             if (data != null && data.trim().length() > 0) {
-                // Need to prompt for characters if data starts with a wildcard
-                if (data.toUpperCase().startsWith(IntkeyDirectiveArgument.KEYWORD_DIALOG_WILDCARD)) {
-                    selectionMode = SelectionMode.KEYWORD;
-                } else if (data.toUpperCase().startsWith(IntkeyDirectiveArgument.LIST_DIALOG_WILDCARD)) {
-                    selectionMode = SelectionMode.LIST;
-                } else if (data.toUpperCase().startsWith(IntkeyDirectiveArgument.DEFAULT_DIALOG_WILDCARD)) {
-                    // Do nothing, use default selection mode as set above
-                } else {
-                    needToPrompt = false;
-                    List<String> subCommands = ParsingUtils.tokenizeDirectiveCall(data);
+                List<String> subCommands = ParsingUtils.tokenizeDirectiveCall(data);
 
-                    for (String subCmd : subCommands) {
-                        // TODO need to handle additional undocumented flags
-                        if (subCmd.equalsIgnoreCase(SUPPRESS_ALREADY_SET_WARNING_FLAG)) {
-                            suppressAlreadySetWarning = true;
-                        } else {
-                            parseSubcommands(subCmd, characterNumbers, specifiedValues, context, stringRepresentationParts);
-                        }
+                for (String subCmd : subCommands) {
+                    // Need to prompt for characters if data contains a wildcard
+                    if (subCmd.equalsIgnoreCase(IntkeyDirectiveArgument.KEYWORD_DIALOG_WILDCARD)) {
+                        selectionMode = SelectionMode.KEYWORD;
+                        needToPrompt = true;
+                        break;
+                    } else if (subCmd.equalsIgnoreCase(IntkeyDirectiveArgument.LIST_DIALOG_WILDCARD)) {
+                        selectionMode = SelectionMode.LIST;
+                        needToPrompt = true;
+                        break;
+                    } else if (subCmd.equalsIgnoreCase(IntkeyDirectiveArgument.DEFAULT_DIALOG_WILDCARD)) {
+                        // Use default selection mode as set above
+                        needToPrompt = true;
+                        break;
+                    } else if (subCmd.equalsIgnoreCase(SUPPRESS_ALREADY_SET_WARNING_FLAG)) {
+                        suppressAlreadySetWarning = true;
+                    } else if (subCmd.startsWith("/")) {
+                        // ignore additional undocumented flags.
+                    } else {
+                        parseSubcommands(subCmd, characterNumbers, specifiedValues, context, stringRepresentationParts);
                     }
                 }
             }

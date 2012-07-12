@@ -41,6 +41,8 @@ public class StartupUtils {
         
         //Copy the zipped dataset as downloaded from the web
         FileUtils.copyFileToDirectory(datasetZip, saveDir);
+
+        File copyZipFile = new File(saveDir, datasetZip.getName());
         
         //Write a new .ink file 
         File newInkFile = new File(saveDir, startupFile.getName());
@@ -55,7 +57,7 @@ public class StartupUtils {
         
         bufFW.append(INIT_FILE_DATA_FILE_KEYWORD);
         bufFW.append("=");
-        bufFW.append(startupFileData.getDataFileLocation().toString());
+        bufFW.append(copyZipFile.toURI().toURL().toString());
         bufFW.append("\n");
         
         bufFW.append(INIT_FILE_INITIALIZATION_FILE_KEYWORD);

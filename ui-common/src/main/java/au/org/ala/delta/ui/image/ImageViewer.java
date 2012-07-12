@@ -25,6 +25,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,6 +49,7 @@ import au.org.ala.delta.ui.image.overlay.OverlayLocationProvider;
 import au.org.ala.delta.ui.image.overlay.RelativePositionedTextOverlay;
 import au.org.ala.delta.ui.image.overlay.SelectableTextOverlay;
 import au.org.ala.delta.ui.image.overlay.TextFieldOverlay;
+import au.org.ala.delta.ui.util.UIUtils;
 
 /**
  * Displays a single DELTA Image.
@@ -105,14 +107,24 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, ActionLis
         addOverlays();
     }
 
+    public ImageViewer(Image image, ImageSettings imageSettings, BufferedImage bufferedImage, URL imageFileLocation, String imageType) {
+        _image = image;
+
+        this.setBackground(Color.BLACK);
+
+        ResourceMap resources = Application.getInstance().getContext().getResourceMap();
+
+        _factory = new OverlayComponentFactory(resources, imageSettings);
+        setLayout(this);
+
+        displayImage(bufferedImage, imageFileLocation, imageType);
+        _components = new ArrayList<JComponent>();
+        _observers = new ArrayList<OverlaySelectionObserver>();
+        addOverlays();
+    }
+
     protected URL findImageFile(String fileName, ImageSettings imageSettings) {
-        URL imageLocation = imageSettings.findFileOnResourcePath(fileName, false);
-
-        if (imageLocation == null) {
-            throw new IllegalArgumentException("Could not open image file " + fileName);
-        }
-
-        return imageLocation;
+        return UIUtils.findImageFile(fileName, imageSettings);
     }
 
     public void addOverlays() {

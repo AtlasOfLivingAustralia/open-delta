@@ -925,7 +925,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Override
     protected void shutdown() {
-        saveCurrentlyOpenedDataset();
         savePreviousApplicationMode(_advancedMode);
         saveLastOpenedDatasetDirectory(_lastOpenedDatasetDirectory);
         _context.cleanupForShutdown();
@@ -2317,6 +2316,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         if (_context.getImageDisplayMode() == ImageDisplayMode.AUTO && characterKeywordImages != null && !characterKeywordImages.isEmpty()) {
             ImageDialog dlg = new ImageDialog(getMainFrame(), _context.getImageSettings(), true, _context.displayScaled());
             dlg.setImages(characterKeywordImages);
+            dlg.showImage(0);
             dlg.setTitle(MessageFormat.format(selectCharacterKeywordsCaption, directiveName));
 
             show(dlg);
@@ -2380,6 +2380,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         if (_context.getImageDisplayMode() == ImageDisplayMode.AUTO && taxonKeywordImages != null && !taxonKeywordImages.isEmpty()) {
             ImageDialog dlg = new ImageDialog(getMainFrame(), _context.getImageSettings(), true, _context.displayScaled());
             dlg.setImages(taxonKeywordImages);
+            dlg.showImage(0);
             dlg.setTitle(MessageFormat.format(selectTaxonKeywordsCaption, directiveName));
 
             show(dlg);

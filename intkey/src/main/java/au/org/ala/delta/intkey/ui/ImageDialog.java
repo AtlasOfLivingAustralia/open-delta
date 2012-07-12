@@ -15,6 +15,7 @@
 package au.org.ala.delta.intkey.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -29,6 +30,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -41,8 +45,10 @@ import javax.swing.JDialog;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.FloatRange;
@@ -52,6 +58,7 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SingleFrameApplication;
 
+import au.org.ala.delta.Logger;
 import au.org.ala.delta.intkey.Intkey;
 import au.org.ala.delta.intkey.directives.ParsingUtils;
 import au.org.ala.delta.model.format.Formatter;
@@ -71,6 +78,7 @@ import au.org.ala.delta.ui.image.SelectableOverlay;
 import au.org.ala.delta.ui.image.overlay.HotSpotGroup;
 import au.org.ala.delta.ui.image.overlay.SelectableTextOverlay;
 import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
+import au.org.ala.delta.ui.util.UIUtils;
 import au.org.ala.delta.util.Pair;
 
 public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserver {
@@ -163,17 +171,10 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
 
         _scaleImages = imagesStartScaled;
 
+        setMinimumSize(new Dimension(500, 500));
+
         buildMenu();
         getContentPane().setLayout(new GridLayout(0, 1, 0, 0));
-
-        this.addWindowListener(new WindowAdapter() {
-
-            @Override
-            public void windowOpened(WindowEvent e) {
-                // fitToImage();
-                replaySound();
-            }
-        });
     }
 
     private void buildMenu() {
@@ -263,13 +264,8 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
         }
 
         _multipleImageViewer = new MultipleImageViewer(_imageSettings);
+        _multipleImageViewer.setObserver(this);
         getContentPane().add(_multipleImageViewer);
-
-        for (Image image : _images) {
-            ImageViewer viewer = new ImageViewer(image, _imageSettings);
-            _multipleImageViewer.addImageViewer(viewer);
-            viewer.addOverlaySelectionObserver(this);
-        }
 
         populateSubjectMenu(_images);
 
@@ -290,16 +286,14 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
 
         ButtonGroup group = new ButtonGroup();
 
-        for (Image image : images) {
+        for (final Image image : images) {
             String imageDescription = _imageDescriptionFormatter.defaultFormat(image.getSubjectTextOrFileName());
-            final String imageFileName = image.getFileName();
             JRadioButtonMenuItem rdBtnMnuIt = new JRadioButtonMenuItem(imageDescription);
             rdBtnMnuIt.addActionListener(new ActionListener() {
 
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    _multipleImageViewer.showImage(imageFileName);
-                    handleNewImageSelected();
+                    showImage(_images.indexOf(image));
                 }
             });
 
@@ -349,20 +343,18 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
     }
 
     public void showImage(int imageIndex) {
-        _multipleImageViewer.showImage(imageIndex);
-        handleNewImageSelected();
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        new ImageLoadWorker(imageIndex).execute();
     }
 
     @Action
     public void nextImage() {
-        _multipleImageViewer.nextImage();
-        handleNewImageSelected();
+        showImage(getIndexCurrentViewedImage() + 1);
     }
 
     @Action
     public void previousImage() {
-        _multipleImageViewer.previousImage();
-        handleNewImageSelected();
+        showImage(getIndexCurrentViewedImage() - 1);
     }
 
     @Action
@@ -378,7 +370,12 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
 
     @Action
     public void replaySound() {
-        _multipleImageViewer.replaySound();
+        try {
+            _multipleImageViewer.replaySound();
+        } catch (Exception ex) {
+            Logger.error(ex);
+            JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(ImageDialog.this), "Error occurred playing sound: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     @Action
@@ -399,8 +396,12 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
         dlg.setLayout(new BorderLayout());
         dlg.setUndecorated(true);
 
-        Image image = _images.get(_multipleImageViewer.getIndexCurrentlyViewedImage());
-        ImageViewer imageViewer = new ImageViewer(image, _imageSettings);
+        Image image = _multipleImageViewer.getVisibleImage();
+        BufferedImage bufferedImage = _multipleImageViewer.getVisibleViewer().getImage();
+        String imageType = _multipleImageViewer.getVisibleViewer().getImageFormatName();
+        URL imageLocation = _multipleImageViewer.getVisibleViewer().getImageFileLocation();
+
+        ImageViewer imageViewer = new ImageViewer(image, _imageSettings, bufferedImage, imageLocation, imageType);
         imageViewer.addOverlaySelectionObserver(this);
         imageViewer.setScalingMode(ScalingMode.NO_SCALING);
 
@@ -460,15 +461,19 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
 
     protected void handleNewImageSelected() {
         reSelectStatesInNewViewer(_multipleImageViewer.getVisibleViewer());
-        _mnuItNextImage.setEnabled(!_multipleImageViewer.atLastImage());
-        _mnuItPreviousImage.setEnabled(!_multipleImageViewer.atFirstImage());
+        _mnuItNextImage.setEnabled(!(_multipleImageViewer.getVisibleImage() == _images.get(_images.size() - 1)));
+        _mnuItPreviousImage.setEnabled(!(_multipleImageViewer.getVisibleImage() == _images.get(0)));
 
-        int viewedIndex = _multipleImageViewer.getIndexCurrentlyViewedImage();
+        int viewedIndex = getIndexCurrentViewedImage();
         JMenuItem mnuIt = (JMenuItem) _mnuSubject.getMenuComponent(viewedIndex);
         mnuIt.setSelected(true);
 
         fitToImage();
         replaySound();
+    }
+
+    private int getIndexCurrentViewedImage() {
+        return _images.indexOf(_multipleImageViewer.getVisibleImage());
     }
 
     protected void displayRTFWindow(String rtfContent, String title) {
@@ -580,5 +585,50 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
      */
     public boolean okButtonPressed() {
         return _okButtonPressed;
+    }
+
+    /**
+     * Loads images from their URLs on a background thread. Used because large
+     * remotely hosted images lock up the UI if they are loaded on the event
+     * dispatch thread.
+     * 
+     * @author ChrisF
+     * 
+     */
+    private class ImageLoadWorker extends SwingWorker<List<Object>, Void> {
+
+        private int _imageIndex;
+
+        public ImageLoadWorker(int imageIndex) {
+            _imageIndex = imageIndex;
+        }
+
+        @Override
+        protected List<Object> doInBackground() throws Exception {
+            Image img = _images.get(_imageIndex);
+            URL imgURL = UIUtils.findImageFile(img.getFileName(), _imageSettings);
+            Pair<BufferedImage, String> imageAndType = UIUtils.readImage(imgURL);
+            List<Object> retList = new ArrayList<Object>();
+            retList.add(img);
+            retList.add(imageAndType.getFirst());
+            retList.add(imageAndType.getSecond());
+            retList.add(imgURL);
+            return retList;
+        }
+
+        @Override
+        protected void done() {
+            ImageDialog.this.setCursor(Cursor.getDefaultCursor());
+            try {
+                List<Object> imageDataList = get();
+                _multipleImageViewer.addImage(((Image) imageDataList.get(0)).getFileName(), (Image) imageDataList.get(0), (BufferedImage) imageDataList.get(1), (URL) imageDataList.get(3),
+                        (String) imageDataList.get(2));
+                _multipleImageViewer.showImage(((Image) imageDataList.get(0)).getFileName());
+                handleNewImageSelected();
+            } catch (Exception ex) {
+                Logger.error(ex);
+                JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(ImageDialog.this), "Error occurred loading image: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 }

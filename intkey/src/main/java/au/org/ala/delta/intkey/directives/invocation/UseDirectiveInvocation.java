@@ -94,7 +94,7 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
 
         _stringRepresentationBuilder.append(directiveName);
         _stringRepresentationBuilder.append(" ");
-        
+
         if (_suppressAlreadySetWarning) {
             _stringRepresentationBuilder.append(UseDirective.SUPPRESS_ALREADY_SET_WARNING_FLAG + " ");
         }
@@ -130,7 +130,11 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
                 if (checkCharacterUsable(ch, context, false)) {
                     Attribute attr = _characterAttributes.get(ch);
                     setValueForCharacter(ch, attr, context);
+                } else {
+                    return false;
                 }
+            } else {
+                return false;
             }
         }
 
@@ -164,12 +168,10 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
                         return false;
                     }
                 } else {
-                    // remove this value so that the user will not be
-                    // prompted
-                    // about it when the command is
-                    // run additional times.
-                    _characterAttributes.remove(ch);
+                    return false;
                 }
+            } else {
+                return false;
             }
         } else {
             List<Character> charsNoValuesCopy = new ArrayList<Character>(charsNoValuesSpecified);
@@ -222,11 +224,7 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
                         if (checkCharacterUsable(ch, context, false)) {
                             attr = promptForCharacterValue(ch, context.getDirectivePopulator());
                         } else {
-                            // remove this value so that the user will not
-                            // be
-                            // prompted about it when the command is
-                            // run additional times.
-                            _characterAttributes.remove(ch);
+                            return false;
                         }
 
                         if (attr != null) {
@@ -239,6 +237,8 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
 
                             charsNoValuesCopy.remove(ch);
                         }
+                    } else {
+                        return false;
                     }
                 }
             }
@@ -248,11 +248,11 @@ public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
         for (Character ch : charsNoValuesSpecified) {
             // Generate a string representation of the value set for the
             // character
-            Attribute attr = _characterAttributes.get(ch);
-            String strRepresentation = Integer.toString(ch.getCharacterId()) + "," + formatAttributeValueForLog(attr);
 
+            Attribute attr = _characterAttributes.get(ch);
             int strRepIndex = _stringRepresentationParts.indexOf(Integer.toString(ch.getCharacterId()));
             _stringRepresentationParts.remove(strRepIndex);
+            String strRepresentation = Integer.toString(ch.getCharacterId()) + "," + formatAttributeValueForLog(attr);
             _stringRepresentationParts.add(strRepIndex, strRepresentation);
         }
 

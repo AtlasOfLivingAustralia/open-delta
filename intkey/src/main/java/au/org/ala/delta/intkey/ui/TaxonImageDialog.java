@@ -71,10 +71,6 @@ public class TaxonImageDialog extends ImageDialog {
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(TaxonImageDialog.class);
         resourceMap.injectFields(this);
         buildMenu();
-
-        if (!_taxa.isEmpty()) {
-            displayImagesForTaxon(0);
-        }
     }
 
     private void buildMenu() {
@@ -95,26 +91,23 @@ public class TaxonImageDialog extends ImageDialog {
         _mnuControl.add(_mnuItMultipleImages);
     }
 
-    private void displayImagesForTaxon(int taxonIndex) {
+    private void displayImagesForTaxon(int taxonIndex, int imageToShow) {
         _selectedTaxonIndex = taxonIndex;
         Item selectedTaxon = _taxa.get(_selectedTaxonIndex);
 
         setImages(selectedTaxon.getImages());
+        showImage(imageToShow);
 
         _mnuItNextTaxon.setEnabled(_selectedTaxonIndex < _taxa.size() - 1);
         _mnuItPreviousTaxon.setEnabled(_selectedTaxonIndex > 0);
         _mnuItMultipleImages.setEnabled(_multipleImagesMenuEnabled && selectedTaxon.getImageCount() > 1);
-
-        updateTitle();
-        fitToImage();
-        replaySound();
     }
 
     private void updateTitle() {
         Item selectedTaxon = _taxa.get(_selectedTaxonIndex);
 
         String formattedTaxonName = _itemFormatter.formatItemDescription(selectedTaxon);
-        String formattedImageName = _imageDescriptionFormatter.defaultFormat(_multipleImageViewer.getVisibleViewer().getViewedImage().getSubjectTextOrFileName());
+        String formattedImageName = _imageDescriptionFormatter.defaultFormat(_multipleImageViewer.getVisibleImage().getSubjectTextOrFileName());
 
         setTitle(String.format("%s: %s", formattedTaxonName, formattedImageName));
     }
@@ -125,24 +118,24 @@ public class TaxonImageDialog extends ImageDialog {
         updateTitle();
     }
 
-    public void displayImagesForTaxon(Item taxon) {
+    public void displayImagesForTaxon(Item taxon, int imageToShow) {
         int taxonIndex = _taxa.indexOf(taxon);
         if (taxonIndex > -1) {
-            displayImagesForTaxon(taxonIndex);
+            displayImagesForTaxon(taxonIndex, imageToShow);
         }
     }
 
     @Action
     public void viewNextTaxon() {
         if (_selectedTaxonIndex < _taxa.size() - 1) {
-            displayImagesForTaxon(_selectedTaxonIndex + 1);
+            displayImagesForTaxon(_selectedTaxonIndex + 1, 0);
         }
     }
 
     @Action
     public void viewPreviousTaxon() {
         if (_selectedTaxonIndex > 0) {
-            displayImagesForTaxon(_selectedTaxonIndex - 1);
+            displayImagesForTaxon(_selectedTaxonIndex - 1, 0);
         }
     }
 

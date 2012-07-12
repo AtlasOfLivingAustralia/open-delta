@@ -462,8 +462,7 @@ public class TaxonInformationDialog extends IntkeyDialog {
         try {
             Item selectedTaxon = getSelectedTaxon();
             TaxonImageDialog dlg = new TaxonImageDialog(UIUtils.getMainFrame(), _imageSettings, _taxaWithImages, false, !_context.displayContinuous(), _context.displayScaled());
-            dlg.displayImagesForTaxon(selectedTaxon);
-            dlg.showImage(imageIndex);
+            dlg.displayImagesForTaxon(selectedTaxon, imageIndex);
             ((SingleFrameApplication) Application.getInstance()).show(dlg);
         } catch (IllegalArgumentException ex) {
             // Display error message if unable to display 

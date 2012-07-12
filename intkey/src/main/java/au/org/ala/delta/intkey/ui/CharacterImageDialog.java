@@ -109,7 +109,7 @@ public class CharacterImageDialog extends ImageDialog {
 
         buildMenuItems();
 
-        displayImagesForCharacter(0);
+        displayImagesForCharacter(0, 0);
     }
 
     private void buildMenuItems() {
@@ -124,17 +124,15 @@ public class CharacterImageDialog extends ImageDialog {
         _mnuControl.add(_mnuItPreviousCharacter);
     }
 
-    private void displayImagesForCharacter(int characterIndex) {
+    private void displayImagesForCharacter(int characterIndex, int imageToShow) {
         _selectedCharacterIndex = characterIndex;
         Character selectedCharacter = _characters.get(characterIndex);
 
         setImages(selectedCharacter.getImages());
+        showImage(imageToShow);
 
         _mnuItNextCharacter.setEnabled(_selectedCharacterIndex < _characters.size() - 1);
         _mnuItPreviousCharacter.setEnabled(_selectedCharacterIndex > 0);
-
-        updateTitle();
-        fitToImage();
     }
 
     private void updateTitle() {
@@ -150,7 +148,7 @@ public class CharacterImageDialog extends ImageDialog {
             }
         } else {
             String strCharacterNumber = Integer.toString(selectedCharacter.getCharacterId());
-            String formattedImageName = _imageDescriptionFormatter.defaultFormat(_multipleImageViewer.getVisibleViewer().getViewedImage().getSubjectTextOrFileName());
+            String formattedImageName = _imageDescriptionFormatter.defaultFormat(_multipleImageViewer.getVisibleImage().getSubjectTextOrFileName());
             setTitle(MessageFormat.format(notEditableTitle, strCharacterNumber, formattedImageName));
         }
     }
@@ -164,21 +162,21 @@ public class CharacterImageDialog extends ImageDialog {
     public void displayImagesForCharacter(Character ch) {
         int characterIndex = _characters.indexOf(ch);
         if (characterIndex > -1) {
-            displayImagesForCharacter(characterIndex);
+            displayImagesForCharacter(characterIndex, 0);
         }
     }
 
     @Action
     public void viewNextCharacter() {
         if (_selectedCharacterIndex < _characters.size() - 1) {
-            displayImagesForCharacter(_selectedCharacterIndex + 1);
+            displayImagesForCharacter(_selectedCharacterIndex + 1, 0);
         }
     }
 
     @Action
     public void viewPreviousCharacter() {
         if (_selectedCharacterIndex > 0) {
-            displayImagesForCharacter(_selectedCharacterIndex - 1);
+            displayImagesForCharacter(_selectedCharacterIndex - 1, 0);
         }
     }
 
