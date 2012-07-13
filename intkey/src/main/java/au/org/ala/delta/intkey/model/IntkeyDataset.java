@@ -310,13 +310,12 @@ public class IntkeyDataset implements DeltaDataSet {
      */
     @Override
     public List<Attribute> getAllAttributesForCharacter(int charNo) {
-        List<Attribute> attrList = IntkeyDatasetFileReader.readAttributesForCharacter(_itemsFileHeader, _itemsBinFile, _characters, _taxa, charNo);
+        List<Attribute> attrList = IntkeyDatasetFileReader.readAllAttributesForCharacter(_itemsFileHeader, _itemsBinFile, getCharacter(charNo), _taxa);
         return attrList;
     }
 
     public Attribute getAttribute(int itemNo, int charNo) {
-        List<Attribute> attrList = IntkeyDatasetFileReader.readAttributesForCharacter(_itemsFileHeader, _itemsBinFile, _characters, _taxa, charNo);
-        return attrList.get(itemNo - 1);
+        return IntkeyDatasetFileReader.readAttribute(_itemsFileHeader, _itemsBinFile, getCharacter(charNo), getItem(itemNo));
     }
 
     public boolean realCharacterKeyStateBoundariesPresent() {

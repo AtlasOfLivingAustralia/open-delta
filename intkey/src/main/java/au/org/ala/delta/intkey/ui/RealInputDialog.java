@@ -82,6 +82,7 @@ public class RealInputDialog extends NumberInputDialog {
     void handleBtnImagesClicked() {
         CharacterImageDialog dlg = new CharacterImageDialog(this, Arrays.asList(new au.org.ala.delta.model.Character[] { _ch }), _imageSettings, true, true, _imagesStartScaled);
         dlg.setVisible(true);
+        dlg.showImage(0);
 
         try {
             FloatRange rangeFromImageDialog = dlg.getInputRealValues();

@@ -28,7 +28,7 @@ import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.editor.slotfile.DirectiveInstance;
 import au.org.ala.delta.editor.slotfile.directive.ConforDirType;
 import au.org.ala.delta.rtf.RTFBuilder;
-import au.org.ala.delta.rtf.RTFBuilder.Alignment;
+import au.org.ala.delta.rtf.RTFAlignment;
 import au.org.ala.delta.util.ArrayUtils;
 
 
@@ -79,7 +79,7 @@ public class ImportExportStatus  {
 	 */
 	public void setHeading(String heading) {
 		this.heading = heading;
-		_logBuilder.setAlignment(Alignment.CENTER);
+		_logBuilder.setAlignment(RTFAlignment.CENTER);
 		_logBuilder.appendText(_resources.getString(_resourcePrefix+".heading"));
 		_logBuilder.appendText(_resources.getString("importExportReport.dataSetLabel",heading));
 	}
@@ -130,7 +130,7 @@ public class ImportExportStatus  {
 		errorsInCurrentFile = 0;
 		directivesInCurentFile = 0;
 		
-		_logBuilder.setAlignment(Alignment.LEFT);
+		_logBuilder.setAlignment(RTFAlignment.LEFT);
 		_logBuilder.appendText("");
 		_logBuilder.appendText(_resources.getString("importExportReport.directivesFileLabel", currentFile));
 		_logBuilder.increaseIndent();
@@ -327,7 +327,7 @@ public class ImportExportStatus  {
 	}
 
 	private void writeReportFooter() {
-		_logBuilder.setAlignment(Alignment.CENTER);
+		_logBuilder.setAlignment(RTFAlignment.CENTER);
 		_logBuilder.appendText(_resources.getString(_resourcePrefix+".finished", currentTime()));
 		if (totalErrors > 0) {
 			_logBuilder.appendText(_resources.getString(_resourcePrefix+".failureMessage",totalErrors));

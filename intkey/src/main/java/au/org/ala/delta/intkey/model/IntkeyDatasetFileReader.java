@@ -1078,19 +1078,30 @@ public final class IntkeyDatasetFileReader {
         }
     }
 
-    public static List<Attribute> readAttributesForCharacter(ItemsFileHeader itemFileHeader, BinFile itemBinFile, List<Character> characters, List<Item> taxa, int charNo) {
+    public static List<Attribute> readAllAttributesForCharacter(ItemsFileHeader itemFileHeader, BinFile itemBinFile, Character ch, List<Item> taxa) {
+        return readAttributes(itemFileHeader, itemBinFile, ch, taxa);
+    }
+
+    public static Attribute readAttribute(ItemsFileHeader itemFileHeader, BinFile itemBinFile, Character ch, Item taxon) {
+        List<Item> taxonInList = new ArrayList<Item>();
+        taxonInList.add(taxon);
+        List<Attribute> attrList = readAttributes(itemFileHeader, itemBinFile, ch, taxonInList);
+        return attrList.get(0);
+    }
+
+    private static List<Attribute> readAttributes(ItemsFileHeader itemFileHeader, BinFile itemBinFile, Character c, List<Item> taxa) {
         List<Attribute> retList = new ArrayList<Attribute>();
 
-        int numChars = itemFileHeader.getNChar();
-        int numTaxa = itemFileHeader.getNItem();
+        int totalNumChars = itemFileHeader.getNChar();
+        int totalNumTaxa = itemFileHeader.getNItem();
 
         seekToRecord(itemBinFile, itemFileHeader.getRpCdat());
-        List<Integer> charAttributeDataRecordIndicies = readIntegerList(itemBinFile, numChars);
+        List<Integer> charAttributeDataRecordIndicies = readIntegerList(itemBinFile, totalNumChars);
 
         // Subtract 1 from the charNo because characters are zero indexed in
         // intkey API
+        int charNo = c.getCharacterId();
         int charTaxonDataRecordIndex = charAttributeDataRecordIndicies.get(charNo - 1);
-        au.org.ala.delta.model.Character c = characters.get(charNo - 1);
 
         seekToRecord(itemBinFile, charTaxonDataRecordIndex);
 
@@ -1099,18 +1110,22 @@ public final class IntkeyDatasetFileReader {
             MultiStateCharacter multiStateChar = (MultiStateCharacter) c;
 
             int bitsPerTaxon = multiStateChar.getStates().length + 1;
-            int totalBitsNeeded = bitsPerTaxon * taxa.size();
-
+            int totalBitsNeeded = bitsPerTaxon * totalNumTaxa;
             int bytesToRead = Double.valueOf(Math.ceil(Double.valueOf(totalBitsNeeded) / Double.valueOf(Byte.SIZE))).intValue();
 
             byte[] bytes = new byte[bytesToRead];
             itemBinFile.readBytes(bytes);
             boolean[] taxaData = Utils.byteArrayToBooleanArray(bytes);
 
-            for (int j = 0; j < numTaxa; j++) {
-                Item t = taxa.get(j);
-
-                int startIndex = j * bitsPerTaxon;
+            for (Item t : taxa) {
+                int startIndex = (t.getItemNumber() - 1) * bitsPerTaxon; // Taxa
+                                                                         // numbers
+                                                                         // are
+                                                                         // 1
+                                                                         // indexed
+                                                                         // instead
+                                                                         // of 0
+                                                                         // indexed
                 int endIndex = startIndex + bitsPerTaxon;
 
                 boolean[] taxonData = Arrays.copyOfRange(taxaData, startIndex, endIndex);
@@ -1147,7 +1162,7 @@ public final class IntkeyDatasetFileReader {
             // minimum and maximum (inclusive),
             // 1 bit for all values above maximum, 1 inapplicability bit.
             int bitsPerTaxon = charMaxValue - charMinValue + 4;
-            int totalBitsNeeded = bitsPerTaxon * numTaxa;
+            int totalBitsNeeded = bitsPerTaxon * totalNumTaxa;
 
             int bytesToRead = Double.valueOf(Math.ceil(Double.valueOf(totalBitsNeeded) / Double.valueOf(Byte.SIZE))).intValue();
 
@@ -1155,10 +1170,15 @@ public final class IntkeyDatasetFileReader {
             itemBinFile.readBytes(bytes);
             boolean[] taxaData = Utils.byteArrayToBooleanArray(bytes);
 
-            for (int j = 0; j < numTaxa; j++) {
-                Item t = taxa.get(j);
-
-                int startIndex = j * bitsPerTaxon;
+            for (Item t : taxa) {
+                int startIndex = (t.getItemNumber() - 1) * bitsPerTaxon; // Taxa
+                                                                         // numbers
+                                                                         // are
+                                                                         // 1
+                                                                         // indexed
+                                                                         // instead
+                                                                         // of 0
+                                                                         // indexed
                 int endIndex = startIndex + bitsPerTaxon;
 
                 boolean[] taxonData = Arrays.copyOfRange(taxaData, startIndex, endIndex);
@@ -1182,7 +1202,7 @@ public final class IntkeyDatasetFileReader {
 
         } else if (c instanceof RealCharacter) {
             // Read NI inapplicability bits
-            int bytesToRead = Double.valueOf(Math.ceil(Double.valueOf(numTaxa) / Double.valueOf(Byte.SIZE))).intValue();
+            int bytesToRead = Double.valueOf(Math.ceil(Double.valueOf(totalNumTaxa) / Double.valueOf(Byte.SIZE))).intValue();
             byte[] bytes = new byte[bytesToRead];
             itemBinFile.readBytes(bytes);
             boolean[] taxaInapplicabilityData = Utils.byteArrayToBooleanArray(bytes);
@@ -1192,15 +1212,15 @@ public final class IntkeyDatasetFileReader {
             seekToRecord(itemBinFile, charTaxonDataRecordIndex + recordsSpannedByInapplicabilityData);
 
             // Read two float values per taxon
-            List<Float> taxonData = readFloatList(itemBinFile, numTaxa * 2);
+            List<Float> taxonData = readFloatList(itemBinFile, totalNumTaxa * 2);
 
-            for (int j = 0; j < numTaxa; j++) {
-                Item t = taxa.get(j);
+            for (Item t : taxa) {
+                int taxonNumber = t.getItemNumber();
 
-                float lowerFloat = taxonData.get(j * 2);
-                float upperFloat = taxonData.get((j * 2) + 1);
+                float lowerFloat = taxonData.get((taxonNumber - 1) * 2);
+                float upperFloat = taxonData.get(((taxonNumber - 1) * 2) + 1);
 
-                boolean inapplicable = taxaInapplicabilityData[j];
+                boolean inapplicable = taxaInapplicabilityData[taxonNumber - 1];
 
                 // Character is unknown for the corresponding taxon if
                 // lowerfloat > upperfloat
@@ -1221,7 +1241,7 @@ public final class IntkeyDatasetFileReader {
             TextCharacter textChar = (TextCharacter) c;
 
             // Read NI inapplicability bits
-            int bytesToRead = Double.valueOf(Math.ceil(Double.valueOf(numTaxa) / Double.valueOf(Byte.SIZE))).intValue();
+            int bytesToRead = Double.valueOf(Math.ceil(Double.valueOf(totalNumTaxa) / Double.valueOf(Byte.SIZE))).intValue();
             byte[] bytes = new byte[bytesToRead];
             itemBinFile.readBytes(bytes);
             boolean[] taxaInapplicabilityData = Utils.byteArrayToBooleanArray(bytes);
@@ -1230,19 +1250,19 @@ public final class IntkeyDatasetFileReader {
 
             seekToRecord(itemBinFile, charTaxonDataRecordIndex + recordsSpannedByInapplicabilityData);
 
-            List<Integer> taxonTextDataOffsets = readIntegerList(itemBinFile, numTaxa + 1);
+            List<Integer> taxonTextDataOffsets = readIntegerList(itemBinFile, totalNumTaxa + 1);
 
-            int recordsSpannedByOffsets = recordsSpannedByBytes((numTaxa + 1) * Constants.SIZE_INT_IN_BYTES);
+            int recordsSpannedByOffsets = recordsSpannedByBytes((totalNumTaxa + 1) * Constants.SIZE_INT_IN_BYTES);
 
             seekToRecord(itemBinFile, charTaxonDataRecordIndex + recordsSpannedByInapplicabilityData + recordsSpannedByOffsets);
 
             ByteBuffer taxonTextData = itemBinFile.readByteBuffer(taxonTextDataOffsets.get(taxonTextDataOffsets.size() - taxonTextDataOffsets.get(0)));
 
-            for (int j = 0; j < numTaxa; j++) {
-                Item t = taxa.get(j);
+            for (Item t : taxa) {
+                int taxonNumber = t.getItemNumber();
 
-                int lowerOffset = taxonTextDataOffsets.get(j);
-                int upperOffset = taxonTextDataOffsets.get(j + 1);
+                int lowerOffset = taxonTextDataOffsets.get(taxonNumber - 1);
+                int upperOffset = taxonTextDataOffsets.get((taxonNumber - 1) + 1);
                 int textLength = upperOffset - lowerOffset;
 
                 String txt = "";
@@ -1253,15 +1273,15 @@ public final class IntkeyDatasetFileReader {
                     txt = BinFileEncoding.decode(textBytes);
                 }
 
-                boolean inapplicable = taxaInapplicabilityData[j];
+                boolean inapplicable = taxaInapplicabilityData[taxonNumber - 1];
                 boolean unknown = StringUtils.isEmpty(txt);
 
                 TextAttribute txtAttr = new TextAttribute(textChar, new SimpleAttributeData(unknown, inapplicable));
                 try {
-                	txtAttr.setText(txt);
-                }
-                catch (DirectiveException e) {
-                	// The SimpleAttributeData implementation won't throw this Exception.
+                    txtAttr.setText(txt);
+                } catch (DirectiveException e) {
+                    // The SimpleAttributeData implementation won't throw this
+                    // Exception.
                 }
                 txtAttr.setItem(t);
 

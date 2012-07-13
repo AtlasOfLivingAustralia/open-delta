@@ -166,7 +166,6 @@ import au.org.ala.delta.intkey.directives.invocation.DisplayLogDirectiveInvocati
 import au.org.ala.delta.intkey.directives.invocation.DisplayNumberingDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.DisplayScaledDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.DisplayUnknownsDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.SetAutoToleranceDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.SetDemonstrationDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.SetDiagTypeSpecimensDirectiveInvocation;
@@ -235,6 +234,7 @@ import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.rtf.RTFBuilder;
 import au.org.ala.delta.rtf.RTFUtils;
+import au.org.ala.delta.rtf.RTFWriter;
 import au.org.ala.delta.ui.AboutBox;
 import au.org.ala.delta.ui.DeltaSingleFrameApplication;
 import au.org.ala.delta.ui.help.HelpController;
@@ -2190,6 +2190,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             try {
                 CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), characters, _context.getImageSettings(), true, false, _context.displayScaled());
                 show(dlg);
+                dlg.displayImagesForCharacter(characters.get(0));
             } catch (IllegalArgumentException ex) {
                 // Display error message if unable to display
                 displayErrorMessage(UIUtils.getResourceString("CouldNotDisplayImage.error", ex.getMessage()));
@@ -2205,6 +2206,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             try {
                 TaxonImageDialog dlg = new TaxonImageDialog(getMainFrame(), _context.getImageSettings(), taxa, false, !_context.displayContinuous(), _context.displayScaled());
                 show(dlg);
+                dlg.displayImagesForTaxon(taxa.get(0), 0);
             } catch (IllegalArgumentException ex) {
                 // Display error message if unable to display
                 displayErrorMessage(UIUtils.getResourceString("CouldNotDisplayImage.error", ex.getMessage()));
@@ -2376,10 +2378,10 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         if (_context.getImageDisplayMode() == ImageDisplayMode.AUTO && taxonKeywordImages != null && !taxonKeywordImages.isEmpty()) {
             ImageDialog dlg = new ImageDialog(getMainFrame(), _context.getImageSettings(), true, _context.displayScaled());
             dlg.setImages(taxonKeywordImages);
-            dlg.showImage(0);
             dlg.setTitle(MessageFormat.format(selectTaxonKeywordsCaption, directiveName));
 
             show(dlg);
+            dlg.showImage(0);
 
             if (!dlg.okButtonPressed()) {
                 // user cancelled
@@ -2459,6 +2461,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             try {
                 CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), Arrays.asList(new Character[] { ch }), _context.getImageSettings(), true, true, _context.displayScaled());
                 show(dlg);
+                dlg.displayImagesForCharacter(ch);
                 if (dlg.okButtonPressed()) {
                     return dlg.getInputTextValues();
                 } else {
@@ -2483,6 +2486,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             try {
                 CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), Arrays.asList(new Character[] { ch }), _context.getImageSettings(), true, true, _context.displayScaled());
                 show(dlg);
+                dlg.displayImagesForCharacter(ch);
                 if (dlg.okButtonPressed()) {
                     return dlg.getInputIntegerValues();
                 } else {
@@ -2507,6 +2511,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             try {
                 CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), Arrays.asList(new Character[] { ch }), _context.getImageSettings(), true, true, _context.displayScaled());
                 show(dlg);
+                dlg.displayImagesForCharacter(ch);
                 if (dlg.okButtonPressed()) {
                     return dlg.getInputRealValues();
                 } else {
@@ -2531,6 +2536,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             try {
                 CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), Arrays.asList(new Character[] { ch }), _context.getImageSettings(), true, true, _context.displayScaled());
                 show(dlg);
+                dlg.displayImagesForCharacter(ch);
                 if (dlg.okButtonPressed()) {
                     return dlg.getSelectedStates();
                 } else {

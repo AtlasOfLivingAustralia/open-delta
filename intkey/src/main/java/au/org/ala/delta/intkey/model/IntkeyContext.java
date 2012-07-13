@@ -405,9 +405,9 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         try {
             parser.parse(directivesFile, IntkeyContext.this);
-        } catch (Exception ex) {
-            Logger.log(ex.getMessage());
-            _appUI.displayErrorMessage(String.format("Error reading file '%s' - %s", directivesFile.getAbsolutePath(), ex.getMessage()));
+        } catch (Throwable th) {
+            Logger.log(th.getMessage());
+            _appUI.displayErrorMessage(String.format("Error reading file '%s' - %s", directivesFile.getAbsolutePath(), th.getMessage()));
         }
 
         _processingDirectivesFile = oldProcessingInputFile;
@@ -487,16 +487,16 @@ public class IntkeyContext extends AbstractDeltaContext {
     public synchronized void parseAndExecuteDirective(String command) {
         try {
             _directiveParser.parse(new StringReader(command), this);
-        } catch (Exception ex) {
+        } catch (Throwable th) {
             String msg;
-            if (ex instanceof IntkeyDirectiveParseException) {
-                msg = ex.getMessage();
+            if (th instanceof IntkeyDirectiveParseException) {
+                msg = th.getMessage();
             } else {
-                msg = String.format("Error occurred while processing '%s' command: %s", command.toUpperCase(), ex.getMessage());
+                msg = String.format("Error occurred while processing '%s' command: %s", command.toUpperCase(), th.getMessage());
             }
             _appUI.displayErrorMessage(msg);
             Logger.error(msg);
-            Logger.error(ex);
+            Logger.error(th);
         }
     }
 

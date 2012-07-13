@@ -15,7 +15,12 @@
 package au.org.ala.delta.intkey.directives.invocation;
 
 import java.awt.Color;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
+
+import org.apache.commons.io.FileUtils;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.ui.UIUtils;
@@ -31,6 +36,7 @@ import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.rtf.RTFBuilder;
+import au.org.ala.delta.rtf.RTFWriter;
 import au.org.ala.delta.util.Pair;
 
 public class DifferencesDirectiveInvocation extends IntkeyDirectiveInvocation {
@@ -100,12 +106,12 @@ public class DifferencesDirectiveInvocation extends IntkeyDirectiveInvocation {
         if (_includeSpecimen) {
             numberOfTaxa++;
         }
-        
+
         if (numberOfTaxa < 2) {
             context.getUI().displayErrorMessage(String.format("At least two taxa required for comparison."));
             return false;
         }
-        
+
         if (_useGlobalMatchValues) {
             _matchType = context.getMatchType();
             _matchUnknowns = context.getMatchUnknowns();
@@ -125,61 +131,70 @@ public class DifferencesDirectiveInvocation extends IntkeyDirectiveInvocation {
         List<au.org.ala.delta.model.Character> differences = DiffUtils.determineDifferingCharactersForTaxa(context.getDataset(), _characters, _taxa, specimen, _matchUnknowns, _matchInapplicables,
                 _matchType, _omitTextCharacters);
 
-        RTFBuilder builder = new RTFBuilder();
-        builder.startDocument();
+        // Differences output can be very large so write it to a temporary file.
+        try {
+            File tempFile = File.createTempFile("IntkeyDifferences", null);
+            tempFile.deleteOnExit();
+            FileWriter fw = new FileWriter(tempFile);
+            RTFWriter rtfWriter = new RTFWriter(fw);
+            rtfWriter.startDocument();
 
-        for (au.org.ala.delta.model.Character ch : differences) {
+            for (au.org.ala.delta.model.Character ch : differences) {
 
-            List<Attribute> attrs = context.getDataset().getAllAttributesForCharacter(ch.getCharacterId());
+                List<Attribute> attrs = context.getDataset().getAllAttributesForCharacter(ch.getCharacterId());
 
-            String charDescription = _characterFormatter.formatCharacterDescription(ch);
-            builder.appendText(charDescription);
+                String charDescription = _characterFormatter.formatCharacterDescription(ch);
+                rtfWriter.writeText(charDescription);
 
-            builder.increaseIndent();
+                rtfWriter.increaseIndent();
 
-            if (_includeSpecimen) {
-                builder.appendText(UIUtils.getResourceString("DifferencesDirective.Specimen"));
-                Attribute attr = specimen.getAttributeForCharacter(ch);
+                if (_includeSpecimen) {
+                    rtfWriter.writeText(UIUtils.getResourceString("DifferencesDirective.Specimen"));
+                    Attribute attr = specimen.getAttributeForCharacter(ch);
 
-                builder.increaseIndent();
+                    rtfWriter.increaseIndent();
 
-                builder.appendText(_attributeFormatter.formatAttribute(attr));
+                    rtfWriter.writeText(_attributeFormatter.formatAttribute(attr));
 
-                builder.decreaseIndent();
+                    rtfWriter.decreaseIndent();
+                }
+
+                for (Item taxon : _taxa) {
+                    Attribute taxonAttr = attrs.get(taxon.getItemNumber() - 1);
+
+                    String taxonDescription = _taxonFormatter.formatItemDescription(taxon);
+                    rtfWriter.writeText(taxonDescription);
+
+                    rtfWriter.increaseIndent();
+
+                    rtfWriter.writeText(_attributeFormatter.formatAttribute(taxonAttr));
+
+                    rtfWriter.decreaseIndent();
+
+                }
+
+                rtfWriter.decreaseIndent();
+                rtfWriter.writeText("");
             }
 
-            for (Item taxon : _taxa) {
-                Attribute taxonAttr = attrs.get(taxon.getItemNumber() - 1);
+            rtfWriter.setTextColor(Color.RED);
+            rtfWriter.setFont(1);
 
-                String taxonDescription = _taxonFormatter.formatItemDescription(taxon);
-                builder.appendText(taxonDescription);
-
-                builder.increaseIndent();
-
-                builder.appendText(_attributeFormatter.formatAttribute(taxonAttr));
-
-                builder.decreaseIndent();
-
+            if (differences.size() == 0) {
+                rtfWriter.writeText(UIUtils.getResourceString("DifferencesDirective.NoDifferences"));
+            } else if (differences.size() == 1) {
+                rtfWriter.writeText(UIUtils.getResourceString("DifferencesDirective.OneDifference"));
+            } else {
+                rtfWriter.writeText(UIUtils.getResourceString("DifferencesDirective.ManyDifferences", differences.size()));
             }
 
-            builder.decreaseIndent();
-            builder.appendText("");
+            rtfWriter.endDocument();
+            context.getUI().displayRTFReport(FileUtils.readFileToString(tempFile), "Differences");
+            System.out.println(tempFile.getAbsolutePath());
+        } catch (IOException ex) {
+            context.getUI().displayErrorMessage(String.format("Error generating differences report: %s.", ex.getMessage()));
         }
-
-        builder.setTextColor(Color.RED);
-        builder.setFont(1);
-
-        if (differences.size() == 0) {
-            builder.appendText(UIUtils.getResourceString("DifferencesDirective.NoDifferences"));
-        } else if (differences.size() == 1) {
-            builder.appendText(UIUtils.getResourceString("DifferencesDirective.OneDifference"));
-        } else {
-            builder.appendText(UIUtils.getResourceString("DifferencesDirective.ManyDifferences", differences.size()));
-        }
-
-        builder.endDocument();
-
-        context.getUI().displayRTFReport(builder.toString(), "Differences");
+        
 
         return true;
     }

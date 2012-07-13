@@ -15,119 +15,70 @@
 package au.org.ala.delta.rtf;
 
 import java.awt.Color;
+import java.io.IOException;
+import java.io.StringWriter;
 
-public class RTFBuilder {
-
-    private StringBuilder _strBuilder;
-
-    // by default, the indent width is 340 twips, which is the same as in the
-    // legacy version
-    // if Intkey
-    private int _indentWidth = 340;
-    private int _currentIndent = 0;
-
-    public static enum Alignment {
-        LEFT, RIGHT, CENTER, JUSTIFY
-    }
-
-    private Alignment _alignment = Alignment.LEFT;
+/**
+ * Like a StringBuilder for writing RTF content. Utility methods for document
+ * start and end, fonts, coloring. Each time text is appended it is put into a
+ * separate paragraph.
+ * 
+ * @author ChrisF
+ * 
+ */
+public class RTFBuilder extends RTFWriter {
 
     public RTFBuilder() {
-        _strBuilder = new StringBuilder();
+        super(new StringWriter());
     }
 
     public String toString() {
-        return _strBuilder.toString();
-    }
-
-    public void setIdentWidth(int twips) {
-        _indentWidth = twips;
+        return ((StringWriter) _writer).toString();
     }
 
     public void startDocument() {
-        _strBuilder.append("{\\rtf1\\ansi\\deff0 {\\fonttbl{\\f0\\froman Times New Roman;}{\\f1\\fswiss MS Sans Serif;}}");
-        _strBuilder.append("\n");
-        _strBuilder.append("{\\colortbl;\\red255\\green0\\blue0;\\red0\\green0\\blue255}");
-        _strBuilder.append("\n");
-        _strBuilder.append("\\fs24");
-        _strBuilder.append("\n");
+        try {
+            super.startDocument();
+        } catch (IOException ex) {
+            // We are using a StringWriter which will never throw an IOException
+            // - do nothing.
+        }
     }
 
     public void endDocument() {
-        _strBuilder.append("}");
-        _strBuilder.append("\n");
-    }
-
-    public void increaseIndent() {
-        _currentIndent++;
-    }
-
-    public void decreaseIndent() {
-        _currentIndent--;
-    }
-
-    public void setAlignment(Alignment alignment) {
-        _alignment = alignment;
+        try {
+            super.endDocument();
+        } catch (IOException ex) {
+            // We are using a StringWriter which will never throw an IOException
+            // - do nothing.
+        }
     }
 
     public void setTextColor(Color color) {
-        if (color.equals(Color.BLACK)) {
-            _strBuilder.append("\\cf0");
-        } else if (color.equals(Color.RED)) {
-            _strBuilder.append("\\cf1");
-        } else if (color.equals(Color.BLUE)) {
-            _strBuilder.append("\\cf2");
-        } else {
-            throw new IllegalArgumentException("Unsupported color");
+        try {
+            super.setTextColor(color);
+        } catch (IOException ex) {
+            // We are using a StringWriter which will never throw an IOException
+            // - do nothing.
         }
     }
 
     public void setFont(int fontNumber) {
-        if (fontNumber == 0) {
-            _strBuilder.append("\\f0");
-        } else if (fontNumber == 1) {
-            _strBuilder.append("\\f1");
-        } else {
-            throw new IllegalArgumentException("Unrecognised font number");
+        try {
+            super.setFont(fontNumber);
+        } catch (IOException ex) {
+            // We are using a StringWriter which will never throw an IOException
+            // - do nothing.
         }
     }
 
     public void appendText(String str) {
-        // newline characters are new significant in RTF. convert them to spaces to avoid
-        // words getting concatenated etc. in the output.
-        str = str.replaceAll("\\n", " ");
-        
-        // If string contains the "par" or "pard" control words, assume that it
-        // has already been
-        // completely formatted, and does not require any additional formatting.
-//        if (str.contains("\\par") || str.contains("\\pard")) {
-//            _strBuilder.append(str);
-//        } else {
-            _strBuilder.append("\\pard ");
-
-            if (_alignment != null) {
-                switch (_alignment) {
-                case LEFT:
-                    _strBuilder.append("\\ql ");
-                    break;
-                case RIGHT:
-                    _strBuilder.append("\\qr ");
-                    break;
-                case CENTER:
-                    _strBuilder.append("\\qc ");
-                    break;
-                case JUSTIFY:
-                    _strBuilder.append("\\qj ");
-                    break;
-                }
-            }
-
-            int indentTwips = _currentIndent * _indentWidth;
-            _strBuilder.append(String.format("\\li%s ", indentTwips));
-            _strBuilder.append(str);
-            _strBuilder.append("\\par ");
-            _strBuilder.append("\n");
+        try {
+            super.writeText(str);
+        } catch (IOException ex) {
+            // We are using a StringWriter which will never throw an IOException
+            // - do nothing.
         }
-//    }
+    }
 
 }
