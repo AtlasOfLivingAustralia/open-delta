@@ -16,7 +16,7 @@ package au.org.ala.delta.intkey.directives.invocation;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class SetToleranceDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class SetToleranceDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
     
     private int _toleranceValue;
     

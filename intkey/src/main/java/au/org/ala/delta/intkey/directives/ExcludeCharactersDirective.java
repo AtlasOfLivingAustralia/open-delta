@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import au.org.ala.delta.intkey.directives.invocation.ExcludeCharactersDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class ExcludeCharactersDirective extends NewIntkeyDirective {
@@ -40,7 +40,7 @@ public class ExcludeCharactersDirective extends NewIntkeyDirective {
     }
 
     @Override
-    protected IntkeyDirectiveInvocation buildCommandObject() {
+    protected BasicIntkeyDirectiveInvocation buildCommandObject() {
         return new ExcludeCharactersDirectiveInvocation();
     }
 

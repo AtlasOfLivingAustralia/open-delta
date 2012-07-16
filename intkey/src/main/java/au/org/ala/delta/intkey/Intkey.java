@@ -86,6 +86,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.FloatRange;
@@ -234,7 +235,6 @@ import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.rtf.RTFBuilder;
 import au.org.ala.delta.rtf.RTFUtils;
-import au.org.ala.delta.rtf.RTFWriter;
 import au.org.ala.delta.ui.AboutBox;
 import au.org.ala.delta.ui.DeltaSingleFrameApplication;
 import au.org.ala.delta.ui.help.HelpController;
@@ -315,6 +315,15 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Resource
     String noHelpAvailableCaption;
+
+    @Resource
+    String saveReportToFilePrompt;
+
+    @Resource
+    String errorWritingToFileError;
+
+    @Resource
+    String errorReadingRTFFileError;
 
     // GUI components
     private JPanel _rootPanel;
@@ -406,6 +415,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     private static String ADVANCED_MODE_PREF_VALUE = "ADVANCED";
 
     private static String LAST_OPENED_DATASET_LOCATION_PREF_KEY = "LAST_OPENED_DATASET_LOCATION";
+
+    private static String rtfFileExtension = "rtf";
 
     private String _datasetInitFileToOpen = null;
     private String _startupPreferencesFile = null;
@@ -1605,7 +1616,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             }
             displayErrorMessage(msg);
             Logger.error(msg);
-        } 
+        }
     }
 
     private void taxonSelectionChanged() {
@@ -1941,6 +1952,42 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         handleUpdateAll();
         if (_context.isDemonstrationMode()) {
             IntKeyDialogController.closeWindows();
+        }
+    }
+
+    @Override
+    public void displayRTFReportFromFile(File rtfFile, String title) {
+        long mbInBytes = 1024 * 1024;
+
+        long fileSizeInMB = rtfFile.length() / mbInBytes;
+
+        // give the user the option of saving the file instead if the file is
+        // 5MB or more in size
+        if (fileSizeInMB >= 5) {
+            boolean saveFile = promptForYesNoOption(MessageFormat.format(saveReportToFilePrompt, fileSizeInMB));
+            if (saveFile) {
+                List<String> fileExtensions = new ArrayList<String>();
+                fileExtensions.add("rtf");
+                try {
+                    File destinationFile = promptForFile(fileExtensions, UIUtils.getResourceString("RtfReportDisplayDialog.fileFilterDescription"), true);
+                    if (destinationFile == null) {
+                        // user hit cancel.
+                        return;
+                    }
+                    FileUtils.copyFile(rtfFile, destinationFile);
+                } catch (IOException ex) {
+                    displayErrorMessage(errorWritingToFileError);
+                }
+                return;
+            }
+        }
+
+        // If the file has not been saved, display its contents.
+        try {
+            String rtfSource = FileUtils.readFileToString(rtfFile);
+            displayRTFReport(rtfSource, title);
+        } catch (IOException ex) {
+            displayErrorMessage(errorWritingToFileError);
         }
     }
 
@@ -2460,8 +2507,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         if (_context.getImageDisplayMode() == ImageDisplayMode.AUTO && !ch.getImages().isEmpty()) {
             try {
                 CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), Arrays.asList(new Character[] { ch }), _context.getImageSettings(), true, true, _context.displayScaled());
-                show(dlg);
                 dlg.displayImagesForCharacter(ch);
+                show(dlg);
                 if (dlg.okButtonPressed()) {
                     return dlg.getInputTextValues();
                 } else {
@@ -2485,8 +2532,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         if (_context.getImageDisplayMode() == ImageDisplayMode.AUTO && !ch.getImages().isEmpty()) {
             try {
                 CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), Arrays.asList(new Character[] { ch }), _context.getImageSettings(), true, true, _context.displayScaled());
-                show(dlg);
                 dlg.displayImagesForCharacter(ch);
+                show(dlg);
                 if (dlg.okButtonPressed()) {
                     return dlg.getInputIntegerValues();
                 } else {
@@ -2510,8 +2557,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         if (_context.getImageDisplayMode() == ImageDisplayMode.AUTO && !ch.getImages().isEmpty()) {
             try {
                 CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), Arrays.asList(new Character[] { ch }), _context.getImageSettings(), true, true, _context.displayScaled());
-                show(dlg);
                 dlg.displayImagesForCharacter(ch);
+                show(dlg);
                 if (dlg.okButtonPressed()) {
                     return dlg.getInputRealValues();
                 } else {
@@ -2535,8 +2582,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         if (_context.getImageDisplayMode() == ImageDisplayMode.AUTO && !ch.getImages().isEmpty()) {
             try {
                 CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), Arrays.asList(new Character[] { ch }), _context.getImageSettings(), true, true, _context.displayScaled());
-                show(dlg);
                 dlg.displayImagesForCharacter(ch);
+                show(dlg);
                 if (dlg.okButtonPressed()) {
                     return dlg.getSelectedStates();
                 } else {

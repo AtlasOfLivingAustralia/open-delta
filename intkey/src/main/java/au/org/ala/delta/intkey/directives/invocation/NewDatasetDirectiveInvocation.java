@@ -18,7 +18,7 @@ import java.io.File;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class NewDatasetDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class NewDatasetDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
     private File _file;
 

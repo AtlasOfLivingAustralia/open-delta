@@ -6,6 +6,7 @@ import java.util.List;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.ReportUtils;
+import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.Specimen;
@@ -17,7 +18,7 @@ public class OutputDiagnoseDirectiveInvocation extends AbstractDiagnoseDirective
     private IntkeyContext _context;
 
     @Override
-    public boolean execute(IntkeyContext context) throws IntkeyDirectiveInvocationException {
+    public String doRunInBackground(IntkeyContext context) throws IntkeyDirectiveInvocationException {
         _context = context;
         if (_context.getLastOutputLineWasComment()) {
             _context.setLastOutputLineWasComment(false);
@@ -26,9 +27,14 @@ public class OutputDiagnoseDirectiveInvocation extends AbstractDiagnoseDirective
             _context.appendTextToOutputFile("OUTPUT DIAGNOSE");
         }
         
-        doDiagnose(context);
+        doDiagnose(context, UIUtils.getResourceString("OutputDiagnoseDirective.Progress.Generating"));
         
-        return true;
+        return null;
+    }
+    
+    @Override
+    protected void handleProcessingDone(IntkeyContext context, String result) {
+        // do nothing - output file is updated by doRunInBackground
     }
     
     @Override

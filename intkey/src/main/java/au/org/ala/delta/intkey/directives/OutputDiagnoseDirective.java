@@ -3,7 +3,6 @@ package au.org.ala.delta.intkey.directives;
 import java.util.ArrayList;
 import java.util.List;
 
-import au.org.ala.delta.intkey.directives.invocation.DiagnoseDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.OutputDiagnoseDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;

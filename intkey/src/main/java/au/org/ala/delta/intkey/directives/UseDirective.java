@@ -25,7 +25,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.FloatRange;
 import org.apache.commons.lang.math.IntRange;
 
-import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.UseDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.Attribute;
@@ -60,11 +60,11 @@ public class UseDirective extends IntkeyDirective {
     }
 
     @Override
-    protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
+    protected BasicIntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
         return doProcess(context, data, false);
     }
 
-    protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data, boolean change) throws Exception {
+    protected BasicIntkeyDirectiveInvocation doProcess(IntkeyContext context, String data, boolean change) throws Exception {
         if (context.getDataset() != null) {
             boolean suppressAlreadySetWarning = false;
 

@@ -17,7 +17,7 @@ package au.org.ala.delta.intkey.directives;
 import java.util.ArrayList;
 import java.util.List;
 
-import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.RestartDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
@@ -49,7 +49,7 @@ public class RestartDirective extends NewIntkeyDirective {
     }
 
     @Override
-    protected IntkeyDirectiveInvocation buildCommandObject() {
+    protected BasicIntkeyDirectiveInvocation buildCommandObject() {
         return new RestartDirectiveInvocation();
     }
 }

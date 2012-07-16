@@ -19,7 +19,7 @@ import java.text.MessageFormat;
 import au.org.ala.delta.intkey.ui.UIUtils;
 
 public class IntkeyDirectiveInvocationException extends Exception {
-    public IntkeyDirectiveInvocationException(String messageKey, Throwable cause, Object... messageArguments) {
+    public IntkeyDirectiveInvocationException(Throwable cause, String messageKey, Object... messageArguments) {
         super(MessageFormat.format(UIUtils.getResourceString(messageKey), messageArguments), cause);
     }
 

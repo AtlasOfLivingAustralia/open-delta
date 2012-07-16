@@ -18,7 +18,7 @@ import java.net.URL;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class FileDisplayDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class FileDisplayDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
     private URL _fileURL;
     private String _fileDescription;

@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
@@ -44,7 +45,7 @@ public class DiagnoseDirectiveInvocation extends AbstractDiagnoseDirectiveInvoca
 
 
     @Override
-    public boolean execute(IntkeyContext context) {
+    public String doRunInBackground(IntkeyContext context) throws IntkeyDirectiveInvocationException {
         _itemFormatter = new ItemFormatter(context.displayNumbering(), CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE, false, false, true);
         _noNumberingRTFCommentsItemFormatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false, true);
         _noCommentsItemFormatter = new ItemFormatter(context.displayNumbering(), CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, false, false, true);
@@ -55,12 +56,16 @@ public class DiagnoseDirectiveInvocation extends AbstractDiagnoseDirectiveInvoca
         _builder = new RTFBuilder();
         _builder.startDocument();
 
-        doDiagnose(context);
+        doDiagnose(context, UIUtils.getResourceString("DiagnoseDirective.Progress.Generating"));
 
         _builder.endDocument();
-        context.getUI().displayRTFReport(_builder.toString(), "Diagnose");
-
-        return true;
+        
+        return _builder.toString();
+    }
+    
+    @Override
+    protected void handleProcessingDone(IntkeyContext context, String result) {
+        context.getUI().displayRTFReport(result, UIUtils.getResourceString("DiagnoseDirective.ReportTitle"));
     }
 
     @Override
@@ -111,7 +116,5 @@ public class DiagnoseDirectiveInvocation extends AbstractDiagnoseDirectiveInvoca
         }
         
     }
-
-
 
 }

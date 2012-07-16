@@ -14,6 +14,9 @@
  ******************************************************************************/
 package au.org.ala.delta.intkey.directives.invocation;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +26,7 @@ import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
+import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
@@ -32,12 +36,12 @@ import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
-import au.org.ala.delta.rtf.RTFBuilder;
 import au.org.ala.delta.rtf.RTFUtils;
+import au.org.ala.delta.rtf.RTFWriter;
 import au.org.ala.delta.util.Pair;
 import au.org.ala.delta.util.Utils;
 
-public class DescribeDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class DescribeDirectiveInvocation extends LongRunningIntkeyDirectiveInvocation<File> {
 
     private List<Item> _taxa;
     private boolean _includeSpecimen;
@@ -53,76 +57,89 @@ public class DescribeDirectiveInvocation extends IntkeyDirectiveInvocation {
     }
 
     @Override
-    public boolean execute(IntkeyContext context) {
+    public File doRunInBackground(IntkeyContext context) throws IntkeyDirectiveInvocationException {
         IntkeyDataset dataset = context.getDataset();
-        
+
         Specimen specimen = context.getSpecimen();
-        Map<Character, List<Attribute>> characterAttributesMap = generateCharacterAttributesMap(dataset);
         Map<Character, String> charactersItemSubheadingMap = generateCharactersItemSubheadingMap(dataset);
 
-        RTFBuilder builder = null;
-        if (dataset.itemSubheadingsPresent() && !context.displayNumbering()) {
-            builder = generateReportGroupedByItemSubheading(characterAttributesMap, specimen, charactersItemSubheadingMap, context.displayUnknowns(), context.displayInapplicables(),
-                    dataset.getOrWord());
-        } else {
-            builder = generateStandardReport(characterAttributesMap, specimen, charactersItemSubheadingMap, context.displayNumbering(), context.displayUnknowns(), context.displayInapplicables(),
-                    dataset.getOrWord());
+        // Similarities output can be very large so write it to a temporary
+        // file.
+        try {
+            File tempFile = File.createTempFile("IntkeyDescribe", null);
+            tempFile.deleteOnExit();
+            FileWriter fw = new FileWriter(tempFile);
+            RTFWriter rtfWriter = new RTFWriter(fw);
+
+            if (dataset.itemSubheadingsPresent() && !context.displayNumbering()) {
+                generateReportGroupedByItemSubheading(context.getDataset(), specimen, charactersItemSubheadingMap, context.displayUnknowns(), context.displayInapplicables(), dataset.getOrWord(), rtfWriter);
+            } else {
+                generateStandardReport(context.getDataset(), specimen, charactersItemSubheadingMap, context.displayNumbering(), context.displayUnknowns(), context.displayInapplicables(),
+                        dataset.getOrWord(), rtfWriter);
+            }
+
+            return tempFile;
+        } catch (IOException ex) {
+            throw new IntkeyDirectiveInvocationException(ex, "Error generating describe report: %s.", ex.getMessage());
         }
+    }
 
-        context.getUI().displayRTFReport(builder.toString(), "Describe");
-
-        return true;
+    @Override
+    protected void handleProcessingDone(IntkeyContext context, File result) {
+        context.getUI().displayRTFReportFromFile(result, UIUtils.getResourceString("DescribeDirective.ReportTitle"));
     }
 
     // Generate a desciption with each attribute value listed on a separate line
-    private RTFBuilder generateStandardReport(Map<Character, List<Attribute>> characterAttributesMap, Specimen specimen, Map<Character, String> charactersItemSubheadingMap, boolean displayNumbering,
-            boolean displayInapplicables, boolean displayUnknowns, String orWord) {
+    private void generateStandardReport(IntkeyDataset dataset, Specimen specimen, Map<Character, String> charactersItemSubheadingMap, boolean displayNumbering,
+            boolean displayInapplicables, boolean displayUnknowns, String orWord, RTFWriter writer) throws IOException {
         ItemFormatter taxonFormatter = new ItemFormatter(displayNumbering, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE, false, false, true);
         CharacterFormatter characterFormatter = new CharacterFormatter(displayNumbering, CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.REMOVE, false, true);
         AttributeFormatter attributeFormatter = new AttributeFormatter(displayNumbering, false, CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.REMOVE, false, orWord);
 
-        RTFBuilder builder = new RTFBuilder();
-        builder.startDocument();
+        writer.startDocument();
+        
+        int numTaxaProcessed = 0;
+        updateProgess(numTaxaProcessed, _taxa.size());
 
         if (_includeSpecimen) {
-            builder.appendText("Specimen");
-            builder.increaseIndent();
+            writer.writeText("Specimen");
+            writer.increaseIndent();
 
             String currentItemSubheading = null;
 
             for (Character ch : _characters) {
                 Attribute attr = specimen.getAttributeForCharacter(ch);
-                currentItemSubheading = standardReportHandleAttribute(builder, attr, charactersItemSubheadingMap, currentItemSubheading, displayInapplicables, displayUnknowns, characterFormatter,
+                currentItemSubheading = standardReportHandleAttribute(writer, attr, charactersItemSubheadingMap, currentItemSubheading, displayInapplicables, displayUnknowns, characterFormatter,
                         attributeFormatter);
             }
 
-            builder.decreaseIndent();
+            writer.decreaseIndent();
+            updateProgess(++numTaxaProcessed, _taxa.size());
         }
 
         for (Item taxon : _taxa) {
-            builder.appendText(taxonFormatter.formatItemDescription(taxon));
-            builder.increaseIndent();
+            writer.writeText(taxonFormatter.formatItemDescription(taxon));
+            writer.increaseIndent();
 
             String currentItemSubheading = null;
 
             for (Character ch : _characters) {
-                Attribute attr = characterAttributesMap.get(ch).get(taxon.getItemNumber() - 1);
-                currentItemSubheading = standardReportHandleAttribute(builder, attr, charactersItemSubheadingMap, currentItemSubheading, displayInapplicables, displayUnknowns, characterFormatter,
+                Attribute attr = dataset.getAttribute(taxon.getItemNumber(), ch.getCharacterId());
+                currentItemSubheading = standardReportHandleAttribute(writer, attr, charactersItemSubheadingMap, currentItemSubheading, displayInapplicables, displayUnknowns, characterFormatter,
                         attributeFormatter);
             }
 
-            builder.appendText("");
-            builder.decreaseIndent();
+            writer.writeText("");
+            writer.decreaseIndent();
+            updateProgess(++numTaxaProcessed, _taxa.size());
         }
 
-        builder.endDocument();
-
-        return builder;
+        writer.endDocument();
     }
 
     // Helper method for generateStandardReport()
-    private String standardReportHandleAttribute(RTFBuilder builder, Attribute attr, Map<Character, String> charactersItemSubheadingMap, String currentItemSubheading, boolean displayInapplicables,
-            boolean displayUnknowns, CharacterFormatter characterFormatter, AttributeFormatter attributeFormatter) {
+    private String standardReportHandleAttribute(RTFWriter writer, Attribute attr, Map<Character, String> charactersItemSubheadingMap, String currentItemSubheading, boolean displayInapplicables,
+            boolean displayUnknowns, CharacterFormatter characterFormatter, AttributeFormatter attributeFormatter) throws IOException {
 
         Character ch = attr.getCharacter();
 
@@ -135,7 +152,7 @@ public class DescribeDirectiveInvocation extends IntkeyDirectiveInvocation {
                 // paragraph. Ignore any item subheadings that contain only
                 // formatting marks
                 if (!StringUtils.isEmpty(RTFUtils.stripFormatting(itemSubheading))) {
-                    builder.appendText(itemSubheading);
+                    writer.writeText(itemSubheading);
                 }
 
                 currentItemSubheading = itemSubheading;
@@ -152,7 +169,7 @@ public class DescribeDirectiveInvocation extends IntkeyDirectiveInvocation {
                 lineToInsert.append(".");
             }
 
-            builder.appendText(lineToInsert.toString());
+            writer.writeText(lineToInsert.toString());
         }
 
         return currentItemSubheading;
@@ -160,75 +177,78 @@ public class DescribeDirectiveInvocation extends IntkeyDirectiveInvocation {
 
     // Generate a description with the attribute values grouped by item
     // subheadings in paragraphs
-    private RTFBuilder generateReportGroupedByItemSubheading(Map<Character, List<Attribute>> characterAttributesMap, Specimen specimen, Map<Character, String> charactersItemSubheadingMap,
-            boolean displayInapplicables, boolean displayUnknowns, String orWord) {
+    private void generateReportGroupedByItemSubheading(IntkeyDataset dataset, Specimen specimen, Map<Character, String> charactersItemSubheadingMap,
+            boolean displayInapplicables, boolean displayUnknowns, String orWord, RTFWriter writer) throws IOException {
         ItemFormatter taxonFormatter = new ItemFormatter(false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE, false, false, true);
         CharacterFormatter characterFormatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, false, true);
         AttributeFormatter attributeFormatter = new AttributeFormatter(false, false, CommentStrippingMode.RETAIN_SURROUNDING_STRIP_INNER, AngleBracketHandlingMode.REMOVE, false, orWord);
 
-        RTFBuilder builder = new RTFBuilder();
-        builder.startDocument();
+        writer.startDocument();
+        
+        int numTaxaProcessed = 0;
+        updateProgess(numTaxaProcessed, _taxa.size());
 
         if (_includeSpecimen) {
-            builder.appendText("Specimen");
-            builder.increaseIndent();
+            writer.writeText("Specimen");
+            writer.increaseIndent();
 
             String currentItemSubheading = null;
             StringBuilder itemSubheadingGroupBuilder = new StringBuilder();
 
             for (Character ch : _characters) {
                 Attribute attr = specimen.getAttributeForCharacter(ch);
-                currentItemSubheading = groupedByItemSubheadingReportHandleAttribute(builder, itemSubheadingGroupBuilder, attr, charactersItemSubheadingMap, currentItemSubheading,
+                currentItemSubheading = groupedByItemSubheadingReportHandleAttribute(writer, itemSubheadingGroupBuilder, attr, charactersItemSubheadingMap, currentItemSubheading,
                         displayInapplicables, displayUnknowns, characterFormatter, attributeFormatter);
             }
 
             if (itemSubheadingGroupBuilder.length() > 0) {
-                builder.appendText(itemSubheadingGroupBuilder.toString());
+                writer.writeText(itemSubheadingGroupBuilder.toString());
             }
 
-            builder.decreaseIndent();
+            writer.decreaseIndent();
+            updateProgess(++numTaxaProcessed, _taxa.size());
         }
 
         for (Item taxon : _taxa) {
-            builder.appendText(taxonFormatter.formatItemDescription(taxon));
-            builder.increaseIndent();
+            writer.writeText(taxonFormatter.formatItemDescription(taxon));
+            writer.increaseIndent();
 
             String currentItemSubheading = null;
             StringBuilder itemSubheadingGroupBuilder = new StringBuilder();
 
             for (Character ch : _characters) {
-                Attribute attr = characterAttributesMap.get(ch).get(taxon.getItemNumber() - 1);
-                currentItemSubheading = groupedByItemSubheadingReportHandleAttribute(builder, itemSubheadingGroupBuilder, attr, charactersItemSubheadingMap, currentItemSubheading,
+                Attribute attr = dataset.getAttribute(taxon.getItemNumber(), ch.getCharacterId());
+                currentItemSubheading = groupedByItemSubheadingReportHandleAttribute(writer, itemSubheadingGroupBuilder, attr, charactersItemSubheadingMap, currentItemSubheading,
                         displayInapplicables, displayUnknowns, characterFormatter, attributeFormatter);
 
             }
 
             if (itemSubheadingGroupBuilder.length() > 0) {
-                builder.appendText(itemSubheadingGroupBuilder.toString());
+                writer.writeText(itemSubheadingGroupBuilder.toString());
             }
 
-            builder.appendText("");
-            builder.decreaseIndent();
+            writer.writeText("");
+            writer.decreaseIndent();
+            updateProgess(++numTaxaProcessed, _taxa.size());
         }
 
-        builder.endDocument();
-
-        return builder;
+        writer.endDocument();
     }
 
     // Helper method for generateReportGroupedByItemSubheading()
-    private String groupedByItemSubheadingReportHandleAttribute(RTFBuilder builder, StringBuilder itemSubheadingGroupBuilder, Attribute attr, Map<Character, String> charactersItemSubheadingMap,
-            String currentItemSubheading, boolean displayInapplicables, boolean displayUnknowns, CharacterFormatter characterFormatter, AttributeFormatter attributeFormatter) {
+    private String groupedByItemSubheadingReportHandleAttribute(RTFWriter writer, StringBuilder itemSubheadingGroupBuilder, Attribute attr, Map<Character, String> charactersItemSubheadingMap,
+            String currentItemSubheading, boolean displayInapplicables, boolean displayUnknowns, CharacterFormatter characterFormatter, AttributeFormatter attributeFormatter) throws IOException {
 
         Character ch = attr.getCharacter();
 
         if ((!(attr.isInapplicable() && attr.isUnknown()) || displayInapplicables) && (!attr.isUnknown() || displayUnknowns)) {
-            
-            //If this is the beginning of a new itemsubheading category then we need to add the item subheading
+
+            // If this is the beginning of a new itemsubheading category then we
+            // need to add the item subheading
             String itemSubheading = charactersItemSubheadingMap.get(ch);
             if (itemSubheading != null && !itemSubheading.equals(currentItemSubheading)) {
                 if (itemSubheadingGroupBuilder.length() > 0) {
-                    builder.appendText(itemSubheadingGroupBuilder.toString());
+                    writer.writeText(itemSubheadingGroupBuilder.toString());
                 }
                 currentItemSubheading = itemSubheading;
 
@@ -243,7 +263,7 @@ public class DescribeDirectiveInvocation extends IntkeyDirectiveInvocation {
                 // Add a paragraph break
                 if (itemSubheadingGroupBuilder.length() > 0) {
                     itemSubheadingGroupBuilder.append(" \\par ");
-                }              
+                }
             }
 
             String characterDescription = characterFormatter.formatCharacterDescription(ch);
@@ -261,7 +281,7 @@ public class DescribeDirectiveInvocation extends IntkeyDirectiveInvocation {
             if (!ch.getOmitPeriod()) {
                 itemSubheadingGroupBuilder.append(".");
             }
-            
+
             itemSubheadingGroupBuilder.append(" ");
 
         }
@@ -301,6 +321,11 @@ public class DescribeDirectiveInvocation extends IntkeyDirectiveInvocation {
         }
 
         return characterAttributesMap;
+    }
+    
+    private void updateProgess(int numTaxaProcessed, int totalNumTaxa) {
+        int progressPercent = (int) Math.floor((((double) numTaxaProcessed) / totalNumTaxa) * 100);
+        progress(UIUtils.getResourceString("DescribeDirective.Progress.Generating", progressPercent));
     }
 
 }

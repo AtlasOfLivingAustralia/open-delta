@@ -23,7 +23,7 @@ import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
 
-public class DisplayCharacterOrderSeparateDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class DisplayCharacterOrderSeparateDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
     private Item _taxonToSeparate;
     private ItemFormatter _formatter;

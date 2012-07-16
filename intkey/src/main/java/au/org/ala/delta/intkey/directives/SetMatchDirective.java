@@ -16,7 +16,7 @@ package au.org.ala.delta.intkey.directives;
 
 import java.util.List;
 
-import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.SetMatchDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.MatchType;
@@ -39,7 +39,7 @@ public class SetMatchDirective extends IntkeyDirective {
     }
 
     @Override
-    protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
+    protected BasicIntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
 
         StringBuilder stringRepresentationBuilder = new StringBuilder(getControlWordsAsString());
 

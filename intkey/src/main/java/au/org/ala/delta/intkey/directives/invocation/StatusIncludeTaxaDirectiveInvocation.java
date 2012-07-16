@@ -21,7 +21,7 @@ import au.org.ala.delta.intkey.model.ReportUtils;
 import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.rtf.RTFBuilder;
 
-public class StatusIncludeTaxaDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class StatusIncludeTaxaDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
     @Override
     public boolean execute(IntkeyContext context) throws IntkeyDirectiveInvocationException {

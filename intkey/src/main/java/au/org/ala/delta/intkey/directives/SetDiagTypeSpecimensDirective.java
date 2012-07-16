@@ -16,7 +16,7 @@ package au.org.ala.delta.intkey.directives;
 
 import java.util.List;
 
-import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.SetDiagTypeSpecimensDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
@@ -37,7 +37,7 @@ public class SetDiagTypeSpecimensDirective extends NewIntkeyDirective {
     }
 
     @Override
-    protected IntkeyDirectiveInvocation buildCommandObject() {
+    protected BasicIntkeyDirectiveInvocation buildCommandObject() {
         return new SetDiagTypeSpecimensDirectiveInvocation();
     }
 

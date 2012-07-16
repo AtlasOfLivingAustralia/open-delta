@@ -22,7 +22,7 @@ import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.rtf.RTFBuilder;
 
-public class FindCharactersDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class FindCharactersDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
     private String _searchText;
 

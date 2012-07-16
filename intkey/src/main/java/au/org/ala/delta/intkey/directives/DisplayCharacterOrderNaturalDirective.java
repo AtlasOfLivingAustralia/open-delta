@@ -15,7 +15,7 @@
 package au.org.ala.delta.intkey.directives;
 
 import au.org.ala.delta.intkey.directives.invocation.DisplayCharacterOrderNaturalDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class DisplayCharacterOrderNaturalDirective extends IntkeyDirective {
@@ -25,7 +25,7 @@ public class DisplayCharacterOrderNaturalDirective extends IntkeyDirective {
     }
 
     @Override
-    protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
+    protected BasicIntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
         DisplayCharacterOrderNaturalDirectiveInvocation invoc = new DisplayCharacterOrderNaturalDirectiveInvocation();
         invoc.setStringRepresentation(getControlWordsAsString());
         return invoc;

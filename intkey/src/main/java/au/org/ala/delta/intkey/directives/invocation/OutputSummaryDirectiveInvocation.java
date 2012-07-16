@@ -33,7 +33,7 @@ import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.util.Pair;
 
-public class OutputSummaryDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class OutputSummaryDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
     private List<Item> _taxa;
 

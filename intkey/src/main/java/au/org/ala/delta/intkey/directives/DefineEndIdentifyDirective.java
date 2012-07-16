@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import au.org.ala.delta.intkey.directives.invocation.DefineEndIdentifyDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class DefineEndIdentifyDirective extends NewIntkeyDirective {
@@ -42,7 +42,7 @@ public class DefineEndIdentifyDirective extends NewIntkeyDirective {
     }
 
     @Override
-    protected IntkeyDirectiveInvocation buildCommandObject() {
+    protected BasicIntkeyDirectiveInvocation buildCommandObject() {
         return new DefineEndIdentifyDirectiveInvocation();
     }
 

@@ -18,15 +18,15 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
-import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class DirectiveInvocationAction extends AbstractAction {
 
-    private IntkeyDirectiveInvocation _invoc;
+    private BasicIntkeyDirectiveInvocation _invoc;
     private IntkeyContext _context;
 
-    public DirectiveInvocationAction(IntkeyDirectiveInvocation invoc, IntkeyContext context) {
+    public DirectiveInvocationAction(BasicIntkeyDirectiveInvocation invoc, IntkeyContext context) {
         _invoc = invoc;
         _context = context;
     }

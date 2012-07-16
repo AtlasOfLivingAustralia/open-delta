@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.DiffUtils;
 import au.org.ala.delta.model.Item;
@@ -26,7 +27,7 @@ import au.org.ala.delta.model.Specimen;
 import au.org.ala.delta.util.Pair;
 import au.org.ala.delta.util.Utils;
 
-public class OutputDifferencesDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class OutputDifferencesDirectiveInvocation extends LongRunningIntkeyDirectiveInvocation<Void> {
 
     private MatchType _matchType;
     private boolean _matchUnknowns = false;
@@ -84,7 +85,16 @@ public class OutputDifferencesDirectiveInvocation extends IntkeyDirectiveInvocat
     }
 
     @Override
-    public boolean execute(IntkeyContext context) throws IntkeyDirectiveInvocationException {
+    public Void doRunInBackground(IntkeyContext context) throws IntkeyDirectiveInvocationException {
+        int numberOfTaxa = _taxa.size();
+        if (_includeSpecimen) {
+            numberOfTaxa++;
+        }
+
+        if (numberOfTaxa < 2) {
+            throw new IntkeyDirectiveInvocationException(String.format("At least two taxa required for comparison."));
+        }
+
         if (_useGlobalMatchValues) {
             _matchType = context.getMatchType();
             _matchUnknowns = context.getMatchUnknowns();
@@ -95,13 +105,20 @@ public class OutputDifferencesDirectiveInvocation extends IntkeyDirectiveInvocat
         if (_includeSpecimen) {
             specimen = context.getSpecimen();
         }
+        
+        progress(UIUtils.getResourceString("OutputDifferencesDirective.Progress.Calculating"));
 
         List<au.org.ala.delta.model.Character> differences = DiffUtils.determineDifferingCharactersForTaxa(context.getDataset(), _characters, _taxa, specimen, _matchUnknowns, _matchInapplicables,
                 _matchType, _omitTextCharacters);
+        
+        int numCharactersProcessed = 0;
 
         List<Integer> differingCharNumbers = new ArrayList<Integer>();
         for (au.org.ala.delta.model.Character ch : differences) {
             differingCharNumbers.add(ch.getCharacterId());
+            
+            int progressPercent = (int) Math.floor((((double) numCharactersProcessed) / differences.size()) * 100);
+            progress(UIUtils.getResourceString("OutputDifferencesDirective.Progress.Generating", progressPercent));
         }
 
         try {
@@ -115,7 +132,12 @@ public class OutputDifferencesDirectiveInvocation extends IntkeyDirectiveInvocat
             throw new IntkeyDirectiveInvocationException("NoOutputFileOpen.error");
         }
 
-        return true;
+        return null;
+    }
+
+    @Override
+    protected void handleProcessingDone(IntkeyContext context, Void result) {
+        // do nothing - output file is updated by doRunInBackground
     }
 
 }

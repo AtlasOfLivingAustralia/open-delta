@@ -57,7 +57,7 @@ import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.impl.SimpleAttributeData;
 import au.org.ala.delta.util.Utils;
 
-public class UseDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
     private static final String USE_DIRECTIVE_NAME = "USE";
     private static final String CHANGE_DIRECTIVE_NAME = "CHANGE";

@@ -9,6 +9,7 @@ import org.apache.commons.lang.math.FloatRange;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
+import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.IntegerAttribute;
@@ -24,7 +25,7 @@ import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.util.Pair;
 import au.org.ala.delta.util.Utils;
 
-public class OutputDescribeDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class OutputDescribeDirectiveInvocation extends LongRunningIntkeyDirectiveInvocation<Void> {
 
     private List<Item> _taxa;
     private boolean _includeSpecimen;
@@ -40,12 +41,15 @@ public class OutputDescribeDirectiveInvocation extends IntkeyDirectiveInvocation
     }
 
     @Override
-    public boolean execute(IntkeyContext context) throws IntkeyDirectiveInvocationException {
+    public Void doRunInBackground(IntkeyContext context) throws IntkeyDirectiveInvocationException {
         IntkeyDataset dataset = context.getDataset();
         ItemFormatter taxonFormatter = new ItemFormatter(false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.RETAIN, true, false, true);
 
         context.appendTextToOutputFile("Output Describe");
         context.appendBlankLineToOutputFile();
+        
+        int numTaxaProcessed = 0;
+        updateProgess(numTaxaProcessed, _taxa.size());
 
         if (_includeSpecimen) {
             StringBuilder builder = new StringBuilder();
@@ -73,11 +77,13 @@ public class OutputDescribeDirectiveInvocation extends IntkeyDirectiveInvocation
 
             context.appendTextToOutputFile(builder.toString());
             context.appendBlankLineToOutputFile();
+            
+            updateProgess(++numTaxaProcessed, _taxa.size());
         }
 
         for (Item taxon : _taxa) {
             StringBuilder builder = new StringBuilder();
-            
+
             builder.append("# ");
             builder.append(taxonFormatter.formatItemDescription(taxon));
             builder.append("/");
@@ -86,8 +92,9 @@ public class OutputDescribeDirectiveInvocation extends IntkeyDirectiveInvocation
             for (int i = 0; i < _characters.size(); i++) {
                 Character ch = _characters.get(i);
                 Attribute attr = dataset.getAttribute(taxon.getItemNumber(), ch.getCharacterId());
-                
-                // Include in the output those characters that are not explicitly coded, but are made
+
+                // Include in the output those characters that are not
+                // explicitly coded, but are made
                 // inapplicable by their controlling characters
                 if (!attr.isUnknown() || attr.isInapplicable()) {
                     builder.append(ch.getCharacterId());
@@ -95,15 +102,28 @@ public class OutputDescribeDirectiveInvocation extends IntkeyDirectiveInvocation
                     builder.append(getAttributeAsString(attr));
                     if (i < _characters.size() - 1) {
                         builder.append(" ");
-                    } 
+                    }
                 }
             }
 
             context.appendTextToOutputFile(builder.toString());
             context.appendBlankLineToOutputFile();
+            
+            updateProgess(++numTaxaProcessed, _taxa.size());
         }
-        
-        return true;
+
+        return null;
+    }
+
+    @Override
+    protected void handleProcessingDone(IntkeyContext context, Void result) {
+        // do nothing - output file is updated by doRunInBackground
+
+    }
+    
+    private void updateProgess(int numTaxaProcessed, int totalNumTaxa) {
+        int progressPercent = (int) Math.floor((((double) numTaxaProcessed) / totalNumTaxa) * 100);
+        progress(UIUtils.getResourceString("OutputDescribeDirective.Progress.Generating", progressPercent));
     }
 
     private String getAttributeAsString(Attribute attr) {
@@ -143,7 +163,7 @@ public class OutputDescribeDirectiveInvocation extends IntkeyDirectiveInvocation
 
     private String getRealAttributeAsString(RealAttribute attr) {
         StringBuilder builder = new StringBuilder();
-        
+
         FloatRange presentRange = attr.getPresentRange();
 
         if (presentRange != null) {

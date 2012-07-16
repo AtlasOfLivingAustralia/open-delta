@@ -19,7 +19,7 @@ import java.util.List;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class DefineSubjectsDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class DefineSubjectsDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
     private String subjects;
 

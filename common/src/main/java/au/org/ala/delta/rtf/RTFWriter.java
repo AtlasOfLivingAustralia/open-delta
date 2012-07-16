@@ -52,11 +52,14 @@ public class RTFWriter {
         _writer.write("\n");
         _writer.write("\\fs24");
         _writer.write("\n");
+        _writer.flush();
     }
 
     public void endDocument() throws IOException {
         _writer.write("}");
         _writer.write("\n");
+        _writer.flush();
+        _writer.close();
     }
 
     public void increaseIndent() {
@@ -81,6 +84,7 @@ public class RTFWriter {
         } else {
             throw new IllegalArgumentException("Unsupported color");
         }
+        _writer.flush();
     }
 
     public void setFont(int fontNumber) throws IOException {
@@ -91,6 +95,7 @@ public class RTFWriter {
         } else {
             throw new IllegalArgumentException("Unrecognised font number");
         }
+        _writer.flush();
     }
 
     /**
@@ -128,6 +133,7 @@ public class RTFWriter {
         _writer.write(str);
         _writer.write("\\par ");
         _writer.write("\n");
+        _writer.flush();
     }
 
 }

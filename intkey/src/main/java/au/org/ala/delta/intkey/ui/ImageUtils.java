@@ -114,15 +114,6 @@ public class ImageUtils {
         protected void done() {
             _applicationWindow.setCursor(Cursor.getDefaultCursor());
             try {
-                List<List<Object>> allImageDataList = get();
-
-                for (List<Object> imageDataList : allImageDataList) {
-                    _viewer.addImage(((Image) imageDataList.get(0)).getFileName(), (Image) imageDataList.get(0), (BufferedImage) imageDataList.get(1), (URL) imageDataList.get(3),
-                            (String) imageDataList.get(2));
-                }
-
-                _viewer.setBackground(Color.BLACK);
-
                 OverlaySelectionObserver observer = new OverlaySelectionObserver() {
                     @Override
                     public void overlaySelected(SelectableOverlay overlay) {
@@ -141,6 +132,15 @@ public class ImageUtils {
                 };
 
                 _viewer.setObserver(observer);
+                
+                List<List<Object>> allImageDataList = get();
+
+                for (List<Object> imageDataList : allImageDataList) {
+                    _viewer.addImage(((Image) imageDataList.get(0)).getFileName(), (Image) imageDataList.get(0), (BufferedImage) imageDataList.get(1), (URL) imageDataList.get(3),
+                            (String) imageDataList.get(2));
+                }
+
+                _viewer.setBackground(Color.BLACK);
 
                 GridBagLayout panelLayout = new GridBagLayout();
 

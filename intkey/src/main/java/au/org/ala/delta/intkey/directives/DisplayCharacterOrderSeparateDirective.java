@@ -19,7 +19,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.intkey.directives.invocation.DisplayCharacterOrderSeparateDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.Item;
 
@@ -30,7 +30,7 @@ public class DisplayCharacterOrderSeparateDirective extends IntkeyDirective {
     }
 
     @Override
-    protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
+    protected BasicIntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
         Item taxonToSeparate;
 
         if (data == null) {

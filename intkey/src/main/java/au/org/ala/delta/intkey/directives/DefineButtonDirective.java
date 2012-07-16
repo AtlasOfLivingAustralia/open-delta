@@ -20,7 +20,7 @@ import java.util.List;
 import au.org.ala.delta.intkey.directives.invocation.DefineButtonClearDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.DefineButtonDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.DefineButtonSpaceDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class DefineButtonDirective extends IntkeyDirective {
@@ -33,7 +33,7 @@ public class DefineButtonDirective extends IntkeyDirective {
     }
 
     @Override
-    protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
+    protected BasicIntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
         
         List<String> tokens = ParsingUtils.tokenizeDirectiveCall(data);
         //Need to prompt if no tokens, or data starts with a wildcard
@@ -84,7 +84,7 @@ public class DefineButtonDirective extends IntkeyDirective {
         }
     }
 
-    private IntkeyDirectiveInvocation processDefineButton(List<String> tokens, IntkeyContext context) {
+    private BasicIntkeyDirectiveInvocation processDefineButton(List<String> tokens, IntkeyContext context) {
         boolean displayAdvancedOnly = false;
         boolean displayNormalOnly = false;
         boolean inactiveUnlessUsed = false;
@@ -123,13 +123,13 @@ public class DefineButtonDirective extends IntkeyDirective {
         }
     }
 
-    private IntkeyDirectiveInvocation processInsertButtonSpace() {
+    private BasicIntkeyDirectiveInvocation processInsertButtonSpace() {
         DefineButtonSpaceDirectiveInvocation invoc = new DefineButtonSpaceDirectiveInvocation();
         invoc.setStringRepresentation(getControlWordsAsString() + " " + SPACE_KEYWORD);
         return invoc;
     }
 
-    private IntkeyDirectiveInvocation processClearButtons() {
+    private BasicIntkeyDirectiveInvocation processClearButtons() {
         DefineButtonClearDirectiveInvocation invoc = new DefineButtonClearDirectiveInvocation();
         invoc.setStringRepresentation(getControlWordsAsString() + " " + CLEAR_KEYWORD);
         return invoc;

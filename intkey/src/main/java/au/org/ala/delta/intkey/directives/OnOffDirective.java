@@ -17,7 +17,7 @@ package au.org.ala.delta.intkey.directives;
 import java.util.ArrayList;
 import java.util.List;
 
-import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public abstract class OnOffDirective extends NewIntkeyDirective {
@@ -39,5 +39,5 @@ public abstract class OnOffDirective extends NewIntkeyDirective {
     }
 
     @Override
-    protected abstract IntkeyDirectiveInvocation buildCommandObject();
+    protected abstract BasicIntkeyDirectiveInvocation buildCommandObject();
 }

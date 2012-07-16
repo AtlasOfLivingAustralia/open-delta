@@ -21,7 +21,7 @@ import au.org.ala.delta.intkey.model.ReportUtils;
 import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.rtf.RTFBuilder;
 
-public class StatusExcludeCharactersDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class StatusExcludeCharactersDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
     @Override
     public boolean execute(IntkeyContext context) throws IntkeyDirectiveInvocationException {
         RTFBuilder builder = new RTFBuilder();

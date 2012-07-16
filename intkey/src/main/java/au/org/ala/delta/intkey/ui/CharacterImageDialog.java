@@ -108,8 +108,6 @@ public class CharacterImageDialog extends ImageDialog {
         getContentPane().setLayout(new BorderLayout(0, 0));
 
         buildMenuItems();
-
-        displayImagesForCharacter(0, 0);
     }
 
     private void buildMenuItems() {

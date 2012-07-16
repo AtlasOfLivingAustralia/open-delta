@@ -15,6 +15,9 @@
 package au.org.ala.delta.intkey.directives.invocation;
 
 import java.awt.Color;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
@@ -31,9 +34,10 @@ import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.rtf.RTFBuilder;
+import au.org.ala.delta.rtf.RTFWriter;
 import au.org.ala.delta.util.Pair;
 
-public class SimilaritiesDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class SimilaritiesDirectiveInvocation extends LongRunningIntkeyDirectiveInvocation<File> {
 
     private MatchType _matchType;
     private boolean _matchUnknowns = false;
@@ -90,7 +94,16 @@ public class SimilaritiesDirectiveInvocation extends IntkeyDirectiveInvocation {
     }
 
     @Override
-    public boolean execute(IntkeyContext context) {
+    public File doRunInBackground(IntkeyContext context) throws IntkeyDirectiveInvocationException {
+        int numberOfTaxa = _taxa.size();
+        if (_includeSpecimen) {
+            numberOfTaxa++;
+        }
+
+        if (numberOfTaxa < 2) {
+            throw new IntkeyDirectiveInvocationException(String.format("At least two taxa required for comparison."));
+        }
+
         if (_useGlobalMatchValues) {
             _matchType = context.getMatchType();
             _matchUnknowns = context.getMatchUnknowns();
@@ -107,65 +120,82 @@ public class SimilaritiesDirectiveInvocation extends IntkeyDirectiveInvocation {
             specimen = context.getSpecimen();
         }
 
+        progress(UIUtils.getResourceString("SimilaritiesDirective.Progress.Calculating"));
+
         List<au.org.ala.delta.model.Character> similarities = DiffUtils.determineSimilaritiesForTaxa(context.getDataset(), _characters, _taxa, specimen, _matchUnknowns, _matchInapplicables,
                 _matchType);
 
-        RTFBuilder builder = new RTFBuilder();
-        builder.startDocument();
+        try {
+            // Similarities output can be very large so write it to a temporary
+            // file.
+            File tempFile = File.createTempFile("IntkeySimilarities", null);
+            tempFile.deleteOnExit();
+            FileWriter fw = new FileWriter(tempFile);
+            RTFWriter rtfWriter = new RTFWriter(fw);
+            rtfWriter.startDocument();
 
-        for (au.org.ala.delta.model.Character ch : similarities) {
+            for (int i = 0; i < similarities.size(); i++) {
+                int progressPercent = (int) Math.floor((((double) i + 1) / similarities.size()) * 100);
+                progress(UIUtils.getResourceString("SimilaritiesDirective.Progress.Generating", progressPercent));
 
-            List<Attribute> attrs = context.getDataset().getAllAttributesForCharacter(ch.getCharacterId());
+                au.org.ala.delta.model.Character ch = similarities.get(i);
 
-            String charDescription = _characterFormatter.formatCharacterDescription(ch);
-            builder.appendText(charDescription);
+                List<Attribute> attrs = context.getDataset().getAllAttributesForCharacter(ch.getCharacterId());
 
-            builder.increaseIndent();
+                String charDescription = _characterFormatter.formatCharacterDescription(ch);
+                rtfWriter.writeText(charDescription);
 
-            if (_includeSpecimen) {
-                builder.appendText(UIUtils.getResourceString("DifferencesDirective.Specimen"));
-                Attribute attr = specimen.getAttributeForCharacter(ch);
-                
-                builder.increaseIndent();
+                rtfWriter.increaseIndent();
 
-                builder.appendText(_attributeFormatter.formatAttribute(attr));
+                if (_includeSpecimen) {
+                    rtfWriter.writeText(UIUtils.getResourceString("DifferencesDirective.Specimen"));
+                    Attribute attr = specimen.getAttributeForCharacter(ch);
 
-                builder.decreaseIndent();
+                    rtfWriter.increaseIndent();
+
+                    rtfWriter.writeText(_attributeFormatter.formatAttribute(attr));
+
+                    rtfWriter.decreaseIndent();
+                }
+
+                for (Item taxon : _taxa) {
+                    Attribute taxonAttr = attrs.get(taxon.getItemNumber() - 1);
+
+                    String taxonDescription = _taxonFormatter.formatItemDescription(taxon);
+                    rtfWriter.writeText(taxonDescription);
+
+                    rtfWriter.increaseIndent();
+
+                    rtfWriter.writeText(_attributeFormatter.formatAttribute(taxonAttr));
+
+                    rtfWriter.decreaseIndent();
+
+                }
+
+                rtfWriter.decreaseIndent();
+                rtfWriter.writeText("");
             }
 
-            for (Item taxon : _taxa) {
-                Attribute taxonAttr = attrs.get(taxon.getItemNumber() - 1);
+            rtfWriter.setTextColor(Color.RED);
+            rtfWriter.setFont(1);
 
-                String taxonDescription = _taxonFormatter.formatItemDescription(taxon);
-                builder.appendText(taxonDescription);
-
-                builder.increaseIndent();
-
-                builder.appendText(_attributeFormatter.formatAttribute(taxonAttr));
-
-                builder.decreaseIndent();
-
+            if (similarities.size() == 0) {
+                rtfWriter.writeText(UIUtils.getResourceString("SimilaritiesDirective.NoDifferences"));
+            } else if (similarities.size() == 1) {
+                rtfWriter.writeText(UIUtils.getResourceString("SimilaritiesDirective.OneDifference"));
+            } else {
+                rtfWriter.writeText(UIUtils.getResourceString("SimilaritiesDirective.ManyDifferences", similarities.size()));
             }
 
-            builder.decreaseIndent();
-            builder.appendText("");
+            rtfWriter.endDocument();
+            return tempFile;
+        } catch (IOException ex) {
+            throw new IntkeyDirectiveInvocationException(ex, "Error generating similarities report: %s.", ex.getMessage());
         }
+    }
 
-        builder.setTextColor(Color.RED);
-        builder.setFont(1);
-
-        if (similarities.size() == 0) {
-            builder.appendText(UIUtils.getResourceString("SimilaritiesDirective.NoDifferences"));
-        } else if (similarities.size() == 1) {
-            builder.appendText(UIUtils.getResourceString("SimilaritiesDirective.OneDifference"));
-        } else {
-            builder.appendText(UIUtils.getResourceString("SimilaritiesDirective.ManyDifferences", similarities.size()));
-        }
-
-        builder.endDocument();
-
-        context.getUI().displayRTFReport(builder.toString(), UIUtils.getResourceString("SimilaritiesDirective.ReportTitle"));
-
-        return true;
+    @Override
+    protected void handleProcessingDone(IntkeyContext context, File result) {
+        context.getUI().displayRTFReportFromFile(result, UIUtils.getResourceString("SimilaritiesDirective.ReportTitle"));
     }
 }

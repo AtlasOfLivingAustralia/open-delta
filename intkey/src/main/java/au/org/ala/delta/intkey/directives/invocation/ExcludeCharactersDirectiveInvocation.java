@@ -21,7 +21,7 @@ import java.util.Set;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.Character;
 
-public class ExcludeCharactersDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class ExcludeCharactersDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
     private Set<Integer> _excludedCharNumbers;
 

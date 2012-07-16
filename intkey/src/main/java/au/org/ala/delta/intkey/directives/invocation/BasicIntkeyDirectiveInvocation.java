@@ -14,30 +14,34 @@
  ******************************************************************************/
 package au.org.ala.delta.intkey.directives.invocation;
 
-import java.io.File;
-import java.io.IOException;
-
-import au.org.ala.delta.Logger;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class FileLogDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
-    private File _file;
 
-    public void setFile(File file) {
-        this._file = file;
+/**
+ * This is the basic implementation of the IntkeyDirectiveInvocation interface. It is used for short-run
+ * directives which will not lock up the user interface.
+ * @author Chris
+ *
+ */
+public abstract class BasicIntkeyDirectiveInvocation implements IntkeyDirectiveInvocation {
+    
+    private String stringRepresentation;
+    
+    public void setStringRepresentation(String stringRepresentation) {
+        this.stringRepresentation = stringRepresentation;
     }
-
+    
     @Override
-    public boolean execute(IntkeyContext context) {
-        try {
-            context.setLogFile(_file);
-            return true;
-        } catch (IOException ex) {
-            Logger.error(ex);
-            context.getUI().displayErrorMessage(String.format("Error opening log file %s", _file.getAbsolutePath()));
-            return false;
-        }
+    public String toString() {
+        return stringRepresentation;
     }
 
+    /**
+     * Perform execution
+     * @param context State object to set values on
+     * @return success
+     */
+    public abstract boolean execute(IntkeyContext context) throws IntkeyDirectiveInvocationException;
+    
 }

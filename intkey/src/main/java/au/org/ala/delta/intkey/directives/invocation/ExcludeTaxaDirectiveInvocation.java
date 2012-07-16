@@ -21,7 +21,7 @@ import java.util.Set;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.Item;
 
-public class ExcludeTaxaDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class ExcludeTaxaDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
     private Set<Integer> _excludedTaxaNumbers;
 

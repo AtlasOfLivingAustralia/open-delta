@@ -25,7 +25,7 @@ import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.rtf.RTFBuilder;
 
-public class CharactersDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class CharactersDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
     private List<Character> _characters;
 

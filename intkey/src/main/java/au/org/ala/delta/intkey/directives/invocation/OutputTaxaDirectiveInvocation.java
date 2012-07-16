@@ -21,7 +21,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.util.Utils;
 
-public class OutputTaxaDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class OutputTaxaDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
     private List<Item> _taxa;
 

@@ -20,7 +20,7 @@ import java.util.Set;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class DefineCharactersDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class DefineCharactersDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 	
     String _keyword;
     List<au.org.ala.delta.model.Character> _characters;

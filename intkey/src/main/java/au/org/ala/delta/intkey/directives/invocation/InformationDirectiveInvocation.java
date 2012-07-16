@@ -19,7 +19,7 @@ import java.util.List;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.Item;
 
-public class InformationDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class InformationDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
     private String _imagesAutoDisplayText;
     private String _otherItemsAutoDisplayText;

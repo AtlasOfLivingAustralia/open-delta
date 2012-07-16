@@ -19,7 +19,7 @@ import java.util.List;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class DefineEndIdentifyDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class DefineEndIdentifyDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
     private String _commands;
 

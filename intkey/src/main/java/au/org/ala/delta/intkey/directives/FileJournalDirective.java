@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import au.org.ala.delta.intkey.directives.invocation.FileJournalDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class FileJournalDirective extends NewIntkeyDirective {
@@ -40,7 +40,7 @@ public class FileJournalDirective extends NewIntkeyDirective {
     }
 
     @Override
-    protected IntkeyDirectiveInvocation buildCommandObject() {
+    protected BasicIntkeyDirectiveInvocation buildCommandObject() {
         return new FileJournalDirectiveInvocation();
     }
 }

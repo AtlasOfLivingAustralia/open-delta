@@ -16,7 +16,7 @@ package au.org.ala.delta.intkey.directives.invocation;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class QuitDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class QuitDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
     @Override
     public boolean execute(IntkeyContext context) {

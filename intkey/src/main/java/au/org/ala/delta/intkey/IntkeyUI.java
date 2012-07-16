@@ -14,6 +14,7 @@
  ******************************************************************************/
 package au.org.ala.delta.intkey;
 
+import java.io.File;
 import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -32,6 +33,8 @@ public interface IntkeyUI {
     void handleIdentificationRestarted();
 
     void displayRTFReport(String rtfSource, String title);
+    
+    void displayRTFReportFromFile(File rtfFile, String title);
 
     void displayErrorMessage(String message);
 

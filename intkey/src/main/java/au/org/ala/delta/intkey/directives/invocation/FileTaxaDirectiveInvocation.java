@@ -18,7 +18,7 @@ import java.io.File;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class FileTaxaDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class FileTaxaDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
     private File _file;
 

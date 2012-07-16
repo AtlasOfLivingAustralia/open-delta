@@ -23,7 +23,7 @@ import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.rtf.RTFBuilder;
 
-public class TaxaDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class TaxaDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
     private List<Item> _taxa;
 

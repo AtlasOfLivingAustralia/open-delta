@@ -16,7 +16,7 @@ package au.org.ala.delta.intkey.directives.invocation;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class SetVaryWtDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class SetVaryWtDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
     private double _varyWt;
 
     public void setVaryWt(double varyWt) {

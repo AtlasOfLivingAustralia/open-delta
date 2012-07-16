@@ -19,7 +19,7 @@ import java.net.URL;
 import java.util.Arrays;
 
 import au.org.ala.delta.intkey.directives.invocation.FileDisplayDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.util.Utils;
 
@@ -30,7 +30,7 @@ public class FileDisplayDirective extends IntkeyDirective {
     }
 
     @Override
-    protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
+    protected BasicIntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
         String filePath = data;
         FileDisplayDirectiveInvocation invoc = null;
 

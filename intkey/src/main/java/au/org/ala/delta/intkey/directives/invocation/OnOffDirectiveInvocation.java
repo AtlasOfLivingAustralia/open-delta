@@ -14,7 +14,7 @@
  ******************************************************************************/
 package au.org.ala.delta.intkey.directives.invocation;
 
-public abstract class OnOffDirectiveInvocation extends IntkeyDirectiveInvocation {
+public abstract class OnOffDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
     protected boolean _value;
 

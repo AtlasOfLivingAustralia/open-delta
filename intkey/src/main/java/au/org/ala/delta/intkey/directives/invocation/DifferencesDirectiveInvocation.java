@@ -39,7 +39,7 @@ import au.org.ala.delta.rtf.RTFBuilder;
 import au.org.ala.delta.rtf.RTFWriter;
 import au.org.ala.delta.util.Pair;
 
-public class DifferencesDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class DifferencesDirectiveInvocation extends LongRunningIntkeyDirectiveInvocation<File> {
 
     private MatchType _matchType;
     private boolean _matchUnknowns = false;
@@ -101,15 +101,14 @@ public class DifferencesDirectiveInvocation extends IntkeyDirectiveInvocation {
     }
 
     @Override
-    public boolean execute(IntkeyContext context) {
+    public File doRunInBackground(IntkeyContext context) throws IntkeyDirectiveInvocationException {
         int numberOfTaxa = _taxa.size();
         if (_includeSpecimen) {
             numberOfTaxa++;
         }
 
         if (numberOfTaxa < 2) {
-            context.getUI().displayErrorMessage(String.format("At least two taxa required for comparison."));
-            return false;
+            throw new IntkeyDirectiveInvocationException(String.format("At least two taxa required for comparison."));
         }
 
         if (_useGlobalMatchValues) {
@@ -128,6 +127,8 @@ public class DifferencesDirectiveInvocation extends IntkeyDirectiveInvocation {
             specimen = context.getSpecimen();
         }
 
+        progress(UIUtils.getResourceString("DifferencesDirective.Progress.Calculating"));
+
         List<au.org.ala.delta.model.Character> differences = DiffUtils.determineDifferingCharactersForTaxa(context.getDataset(), _characters, _taxa, specimen, _matchUnknowns, _matchInapplicables,
                 _matchType, _omitTextCharacters);
 
@@ -139,7 +140,8 @@ public class DifferencesDirectiveInvocation extends IntkeyDirectiveInvocation {
             RTFWriter rtfWriter = new RTFWriter(fw);
             rtfWriter.startDocument();
 
-            for (au.org.ala.delta.model.Character ch : differences) {
+            for (int i = 0; i < differences.size(); i++) {
+                au.org.ala.delta.model.Character ch = differences.get(i);
 
                 List<Attribute> attrs = context.getDataset().getAllAttributesForCharacter(ch.getCharacterId());
 
@@ -175,6 +177,9 @@ public class DifferencesDirectiveInvocation extends IntkeyDirectiveInvocation {
 
                 rtfWriter.decreaseIndent();
                 rtfWriter.writeText("");
+
+                int progressPercent = (int) Math.floor((((double) i + 1) / differences.size()) * 100);
+                progress(UIUtils.getResourceString("DifferencesDirective.Progress.Generating", progressPercent));
             }
 
             rtfWriter.setTextColor(Color.RED);
@@ -189,13 +194,14 @@ public class DifferencesDirectiveInvocation extends IntkeyDirectiveInvocation {
             }
 
             rtfWriter.endDocument();
-            context.getUI().displayRTFReport(FileUtils.readFileToString(tempFile), "Differences");
-            System.out.println(tempFile.getAbsolutePath());
+            return tempFile;
         } catch (IOException ex) {
-            context.getUI().displayErrorMessage(String.format("Error generating differences report: %s.", ex.getMessage()));
+            throw new IntkeyDirectiveInvocationException(ex, "Error generating differences report: %s.", ex.getMessage());
         }
-        
+    }
 
-        return true;
+    @Override
+    protected void handleProcessingDone(IntkeyContext context, File result) {
+        context.getUI().displayRTFReportFromFile(result, UIUtils.getResourceString("DifferencesDirective.ReportTitle"));
     }
 }

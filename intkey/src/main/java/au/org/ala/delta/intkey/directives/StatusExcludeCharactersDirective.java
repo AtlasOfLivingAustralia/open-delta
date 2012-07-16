@@ -14,7 +14,7 @@
  ******************************************************************************/
 package au.org.ala.delta.intkey.directives;
 
-import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.StatusExcludeCharactersDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
@@ -24,7 +24,7 @@ public class StatusExcludeCharactersDirective extends IntkeyDirective {
     }
 
     @Override
-    protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
+    protected BasicIntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
         StatusExcludeCharactersDirectiveInvocation invoc = new StatusExcludeCharactersDirectiveInvocation();
         invoc.setStringRepresentation(getControlWordsAsString());
         return invoc;

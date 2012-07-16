@@ -14,6 +14,7 @@
  ******************************************************************************/
 package au.org.ala.delta.intkey.model;
 
+import java.io.File;
 import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -128,6 +129,12 @@ public class MockIntkeyUI implements IntkeyUI {
     @Override
     public void displayHelpTopic(String topicID) {
         // do nothing
+    }
+
+    @Override
+    public void displayRTFReportFromFile(File rtfFile, String title) {
+        // TODO Auto-generated method stub
+        
     }
 
 }

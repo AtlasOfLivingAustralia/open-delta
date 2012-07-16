@@ -31,7 +31,7 @@ import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.rtf.RTFBuilder;
 
-public class DisplayImagesDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class DisplayImagesDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
     private ImageDisplayMode _displayMode;
     private DisplayImagesReportType _reportType;

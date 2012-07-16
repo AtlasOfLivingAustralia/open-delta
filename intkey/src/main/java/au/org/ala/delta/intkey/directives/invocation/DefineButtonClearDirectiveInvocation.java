@@ -16,7 +16,7 @@ package au.org.ala.delta.intkey.directives.invocation;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class DefineButtonClearDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class DefineButtonClearDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
     @Override
     public boolean execute(IntkeyContext context) {

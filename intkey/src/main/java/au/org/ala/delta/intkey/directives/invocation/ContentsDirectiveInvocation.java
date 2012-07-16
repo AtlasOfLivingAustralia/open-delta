@@ -25,7 +25,7 @@ import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class ContentsDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class ContentsDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
     private File file;
 

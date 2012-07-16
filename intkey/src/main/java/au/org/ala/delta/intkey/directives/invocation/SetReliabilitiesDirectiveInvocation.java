@@ -19,7 +19,7 @@ import java.util.Map;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.Character;
 
-public class SetReliabilitiesDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class SetReliabilitiesDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
     private Map<Character, Float> _reliabilitiesMap;
 
     public SetReliabilitiesDirectiveInvocation(Map<Character, Float> reliabilitiesMap) {

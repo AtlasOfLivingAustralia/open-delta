@@ -23,7 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.Item;
 
-public class DefineTaxaDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class DefineTaxaDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
     public static final String LABEL = "DEFINE TAXA";
 

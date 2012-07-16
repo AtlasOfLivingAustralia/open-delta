@@ -18,7 +18,7 @@ import au.org.ala.delta.best.DiagType;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.MatchType;
 
-public class RestartDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class RestartDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
     boolean _identificationParameters = false;
     boolean _queryParameters = false;

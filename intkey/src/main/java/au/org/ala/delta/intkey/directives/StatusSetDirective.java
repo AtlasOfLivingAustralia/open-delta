@@ -14,7 +14,7 @@
  ******************************************************************************/
 package au.org.ala.delta.intkey.directives;
 
-import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.StatusSetDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
@@ -25,7 +25,7 @@ public class StatusSetDirective extends IntkeyDirective {
     }
 
     @Override
-    protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
+    protected BasicIntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
         StatusSetDirectiveInvocation invoc = new StatusSetDirectiveInvocation();
         invoc.setStringRepresentation(getControlWordsAsString());
         return invoc;

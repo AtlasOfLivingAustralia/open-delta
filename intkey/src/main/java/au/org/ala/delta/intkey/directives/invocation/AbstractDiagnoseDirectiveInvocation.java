@@ -1,5 +1,6 @@
 package au.org.ala.delta.intkey.directives.invocation;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -11,6 +12,7 @@ import au.org.ala.delta.best.DiagType;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.intkey.model.ReportUtils;
+import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
@@ -25,7 +27,7 @@ import au.org.ala.delta.util.Pair;
  * @author ChrisF
  * 
  */
-public abstract class AbstractDiagnoseDirectiveInvocation extends IntkeyDirectiveInvocation {
+public abstract class AbstractDiagnoseDirectiveInvocation extends LongRunningIntkeyDirectiveInvocation<String> {
 
     protected List<Item> _taxa;
     protected List<Character> _presetCharacters;
@@ -41,7 +43,7 @@ public abstract class AbstractDiagnoseDirectiveInvocation extends IntkeyDirectiv
         this._presetCharacters = characters;
     }
 
-    protected boolean doDiagnose(IntkeyContext context) {
+    protected boolean doDiagnose(IntkeyContext context, String progressMessageTemplate) {
         int diagLevel = context.getDiagLevel();
         DiagType diagType = context.getDiagType();
 
@@ -53,6 +55,9 @@ public abstract class AbstractDiagnoseDirectiveInvocation extends IntkeyDirectiv
 
         IntkeyDataset dataset = context.getDataset();
 
+        int numTaxaProcessed = 0;
+        updateProgess(numTaxaProcessed, _taxa.size(), progressMessageTemplate);
+        
         // derive diagnostic character set for specified items from set of
         // masked-in characters.
         for (Item taxon : _taxa) {
@@ -119,9 +124,16 @@ public abstract class AbstractDiagnoseDirectiveInvocation extends IntkeyDirectiv
 
             updateRemainingTaxaFromSpecimen(remainingTaxa, specimen, diagLevel);
             handleEndProcessingTaxon(taxon, diagLevelNotAttained, specimen, remainingTaxa);
+            
+            updateProgess(++numTaxaProcessed, _taxa.size(), progressMessageTemplate);
         }
 
         return true;
+    }
+    
+    private void updateProgess(int numTaxaProcessed, int totalNumTaxa, String messageTemplate) {
+        int progressPercent = (int) Math.floor((((double) numTaxaProcessed) / totalNumTaxa) * 100);
+        progress(MessageFormat.format(messageTemplate, progressPercent));
     }
 
     protected void useAttribute(Specimen specimen, Attribute attr, DiagType diagType, int diagLevel, List<Character> remainingCharacters, List<Item> remainingTaxa) {

@@ -16,7 +16,7 @@ package au.org.ala.delta.intkey.directives.invocation;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class SetRBaseDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class SetRBaseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
     private double _rbase;
 

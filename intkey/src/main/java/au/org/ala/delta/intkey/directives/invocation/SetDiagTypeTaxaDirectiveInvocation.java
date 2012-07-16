@@ -17,7 +17,7 @@ package au.org.ala.delta.intkey.directives.invocation;
 import au.org.ala.delta.best.DiagType;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class SetDiagTypeTaxaDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class SetDiagTypeTaxaDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
     @Override
     public boolean execute(IntkeyContext context) {

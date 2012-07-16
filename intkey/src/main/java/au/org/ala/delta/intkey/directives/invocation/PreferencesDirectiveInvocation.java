@@ -18,7 +18,7 @@ import java.io.File;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class PreferencesDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class PreferencesDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
     private File _file;
 

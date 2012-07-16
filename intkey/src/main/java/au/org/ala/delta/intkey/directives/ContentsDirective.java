@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import au.org.ala.delta.intkey.directives.invocation.ContentsDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class ContentsDirective extends NewIntkeyDirective {
@@ -41,7 +41,7 @@ public class ContentsDirective extends NewIntkeyDirective {
     }
 
     @Override
-    protected IntkeyDirectiveInvocation buildCommandObject() {
+    protected BasicIntkeyDirectiveInvocation buildCommandObject() {
         return new ContentsDirectiveInvocation();
     }
 

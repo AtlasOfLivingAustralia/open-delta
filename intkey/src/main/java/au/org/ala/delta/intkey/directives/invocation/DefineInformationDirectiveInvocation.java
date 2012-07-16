@@ -16,7 +16,7 @@ package au.org.ala.delta.intkey.directives.invocation;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class DefineInformationDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class DefineInformationDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
     private String _subject;
     private String _command;

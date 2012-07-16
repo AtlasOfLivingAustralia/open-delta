@@ -21,7 +21,7 @@ import java.util.Set;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.Item;
 
-public class DefineNamesDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class DefineNamesDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
     private String _keyword;
     private List<Item> _taxa;

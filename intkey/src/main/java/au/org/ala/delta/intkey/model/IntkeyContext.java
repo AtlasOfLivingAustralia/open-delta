@@ -20,6 +20,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.StringReader;
+import java.lang.reflect.TypeVariable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,6 +32,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import org.apache.commons.io.FileUtils;
@@ -41,11 +43,15 @@ import au.org.ala.delta.best.Best;
 import au.org.ala.delta.best.DiagType;
 import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.intkey.IntkeyUI;
+import au.org.ala.delta.intkey.LongRunningDirectiveSwingWorker;
 import au.org.ala.delta.intkey.directives.DirectivePopulator;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParseException;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParser;
+import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.DirectiveInvocationProgressHandler;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocationException;
+import au.org.ala.delta.intkey.directives.invocation.LongRunningIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
@@ -512,29 +518,40 @@ public class IntkeyContext extends AbstractDeltaContext {
         // record correct insertion index in case execution of directive results
         // in further directives being
         // run (such as in the case of the File Input directive).
-        int insertionIndex = _executedDirectives.size();
+        int executedDirectivesIndex = _executedDirectives.size();
 
-        try {
-            boolean success = invoc.execute(this);
-
-            // Omit directive calls from the log and journal if a directives
-            // file is being processes, except in the case
-            // that the file is an "input" file as specified by FILE INPUT, and
-            // DISPLAY INPUT is set to ON.
-            if (success && (!_processingDirectivesFile || (_processingInputFile && _displayInput))) {
-                if (_executedDirectives.size() < insertionIndex) {
-                    // executed directives list has been cleared, just add this
-                    // directive to the end of the list
-                    _executedDirectives.add(invoc);
-                } else {
-                    _executedDirectives.add(insertionIndex, invoc);
+        if (invoc instanceof LongRunningIntkeyDirectiveInvocation && SwingUtilities.isEventDispatchThread()) {
+            LongRunningIntkeyDirectiveInvocation<?> longInvoc = (LongRunningIntkeyDirectiveInvocation<?>) invoc;
+            LongRunningDirectiveSwingWorker worker = new LongRunningDirectiveSwingWorker(longInvoc, this, _appUI, executedDirectivesIndex);
+            worker.execute();
+        } else {
+            try {
+                boolean success = invoc.execute(this);
+                if (success) {
+                    handleDirectiveExecutionComplete(invoc, executedDirectivesIndex);
                 }
-
-                appendToLog("*" + invoc.toString());
-                appendToJournal("*" + invoc.toString());
+            } catch (IntkeyDirectiveInvocationException ex) {
+                _appUI.displayErrorMessage(ex.getMessage());
             }
-        } catch (IntkeyDirectiveInvocationException ex) {
-            _appUI.displayErrorMessage(ex.getMessage());
+        }
+    }
+
+    public void handleDirectiveExecutionComplete(IntkeyDirectiveInvocation invoc, int executedDirectivesIndex) {
+        // Omit directive calls from the log and journal if a directives
+        // file is being processes, except in the case
+        // that the file is an "input" file as specified by FILE INPUT, and
+        // DISPLAY INPUT is set to ON.
+        if (!_processingDirectivesFile || (_processingInputFile && _displayInput)) {
+            if (_executedDirectives.size() < executedDirectivesIndex) {
+                // executed directives list has been cleared, just add this
+                // directive to the end of the list
+                _executedDirectives.add(invoc);
+            } else {
+                _executedDirectives.add(executedDirectivesIndex, invoc);
+            }
+
+            appendToLog("*" + invoc.toString());
+            appendToJournal("*" + invoc.toString());
         }
     }
 

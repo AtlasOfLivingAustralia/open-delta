@@ -19,7 +19,7 @@ import java.util.List;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class SetImagePathDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class SetImagePathDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
     private List<String> _imagePaths;
 

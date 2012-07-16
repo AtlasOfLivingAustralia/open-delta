@@ -20,7 +20,7 @@ import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class DefineButtonDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class DefineButtonDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
     private boolean _displayAdvancedOnly;
     private boolean _displayNormalOnly;

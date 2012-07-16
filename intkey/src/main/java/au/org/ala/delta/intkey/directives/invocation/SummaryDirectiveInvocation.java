@@ -43,7 +43,7 @@ import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.rtf.RTFBuilder;
 import au.org.ala.delta.util.Pair;
 
-public class SummaryDirectiveInvocation extends IntkeyDirectiveInvocation {
+public class SummaryDirectiveInvocation extends LongRunningIntkeyDirectiveInvocation<String> {
 
     private List<Item> _taxa;
 
@@ -60,12 +60,15 @@ public class SummaryDirectiveInvocation extends IntkeyDirectiveInvocation {
     }
 
     @Override
-    public boolean execute(IntkeyContext context) {
+    public String doRunInBackground(IntkeyContext context) throws IntkeyDirectiveInvocationException {
         RTFBuilder builder = new RTFBuilder();
         CharacterFormatter characterFormatter = new CharacterFormatter(false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, true, false);
         builder.startDocument();
 
         appendReportHeading(builder);
+        
+        int numCharsProcessed = 0;
+        updateProgess(numCharsProcessed, _characters.size());
 
         for (Character ch : _characters) {
             int characterNumber = ch.getCharacterId();
@@ -166,12 +169,22 @@ public class SummaryDirectiveInvocation extends IntkeyDirectiveInvocation {
                 builder.appendText("");
                 builder.decreaseIndent();
             }
+            updateProgess(++numCharsProcessed, _characters.size());
         }
 
         builder.endDocument();
-        context.getUI().displayRTFReport(builder.toString(), UIUtils.getResourceString("SummaryDirective.ReportTitle"));
-
-        return true;
+        
+        return builder.toString();
+    }
+    
+    @Override
+    protected void handleProcessingDone(IntkeyContext context, String result) {
+        context.getUI().displayRTFReport(result, UIUtils.getResourceString("SummaryDirective.ReportTitle"));        
+    }
+    
+    private void updateProgess(int numCharsProcessed, int totalNumChars) {
+        int progressPercent = (int) Math.floor((((double) numCharsProcessed) / totalNumChars) * 100);
+        progress(UIUtils.getResourceString("SummaryDirective.Progress.Generating", progressPercent));
     }
 
     private void appendReportHeading(RTFBuilder builder) {
