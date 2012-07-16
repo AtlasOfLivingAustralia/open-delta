@@ -14,9 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.translation;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.DeltaContext.PrintActionType;
 import au.org.ala.delta.TranslateType;
@@ -54,6 +51,9 @@ import au.org.ala.delta.translation.print.UncodedCharactersTranslator;
 import au.org.ala.delta.translation.print.UncodedCharactersTypeSetter;
 import au.org.ala.delta.util.Pair;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * Creates appropriate instances of DataSetTranslator for the supplied DeltaContext.
@@ -61,7 +61,7 @@ import au.org.ala.delta.util.Pair;
 public class DataSetTranslatorFactory {
 	
 	/**
-	 * Creates a DataSetTranslator instance that is approropriate for the
+	 * Creates a DataSetTranslator instance that is appropriate for the
 	 * supplied DeltaContext.  If more than one output action (e.g. 
 	 * TRANSLATE INTO / PRINT ..) has been specified, the returned 
 	 * DataSetTranslator will be a composite object that delegates to 

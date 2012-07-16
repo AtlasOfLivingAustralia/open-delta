@@ -100,7 +100,6 @@ public class VariantItemExportTest extends AbstractImportExportTest {
             File actualFile = new File(tempDir, fileNames[i]);
             assertTrue(actualFile.exists());
             String actualFileContents = FileUtils.readFileToString(actualFile);
-            System.out.println(actualFileContents);
             assertEquals(expected[i], actualFileContents);
         }
 

@@ -14,9 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
-import java.io.File;
-import java.util.List;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.validation.DirectiveError;
@@ -29,6 +26,9 @@ import au.org.ala.delta.translation.DataSetTranslator;
 import au.org.ala.delta.translation.DataSetTranslatorFactory;
 import au.org.ala.delta.util.DataSetHelper;
 import au.org.ala.delta.util.Utils;
+
+import java.io.File;
+import java.util.List;
 
 /**
  * Takes action at certain points in the directive parsing lifecycle, for example after the CHARACTER LIST or ITEM DESCRIPTIONS directives have been parsed a translation action may be initiated.
@@ -147,6 +147,7 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 		fileManager.message("");
 
 		listOutputFiles();
+        fileManager.closeAll();
 	}
 
 	private void listOutputFiles() {

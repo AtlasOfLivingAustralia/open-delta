@@ -437,4 +437,17 @@ public class OutputFileSelector extends OutputFileManager {
         return files;
     }
 
+    @Override
+    public void closeAll() {
+        super.closeAll();
+        if (_printFile != null) {
+            _printFile.close();
+        }
+        if (_printStream != null) {
+            IOUtils.closeQuietly(_printStream);
+        }
+        if (_indexFile != null) {
+            _indexFile.close();
+        }
+    }
 }

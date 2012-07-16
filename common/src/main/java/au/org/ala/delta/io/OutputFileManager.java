@@ -14,22 +14,21 @@
  ******************************************************************************/
 package au.org.ala.delta.io;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-
 import au.org.ala.delta.DeltaContext.OutputFormat;
 import au.org.ala.delta.directives.ParsingContext;
 import au.org.ala.delta.directives.validation.DirectiveError;
 import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.translation.PrintFile;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Manages the files and file paths that are output by DELTA programs.
@@ -350,5 +349,16 @@ public class OutputFileManager {
 
     public TextOutputFile outputFile(OutputFileType type) {
         return _outputFiles[type.ordinal()];
+    }
+
+    /**
+     * Closes any open files managed by this class.
+     */
+    public void closeAll() {
+        for (TextOutputFile file : _outputFiles) {
+            if (file != null) {
+                file.close();
+            }
+        }
     }
 }
