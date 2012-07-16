@@ -18,37 +18,37 @@ import java.util.Arrays;
 public class VariantItemExportTest extends AbstractImportExportTest {
 
 
+    private String eol = System.getProperty("line.separator");
     private String SPECS =
-            "*SHOW ~ Dataset specifications.\n\n"+
-                    "*DATA BUFFER SIZE 4000\n\n"+
-                    "*NUMBER OF CHARACTERS 1\n\n"+
-                    "*MAXIMUM NUMBER OF STATES 1\n\n"+
-                    "*MAXIMUM NUMBER OF ITEMS 3\n\n"+
-                    "*CHARACTER TYPES\n\n"+
-                    "*NUMBERS OF STATES 1,1\n\n"+
-                    "*IMPLICIT VALUES\n\n"+
-                    "*DEPENDENT CHARACTERS\n\n"+
-                    "*MANDATORY CHARACTERS\n";
+            "*SHOW ~ Dataset specifications."+eol+eol+
+                    "*DATA BUFFER SIZE 4000"+eol+eol+
+                    "*NUMBER OF CHARACTERS 1"+eol+eol+
+                    "*MAXIMUM NUMBER OF STATES 1"+eol+eol+
+                    "*MAXIMUM NUMBER OF ITEMS 3"+eol+eol+
+                    "*CHARACTER TYPES"+eol+eol+
+                    "*NUMBERS OF STATES 1,1"+eol+eol+
+                    "*IMPLICIT VALUES"+eol+eol+
+                    "*DEPENDENT CHARACTERS"+eol+eol+
+                    "*MANDATORY CHARACTERS"+eol;
 
     private String CHARS =
-            "*SHOW ~ Character list.\n\n"+
-                    "*CHARACTER LIST\n\n"+
-                    "#1. Character 1/\n"+
-                    "       1. State 1/\n\n";
+            "*SHOW ~ Character list."+eol+eol+
+                    "*CHARACTER LIST"+eol+eol+
+                    "#1. Character 1/"+eol+
+                    "       1. State 1/"+eol+eol;
 
     private String ITEMS =
-            "*SHOW ~ Item descriptions\n" +
-                    "\n" +
-                    "*ITEM DESCRIPTIONS\n" +
-                    "\n\n" +
-                    "# Item 1/\n" +
-                    "1<comment>,1\n" +
-                    "\n" +
-                    "#+ Item 2/\n" +
-                    "1<comment 2>\n" +
-                    "\n" +
-                    "# Item 3/\n" +
-                    "1,1\n\n";
+            "*SHOW ~ Item descriptions" + eol +
+                    eol +
+                    "*ITEM DESCRIPTIONS" + eol + eol + eol +
+                    "# Item 1/" + eol +
+                    "1<comment>,1" + eol + eol +
+
+                    "#+ Item 2/" + eol +
+                    "1<comment 2>" + eol + eol +
+
+                    "# Item 3/" + eol +
+                    "1,1"+ eol + eol;
 
 
     protected void createDataSet() throws Exception {
