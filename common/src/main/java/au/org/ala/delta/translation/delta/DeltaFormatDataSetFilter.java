@@ -50,7 +50,9 @@ public class DeltaFormatDataSetFilter extends AbstractDataSetFilter implements D
 		Attribute attribute = item.getAttribute(character);
 
 		if (item.isVariant()) {
-			return outputVariantAttribute((VariantItem)item, character);
+            if (item instanceof VariantItem) {
+			    return outputVariantAttribute((VariantItem)item, character);
+            }
 		}
 		
 		if (attribute instanceof MultiStateAttribute && ((MultiStateAttribute)attribute).isImplicit()) {

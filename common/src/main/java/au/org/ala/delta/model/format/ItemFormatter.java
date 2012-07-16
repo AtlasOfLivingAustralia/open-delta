@@ -15,6 +15,8 @@
 package au.org.ala.delta.model.format;
 
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.translation.Words;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Knows how to format items in a standard way.
@@ -22,7 +24,7 @@ import au.org.ala.delta.model.Item;
 public class ItemFormatter extends Formatter {
 
     private boolean _includeNumber;
-    private String variant;
+    private String _variant;
 
     public ItemFormatter() {
         this(true, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.RETAIN, false, true, false);
@@ -34,18 +36,26 @@ public class ItemFormatter extends Formatter {
         _includeNumber = includeNumber;
 
         if (useShortVariant) {
-            variant = "(+)";
+            _variant = "(+)";
         } else {
-            variant = "(variant)";
+            _variant = Words.word(Words.Word.VARIANT);
         }
     }
+
+    /**
+     * Specifies the symbol to be used when outputting a variant Item.
+     * @param variant the symbol or description to use to indicate an Item is a variant of another Item.
+     */
+    public void setVariantDescription(String variant) {
+        _variant = variant;
+    }
+
 
     /**
      * Formats the supplied item in a standard way according to the parameters
      * supplied at construction time.
      * 
-     * @param Item
-     *            the item to format.
+     * @param item the item to format.
      * @return a String representing the supplied Item.
      */
     public String formatItemDescription(Item item) {
@@ -58,10 +68,8 @@ public class ItemFormatter extends Formatter {
      * Formats the supplied item in a standard way according to the parameters
      * supplied at construction time.
      * 
-     * @param Item
-     *            the item to format.
-     * @param stripComments
-     *            true if comments should be removed from the description.
+     * @param item the item to format.
+     * @param commentStrippingMode true if comments should be removed from the description.
      * @return a String representing the supplied Item.
      */
     public String formatItemDescription(Item item, CommentStrippingMode commentStrippingMode) {
@@ -74,8 +82,8 @@ public class ItemFormatter extends Formatter {
          if (_includeNumber) {
              builder.append(item.getItemNumber()).append(". ");
          }
-         if (item.isVariant()) {
-             builder.append(variant).append(" ");
+         if (item.isVariant() && StringUtils.isNotBlank(_variant)) {
+             builder.append(_variant).append(" ");
          }
          
          description = defaultFormat(description, commentStrippingMode, _angleBracketHandlingMode, _stripFormatting, _capitaliseFirstWord);

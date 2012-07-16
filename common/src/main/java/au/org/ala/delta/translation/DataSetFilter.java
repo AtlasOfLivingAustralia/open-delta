@@ -27,8 +27,9 @@ public interface DataSetFilter {
 	public boolean filter(Item item);
 
 	/**
-	 * Filters the supplied Attribute.
-	 * @param attribute the Attribute to filter.
+	 * Filters the supplied Attribute, identified by the supplied Item and Character.
+	 * @param item specifies the Attribute's Item
+     * @param character specifies the Attribute's Character
 	 * @return true if the attribute should be included in the translation.
 	 */
 	public boolean filter(Item item, Character character);

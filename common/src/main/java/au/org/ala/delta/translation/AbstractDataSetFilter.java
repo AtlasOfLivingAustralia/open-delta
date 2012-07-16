@@ -40,24 +40,24 @@ public abstract class AbstractDataSetFilter implements DataSetFilter {
 	 * 
 	 * @return true if the attribute should be output.
 	 */
-	protected boolean outputVariantAttribute(VariantItem item, Character character) {
-		
-		
+	protected boolean outputVariantAttribute(VariantItem variantItem, Character character) {
+
+
 		Boolean omitRedundantVariantAttributes = _context.getOmitRedundantVariantAttributes();
 		if (omitRedundantVariantAttributes == null) {
-			if (item.isInherited(character) &&
-			    (_context.isCharacterAdded(item.getItemNumber(), character.getCharacterId()) == false)) {
+			if (variantItem.isInherited(character) &&
+			    (_context.isCharacterAdded(variantItem.getItemNumber(), character.getCharacterId()) == false)) {
 				// Don't output this attribute
 				return false;
 			}
 		} else if (omitRedundantVariantAttributes == true) {
 			
-			if (item.isInherited(character) && _context.isCharacterAdded(item.getItemNumber(), character.getCharacterId()) == false) {
+			if (variantItem.isInherited(character) && _context.isCharacterAdded(variantItem.getItemNumber(), character.getCharacterId()) == false) {
 				// Don't output this attribute
 				return false;
 			}
-			Attribute attribute = item.getAttribute(character);
-			return !(attribute.getValueAsString().equals(item.getParentAttribute(character).getValueAsString()));
+			Attribute attribute = variantItem.getAttribute(character);
+			return !(attribute.getValueAsString().equals(variantItem.getParentAttribute(character).getValueAsString()));
 				
 		}
 		

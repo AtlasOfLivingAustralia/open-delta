@@ -14,40 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.ui;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.beans.PropertyVetoException;
-
-import javax.swing.ActionMap;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JInternalFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
-import javax.swing.JTabbedPane;
-import javax.swing.JToggleButton;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.ListSelectionModel;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.InternalFrameAdapter;
-import javax.swing.event.InternalFrameEvent;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
-import org.apache.commons.lang.StringUtils;
-import org.jdesktop.application.Action;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.Resource;
-import org.jdesktop.application.ResourceMap;
-
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.validator.ItemValidator;
 import au.org.ala.delta.editor.ui.validator.TextComponentValidator;
@@ -56,6 +22,25 @@ import au.org.ala.delta.editor.ui.validator.ValidationResult;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.ui.rtf.RtfEditor;
 import au.org.ala.delta.ui.rtf.RtfToolBar;
+import org.apache.commons.lang.StringUtils;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.Resource;
+import org.jdesktop.application.ResourceMap;
+
+import javax.swing.*;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameEvent;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.beans.PropertyVetoException;
 
 /**
  * Provides a user interface that allows an item description and images to be edited.
@@ -351,10 +336,7 @@ public class ItemEditor extends AbstractDeltaView implements ValidationListener 
 	/**
 	 * Provides the backing model for this Dialog.
 	 * 
-	 * @param dataSet
-	 *            the data set the dialog operates from.
-	 * @param itemNumber
-	 *            the currently selected item
+	 * @param dataSet the data set the dialog operates from.
 	 */
 	public void bind(EditorViewModel dataSet) {
 		_dataSet = dataSet;

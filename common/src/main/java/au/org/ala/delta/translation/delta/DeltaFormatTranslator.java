@@ -63,14 +63,19 @@ public class DeltaFormatTranslator extends AbstractIterativeTranslator {
 			CharacterListTypeSetter typeSetter,
 			ItemListTypeSetter itemTypeSetter) {
 		
-		_printer = printer;
+	    _printer = printer;
 		_printer.setIndentOnLineWrap(true);
 		_itemFormatter = itemFormatter;
+        // Items that are a variant of another Item are output specially in the DELTA format so we don't want
+        // the Formatter doing the work.
+        if (_itemFormatter != null) {
+            _itemFormatter.setVariantDescription("");
+        }
 		_characterFormatter = characterFormatter;
-		 _parser = new AttributeParser();
-		 _typeSetter = typeSetter;
-		 _itemTypeSetter = itemTypeSetter;
-		 _attributeFormatter = attributeFormatter;
+		_parser = new AttributeParser();
+		_typeSetter = typeSetter;
+		_itemTypeSetter = itemTypeSetter;
+		_attributeFormatter = attributeFormatter;
 	}
 	
 	@Override
@@ -84,7 +89,12 @@ public class DeltaFormatTranslator extends AbstractIterativeTranslator {
 	@Override
 	public void beforeItem(Item item) {
 		StringBuilder itemDescription = new StringBuilder();
-		itemDescription.append("# ");
+        if (item.isVariant()) {
+            itemDescription.append("#+ ");
+        }
+        else {
+		    itemDescription.append("# ");
+        }
 		itemDescription.append(_itemFormatter.formatItemDescription(item));
 		itemDescription.append("/");
 		outputLine(itemDescription.toString());
