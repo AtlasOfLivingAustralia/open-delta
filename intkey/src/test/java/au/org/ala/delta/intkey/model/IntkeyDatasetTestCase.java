@@ -47,22 +47,14 @@ public abstract class IntkeyDatasetTestCase extends TestCase {
     public IntkeyContext loadDataset(String resourcePathToDataset) throws Exception {
         URL initFileUrl = getClass().getResource(resourcePathToDataset);
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        SwingWorker<?, ?> worker = context.newDataSetFile(new File(initFileUrl.toURI()));
-
-        // The dataset is loaded on a separate thread so we need to wait until
-        // it is loaded.
-        worker.get();
+        context.newDataSetFile(new File(initFileUrl.toURI()));
 
         return context;
     }
 
     public void loadNewDatasetInExistingContext(String resourcePathToDataset, IntkeyContext context) throws Exception {
         URL initFileUrl = getClass().getResource(resourcePathToDataset);
-        SwingWorker<?, ?> worker = context.newDataSetFile(new File(initFileUrl.toURI()));
-
-        // The dataset is loaded on a separate thread so we need to wait until
-        // it is loaded.
-        worker.get();
+        context.newDataSetFile(new File(initFileUrl.toURI()));
     }
     
     public static Pair<List<Integer>, List<Integer>> getCharacterAndTaxonNumbersForBest(IntkeyContext context) {

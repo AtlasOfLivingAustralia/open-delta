@@ -640,11 +640,8 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
         ReportCharacterValuePromptDirectivePopulator populator = new ReportCharacterValuePromptDirectivePopulator();
         
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), populator);
-        SwingWorker<?, ?> worker = context.newDataSetFile(new File(initFileUrl.toURI()));
+        context.newDataSetFile(new File(initFileUrl.toURI()));
 
-        // The dataset is loaded on a separate thread so we need to wait until
-        // it is loaded.
-        worker.get();
         
         new UseDirective().parseAndProcess(context, "2,1");
         new UseDirective().parseAndProcess(context, "5,1");

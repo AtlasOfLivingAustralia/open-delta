@@ -2,6 +2,7 @@ package au.org.ala.delta.intkey;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CancellationException;
 
 import javax.swing.SwingWorker;
 
@@ -29,6 +30,16 @@ public class LongRunningDirectiveSwingWorker extends SwingWorker<Object, String>
 
             @Override
             public void progress(String message) {
+                // When progress is updated, check if the worker has been
+                // cancelled. If it has, throw a CancellationException to
+                // stop the background thread. SwingWorker.cancel(true) cannot
+                // be used because the open items and characters dataset files
+                // can get into an unhappy state if a CancellationException is
+                // thrown in the middle of a read.
+                if (isCancelled()) {
+                    throw new CancellationException();
+                }
+
                 List<String> messageInList = new ArrayList<String>();
                 messageInList.add(message);
                 process(messageInList);
@@ -41,7 +52,7 @@ public class LongRunningDirectiveSwingWorker extends SwingWorker<Object, String>
     @Override
     protected void process(List<String> chunks) {
         // We are only interested in the latest progress message
-        _appUI.displayBusyMessage(chunks.get(chunks.size() - 1));
+        _appUI.displayBusyMessageAllowCancelWorker(chunks.get(chunks.size() - 1), this);
     }
 
     @Override
@@ -51,7 +62,11 @@ public class LongRunningDirectiveSwingWorker extends SwingWorker<Object, String>
             Object result = get();
             _invoc.done(_context, result);
             _context.handleDirectiveExecutionComplete(_invoc, _executedDirectivesIndex);
+        } catch (CancellationException ex) {
+            // worker was cancelled - no action required
+            _appUI.removeBusyMessage();
         } catch (Exception ex) {
+            ex.printStackTrace();
             _appUI.displayErrorMessage(ex.getMessage());
         }
     }

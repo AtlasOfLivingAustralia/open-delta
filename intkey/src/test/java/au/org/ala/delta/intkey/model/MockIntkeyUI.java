@@ -19,6 +19,8 @@ import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import javax.swing.SwingWorker;
+
 import au.org.ala.delta.intkey.IntkeyUI;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
@@ -133,6 +135,12 @@ public class MockIntkeyUI implements IntkeyUI {
 
     @Override
     public void displayRTFReportFromFile(File rtfFile, String title) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void displayBusyMessageAllowCancelWorker(String message, SwingWorker<?, ?> worker) {
         // TODO Auto-generated method stub
         
     }

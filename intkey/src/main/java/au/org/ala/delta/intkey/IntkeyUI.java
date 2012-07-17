@@ -19,6 +19,8 @@ import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import javax.swing.SwingWorker;
+
 import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.model.Item;
 
@@ -41,6 +43,8 @@ public interface IntkeyUI {
     void displayInformationMessage(String message);
 
     void displayBusyMessage(String message);
+    
+    void displayBusyMessageAllowCancelWorker(String message, SwingWorker<?,?> worker);
 
     void removeBusyMessage();
 

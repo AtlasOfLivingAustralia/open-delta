@@ -464,7 +464,7 @@ public class IntkeyContext extends AbstractDeltaContext {
      *         tests need this so that they can block until the dataset is
      *         loaded.
      */
-    public synchronized SwingWorker<?, ?> newDataSetFile(File datasetFile) {
+    public synchronized void newDataSetFile(final File datasetFile) {
         Logger.log("Reading in directives from file: %s", datasetFile.getAbsolutePath());
 
         cleanupOldDataset();
@@ -475,12 +475,49 @@ public class IntkeyContext extends AbstractDeltaContext {
             throw new IllegalArgumentException("Could not open dataset file " + datasetFile.getAbsolutePath());
         }
 
-        StartupFileLoader loader = new StartupFileLoader(datasetFile);
-        loader.execute();
+        // Loading of a new dataset can take a long time and hence can lock up
+        // the UI. If this method is called from the Swing Event Dispatch
+        // Thread, load the
+        // new dataset on a background thread using a SwingWorker.
+        if (SwingUtilities.isEventDispatchThread()) {
+            SwingWorker<Void, Void> startupWorker = new SwingWorker<Void, Void>() {
 
-        _datasetStartupFile = datasetFile;
+                @Override
+                protected Void doInBackground() throws Exception {
+                    processStartupFile(datasetFile);
+                    return null;
+                }
 
-        return loader;
+                @Override
+                protected void done() {
+                    try {
+                        get();
+                        appendToLog(_dataset.getHeading());
+                        appendToLog(_dataset.getSubHeading());
+                        _datasetStartupFile = datasetFile;
+                        _appUI.handleNewDataset(_dataset);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        _appUI.displayErrorMessage("Error reading dataset file " + datasetFile.getAbsolutePath());
+                    } finally {
+                        _appUI.removeBusyMessage();
+                    }
+                }
+            };
+
+            startupWorker.execute();
+            _appUI.displayBusyMessage("Loading dataset...");
+        } else {
+            try {
+                processStartupFile(datasetFile);
+                appendToLog(_dataset.getHeading());
+                appendToLog(_dataset.getSubHeading());
+                _datasetStartupFile = datasetFile;
+                _appUI.handleNewDataset(_dataset);
+            } catch (Exception ex) {
+                throw new RuntimeException("Error reading dataset file " + datasetFile.getAbsolutePath(), ex);
+            }
+        }
     }
 
     private void processInitializationFile(File initializationFile) {
@@ -520,6 +557,9 @@ public class IntkeyContext extends AbstractDeltaContext {
         // run (such as in the case of the File Input directive).
         int executedDirectivesIndex = _executedDirectives.size();
 
+        // If this is a long running directive and we are on the event dispatch
+        // thread, run the task in the
+        // background using a SwingWorker.
         if (invoc instanceof LongRunningIntkeyDirectiveInvocation && SwingUtilities.isEventDispatchThread()) {
             LongRunningIntkeyDirectiveInvocation<?> longInvoc = (LongRunningIntkeyDirectiveInvocation<?>) invoc;
             LongRunningDirectiveSwingWorker worker = new LongRunningDirectiveSwingWorker(longInvoc, this, _appUI, executedDirectivesIndex);
@@ -1463,6 +1503,10 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
 
     private void cleanupOldDataset() {
+        // need to do this first, as the UI may want to access the
+        // _startupFileData as part of its cleanup process
+        _appUI.handleDatasetClosed();
+
         if (_dataset != null) {
             _dataset.close();
         }
@@ -1478,9 +1522,6 @@ public class IntkeyContext extends AbstractDeltaContext {
                 // happen is that files get left in the temporary folder.
             }
         }
-
-        _appUI.handleDatasetClosed();
-
     }
 
     /**
@@ -1840,140 +1881,99 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
-    private class StartupFileLoader extends SwingWorker<Void, String> {
+    private synchronized void processStartupFile(File startupFile) throws Exception {
+        URL inkFileLocation = null;
+        URL dataFileLocation = null;
+        String initializationFileLocation = null;
+        String imagePath = null;
+        String infoPath = null;
 
-        private File _startupFile;
+        BufferedReader reader = new BufferedReader(new FileReader(startupFile));
 
-        public StartupFileLoader(File startupFile) {
-            _startupFile = startupFile;
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] tokens = line.split("=");
+
+            if (tokens.length == 2) {
+                String keyword = tokens[0];
+                String value = tokens[1];
+
+                if (keyword.equals(Constants.INIT_FILE_INK_FILE_KEYWORD)) {
+                    // Datasets saved with the old implementation of Intkey
+                    // used simple file paths
+                    // for startup files that were saved to disk. Check if
+                    // this is the format that is
+                    // used before attempting to read as a URL.
+                    if (value.equals(startupFile.getAbsolutePath())) {
+                        inkFileLocation = startupFile.toURI().toURL();
+                    } else {
+                        inkFileLocation = new URL(value);
+                    }
+                } else if (keyword.equals(Constants.INIT_FILE_DATA_FILE_KEYWORD)) {
+                    dataFileLocation = new URL(value);
+                } else if (keyword.equals(Constants.INIT_FILE_INITIALIZATION_FILE_KEYWORD)) {
+                    initializationFileLocation = value;
+                } else if (keyword.equals(Constants.INIT_FILE_IMAGE_PATH_KEYWORD)) {
+                    imagePath = value;
+                } else if (keyword.equals(Constants.INIT_FILE_INFO_PATH_KEYWORD)) {
+                    infoPath = value;
+                }
+            }
         }
 
-        @Override
-        protected Void doInBackground() throws Exception {
-            publish("Loading dataset...");
+        if (inkFileLocation != null && initializationFileLocation != null && dataFileLocation != null) {
+            File tempDir = new File(FileUtils.getTempDirectory(), UUID.randomUUID().toString());
+            tempDir.mkdir();
 
-            URL inkFileLocation = null;
-            URL dataFileLocation = null;
-            String initializationFileLocation = null;
-            String imagePath = null;
-            String infoPath = null;
+            String[] dataFileLocationTokens = dataFileLocation.toString().split("/");
+            String dataFileName = dataFileLocationTokens[dataFileLocationTokens.length - 1];
+            File localDataFile = new File(tempDir, dataFileName);
 
-            BufferedReader reader = new BufferedReader(new FileReader(_startupFile));
-
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] tokens = line.split("=");
-
-                if (tokens.length == 2) {
-                    String keyword = tokens[0];
-                    String value = tokens[1];
-
-                    if (keyword.equals(Constants.INIT_FILE_INK_FILE_KEYWORD)) {
-                        // Datasets saved with the old implementation of Intkey
-                        // used simple file paths
-                        // for startup files that were saved to disk. Check if
-                        // this is the format that is
-                        // used before attempting to read as a URL.
-                        if (value.equals(_startupFile.getAbsolutePath())) {
-                            inkFileLocation = _startupFile.toURI().toURL();
-                        } else {
-                            inkFileLocation = new URL(value);
-                        }
-                    } else if (keyword.equals(Constants.INIT_FILE_DATA_FILE_KEYWORD)) {
-                        dataFileLocation = new URL(value);
-                    } else if (keyword.equals(Constants.INIT_FILE_INITIALIZATION_FILE_KEYWORD)) {
-                        initializationFileLocation = value;
-                    } else if (keyword.equals(Constants.INIT_FILE_IMAGE_PATH_KEYWORD)) {
-                        imagePath = value;
-                    } else if (keyword.equals(Constants.INIT_FILE_INFO_PATH_KEYWORD)) {
-                        infoPath = value;
+            // If the ink file location points to a local file, the dataset
+            // has been saved locally. Look for the
+            // zipped data file in the same directory as the ink file.
+            boolean savedDatasetOpened = false;
+            if (inkFileLocation.getProtocol().equals("file")) {
+                File savedInkFile = new File(inkFileLocation.toURI());
+                if (savedInkFile.exists()) {
+                    File saveDirectory = savedInkFile.getParentFile();
+                    File savedDataFile = new File(saveDirectory, dataFileName);
+                    if (savedDataFile.exists()) {
+                        FileUtils.copyFile(savedDataFile, localDataFile);
+                        savedDatasetOpened = true;
                     }
                 }
             }
 
-            if (inkFileLocation != null && initializationFileLocation != null && dataFileLocation != null) {
-                File tempDir = new File(FileUtils.getTempDirectory(), UUID.randomUUID().toString());
-                tempDir.mkdir();
-
-                String[] dataFileLocationTokens = dataFileLocation.toString().split("/");
-                String dataFileName = dataFileLocationTokens[dataFileLocationTokens.length - 1];
-                File localDataFile = new File(tempDir, dataFileName);
-
-                // If the ink file location points to a local file, the dataset
-                // has been saved locally. Look for the
-                // zipped data file in the same directory as the ink file.
-                boolean savedDatasetOpened = false;
-                if (inkFileLocation.getProtocol().equals("file")) {
-                    File savedInkFile = new File(inkFileLocation.toURI());
-                    if (savedInkFile.exists()) {
-                        File saveDirectory = savedInkFile.getParentFile();
-                        File savedDataFile = new File(saveDirectory, dataFileName);
-                        if (savedDataFile.exists()) {
-                            FileUtils.copyFile(savedDataFile, localDataFile);
-                            savedDatasetOpened = true;
-                        }
-                    }
-                }
-
-                if (!savedDatasetOpened) {
-                    // Data set is hosted remotely. Download it.
-                    publish("downloading dataset from " + dataFileLocation.toString());
-                    FileUtils.copyURLToFile(dataFileLocation, localDataFile, 10000, 10000);
-                }
-
-                Utils.extractZipFile(localDataFile, tempDir);
-
-                StartupFileData startupFileData = new StartupFileData();
-                startupFileData.setInkFileLocation(inkFileLocation);
-                startupFileData.setDataFileLocation(dataFileLocation);
-                startupFileData.setInitializationFileLocation(initializationFileLocation);
-                startupFileData.setDataFileLocalCopy(localDataFile);
-                startupFileData.setInitializationFileLocalCopy(new File(tempDir, initializationFileLocation));
-                startupFileData.setImagePath(imagePath);
-                startupFileData.setInfoPath(infoPath);
-                startupFileData.setRemoteDataset(!savedDatasetOpened);
-
-                _startupFileData = startupFileData;
-                processInitializationFile(_startupFileData.getInitializationFileLocalCopy());
-
-                if (startupFileData.getImagePath() != null) {
-                    setImagePaths(Arrays.asList(_startupFileData.getImagePath()));
-                }
-
-                if (startupFileData.getInfoPath() != null) {
-                    setInfoPaths(Arrays.asList(_startupFileData.getInfoPath()));
-                }
-            } else {
-                processInitializationFile(_startupFile);
+            if (!savedDatasetOpened) {
+                // Data set is hosted remotely. Download it.
+                FileUtils.copyURLToFile(dataFileLocation, localDataFile, 10000, 10000);
             }
 
-            return null;
-        }
+            Utils.extractZipFile(localDataFile, tempDir);
 
-        @Override
-        protected void process(List<String> chunks) {
-            String lastProgressMessage = chunks.get(chunks.size() - 1);
-            _appUI.displayBusyMessage(lastProgressMessage);
-        }
+            StartupFileData startupFileData = new StartupFileData();
+            startupFileData.setInkFileLocation(inkFileLocation);
+            startupFileData.setDataFileLocation(dataFileLocation);
+            startupFileData.setInitializationFileLocation(initializationFileLocation);
+            startupFileData.setDataFileLocalCopy(localDataFile);
+            startupFileData.setInitializationFileLocalCopy(new File(tempDir, initializationFileLocation));
+            startupFileData.setImagePath(imagePath);
+            startupFileData.setInfoPath(infoPath);
+            startupFileData.setRemoteDataset(!savedDatasetOpened);
 
-        @Override
-        protected void done() {
-            try {
-                _appUI.removeBusyMessage();
+            _startupFileData = startupFileData;
+            processInitializationFile(_startupFileData.getInitializationFileLocalCopy());
 
-                // Need to call get() so that we can handle any exceptions that
-                // occurred on the other thread.
-                get();
-
-                if (_dataset != null) {
-                    appendToLog(_dataset.getHeading());
-                    appendToLog(_dataset.getSubHeading());
-                    _appUI.handleNewDataset(_dataset);
-                }
-            } catch (Exception e) {
-                _appUI.displayErrorMessage("Error reading dataset file " + _startupFile.getAbsolutePath());
-                e.printStackTrace();
+            if (startupFileData.getImagePath() != null) {
+                setImagePaths(Arrays.asList(_startupFileData.getImagePath()));
             }
+
+            if (startupFileData.getInfoPath() != null) {
+                setInfoPaths(Arrays.asList(_startupFileData.getInfoPath()));
+            }
+        } else {
+            processInitializationFile(startupFile);
         }
     }
 

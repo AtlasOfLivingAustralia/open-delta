@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.CancellationException;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -275,7 +276,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     String calculatingBestCaption;
 
     @Resource
-    String loadingReportCaption;
+    String displayingReportCaption;
 
     @Resource
     String identificationCompleteCaption;
@@ -324,6 +325,9 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Resource
     String errorReadingRTFFileError;
+
+    @Resource
+    String rtfFileTooLargeError;
 
     // GUI components
     private JPanel _rootPanel;
@@ -1986,7 +1990,9 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         try {
             String rtfSource = FileUtils.readFileToString(rtfFile);
             displayRTFReport(rtfSource, title);
-        } catch (IOException ex) {
+        } catch (OutOfMemoryError err) {
+            displayErrorMessage(rtfFileTooLargeError);
+        } catch (Exception ex) {
             displayErrorMessage(errorWritingToFileError);
         }
     }
@@ -2004,7 +2010,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         try {
             Thread.sleep(250);
             if (!worker.isDone()) {
-                displayBusyMessage(loadingReportCaption);
+                displayBusyMessageAllowCancelWorker(displayingReportCaption, worker);
             }
         } catch (InterruptedException ex) {
             // do nothing
@@ -2024,25 +2030,26 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         @Override
         public Void doInBackground() {
-            try {
-                _dlg = new RtfReportDisplayDialog(getMainFrame(), new SimpleRtfEditorKit(null), _rtfSource, _title);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+            _dlg = new RtfReportDisplayDialog(getMainFrame(), new SimpleRtfEditorKit(null), _rtfSource, _title);
             return null;
         }
 
         @Override
         protected void done() {
-            // A runtime exception is thrown by the RtfReportDisplayDialog if
-            // the RTF was invalid. This will result in the dialog being null.
-            if (_dlg == null) {
-                displayErrorMessage(badlyFormedRTFContentMessage);
-            } else {
+            try {
+                get();
                 Intkey.this.show(_dlg);
+            } catch (CancellationException ex) {
+                // display of RTF content was cancelled - no action required.
+            } catch (Exception ex) {
+                // A runtime exception is thrown by the RtfReportDisplayDialog
+                // if
+                // the RTF was invalid. This will result in the dialog being
+                // null.
+                displayErrorMessage(badlyFormedRTFContentMessage);
+            } finally {
+                removeBusyMessage();
             }
-
-            removeBusyMessage();
         }
 
     }
@@ -2066,6 +2073,12 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         } else {
             _busyGlassPane.setMessage(message);
         }
+    }
+
+    @Override
+    public void displayBusyMessageAllowCancelWorker(String message, SwingWorker<?, ?> worker) {
+        displayBusyMessage(message);
+        _busyGlassPane.setWorkerForCancellation(worker);
     }
 
     @Override
@@ -2884,12 +2897,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     }
 
     private void openPreviouslyOpenedFile(String fileName) {
-        try {
-            _context.newDataSetFile(new File(fileName));
-        } catch (Exception ex) {
-            displayErrorMessage(ex.getMessage());
-            removeFileFromMRU(fileName);
-        }
+        _context.newDataSetFile(new File(fileName));
     }
 
     private void saveCurrentlyOpenedDataset() {
@@ -2911,6 +2919,11 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                     try {
                         File newInkFile = StartupUtils.saveRemoteDataset(_context, saveDir);
                         fileToOpenDataset = newInkFile;
+
+                        // Remove the current startup file from the MRU as a new
+                        // file will go in its
+                        // place.
+                        removeFileFromMRU(_context.getDatasetStartupFile().getAbsolutePath());
                     } catch (IOException ex) {
                         displayErrorMessage("Error saving downloaded dataset");
                         // not much we can do here, just abort saving/adding to
