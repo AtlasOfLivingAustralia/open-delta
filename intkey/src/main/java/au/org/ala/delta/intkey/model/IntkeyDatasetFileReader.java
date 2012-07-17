@@ -1089,6 +1089,14 @@ public final class IntkeyDatasetFileReader {
         return attrList.get(0);
     }
 
+    /**
+     * Read attributes from the items file
+     * @param itemFileHeader item file header
+     * @param itemBinFile item file data
+     * @param c character that we want attributes for
+     * @param taxa taxa that we want attributes for
+     * @return a list of attributes for the supplied character and taxa.
+     */
     private static List<Attribute> readAttributes(ItemsFileHeader itemFileHeader, BinFile itemBinFile, Character c, List<Item> taxa) {
         List<Attribute> retList = new ArrayList<Attribute>();
 
@@ -1268,6 +1276,7 @@ public final class IntkeyDatasetFileReader {
                 String txt = "";
                 if (textLength > 0) {
                     byte[] textBytes = new byte[textLength];
+                    taxonTextData.position(lowerOffset - 1);
                     taxonTextData.get(textBytes);
 
                     txt = BinFileEncoding.decode(textBytes);

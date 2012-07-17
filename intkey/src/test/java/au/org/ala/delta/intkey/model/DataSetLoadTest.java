@@ -63,9 +63,9 @@ public class DataSetLoadTest extends IntkeyDatasetTestCase {
 
         assertEquals(87, context.getDataset().getNumberOfCharacters());
         assertEquals(14, context.getDataset().getNumberOfTaxa());
-        
-        for (Character ch: context.getDataset().getCharactersAsList()) {
-            for (Attribute attr: context.getDataset().getAllAttributesForCharacter(ch.getCharacterId())) {
+
+        for (Character ch : context.getDataset().getCharactersAsList()) {
+            for (Attribute attr : context.getDataset().getAllAttributesForCharacter(ch.getCharacterId())) {
                 if (!attr.isUnknown() && attr.isInapplicable()) {
                     System.out.println(attr.getItem().getItemNumber() + " " + ch.getCharacterId());
                 }
@@ -506,6 +506,82 @@ public class DataSetLoadTest extends IntkeyDatasetTestCase {
         assertEquals("<strawberry>", ((TextAttribute) moreCommentsAttrs.get(2)).getText());
         assertEquals("<plum>", ((TextAttribute) moreCommentsAttrs.get(3)).getText());
         assertEquals("<potato>", ((TextAttribute) moreCommentsAttrs.get(4)).getText());
+    }
+
+    /**
+     * Test reading attributes (character-taxon data). These are loaded
+     * on-demand from disk by the IntkeyDataset, as they are too large to hold
+     * in memory.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testReadSingleAttribute() throws Exception {
+        IntkeyContext context = loadDataset("/dataset/controlling_characters_simple/intkey.ink");
+
+        IntkeyDataset ds = context.getDataset();
+
+        RealCharacter charAvgWeight = (RealCharacter) ds.getCharacter(1);
+        UnorderedMultiStateCharacter charSeedPresence = (UnorderedMultiStateCharacter) ds.getCharacter(2);
+        UnorderedMultiStateCharacter charSeedInShell = (UnorderedMultiStateCharacter) ds.getCharacter(3);
+        RealCharacter charAvgThickness = (RealCharacter) ds.getCharacter(4);
+        IntegerCharacter charAvgNumberOfSeeds = (IntegerCharacter) ds.getCharacter(5);
+        OrderedMultiStateCharacter charColor = (OrderedMultiStateCharacter) ds.getCharacter(6);
+        RealCharacter charAvgLength = (RealCharacter) ds.getCharacter(7);
+        TextCharacter charMoreComments = (TextCharacter) ds.getCharacter(8);
+
+        Item itemApricot = ds.getItem(2);
+
+        Attribute apricotAverageWeight = ds.getAttribute(2, 1);
+        assertTrue(apricotAverageWeight instanceof RealAttribute);
+        assertEquals(itemApricot, apricotAverageWeight.getItem());
+        assertEquals(new FloatRange(10.0, 20.0), ((RealAttribute) apricotAverageWeight).getPresentRange());
+
+        Attribute apricotSeedPresence = ds.getAttribute(2, 2);
+        assertTrue(apricotSeedPresence instanceof MultiStateAttribute);
+        assertEquals(itemApricot, apricotSeedPresence.getItem());
+        assertEquals(charSeedPresence, apricotSeedPresence.getCharacter());
+        assertEquals(new HashSet<Integer>(Arrays.asList(1)), ((MultiStateAttribute) apricotSeedPresence).getPresentStates());
+
+        Attribute apricotSeedInShell = ds.getAttribute(2, 3);
+        assertTrue(apricotSeedInShell instanceof MultiStateAttribute);
+        assertEquals(itemApricot, apricotSeedInShell.getItem());
+        assertEquals(charSeedInShell, apricotSeedInShell.getCharacter());
+        assertEquals(new HashSet<Integer>(Arrays.asList(1)), ((MultiStateAttribute) apricotSeedInShell).getPresentStates());
+
+        Attribute apricotAvgThickness = ds.getAttribute(2, 4);
+
+        assertTrue(apricotAvgThickness instanceof RealAttribute);
+        assertEquals(itemApricot, apricotAvgThickness.getItem());
+        assertEquals(charAvgThickness, apricotAvgThickness.getCharacter());
+        assertEquals(new FloatRange(3, 3), ((RealAttribute) apricotAvgThickness).getPresentRange());
+
+        Attribute apricotAvgNumSeeds = ds.getAttribute(2, 5);
+        assertTrue(apricotAvgNumSeeds instanceof IntegerAttribute);
+        assertEquals(itemApricot, apricotAvgNumSeeds.getItem());
+        assertEquals(charAvgNumberOfSeeds, apricotAvgNumSeeds.getCharacter());
+        assertEquals(new HashSet(Arrays.asList(1)), ((IntegerAttribute) apricotAvgNumSeeds).getPresentValues());
+
+        Attribute apricotColor = ds.getAttribute(2, 6);
+        assertTrue(apricotColor instanceof MultiStateAttribute);
+        assertEquals(charColor, apricotColor.getCharacter());
+        assertEquals(itemApricot, apricotColor.getItem());
+        assertEquals(new HashSet(Arrays.asList(3)), ((MultiStateAttribute) apricotColor).getPresentStates());
+
+        Attribute apricotAverageLength = ds.getAttribute(2, 7);
+        assertTrue(apricotAverageLength instanceof RealAttribute);
+        assertEquals(charAvgLength, apricotAverageLength.getCharacter());
+        assertEquals(itemApricot, apricotAverageLength.getItem());
+        assertEquals(new FloatRange(5.0, 10.0), ((RealAttribute) apricotAverageLength).getPresentRange());
+
+        Attribute apricotMoreComments = ds.getAttribute(2, 8);
+
+        assertTrue(apricotMoreComments instanceof TextAttribute);
+        assertEquals(charMoreComments, apricotMoreComments.getCharacter());
+
+        assertEquals(itemApricot, apricotMoreComments.getItem());
+
+        assertEquals("<apricot>", ((TextAttribute) apricotMoreComments).getText());
     }
 
     /**
