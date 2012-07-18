@@ -461,7 +461,7 @@ public class TaxonInformationDialog extends IntkeyDialog {
     private void displaySelectedTaxonImage(int imageIndex) {
         try {
             Item selectedTaxon = getSelectedTaxon();
-            TaxonImageDialog dlg = new TaxonImageDialog(UIUtils.getMainFrame(), _imageSettings, _taxaWithImages, false, !_context.displayContinuous(), _context.displayScaled());
+            TaxonImageDialog dlg = new TaxonImageDialog(UIUtils.getMainFrame(), _imageSettings, _taxaWithImages, false, !_context.displayContinuous(), _context.displayScaled(), _context.getImageSubjects(), _context.getUI());
             dlg.displayImagesForTaxon(selectedTaxon, imageIndex);
             ((SingleFrameApplication) Application.getInstance()).show(dlg);
         } catch (IllegalArgumentException ex) {

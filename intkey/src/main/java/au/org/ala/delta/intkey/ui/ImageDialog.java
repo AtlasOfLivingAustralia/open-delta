@@ -116,9 +116,9 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
 
     protected Formatter _imageDescriptionFormatter;
 
-    private List<Image> _images;
+    protected List<Image> _images;
 
-    private boolean _scaleImages;
+    protected boolean _scaleImages;
 
     /**
      * ctor

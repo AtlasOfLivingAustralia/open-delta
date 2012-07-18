@@ -1,6 +1,8 @@
 package au.org.ala.delta.intkey.ui;
 
 import java.awt.Dialog;
+import java.awt.Frame;
+
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import javax.swing.JButton;
@@ -87,9 +89,19 @@ public class MultipleImagesDialog extends IntkeyDialog {
     private JList _listSubjects;
     private ButtonGroup radioButtonGroup;
 
+    public MultipleImagesDialog(Frame owner, boolean modal, Item currentSelectedTaxon, List<Item> allSelectedTaxa, List<String> imageSubjects, ImageSettings imageSettings, boolean displayContinuous,
+            boolean displayScaled, IntkeyUI mainUI) {
+        super(owner, modal);
+        init(currentSelectedTaxon, allSelectedTaxa, imageSubjects, imageSettings, displayContinuous, displayScaled, mainUI);
+    }
+
     public MultipleImagesDialog(Dialog owner, boolean modal, Item currentSelectedTaxon, List<Item> allSelectedTaxa, List<String> imageSubjects, ImageSettings imageSettings, boolean displayContinuous,
             boolean displayScaled, IntkeyUI mainUI) {
         super(owner, modal);
+        init(currentSelectedTaxon, allSelectedTaxa, imageSubjects, imageSettings, displayContinuous, displayScaled, mainUI);
+    }
+
+    private void init(Item currentSelectedTaxon, List<Item> allSelectedTaxa, List<String> imageSubjects, ImageSettings imageSettings, boolean displayContinuous, boolean displayScaled, IntkeyUI mainUI) {
 
         _imageSettings = imageSettings;
         _imageSubjects = imageSubjects;
@@ -193,6 +205,9 @@ public class MultipleImagesDialog extends IntkeyDialog {
 
     @Action
     public void MultipleImagesDialog_OK() {
+        //Close any windows that are already open
+        IntKeyDialogController.closeWindows();
+        
         List<Image> imagesToDisplay = new ArrayList<Image>();
 
         // Use to keep track of what taxon each image belongs to
@@ -270,12 +285,12 @@ public class MultipleImagesDialog extends IntkeyDialog {
         taxonInList.add(taxon);
 
         try {
-            TaxonImageDialog dlg = new TaxonImageDialog(UIUtils.getMainFrame(), _imageSettings, taxonInList, false, !_displayContinuous, !_displayScaled);
+            TaxonImageDialog dlg = new TaxonImageDialog(UIUtils.getMainFrame(), _imageSettings, taxonInList, false, !_displayContinuous, !_displayScaled, _imageSubjects, _mainUI);
             dlg.displayImagesForTaxon(taxon, 0);
             dlg.showImage(taxon.getImages().indexOf(img));
             ((SingleFrameApplication) Application.getInstance()).show(dlg);
         } catch (IllegalArgumentException ex) {
-            // Display error message if unable to display 
+            // Display error message if unable to display
             _mainUI.displayErrorMessage(UIUtils.getResourceString("CouldNotDisplayImage.error", ex.getMessage()));
         }
     }

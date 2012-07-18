@@ -21,11 +21,14 @@ import java.util.List;
 
 import javax.swing.ActionMap;
 import javax.swing.JMenuItem;
+import javax.swing.SwingUtilities;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
+import org.jdesktop.application.SingleFrameApplication;
 
+import au.org.ala.delta.intkey.IntkeyUI;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
@@ -44,25 +47,32 @@ public class TaxonImageDialog extends ImageDialog {
     private JMenuItem _mnuItNextTaxon;
     private JMenuItem _mnuItPreviousTaxon;
     private JMenuItem _mnuItMultipleImages;
-    
+
     private boolean _multipleImagesMenuEnabled;
 
     private int _selectedTaxonIndex;
 
     private ItemFormatter _itemFormatter;
 
-    public TaxonImageDialog(Dialog owner, ImageSettings imageSettings, List<Item> taxa, boolean modal, boolean multipleImagesMenuEnabled, boolean initScalingMode) {
+    private List<String> _imageSubjects;
+    private IntkeyUI _mainUI;
+
+    public TaxonImageDialog(Dialog owner, ImageSettings imageSettings, List<Item> taxa, boolean modal, boolean multipleImagesMenuEnabled, boolean initScalingMode, List<String> imageSubjects,
+            IntkeyUI appUI) {
         super(owner, imageSettings, modal, initScalingMode);
-        init(taxa, multipleImagesMenuEnabled);
+        init(taxa, multipleImagesMenuEnabled, imageSubjects, appUI);
     }
 
-    public TaxonImageDialog(Frame owner, ImageSettings imageSettings, List<Item> taxa, boolean modal, boolean multipleImagesMenuEnabled, boolean initScalingMode) {
+    public TaxonImageDialog(Frame owner, ImageSettings imageSettings, List<Item> taxa, boolean modal, boolean multipleImagesMenuEnabled, boolean initScalingMode, List<String> imageSubjects,
+            IntkeyUI appUI) {
         super(owner, imageSettings, modal, initScalingMode);
-        init(taxa, multipleImagesMenuEnabled);
+        init(taxa, multipleImagesMenuEnabled, imageSubjects, appUI);
     }
 
-    private void init(List<Item> taxa, boolean multipleImagesMenuEnabled) {
+    private void init(List<Item> taxa, boolean multipleImagesMenuEnabled, List<String> imageSubjects, IntkeyUI appUI) {
         _multipleImagesMenuEnabled = multipleImagesMenuEnabled;
+        _imageSubjects = new ArrayList<String>(imageSubjects);
+        _mainUI = appUI;
         _taxa = new ArrayList<Item>(taxa);
 
         _itemFormatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, true, false, false);
@@ -141,7 +151,9 @@ public class TaxonImageDialog extends ImageDialog {
 
     @Action
     public void displayMultipleImages() {
-
+        MultipleImagesDialog dlg = new MultipleImagesDialog(UIUtils.getMainFrame(), true, _taxa.get(_selectedTaxonIndex), _taxa, _imageSubjects, _imageSettings, _multipleImagesMenuEnabled,
+                _scaleImages, _mainUI);
+        ((SingleFrameApplication) Application.getInstance()).show(dlg);
     }
 
 }

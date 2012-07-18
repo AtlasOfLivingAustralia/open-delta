@@ -266,7 +266,7 @@ public class TaxonSelectionDialog extends ListSelectionDialog implements Searcha
         List<Item> taxonInList = new ArrayList<Item>();
         taxonInList.add(taxon);
         try {
-            TaxonImageDialog dlg = new TaxonImageDialog(this, _context.getImageSettings(), taxonInList, false, !_context.displayContinuous(), _context.displayScaled());
+            TaxonImageDialog dlg = new TaxonImageDialog(this, _context.getImageSettings(), taxonInList, false, !_context.displayContinuous(), _context.displayScaled(), _context.getImageSubjects(), _context.getUI());
             dlg.displayImagesForTaxon(taxon, 0);
             ((SingleFrameApplication) Application.getInstance()).show(dlg);
         } catch (IllegalArgumentException ex) {

@@ -302,19 +302,29 @@ public class IntkeyDataset implements DeltaDataSet {
     }
 
     /**
-     * Get all attributes for the character with the supplied number
+     * Get all attributes for the character with the supplied number.
+     * Synchronized because multiple threads reading from the characters and
+     * items files simultaneously can cause problems.
      * 
-     * @param charNo
+     * @param charNo character number
      * @return A list of all attributes for the character, ordered by taxon
      *         number in ascending order
      */
     @Override
-    public List<Attribute> getAllAttributesForCharacter(int charNo) {
+    public synchronized List<Attribute> getAllAttributesForCharacter(int charNo) {
         List<Attribute> attrList = IntkeyDatasetFileReader.readAllAttributesForCharacter(_itemsFileHeader, _itemsBinFile, getCharacter(charNo), _taxa);
         return attrList;
     }
 
-    public Attribute getAttribute(int itemNo, int charNo) {
+    /**
+     * Get the attribute for the supplied taxon/character pair
+     * 
+     * @param itemNo the taxon number
+     * @param charNo
+     * @return A list of all attributes for the character, ordered by taxon
+     *         number in ascending order
+     */
+    public synchronized Attribute getAttribute(int itemNo, int charNo) {
         return IntkeyDatasetFileReader.readAttribute(_itemsFileHeader, _itemsBinFile, getCharacter(charNo), getItem(itemNo));
     }
 
@@ -327,7 +337,7 @@ public class IntkeyDataset implements DeltaDataSet {
         return new ArrayList<TextCharacter>(_synonymyCharacters);
     }
 
-    public void setSynonymyCharacters(List<TextCharacter> synonymyCharacters) {
+    void setSynonymyCharacters(List<TextCharacter> synonymyCharacters) {
         _synonymyCharacters = new ArrayList<TextCharacter>(synonymyCharacters);
     }
 

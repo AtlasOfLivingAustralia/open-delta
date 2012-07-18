@@ -2296,7 +2296,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             displayErrorMessage(UIUtils.getResourceString("ImageDisplayDisabled.error"));
         } else {
             try {
-                TaxonImageDialog dlg = new TaxonImageDialog(getMainFrame(), _context.getImageSettings(), taxa, false, !_context.displayContinuous(), _context.displayScaled());
+                TaxonImageDialog dlg = new TaxonImageDialog(getMainFrame(), _context.getImageSettings(), taxa, false, !_context.displayContinuous(), _context.displayScaled(), _context.getImageSubjects(), this);
                 show(dlg);
                 dlg.displayImagesForTaxon(taxa.get(0), 0);
             } catch (IllegalArgumentException ex) {
