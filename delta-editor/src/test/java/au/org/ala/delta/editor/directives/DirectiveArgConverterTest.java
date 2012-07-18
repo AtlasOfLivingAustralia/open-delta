@@ -14,12 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.directives;
 
-import java.math.BigDecimal;
-import java.util.List;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.directives.CharacterTypes;
@@ -43,6 +37,11 @@ import au.org.ala.delta.editor.slotfile.VODirFileDesc.DirListData;
 import au.org.ala.delta.editor.slotfile.VODirFileDescTest;
 import au.org.ala.delta.editor.slotfile.directive.ConforDirType;
 import au.org.ala.delta.editor.slotfile.directive.IntkeyDirType;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 
 /**
@@ -58,6 +57,7 @@ public class DirectiveArgConverterTest extends VODirFileDescTest {
 		super.setUp();
 		_converter = new DirectiveArgConverter(_vop);
 		_context = new DeltaContext();
+        _context.newParsingContext();
 	}
 	
 	@Test

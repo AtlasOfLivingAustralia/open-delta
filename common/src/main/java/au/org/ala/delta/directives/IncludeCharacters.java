@@ -18,7 +18,7 @@ import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.directives.validation.CharacterNumberValidator;
-import au.org.ala.delta.directives.validation.IdValidator;
+import au.org.ala.delta.directives.validation.IntegerValidator;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -69,7 +69,7 @@ public class IncludeCharacters extends AbstractRangeListDirective<DeltaContext> 
 
 
     @Override
-    protected IdValidator createValidator(DeltaContext context) {
+    protected IntegerValidator createValidator(DeltaContext context) {
         return new CharacterNumberValidator(context);
     }
 }

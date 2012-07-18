@@ -19,6 +19,7 @@ import au.org.ala.delta.directives.validation.DirectiveError;
 import au.org.ala.delta.directives.validation.DirectiveError.Error;
 
 import au.org.ala.delta.directives.validation.DirectiveException;
+import au.org.ala.delta.directives.validation.IntegerValidator;
 
 /**
  * Utility class for associating common parsing operations (e.g. string to 
@@ -26,12 +27,22 @@ import au.org.ala.delta.directives.validation.DirectiveException;
  */
 public class ParsingUtils {
 	
-	public static int readInt(ParsingContext context, String value) throws DirectiveException {
+	public static int readInt(ParsingContext context, IntegerValidator validator, String value) throws DirectiveException {
 		try {
-			return Integer.parseInt(value);
+            int currentPos = (int)context.getCurrentOffset();
+			int intValue = Integer.parseInt(value);
+            if (validator != null) {
+                DirectiveError error = validator.validateInteger(intValue);
+                if (error != null) {
+                    error.setPosition(currentPos);
+                    throw error.asException();
+                }
+            }
+            return intValue;
 		}
-		catch (Exception e) {
+        catch (NumberFormatException e) {
 			throw DirectiveError.asException(Error.INTEGER_EXPECTED, (int)context.getCurrentOffset());
 		}
+
 	}
 }

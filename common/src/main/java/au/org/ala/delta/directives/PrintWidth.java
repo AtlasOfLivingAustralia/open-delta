@@ -17,9 +17,10 @@ package au.org.ala.delta.directives;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.args.DirectiveArgType;
+import au.org.ala.delta.directives.validation.IntegerValidator;
 
 /**
- * @see http://delta-intkey.com/www/uguide.htm#_*PRINT_WIDTH__1
+ * @link http://delta-intkey.com/www/uguide.htm#_*PRINT_WIDTH__1
  *
  */
 public class PrintWidth extends AbstractIntegerDirective {
@@ -39,5 +40,10 @@ public class PrintWidth extends AbstractIntegerDirective {
 		
 		context.getOutputFileSelector().setPrintWidth(value);
 	}
+
+    @Override
+    protected IntegerValidator createValidator(DeltaContext context) {
+        return null;
+    }
 
 }

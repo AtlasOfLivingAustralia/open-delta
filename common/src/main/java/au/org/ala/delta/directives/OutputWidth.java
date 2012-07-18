@@ -17,9 +17,11 @@ package au.org.ala.delta.directives;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.args.DirectiveArgType;
+import au.org.ala.delta.directives.validation.IntegerRangeValidator;
+import au.org.ala.delta.directives.validation.IntegerValidator;
 
 /**
- * @see http://delta-intkey.com/www/uguide.htm#_*OUTPUT_WIDTH__1
+ * @link http://delta-intkey.com/www/uguide.htm#_*OUTPUT_WIDTH__1
  *
  */
 public class OutputWidth extends AbstractIntegerDirective {
@@ -39,5 +41,10 @@ public class OutputWidth extends AbstractIntegerDirective {
 		
 		context.getOutputFileSelector().setOutputWidth(value);
 	}
+
+    @Override
+    protected IntegerValidator createValidator(DeltaContext context) {
+        return new IntegerRangeValidator(40, 132);
+    }
 
 }

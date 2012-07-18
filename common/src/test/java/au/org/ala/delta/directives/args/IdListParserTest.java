@@ -15,7 +15,7 @@
 package au.org.ala.delta.directives.args;
 
 import au.org.ala.delta.DeltaContext;
-import au.org.ala.delta.directives.validation.IdValidator;
+import au.org.ala.delta.directives.validation.IntegerValidator;
 import junit.framework.TestCase;
 import org.junit.Test;
 
@@ -28,7 +28,7 @@ import java.text.ParseException;
 public class IdListParserTest extends TestCase {
 
 	
-	private IdListParser parserFor(String directiveArgs, IdValidator validator) {
+	private IdListParser parserFor(String directiveArgs, IntegerValidator validator) {
 		DeltaContext context = new DeltaContext();
 		
 		StringReader reader = new StringReader(directiveArgs);

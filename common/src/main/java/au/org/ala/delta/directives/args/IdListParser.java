@@ -15,7 +15,7 @@
 package au.org.ala.delta.directives.args;
 
 import au.org.ala.delta.directives.AbstractDeltaContext;
-import au.org.ala.delta.directives.validation.IdValidator;
+import au.org.ala.delta.directives.validation.IntegerValidator;
 import org.apache.commons.lang.math.IntRange;
 
 import java.io.Reader;
@@ -33,9 +33,9 @@ import java.text.ParseException;
  */
 public class IdListParser extends DirectiveArgsParser {
 	
-	private IdValidator _validator;
+	private IntegerValidator _validator;
 	
-	public IdListParser(AbstractDeltaContext context, Reader reader, IdValidator validator) {
+	public IdListParser(AbstractDeltaContext context, Reader reader, IntegerValidator validator) {
 		super(context, reader);
         _validator = validator;
 	}

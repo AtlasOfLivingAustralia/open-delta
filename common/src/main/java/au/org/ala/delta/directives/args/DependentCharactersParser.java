@@ -17,7 +17,7 @@ package au.org.ala.delta.directives.args;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.validation.CharacterNumberValidator;
 import au.org.ala.delta.directives.validation.DirectiveError;
-import au.org.ala.delta.directives.validation.IdValidator;
+import au.org.ala.delta.directives.validation.IntegerValidator;
 import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.DefaultDataSetFactory;
@@ -39,7 +39,7 @@ public class DependentCharactersParser extends DirectiveArgsParser {
 	private MutableDeltaDataSet _dataSet;
 	private List<CharacterDependency> _dependencies;
 	private DeltaDataSetFactory _factory;
-    private IdValidator _validator;
+    private IntegerValidator _validator;
 	
 	public DependentCharactersParser(DeltaContext context, Reader reader) {
 		super(context, reader);

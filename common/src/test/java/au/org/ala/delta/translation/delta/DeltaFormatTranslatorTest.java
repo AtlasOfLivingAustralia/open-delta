@@ -14,16 +14,17 @@
  ******************************************************************************/
 package au.org.ala.delta.translation.delta;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-
-import org.junit.Before;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.translation.DataSetTranslator;
 import au.org.ala.delta.translation.DataSetTranslatorFactory;
 import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.translation.TranslatorTest;
+import junit.framework.TestResult;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 
 /**
  * Tests the DeltaFormatTranslator.
@@ -49,33 +50,35 @@ public class DeltaFormatTranslatorTest extends TranslatorTest {
 		_factory = new DataSetTranslatorFactory();
 		
 	}
-	
+
+    @Test
 	public void testItemsTranslation() throws Exception {
-		
 		_context.setOmitTypeSettingMarks(false);
 		_context.setInsertImplicitValues(true);
 		initialiseContext(DEFAULT_DATASET_PATH);
 		
 		checkResult("/dataset/sample/expected_results/deltaformatitems.txt");
-		
+
 	}
-	
+
+    @Test
 	public void testItemsTranslationOmitTypeSettingMarks() throws Exception {
 		_context.setInsertImplicitValues(true);
 		_context.setOmitTypeSettingMarks(true);
 		initialiseContext(DEFAULT_DATASET_PATH);
-		
+
 		checkResult("/dataset/sample/expected_results/deltaformatitem-omittypesettingmarks.txt");
-		
+
 	}
-	
+
+    @Test
 	public void testItemsTranslationNoImplicitValues() throws Exception {
 		_context.setInsertImplicitValues(false);
-		
+
 		initialiseContext(DEFAULT_DATASET_PATH);
-		
+
 		checkResult("/dataset/sample/expected_results/deltaformatitem-noimplicitvalues.txt");
-		
+
 	}
 
 	/**
@@ -83,8 +86,6 @@ public class DeltaFormatTranslatorTest extends TranslatorTest {
 	 *
 	 * @param expectedResultsFileName the name of the file - the path "/dataset/simple/expected_results/" is 
 	 * prepended before loading the file contents.
-	 * @param vide true if we are checking the Vide dataset - we do a few things a bit differently
-	 * to CONFOR that I am taking into account.
 	 * @throws Exception if there is an error reading the file.
 	 */
 	protected void checkResult(String expectedResultsFileName) throws Exception {
@@ -124,4 +125,8 @@ public class DeltaFormatTranslatorTest extends TranslatorTest {
 		
 		
 	}
+    public TestResult run() {
+        System.out.println("Running....");
+        return super.run();
+    }
 }

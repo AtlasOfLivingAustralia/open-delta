@@ -14,11 +14,12 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
-import java.text.ParseException;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.directives.args.ParsingUtils;
+import au.org.ala.delta.directives.validation.IntegerValidator;
+
+import java.text.ParseException;
 
 public abstract class AbstractIntegerDirective extends AbstractDirective<DeltaContext> {
 
@@ -40,7 +41,7 @@ public abstract class AbstractIntegerDirective extends AbstractDirective<DeltaCo
 	
 	@Override
 	public void parse(DeltaContext context, String data) throws ParseException {
-		_value = ParsingUtils.readInt(context.getCurrentParsingContext(), data.trim());
+		_value = ParsingUtils.readInt(context.getCurrentParsingContext(), createValidator(context), data.trim());
 	}
 
 	@Override
@@ -50,5 +51,12 @@ public abstract class AbstractIntegerDirective extends AbstractDirective<DeltaCo
 	}
 
 	protected abstract void processInteger(DeltaContext context, int character) throws Exception;
+
+    /**
+     * Subclasses should override this method to create a validator appropriate for the directive type.
+     * @param context the current parsing/processing context.
+     * @return either an appropriate instance of IntegerValidator or null if validation is not required.
+     */
+    protected abstract IntegerValidator createValidator(DeltaContext context);
 
 }

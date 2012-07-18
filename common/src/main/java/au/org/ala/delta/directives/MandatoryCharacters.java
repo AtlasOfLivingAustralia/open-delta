@@ -18,7 +18,7 @@ import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.validation.CharacterNumberValidator;
-import au.org.ala.delta.directives.validation.IdValidator;
+import au.org.ala.delta.directives.validation.IntegerValidator;
 
 public class MandatoryCharacters extends AbstractRangeListDirective<DeltaContext> {
 
@@ -44,7 +44,7 @@ public class MandatoryCharacters extends AbstractRangeListDirective<DeltaContext
 	}
 
     @Override
-    protected IdValidator createValidator(DeltaContext context) {
+    protected IntegerValidator createValidator(DeltaContext context) {
         return new CharacterNumberValidator(context);
     }
 }

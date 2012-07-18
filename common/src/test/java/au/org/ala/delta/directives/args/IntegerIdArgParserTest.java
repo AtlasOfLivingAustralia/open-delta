@@ -14,14 +14,13 @@
  ******************************************************************************/
 package au.org.ala.delta.directives.args;
 
-import java.io.StringReader;
-import java.text.ParseException;
-
+import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.validation.IntegerRangeValidator;
 import junit.framework.TestCase;
-
 import org.junit.Test;
 
-import au.org.ala.delta.DeltaContext;
+import java.io.StringReader;
+import java.text.ParseException;
 
 /**
  * Tests the IntegerIdArgParser class.
@@ -31,10 +30,11 @@ public class IntegerIdArgParserTest extends TestCase {
 	
 	private IntegerIdArgParser parserFor(String directiveArgs) {
 		DeltaContext context = new DeltaContext();
+        context.newParsingContext();
 		
 		StringReader reader = new StringReader(directiveArgs);
 		
-		return new IntegerIdArgParser(context, reader);
+		return new IntegerIdArgParser(context, reader, new IntegerRangeValidator(-1000, 1000));
 	}
 	
 	/**

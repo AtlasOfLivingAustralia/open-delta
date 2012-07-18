@@ -68,8 +68,10 @@ public class DirectiveArgParserFactory {
 			parser = new NumericArgParser(context, reader);
 			break;
 		case DirectiveArgType.DIRARG_CHAR:
+            parser = new IntegerIdArgParser(context, reader, new CharacterNumberValidator(context));
+            break;
 		case DirectiveArgType.DIRARG_ITEM:
-			parser = new IntegerIdArgParser(context, reader);
+			parser = new IntegerIdArgParser(context, reader, new ItemNumberValidator(context));
 			break;
 		case DirectiveArgType.DIRARG_CHARLIST:
             parser = new IdListParser(context, reader, new CharacterNumberValidator(context));

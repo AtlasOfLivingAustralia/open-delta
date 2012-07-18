@@ -22,7 +22,7 @@ import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.directives.validation.CharacterNumberValidator;
 import au.org.ala.delta.directives.validation.DirectiveError;
 import au.org.ala.delta.directives.validation.DirectiveException;
-import au.org.ala.delta.directives.validation.IdValidator;
+import au.org.ala.delta.directives.validation.IntegerValidator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,7 +77,7 @@ public class NewCharacterOrder extends AbstractRangeListDirective<DelforContext>
 	}
 
     @Override
-    protected IdValidator createValidator(DelforContext context) {
+    protected IntegerValidator createValidator(DelforContext context) {
         return new CharacterNumberValidator(context);
     }
 }

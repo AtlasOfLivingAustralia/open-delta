@@ -1,11 +1,11 @@
 package au.org.ala.delta.directives.validation;
 
 /**
- * An IdValidator is responsible for validation of an id (Character number, Item number or state number) during
+ * An IntegerValidator is responsible for validation of an id (Character number, Item number or state number) during
  * directive parsing.  It is designed to be invoked during the parsing so that if an error occurs the current
  * parse position is known and hence the error position can be highlighted to the user.
  */
-public interface IdValidator {
+public interface IntegerValidator {
 
     /**
      * Validates the supplied id, and returns a specific instance of DirectiveError if the id is found to be
@@ -14,5 +14,5 @@ public interface IdValidator {
      * @return either null (if the id is valid) or an instance of DirectiveError that contains the reason the id
      * was deemed to be invalid.
      */
-    public DirectiveError validateId(int id);
+    public DirectiveError validateInteger(int id);
 }

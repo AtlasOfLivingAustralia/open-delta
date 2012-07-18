@@ -17,7 +17,7 @@ package au.org.ala.delta.directives.args;
 import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.directives.AbstractStreamParser;
 import au.org.ala.delta.directives.validation.DirectiveError;
-import au.org.ala.delta.directives.validation.IdValidator;
+import au.org.ala.delta.directives.validation.IntegerValidator;
 import org.apache.commons.lang.math.IntRange;
 
 import java.io.IOException;
@@ -112,7 +112,7 @@ public abstract class DirectiveArgsParser extends AbstractStreamParser {
 		return text.toString();
 	}
 	
-	protected IntRange readIds(IdValidator validator) throws ParseException {
+	protected IntRange readIds(IntegerValidator validator) throws ParseException {
         int startPos = _position;
         int first = readInteger();
         validateId(first, validator, startPos);
@@ -126,9 +126,9 @@ public abstract class DirectiveArgsParser extends AbstractStreamParser {
         return new IntRange(first);
     }
 
-    private void validateId(int id, IdValidator validator, int parsePosition) throws ParseException {
+    private void validateId(int id, IntegerValidator validator, int parsePosition) throws ParseException {
         if (validator != null) {
-            DirectiveError result = validator.validateId(id);
+            DirectiveError result = validator.validateInteger(id);
             if (result != null) {
                 result.setPosition(parsePosition);
                 throw result.asException();
@@ -136,7 +136,7 @@ public abstract class DirectiveArgsParser extends AbstractStreamParser {
         }
     }
 
-	protected List<Integer> readSet(IdValidator validator) throws ParseException {
+	protected List<Integer> readSet(IntegerValidator validator) throws ParseException {
 		List<Integer> values = new ArrayList<Integer>();
 		while (_currentInt > 0 && !Character.isWhitespace(_currentChar)) {
 			if (_currentChar == SET_VALUE_SEPARATOR) {
@@ -177,14 +177,14 @@ public abstract class DirectiveArgsParser extends AbstractStreamParser {
 	    return id.toString().trim();
 	}
 	
-	protected int readListId(IdValidator validator) throws ParseException {
+	protected int readListId(IntegerValidator validator) throws ParseException {
 		expect(MARK_IDENTIFIER);
 		
 		readNext();
 		
 		int id = readInteger();
 		if (validator != null) {
-            validator.validateId(id);
+            validator.validateInteger(id);
         }
 		expect('.');
 	    readNext();  // consume the . character.

@@ -17,7 +17,7 @@ package au.org.ala.delta.directives;
 import au.org.ala.delta.directives.args.DirectiveArgument;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.directives.args.IdSetParser;
-import au.org.ala.delta.directives.validation.IdValidator;
+import au.org.ala.delta.directives.validation.IntegerValidator;
 
 import java.io.StringReader;
 import java.text.ParseException;
@@ -60,5 +60,5 @@ public abstract class AbstractCharacterSetDirective<C extends AbstractDeltaConte
 
 	protected abstract void processCharacterSet(C context, List<Integer> characters);
 
-    protected abstract IdValidator getValidator(C context);
+    protected abstract IntegerValidator getValidator(C context);
 }

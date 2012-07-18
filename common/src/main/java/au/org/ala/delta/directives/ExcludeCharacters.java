@@ -19,7 +19,7 @@ import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.directives.validation.CharacterNumberValidator;
 import au.org.ala.delta.directives.validation.DirectiveException;
-import au.org.ala.delta.directives.validation.IdValidator;
+import au.org.ala.delta.directives.validation.IntegerValidator;
 
 /**
  * Implements the EXCLUDE CHARACTERS directive.  Accepts a list of character numbers which are added to the
@@ -55,7 +55,7 @@ public class ExcludeCharacters extends AbstractRangeListDirective<DeltaContext> 
 	}
 
     @Override
-    protected IdValidator createValidator(DeltaContext context) {
+    protected IntegerValidator createValidator(DeltaContext context) {
         return new CharacterNumberValidator(context);
     }
 }

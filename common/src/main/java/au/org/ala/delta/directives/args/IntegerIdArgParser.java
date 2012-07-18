@@ -14,11 +14,13 @@
  ******************************************************************************/
 package au.org.ala.delta.directives.args;
 
-import java.io.Reader;
-import java.text.ParseException;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.validation.DirectiveError;
+import au.org.ala.delta.directives.validation.DirectiveException;
+import au.org.ala.delta.directives.validation.IntegerValidator;
+
+import java.io.Reader;
+import java.text.ParseException;
 
 /**
  * The IntegerIdArgParser parses directive arguments in the form:
@@ -32,8 +34,12 @@ import au.org.ala.delta.directives.validation.DirectiveError;
  */
 public class IntegerIdArgParser extends DirectiveArgsParser {
 
-	public IntegerIdArgParser(DeltaContext context, Reader reader) {
+    private IntegerValidator _validator;
+
+	public IntegerIdArgParser(DeltaContext context, Reader reader, IntegerValidator validator) {
 		super(context, reader);
+
+        _validator = validator;
 	}
 	
 	@Override
@@ -41,11 +47,23 @@ public class IntegerIdArgParser extends DirectiveArgsParser {
 		_args = new DirectiveArguments();
 		skipWhitespace();
 		try {
+            int currentPos = (int)_context.getCurrentParsingContext().getCurrentOffset();
 			Integer id = Integer.parseInt(readFully().trim());
-			_args.addDirectiveArgument(id);
+            validate(currentPos, id);
+            _args.addDirectiveArgument(id);
 		}
-		catch (Exception e) {
+		catch (NumberFormatException e) {
 			throw DirectiveError.asException(DirectiveError.Error.INTEGER_EXPECTED, 0);
 		}
 	}
+
+    private void validate(int currentPos, Integer id) throws DirectiveException {
+        if (_validator != null) {
+            DirectiveError error = _validator.validateInteger(id);
+            if (error != null) {
+                error.setPosition(currentPos);
+                throw error.asException();
+            }
+        }
+    }
 }

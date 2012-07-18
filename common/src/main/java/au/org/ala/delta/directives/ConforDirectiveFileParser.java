@@ -14,14 +14,13 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.validation.DirectiveError;
 import au.org.ala.delta.directives.validation.DirectiveException;
+import org.apache.commons.lang.StringUtils;
+
+import java.util.List;
 
 /**
  * A directive file is a text file containing one or more directives. Directives
@@ -136,7 +135,8 @@ public class ConforDirectiveFileParser extends DirectiveParser<DeltaContext> {
         instance.registerDirective(new OutputParameters());
         instance.registerDirective(new OutputWidth());       
         instance.registerDirective(new OverlayFonts());
-        
+
+        instance.registerDirective(new PageLength());
         instance.registerDirective(new PercentError());
         instance.registerDirective(new PrintCharacterList());  
         instance.registerDirective(new PrintComment());  

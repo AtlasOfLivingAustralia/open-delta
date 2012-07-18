@@ -86,9 +86,9 @@ public class DataSetTranslatorFactory {
 		}
 		else {
 			DataSetTranslator translator = null;
-			
+
 			if (translation.equals(TranslateType.Delta)) {
-				translator = createDeltaFormatTranslator(context, context.getOutputFileSelector().getOutputFile(), formatterFactory);
+				translator = createDeltaFormatTranslator(context, getOutputFile(context), formatterFactory);
 			}
 			else if (translation.equals(TranslateType.IntKey)) {
 				translator = createIntkeyFormatTranslator(context, formatterFactory);
@@ -100,16 +100,16 @@ public class DataSetTranslatorFactory {
 				translator = createDistFormatTranslator(context, formatterFactory);
 			}
 			else if (translation.equals(TranslateType.NexusFormat)) {
-				translator = createNexusFormatTranslator(context,  context.getOutputFileSelector().getOutputFile(), formatterFactory);
+				translator = createNexusFormatTranslator(context,  getOutputFile(context), formatterFactory);
 			}
 			else if (translation.equals(TranslateType.PAUP)) {
-				translator = createPaupFormatTranslator(context,  context.getOutputFileSelector().getOutputFile(), formatterFactory);
+				translator = createPaupFormatTranslator(context,  getOutputFile(context), formatterFactory);
 			}
 			else if (translation.equals(TranslateType.Payne)) {
-				translator = createPayneFormatTranslator(context,  context.getOutputFileSelector().getOutputFile(), formatterFactory);
+				translator = createPayneFormatTranslator(context,  getOutputFile(context), formatterFactory);
 			}
 			else if (translation.equals(TranslateType.Hennig86)) {
-				translator = createHenningFormatTranslator(context,  context.getOutputFileSelector().getOutputFile(), formatterFactory);
+				translator = createHenningFormatTranslator(context,  getOutputFile(context), formatterFactory);
 			}
 			else if (translation.equals(TranslateType.None)) {
 				translator = new NullTranslator();
@@ -123,6 +123,14 @@ public class DataSetTranslatorFactory {
 		
 		return new CompositeDataSetTranslator(translators);
 	}
+
+    private PrintFile getOutputFile(DeltaContext context) throws DirectiveException {
+        PrintFile outputFile = context.getOutputFileSelector().getOutputFile();
+        if (outputFile == null) {
+            throw DirectiveError.asException(DirectiveError.Error.MISSING_OUTPUT_FILE, 0, "output");
+        }
+        return outputFile;
+    }
 	
 	/**
 	 * Creates an appropriate instance of the ImplicitValuesTranslator for the

@@ -17,12 +17,12 @@ package au.org.ala.delta.directives;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.validation.CharacterNumberValidator;
-import au.org.ala.delta.directives.validation.IdValidator;
+import au.org.ala.delta.directives.validation.IntegerValidator;
 
 
 /**
  * Processes the OMIT LOWER FOR CHARACTERS directive.
- * @see http://delta-intkey.com/www/uguide.htm#_*OMIT_LOWER_FOR
+ * @link http://delta-intkey.com/www/uguide.htm#_*OMIT_LOWER_FOR
  */
 public class OmitLowerForCharacters extends AbstractRangeListDirective<DeltaContext> {
 
@@ -47,7 +47,7 @@ public class OmitLowerForCharacters extends AbstractRangeListDirective<DeltaCont
 	}
 
     @Override
-    protected IdValidator createValidator(DeltaContext context) {
+    protected IntegerValidator createValidator(DeltaContext context) {
         return new CharacterNumberValidator(context);
     }
 }

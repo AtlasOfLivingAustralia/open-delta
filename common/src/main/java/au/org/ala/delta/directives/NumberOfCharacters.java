@@ -17,6 +17,8 @@ package au.org.ala.delta.directives;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.args.DirectiveArgType;
+import au.org.ala.delta.directives.validation.IntegerValidator;
+import au.org.ala.delta.directives.validation.PositiveIntegerValidator;
 
 public class NumberOfCharacters extends AbstractIntegerDirective {
 
@@ -39,4 +41,8 @@ public class NumberOfCharacters extends AbstractIntegerDirective {
 		return 1;
 	}
 
+    @Override
+    protected IntegerValidator createValidator(DeltaContext context) {
+        return new PositiveIntegerValidator();
+    }
 }

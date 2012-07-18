@@ -21,7 +21,7 @@ import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArgsParser;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.directives.validation.CharacterNumberValidator;
-import au.org.ala.delta.directives.validation.IdValidator;
+import au.org.ala.delta.directives.validation.IntegerValidator;
 import org.apache.commons.lang.math.IntRange;
 
 import java.io.Reader;
@@ -74,7 +74,7 @@ public class NewStateOrders extends AbstractDirective<DelforContext> {
 	
 	class NewStateOrdersParser extends DirectiveArgsParser {
 
-        private IdValidator _validator;
+        private IntegerValidator _validator;
 		public NewStateOrdersParser(DelforContext context, Reader reader) {
 			super(context, reader);
             _validator = new CharacterNumberValidator(context);

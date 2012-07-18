@@ -14,7 +14,7 @@
  ******************************************************************************/
 package au.org.ala.delta.directives.args;
 import au.org.ala.delta.DeltaContext;
-import au.org.ala.delta.directives.validation.IdValidator;
+import au.org.ala.delta.directives.validation.IntegerValidator;
 import org.apache.commons.lang.math.IntRange;
 
 import java.io.Reader;
@@ -23,14 +23,14 @@ import java.text.ParseException;
 
 public class IntegerTextListParser extends TextListParser<IntRange> {
 
-    private IdValidator _validator;
+    private IntegerValidator _validator;
 
-	public IntegerTextListParser(DeltaContext context, Reader reader, IdValidator validator) {
+	public IntegerTextListParser(DeltaContext context, Reader reader, IntegerValidator validator) {
 		super(context, reader);
         _validator = validator;
 	}
 	
-	public IntegerTextListParser(DeltaContext context, Reader reader, boolean cleanWhitespace, IdValidator validator) {
+	public IntegerTextListParser(DeltaContext context, Reader reader, boolean cleanWhitespace, IntegerValidator validator) {
 		super(context, reader, cleanWhitespace);
         _validator = validator;
 	}

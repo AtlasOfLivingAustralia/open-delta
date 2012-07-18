@@ -17,7 +17,7 @@ package au.org.ala.delta.directives.args;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.validation.CharacterNumberValidator;
 import au.org.ala.delta.directives.validation.DirectiveError;
-import au.org.ala.delta.directives.validation.IdValidator;
+import au.org.ala.delta.directives.validation.IntegerValidator;
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.MutableDeltaDataSet;
 import org.apache.commons.lang.math.IntRange;
@@ -31,7 +31,7 @@ import java.text.ParseException;
 public class KeyStateParser extends DirectiveArgsParser {
 
 	private MutableDeltaDataSet _dataSet;
-    private IdValidator _validator;
+    private IntegerValidator _validator;
 	
 	public KeyStateParser(DeltaContext context, Reader reader) {
 		super(context, reader);

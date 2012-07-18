@@ -17,7 +17,7 @@ package au.org.ala.delta.directives;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
-import au.org.ala.delta.directives.validation.IdValidator;
+import au.org.ala.delta.directives.validation.IntegerValidator;
 import au.org.ala.delta.directives.validation.ItemNumberValidator;
 
 import java.util.HashSet;
@@ -67,7 +67,7 @@ public class IncludeItems extends AbstractRangeListDirective<DeltaContext> {
 	}
 
     @Override
-    protected IdValidator createValidator(DeltaContext context) {
+    protected IntegerValidator createValidator(DeltaContext context) {
         return new ItemNumberValidator(context);
     }
 }

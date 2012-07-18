@@ -16,6 +16,8 @@ package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
+import au.org.ala.delta.directives.validation.CharacterNumberValidator;
+import au.org.ala.delta.directives.validation.IntegerValidator;
 
 public class CharacterForTaxonImages extends AbstractIntegerDirective {
 	
@@ -40,5 +42,9 @@ public class CharacterForTaxonImages extends AbstractIntegerDirective {
 	public int getOrder() {
 		return 4;
 	}
-	
+
+    @Override
+    protected IntegerValidator createValidator(DeltaContext context) {
+        return new CharacterNumberValidator(context);
+    }
 }

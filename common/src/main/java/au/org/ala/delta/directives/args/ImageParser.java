@@ -15,7 +15,7 @@
 package au.org.ala.delta.directives.args;
 
 import au.org.ala.delta.DeltaContext;
-import au.org.ala.delta.directives.validation.IdValidator;
+import au.org.ala.delta.directives.validation.IntegerValidator;
 import au.org.ala.delta.model.image.ImageInfo;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.ImageOverlayParser;
@@ -33,9 +33,9 @@ public class ImageParser extends DirectiveArgsParser {
 	protected ImageOverlayParser _overlayParser;
 	protected int _imageType;
 	protected List<ImageInfo> _imageInfo;
-    protected IdValidator _validator;
+    protected IntegerValidator _validator;
 	
-	public ImageParser(DeltaContext context, Reader reader, int imageType, IdValidator validator) {
+	public ImageParser(DeltaContext context, Reader reader, int imageType, IntegerValidator validator) {
 		super(context, reader);
 		_overlayParser = new ImageOverlayParser();
 		_overlayParser.setColorsBGR(true);

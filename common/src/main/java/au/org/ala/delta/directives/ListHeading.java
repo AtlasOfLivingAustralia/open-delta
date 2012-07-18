@@ -21,7 +21,7 @@ import au.org.ala.delta.io.OutputFileSelector;
 
 /**
  * Processes the LIST HEADING directive.
- * @see http://delta-intkey.com/www/uguide.htm#_*PRINT_HEADING_
+ * @link http://delta-intkey.com/www/uguide.htm#_*PRINT_HEADING_
  */
 public class ListHeading extends AbstractNoArgDirective {
 
@@ -32,7 +32,9 @@ public class ListHeading extends AbstractNoArgDirective {
 	@Override
 	public void process(DeltaContext context, DirectiveArguments directiveArguments) throws Exception {
 		String heading = context.getHeading(HeadingType.HEADING);
-		
+		if (heading == null) {
+            heading = "";
+        }
 		OutputFileSelector outputFileManager = context.getOutputFileSelector();
 		outputFileManager.listMessage("");
 		outputFileManager.listMessage("");		

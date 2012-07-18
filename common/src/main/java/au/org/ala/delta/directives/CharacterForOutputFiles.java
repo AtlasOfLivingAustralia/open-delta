@@ -16,10 +16,12 @@ package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
+import au.org.ala.delta.directives.validation.CharacterNumberValidator;
+import au.org.ala.delta.directives.validation.IntegerValidator;
 
 /**
  * Processes the CHARACTER FOR OUTPUT FILES directives.
- * @see http://delta-intkey.com/www/uguide.htm#_*CHARACTER_FOR_OUTPUT
+ * @link http://delta-intkey.com/www/uguide.htm#_*CHARACTER_FOR_OUTPUT
  */
 public class CharacterForOutputFiles extends AbstractIntegerDirective {
 	
@@ -43,5 +45,9 @@ public class CharacterForOutputFiles extends AbstractIntegerDirective {
 	public int getOrder() {
 		return 4;
 	}
-	
+
+    @Override
+    protected IntegerValidator createValidator(DeltaContext context) {
+        return new CharacterNumberValidator(context);
+    }
 }

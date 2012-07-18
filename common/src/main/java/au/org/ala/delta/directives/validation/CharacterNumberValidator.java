@@ -6,7 +6,7 @@ import au.org.ala.delta.DeltaContext;
  * Validates that the parsed id maps to a valid character in the data set as well as supplied character numbers
  * are unique.
  */
-public class CharacterNumberValidator implements IdValidator {
+public class CharacterNumberValidator implements IntegerValidator {
 
     private DeltaContext _context;
 
@@ -15,7 +15,7 @@ public class CharacterNumberValidator implements IdValidator {
     }
 
     @Override
-    public DirectiveError validateId(int id) {
+    public DirectiveError validateInteger(int id) {
         if (id < 1) {
             return new DirectiveError(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, DirectiveError.UNKNOWN_POSITION);
         }

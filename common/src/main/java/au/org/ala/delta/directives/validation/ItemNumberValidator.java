@@ -9,7 +9,7 @@ import au.org.ala.delta.DeltaContext;
  * typically not known until the ITEM DESCRIPTIONS directive is parsed (which is order 5 and hence comes
  * last in a directives file).
  */
-public class ItemNumberValidator extends UniqueIdValidator {
+public class ItemNumberValidator extends UniqueIntegerValidator {
 
     private DeltaContext _context;
 
@@ -18,7 +18,7 @@ public class ItemNumberValidator extends UniqueIdValidator {
     }
 
     @Override
-    public DirectiveError validateId(int id) {
+    public DirectiveError validateInteger(int id) {
         if (id < 1) {
             return new DirectiveError(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, DirectiveError.UNKNOWN_POSITION);
         }
@@ -26,7 +26,7 @@ public class ItemNumberValidator extends UniqueIdValidator {
             return new DirectiveError(DirectiveError.Error.ILLEGAL_VALUE_NO_ARGS, DirectiveError.UNKNOWN_POSITION, _context.getMaximumNumberOfItems());
         }
 
-        return super.validateId(id);
+        return super.validateInteger(id);
     }
 
 

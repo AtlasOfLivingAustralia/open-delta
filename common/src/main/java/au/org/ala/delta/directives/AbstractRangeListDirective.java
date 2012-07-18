@@ -18,7 +18,7 @@ import au.org.ala.delta.directives.args.DirectiveArgument;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.directives.args.IdListParser;
 import au.org.ala.delta.directives.validation.DirectiveException;
-import au.org.ala.delta.directives.validation.IdValidator;
+import au.org.ala.delta.directives.validation.IntegerValidator;
 
 import java.io.StringReader;
 import java.text.ParseException;
@@ -72,8 +72,8 @@ public abstract class AbstractRangeListDirective<C extends AbstractDeltaContext>
     /**
      * Subclasses should override this method to create a validator appropriate for the directive type.
      * @param context the current parsing/processing context.
-     * @return either an appropriate instance of IdValidator or null if validation is not required.
+     * @return either an appropriate instance of IntegerValidator or null if validation is not required.
      */
-    protected abstract IdValidator createValidator(C context);
+    protected abstract IntegerValidator createValidator(C context);
 
 }

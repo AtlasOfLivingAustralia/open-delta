@@ -17,7 +17,7 @@ package au.org.ala.delta.directives;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.validation.CharacterNumberValidator;
-import au.org.ala.delta.directives.validation.IdValidator;
+import au.org.ala.delta.directives.validation.IntegerValidator;
 
 import java.util.HashSet;
 import java.util.List;
@@ -49,7 +49,7 @@ public class ReplaceSemicolonByComma extends AbstractCharacterSetDirective<Delta
 	}
 
     @Override
-    protected IdValidator getValidator(DeltaContext context) {
+    protected IntegerValidator getValidator(DeltaContext context) {
         return new CharacterNumberValidator(context);
     }
 }

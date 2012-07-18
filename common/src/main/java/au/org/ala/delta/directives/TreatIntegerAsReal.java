@@ -19,7 +19,7 @@ import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArgument;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.directives.args.IdListParser;
-import au.org.ala.delta.directives.validation.UniqueIdValidator;
+import au.org.ala.delta.directives.validation.UniqueIntegerValidator;
 
 import java.io.StringReader;
 import java.text.ParseException;
@@ -47,7 +47,7 @@ public class TreatIntegerAsReal extends AbstractDirective<DeltaContext> {
 
 	@Override
 	public void parse(DeltaContext context, String data) throws ParseException {
-		IdListParser parser = new IdListParser(context, new StringReader(data), new UniqueIdValidator());
+		IdListParser parser = new IdListParser(context, new StringReader(data), new UniqueIntegerValidator());
 		parser.parse();
 		_args = parser.getDirectiveArgs();
 	}

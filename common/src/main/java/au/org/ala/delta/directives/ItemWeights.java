@@ -19,7 +19,7 @@ import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArgument;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.directives.args.IdValueListParser;
-import au.org.ala.delta.directives.validation.IdValidator;
+import au.org.ala.delta.directives.validation.IntegerValidator;
 import au.org.ala.delta.directives.validation.ItemNumberValidator;
 
 import java.io.StringReader;
@@ -56,7 +56,7 @@ public class ItemWeights extends AbstractDirective<DeltaContext> {
 
 	@Override
 	public void parse(DeltaContext context, String data) throws ParseException {
-        IdValidator itemValidator = new ItemNumberValidator(context);
+        IntegerValidator itemValidator = new ItemNumberValidator(context);
 		IdValueListParser parser = new IdValueListParser(context, new StringReader(data), itemValidator);
 		parser.parse();
 		

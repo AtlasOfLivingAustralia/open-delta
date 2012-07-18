@@ -16,10 +16,13 @@ package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
+import au.org.ala.delta.directives.validation.CharacterNumberValidator;
+import au.org.ala.delta.directives.validation.IntegerValidator;
 import au.org.ala.delta.model.CharacterType;
 
 /**
  * Allows the value of an Item attribute to be used instead of the Item description.
+ * @link http://delta-intkey.com/www/uguide.htm#_*CHARACTER_FOR_TAXON
  */
 public class CharacterForTaxonNames extends AbstractIntegerDirective {
 	
@@ -46,5 +49,9 @@ public class CharacterForTaxonNames extends AbstractIntegerDirective {
 	public int getOrder() {
 		return 4;
 	}
-	
+
+    @Override
+    protected IntegerValidator createValidator(DeltaContext context) {
+        return new CharacterNumberValidator(context);
+    }
 }

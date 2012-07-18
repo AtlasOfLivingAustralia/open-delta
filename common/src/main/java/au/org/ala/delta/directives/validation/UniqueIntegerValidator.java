@@ -20,19 +20,19 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * The UniqueIdValidator keeps track of ids that have been passed to the validateId method and will return
+ * The UniqueIntegerValidator keeps track of ids that have been passed to the validateInteger method and will return
  * an error if a duplicate is found.
  */
-public class UniqueIdValidator implements IdValidator {
+public class UniqueIntegerValidator implements IntegerValidator {
 
 	private Set<Integer> _ids;
 	
-	public UniqueIdValidator() {
+	public UniqueIntegerValidator() {
 		_ids = new HashSet<Integer>();
 	}
 
     @Override
-	public DirectiveError validateId(int id) {
+	public DirectiveError validateInteger(int id) {
 		if (_ids.contains(id)) {
 				return new DirectiveError(Error.DUPLICATE_VALUE, DirectiveError.UNKNOWN_POSITION);
 		}

@@ -17,6 +17,8 @@ package au.org.ala.delta.dist.directives;
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.AbstractIntegerDirective;
 import au.org.ala.delta.directives.args.DirectiveArgType;
+import au.org.ala.delta.directives.validation.IntegerValidator;
+import au.org.ala.delta.directives.validation.PositiveIntegerValidator;
 import au.org.ala.delta.dist.DistContext;
 
 /**
@@ -40,4 +42,8 @@ public class MinimumNumberOfComparisons extends AbstractIntegerDirective {
 	
 	}
 
+    @Override
+    protected IntegerValidator createValidator(DeltaContext context) {
+        return new PositiveIntegerValidator();
+    }
 }
