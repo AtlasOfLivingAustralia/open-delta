@@ -23,6 +23,7 @@
 <mapID target="hardware_requirements" url="topics/hardware_requirements.html" />
 <mapID target="conditions_of_use" url="topics/conditions_of_use.html" />
 
+<mapID target="commands" url="topics/commands.html" />
 <mapID target="characters_toolbar_buttons" url="topics/characters_toolbar_buttons.html"/>
 <mapID target="characters_toolbar_restart" url="topics/characters_toolbar_buttons.html#_restart"/>
 <mapID target="characters_toolbar_best" url="topics/characters_toolbar_buttons.html#_best"/>

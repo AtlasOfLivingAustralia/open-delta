@@ -246,9 +246,28 @@ import au.org.ala.delta.util.Pair;
 public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, DirectivePopulator {
 
     public static final String HELPSET_PATH = "help/Intkey";
+    
+    public static final String HELP_ID_TOPICS = "topics";
+    public static final String HELP_ID_COMMANDS = "commands";
+    
     public static final String HELP_ID_NO_MATCHING_TAXA_REMAIN = "no_taxa_match_the_specimen";
     public static final String HELP_ID_IDENTIFICATION_COMPLETE = "checking_an_identification";
     public static final String HELP_ID_NO_CHARACTERS_REMAINING = "not_enough_characters_for_identification";
+    
+    public static final String HELP_ID_CHARACTERS_TOOLBAR_RESTART = "characters_toolbar_restart";
+    public static final String HELP_ID_CHARACTERS_TOOLBAR_BEST= "characters_toolbar_best";
+    public static final String HELP_ID_CHARACTERS_TOOLBAR_SEPARATE = "characters_toolbar_separate";
+    public static final String HELP_ID_CHARACTERS_TOOLBAR_NATURAL = "characters_toolbar_natural";
+    public static final String HELP_ID_CHARACTERS_TOOLBAR_DIFF_SPECIMEN_REMAINING = "characters_toolbar_diff_specimen_remaining";
+    public static final String HELP_ID_CHARACTERS_TOOLBAR_TOLERANCE = "characters_toolbar_tolerance";
+    public static final String HELP_ID_CHARACTERS_TOOLBAR_SET_MATCH = "characters_toolbar_set_match";
+    public static final String HELP_ID_CHARACTERS_TOOLBAR_SUBSET_CHARACTERS = "characters_toolbar_subset_characters";
+    public static final String HELP_ID_CHARACTERS_TOOLBAR_FIND_CHARACTERS = "characters_toolbar_find_characters";
+
+    public static final String HELP_ID_TAXA_TOOLBAR_INFO = "taxa_toolbar_info";
+    public static final String HELP_ID_TAXA_TOOLBAR_DIFF_TAXA = "taxa_toolbar_diff_taxa";
+    public static final String HELP_ID_TAXA_TOOLBAR_SUBSET_TAXA = "taxa_toolbar_subset_taxa";
+    public static final String HELP_ID_TAXA_TOOLBAR_FIND_TAXA = "taxa_toolbar_find_taxa";
 
     // Resource strings
     @Resource
@@ -847,20 +866,20 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _logDialog = new RtfReportDisplayDialog(getMainFrame(), new SimpleRtfEditorKit(null), null, logDialogTitle);
 
         // Set context-sensitive help keys for toolbar buttons
-        _helpController.setHelpKeyForComponent(_btnRestart, "characters_toolbar_restart");
-        _helpController.setHelpKeyForComponent(_btnBestOrder, "characters_toolbar_best");
-        _helpController.setHelpKeyForComponent(_btnSeparate, "characters_toolbar_separate");
-        _helpController.setHelpKeyForComponent(_btnNaturalOrder, "characters_toolbar_natural");
-        _helpController.setHelpKeyForComponent(_btnDiffSpecimenTaxa, "characters_toolbar_diff_specimen_remaining");
-        _helpController.setHelpKeyForComponent(_btnSetTolerance, "characters_toolbar_tolerance");
-        _helpController.setHelpKeyForComponent(_btnSetMatch, "characters_toolbar_set_match");
-        _helpController.setHelpKeyForComponent(_btnSubsetCharacters, "characters_toolbar_subset_characters");
-        _helpController.setHelpKeyForComponent(_btnFindCharacter, "characters_toolbar_find_characters");
+        _helpController.setHelpKeyForComponent(_btnRestart, HELP_ID_CHARACTERS_TOOLBAR_RESTART);
+        _helpController.setHelpKeyForComponent(_btnBestOrder, HELP_ID_CHARACTERS_TOOLBAR_BEST);
+        _helpController.setHelpKeyForComponent(_btnSeparate, HELP_ID_CHARACTERS_TOOLBAR_SEPARATE);
+        _helpController.setHelpKeyForComponent(_btnNaturalOrder, HELP_ID_CHARACTERS_TOOLBAR_NATURAL);
+        _helpController.setHelpKeyForComponent(_btnDiffSpecimenTaxa, HELP_ID_CHARACTERS_TOOLBAR_DIFF_SPECIMEN_REMAINING);
+        _helpController.setHelpKeyForComponent(_btnSetTolerance, HELP_ID_CHARACTERS_TOOLBAR_TOLERANCE);
+        _helpController.setHelpKeyForComponent(_btnSetMatch, HELP_ID_CHARACTERS_TOOLBAR_SET_MATCH);
+        _helpController.setHelpKeyForComponent(_btnSubsetCharacters, HELP_ID_CHARACTERS_TOOLBAR_SUBSET_CHARACTERS);
+        _helpController.setHelpKeyForComponent(_btnFindCharacter, HELP_ID_CHARACTERS_TOOLBAR_FIND_CHARACTERS);
 
-        _helpController.setHelpKeyForComponent(_btnTaxonInfo, "taxa_toolbar_info");
-        _helpController.setHelpKeyForComponent(_btnDiffTaxa, "taxa_toolbar_diff_taxa");
-        _helpController.setHelpKeyForComponent(_btnSubsetTaxa, "taxa_toolbar_subset_taxa");
-        _helpController.setHelpKeyForComponent(_btnFindTaxon, "taxa_toolbar_find_taxa");
+        _helpController.setHelpKeyForComponent(_btnTaxonInfo, HELP_ID_TAXA_TOOLBAR_INFO);
+        _helpController.setHelpKeyForComponent(_btnDiffTaxa, HELP_ID_TAXA_TOOLBAR_DIFF_TAXA);
+        _helpController.setHelpKeyForComponent(_btnSubsetTaxa, HELP_ID_TAXA_TOOLBAR_SUBSET_TAXA);
+        _helpController.setHelpKeyForComponent(_btnFindTaxon, HELP_ID_TAXA_TOOLBAR_FIND_TAXA);
 
         // This mouse listener on the default glasspane is to assist with
         // context senstive help. It intercepts the mouse events,
@@ -1343,15 +1362,28 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     private JMenu buildHelpMenu(boolean advancedMode, ActionMap actionMap) {
         JMenu mnuHelp = new JMenu();
         mnuHelp.setName("mnuHelp");
-        JMenuItem mnuItHelpIntroduction = new JMenuItem();
-        mnuItHelpIntroduction.setName("mnuItHelpIntroduction");
-        mnuItHelpIntroduction.addActionListener(_helpController.helpAction());
-        mnuHelp.add(mnuItHelpIntroduction);
+        JMenuItem mnuItHelpTopics = new JMenuItem();
+        mnuItHelpTopics.setName("mnuItHelpTopics");
+        mnuItHelpTopics.addActionListener(new ActionListener() {
+            
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                UIUtils.displayHelpTopic(HELP_ID_TOPICS, getMainFrame(), e);
+            }
+        });
+        mnuHelp.add(mnuItHelpTopics);
 
         if (advancedMode) {
             JMenuItem mnuItHelpCommands = new JMenuItem();
             mnuItHelpCommands.setName("mnuItHelpCommands");
-            mnuItHelpCommands.addActionListener(_helpController.helpAction());
+            mnuItHelpCommands.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    UIUtils.displayHelpTopic(HELP_ID_COMMANDS, getMainFrame(), e);
+                }
+                
+            });
             mnuHelp.add(mnuItHelpCommands);
         }
 

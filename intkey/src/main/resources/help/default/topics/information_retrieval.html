@@ -1,14 +1,68 @@
 <html>
 <body>
-<h2>Information retrieval</h2>
-The &quot;Remaining Taxa&quot; and &quot;Eliminated Taxa&quot; lists behave as a single list when taxa are being selected. Clicking on a taxon selects that taxon and deselects all others. Multiple taxa can be selected in the usual ways, that is, by holding down the Shift and/or Ctrl keys while clicking.
-The &quot;Information&quot; button in the &quot;Taxa&quot; toolbar (top-right pane) provides access to descriptions and illustrations of taxa. Before pressing the button, you may select the required taxon or taxa in either or both of the &quot;Taxa&quot; panes; if no taxa are selected, the &quot;Remaining&quot; taxa are used.
-When the button is pressed, the &quot;Information&quot; dialog box is displayed. This initially shows the name of the first (or only) selected taxon, and lists the descriptions and/or images that are available for it. Any or all of these can be selected and displayed. The information for the other selected taxa (if any) can be shown by navigating the list of taxa by means of &quot;Back&quot; and &quot;Forward&quot; buttons, or by selecting from a drop-down list. A completely new selection of taxa can be made by means of the &quot;Select new taxa&quot; button.
-The information usually includes a diagnostic description, which aims to distinguish the taxon from all the others in at least a certain number of characters. This number is called the &quot;diagnostic level&quot;. Intkey gives it a default value of 1, but a larger value may have been set by the author of a particular dataset. The diagnostic description includes messages showing the diagnostic levels that were actually attained. If an identification is in progress, the diagnostic description uses only characters that have not already been used in the identification.
-Images are scaled to fit the available area; to turn scaling off or on, click &quot;Scaled&quot; in the image&quot;s &quot;Window&quot; menu. To view an image or description at the maximum possible size, press its &quot;maximize&quot; button.
-The &quot;Differences between taxa&quot; button in the &quot;Taxa&quot; toolbar (top-right pane) displays the differences between selected taxa. Two or more taxa must be selected in either or both of the &quot;Taxa&quot; panes before pressing the button. Differences in free-text characters are not shown, and unrecorded or inapplicable attributes are not treated as being different from recorded attributes.
-Taxa having a specified set of attributes can be found by using the ordinary identification procedure to specify the attributes. The natural order of the character list (obtained by pressing the &quot;Natural order&quot; button in the &quot;Characters&quot; toolbar) should be used. The &quot;Match&quot; setting used for identification is usually inappropriate, because taxa for which the specified characters are unrecorded or inapplicable are not eliminated. The setting can be changed by means of the &quot;Set match&quot; button, which is in the &quot;Characters&quot; toolbar in Advanced mode. For details, see the help for the &quot;Set Match&quot; command, which is available via the main &quot;Help&quot; menu, or by pressing the &quot;Help&quot; button in the &quot;Set Match&quot; dialog box.
-To find the taxa for which a given character is unrecorded, set &quot;Match&quot; to &quot;Overlap Inapplicables&quot;, and select all the states of the character; the taxa for which the character is unrecorded are displayed in the &quot;Eliminated Taxa&quot; pane.
-The Queries menu contains other commands useful for information retrieval: Describe, Diagnose, Differences, Similarities, and Summary. Using the Differences command from this menu instead of from the &quot;Taxa&quot; toolbar allows more flexibility &#45; free-text attributes may be compared, and matching is defined by the current &quot;Match&quot; setting.
+	<h2>Information retrieval</h2>
+	<p>The &quot;Remaining Taxa&quot; and &quot;Eliminated Taxa&quot;
+		lists behave as a single list when taxa are being selected. Clicking
+		on a taxon selects that taxon and deselects all others. Multiple taxa
+		can be selected in the usual ways, that is, by holding down the Shift
+		and/or Ctrl keys while clicking.</p>
+	<p>The &quot;Information&quot; button in the &quot;Taxa&quot;
+		toolbar (top-right pane) provides access to descriptions and
+		illustrations of taxa. Before pressing the button, you may select the
+		required taxon or taxa in either or both of the &quot;Taxa&quot;
+		panes; if no taxa are selected, the &quot;Remaining&quot; taxa are
+		used.</p>
+	<p>When the button is pressed, the &quot;Information&quot; dialog
+		box is displayed. This initially shows the name of the first (or only)
+		selected taxon, and lists the descriptions and/or images that are
+		available for it. Any or all of these can be selected and displayed.
+		The information for the other selected taxa (if any) can be shown by
+		navigating the list of taxa by means of &quot;Back&quot; and
+		&quot;Forward&quot; buttons, or by selecting from a drop-down list. A
+		completely new selection of taxa can be made by means of the
+		&quot;Select new taxa&quot; button.</p>
+	<p>The information usually includes a diagnostic description, which
+		aims to distinguish the taxon from all the others in at least a
+		certain number of characters. This number is called the
+		&quot;diagnostic level&quot;. Intkey gives it a default value of 1,
+		but a larger value may have been set by the author of a particular
+		dataset. The diagnostic description includes messages showing the
+		diagnostic levels that were actually attained. If an identification is
+		in progress, the diagnostic description uses only characters that have
+		not already been used in the identification.</p>
+	<p>Images are scaled to fit the available area; to turn scaling off
+		or on, click &quot;Scaled&quot; in the image&quot;s &quot;Window&quot;
+		menu. To view an image or description at the maximum possible size,
+		press its &quot;maximize&quot; button.</p>
+	<p>The &quot;Differences between taxa&quot; button in the
+		&quot;Taxa&quot; toolbar (top-right pane) displays the differences
+		between selected taxa. Two or more taxa must be selected in either or
+		both of the &quot;Taxa&quot; panes before pressing the button.
+		Differences in free-text characters are not shown, and unrecorded or
+		inapplicable attributes are not treated as being different from
+		recorded attributes.</p>
+	<p>Taxa having a specified set of attributes can be found by using
+		the ordinary identification procedure to specify the attributes. The
+		natural order of the character list (obtained by pressing the
+		&quot;Natural order&quot; button in the &quot;Characters&quot;
+		toolbar) should be used. The &quot;Match&quot; setting used for
+		identification is usually inappropriate, because taxa for which the
+		specified characters are unrecorded or inapplicable are not
+		eliminated. The setting can be changed by means of the &quot;Set
+		match&quot; button, which is in the &quot;Characters&quot; toolbar in
+		Advanced mode. For details, see the help for the &quot;Set Match&quot;
+		command, which is available via the main &quot;Help&quot; menu, or by
+		pressing the &quot;Help&quot; button in the &quot;Set Match&quot;
+		dialog box.</p>
+	<p>To find the taxa for which a given character is unrecorded, set
+		&quot;Match&quot; to &quot;Overlap Inapplicables&quot;, and select all
+		the states of the character; the taxa for which the character is
+		unrecorded are displayed in the &quot;Eliminated Taxa&quot; pane.</p>
+	<p>The Queries menu contains other commands useful for information
+		retrieval: Describe, Diagnose, Differences, Similarities, and Summary.
+		Using the Differences command from this menu instead of from the
+		&quot;Taxa&quot; toolbar allows more flexibility &#45; free-text
+		attributes may be compared, and matching is defined by the current
+		&quot;Match&quot; setting.</p>
 </body>
 </html>

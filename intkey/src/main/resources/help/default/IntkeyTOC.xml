@@ -6,24 +6,24 @@
   <tocitem text="Topics" target="topics">
     <tocitem text="Introduction" target="introduction" />
     <tocitem text="Identification" target="identification" />
-    <tocitem text="Checking an Identification" target="checking_an_identification" />
-    <tocitem text="Not Enough Characters for Identification" target="not_enough_characters_for_identification" />
-    <tocitem text="No Taxa Match the Specimen" target="no_taxa_match_the_specimen" />
-    <tocitem text="Selecting Taxa" target="selecting_taxa" />
-    <tocitem text="Information Retrieval" target="information_retrieval" />
-    <tocitem text="Modes of Operation" target="modes_of_operation" />
+    <tocitem text="Checking an identification" target="checking_an_identification" />
+    <tocitem text="Not enough characters for identification" target="not_enough_characters_for_identification" />
+    <tocitem text="No taxa match the specimen" target="no_taxa_match_the_specimen" />
+    <tocitem text="Selecting taxa" target="selecting_taxa" />
+    <tocitem text="Information retrieval" target="information_retrieval" />
+    <tocitem text="Modes of operation" target="modes_of_operation" />
     <tocitem text="Keywords" target="keywords" />
-    <tocitem text="Dialog Boxes and List Boxes" target="dialog_list_boxes" />
-    <tocitem text="Buttons in Dialog Boxes" target="dialog_buttons" />
-    <tocitem text="Command Line" target="command_line" />
-    <tocitem text="Saving Output" target="saving_output" />
-    <tocitem text="Data-Sets Index and Startup Parameters" target="data_sets_index_startup_parameters" />
-    <tocitem text="Hardware Requirements" target="hardware_requirements" />
-    <tocitem text="Conditions of Use" target="conditions_of_use" />
-    <tocitem text="Characters Toolbar Buttons" target="characters_toolbar_buttons" />
-    <tocitem text="Taxa Toolbar Buttons" target="taxa_toolbar_buttons" />
+    <tocitem text="Dialog boxes and list boxes" target="dialog_list_boxes" />
+    <tocitem text="Buttons in dialog boxes" target="dialog_buttons" />
+    <tocitem text="Command line" target="command_line" />
+    <tocitem text="Saving output" target="saving_output" />
+    <tocitem text="Data-sets index and startup parameters" target="data_sets_index_startup_parameters" />
+    <tocitem text="Hardware requirements" target="hardware_requirements" />
+    <tocitem text="Conditions of use" target="conditions_of_use" />
+    <tocitem text="Characters toolbar buttons" target="characters_toolbar_buttons" />
+    <tocitem text="Taxa toolbar buttons" target="taxa_toolbar_buttons" />
   </tocitem>
-  <tocitem text="Commands">
+  <tocitem text="Commands" target="commands">
   	<tocitem text="Change" target="directive_change" />
 	<tocitem text="Characters" target="directive_characters" />
 	<tocitem text="Comment" target="directive_comment" />
