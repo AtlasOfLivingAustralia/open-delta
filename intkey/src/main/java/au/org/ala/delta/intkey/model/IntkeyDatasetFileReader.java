@@ -1455,8 +1455,7 @@ public final class IntkeyDatasetFileReader {
                 imageData.setOverlays(overlayList);
             }
             return image;
-        } catch (Exception ex) {// (ParseException ex) {
-            ex.printStackTrace();
+        } catch (Exception ex) {
             throw new RuntimeException("Error parsing image overlay data");
         }
     }

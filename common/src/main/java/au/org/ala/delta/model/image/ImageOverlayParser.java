@@ -147,7 +147,7 @@ public class ImageOverlayParser {
             // in the c++...
             if (evaluated && !saveIt) {
                 continue;
-            } else if (saveIt || (ch == '@' && (i == 0 || buffer.charAt(i - 1) != '@'))) {
+            } else if (saveIt || (ch == '@' && (i == 0 || buffer.charAt(i - 1) != '@') && parseState != ParseState.TEXT)) {
                 // SaveIt:
                 // Should check and save whatever we have built up
                 if ((parseState == ParseState.TEXT || parseState == ParseState.PATH) && textStart != -1) {
