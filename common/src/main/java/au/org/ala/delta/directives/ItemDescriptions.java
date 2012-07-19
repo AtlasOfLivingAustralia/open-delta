@@ -14,10 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
-import java.io.Reader;
-import java.io.StringReader;
-import java.text.ParseException;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.args.DirectiveArgType;
@@ -27,6 +23,13 @@ import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MutableDeltaDataSet;
+
+import java.io.Reader;
+import java.io.StringReader;
+import java.text.ParseException;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Parses and processes the ITEM DESCRIPTIONS directive.
@@ -78,16 +81,16 @@ class ItemsParser extends AbstractStreamParser {
 	private int _lastMaster;
 	
 	private boolean _normalizeBeforeParsing = false;
+    private boolean _allowDuplicates;
 	
 	public ItemsParser(DeltaContext context, Reader reader, boolean normalizeBeforeParsing) {
 		super(context, reader);
 		_normalizeBeforeParsing = normalizeBeforeParsing;
+        _allowDuplicates = false; //context.getAllowDuplicateValues();
 	}
 
 	@Override
 	public void parse() throws ParseException {
-
-		// getContext().initializeMatrix();
 
 		int itemIndex = 1;
 		while (skipTo('#') && _currentInt >= 0) {
@@ -103,6 +106,8 @@ class ItemsParser extends AbstractStreamParser {
 
 	private void parseItem(int itemIndex) throws ParseException {
 
+        Set<Integer> encounteredChars = new HashSet<Integer>();
+        MutableDeltaDataSet dataSet = getContext().getDataSet();
 		assert _currentChar == '#';
 		readNext();
 
@@ -139,7 +144,6 @@ class ItemsParser extends AbstractStreamParser {
 				}
 			}
 
-//			StateValue stateValue = new StateValue(ch, item, strValue);
 			StringBuilder value = new StringBuilder();
 			if (comment != null) {
 				value.append(comment);
@@ -147,9 +151,15 @@ class ItemsParser extends AbstractStreamParser {
 			if (strValue != null) {
 				value.append(strValue);
 			}
-			
-			Attribute attribute = getContext().getDataSet().addAttribute(item.getItemNumber(), ch.getCharacterId());
-						
+
+            if (encounteredChars.contains(ch.getCharacterId())) {
+                if (!_allowDuplicates) {
+                    throw DirectiveError.asException(DirectiveError.Error.CHARACTER_ALREADY_SPECIFIED, _position, ch.getCharacterId());
+                }
+            }
+            encounteredChars.add(ch.getCharacterId());
+            Attribute attribute = dataSet.addAttribute(item.getItemNumber(), ch.getCharacterId());
+
 			try {
 				String theValue = value.toString();
 				if (_normalizeBeforeParsing) {
@@ -161,8 +171,7 @@ class ItemsParser extends AbstractStreamParser {
 				e.getError().setPosition(e.getErrorOffset() + oldOffset + 1);
 				getContext().addError(e.getError());
 			}
-			// getContext().getMatrix().setValue(charIdx, itemIndex, stateValue);
-		
+
 			skipWhitespace();
 		}
 	}

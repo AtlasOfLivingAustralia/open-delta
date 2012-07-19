@@ -14,16 +14,16 @@
  ******************************************************************************/
 package au.org.ala.delta.confor;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStreamReader;
-import java.util.List;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.directives.ConforDirectiveFileParser;
 import au.org.ala.delta.directives.ConforDirectiveParserObserver;
 import au.org.ala.delta.directives.validation.DirectiveException;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStreamReader;
+import java.util.List;
 
 public class CONFOR {
 
@@ -37,14 +37,15 @@ public class CONFOR {
 		System.out.println(credits());
 		
 		File f = handleArgs(args);
-		if (!f.exists()) {
+		if (!f.exists() || f.isDirectory()) {
+            System.err.println(String.format("File %s does not exist or is not readable!", f.getName()));
 			Logger.log("File %s does not exist!", f.getName());
 			return;
 		}
 		
 		new CONFOR(f);
 	}
-	
+
 	private static String credits() {
 		String eol = System.getProperty("line.separator");
 	    StringBuilder credits = new StringBuilder("CONFOR version 3.00 (Java)");
