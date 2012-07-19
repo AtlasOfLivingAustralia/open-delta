@@ -443,7 +443,7 @@ public class OutputFileSelector extends OutputFileManager {
         if (_printFile != null) {
             _printFile.close();
         }
-        if (_printStream != null) {
+        if (_printStream != null && _printStream != System.out && _printStream != System.err ) {
             IOUtils.closeQuietly(_printStream);
         }
         if (_indexFile != null) {

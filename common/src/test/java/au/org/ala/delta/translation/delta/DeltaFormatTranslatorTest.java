@@ -20,6 +20,8 @@ import au.org.ala.delta.translation.DataSetTranslatorFactory;
 import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.translation.TranslatorTest;
 import junit.framework.TestResult;
+import org.apache.commons.io.IOUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -50,6 +52,13 @@ public class DeltaFormatTranslatorTest extends TranslatorTest {
 		_factory = new DataSetTranslatorFactory();
 		
 	}
+
+    @After
+    public void tearDown() {
+
+        _outputFile.close();
+        IOUtils.closeQuietly(_bytes);
+    }
 
     @Test
 	public void testItemsTranslation() throws Exception {

@@ -14,15 +14,14 @@
  ******************************************************************************/
 package au.org.ala.delta.translation;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
-
+import au.org.ala.delta.translation.Words.Word;
+import au.org.ala.delta.util.Utils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
-import au.org.ala.delta.translation.Words.Word;
-import au.org.ala.delta.util.Utils;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 
 /**
  * The PrintFile is a wrapper around an output steam that provides some utility
@@ -153,7 +152,9 @@ public class PrintFile {
 
     public void close() {
         _output.flush();
-        _output.close();
+        if (_output != System.out && _output != System.err) {
+            _output.close();
+        }
     }
 
     /**

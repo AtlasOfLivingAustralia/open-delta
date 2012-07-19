@@ -14,27 +14,24 @@
  ******************************************************************************/
 package au.org.ala.delta.translation.naturallanguage;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.util.HashSet;
-import java.util.Set;
-
-
-import org.junit.Before;
-import org.junit.Test;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
-import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.translation.AbstractDataSetTranslator;
 import au.org.ala.delta.translation.DataSetFilter;
 import au.org.ala.delta.translation.IterativeTranslator;
 import au.org.ala.delta.translation.PlainTextTypeSetter;
 import au.org.ala.delta.translation.PrintFile;
-import au.org.ala.delta.translation.naturallanguage.NaturalLanguageTranslator;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Tests the production of plain text natural language.  This test is more of an integration

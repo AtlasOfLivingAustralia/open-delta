@@ -75,7 +75,7 @@ public class OutputFileManager {
         }
 
         public void close() {
-            if (_stream != _defaultOut && _stream != _defaultErr) {
+            if (_stream != _defaultOut && _stream != _defaultErr && _stream != System.out && _stream != System.err) {
                 IOUtils.closeQuietly(_stream);
             }
         }
