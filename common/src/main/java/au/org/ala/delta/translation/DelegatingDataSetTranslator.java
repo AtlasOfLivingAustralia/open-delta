@@ -40,9 +40,8 @@ public class DelegatingDataSetTranslator implements DataSetTranslator {
 	private List<IterativeTranslator> _translators;
 	private List<DataSetFilter> _filters;
 	
-	
 	public DelegatingDataSetTranslator(DeltaContext context) {
-		_context = context;;
+		_context = context;
 		_translators = new ArrayList<IterativeTranslator>();
 		_filters = new ArrayList<DataSetFilter>();
 	}
@@ -65,6 +64,10 @@ public class DelegatingDataSetTranslator implements DataSetTranslator {
 		beforeFirstItem();
 		
 		int numItems = dataSet.getMaximumNumberOfItems();
+        if (_context.getStopAfterItem() != null) {
+            numItems = Math.min(numItems, _context.getStopAfterItem());
+        }
+
 		for (int i=1; i<=numItems; i++) {
 			Item item = dataSet.getItem(i);
 			String description = RTFUtils.stripFormatting(item.getDescription());

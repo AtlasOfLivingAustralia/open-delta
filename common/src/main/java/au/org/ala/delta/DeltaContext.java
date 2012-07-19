@@ -133,7 +133,7 @@ public class DeltaContext extends AbstractDeltaContext {
 
     private Map<HeadingType, String> _headings = new HashMap<HeadingType, String>();
     private Integer _characterForTaxonImages = null;
-
+    private Integer _stopAfterItem = null;
     private String _credits;
 
     // private StateValueMatrix _matrix;
@@ -1065,5 +1065,13 @@ public class DeltaContext extends AbstractDeltaContext {
 
     public void useLastValueCoded() {
         _useLastValueCoded = true;
+    }
+
+    public void stopAfterItem(int itemNumber) {
+        _stopAfterItem = itemNumber;
+    }
+
+    public Integer getStopAfterItem() {
+        return _stopAfterItem;
     }
 }
