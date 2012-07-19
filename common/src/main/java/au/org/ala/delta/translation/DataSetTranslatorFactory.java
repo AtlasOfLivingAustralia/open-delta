@@ -79,7 +79,7 @@ public class DataSetTranslatorFactory {
 		
 		if (translation.equals(TranslateType.NaturalLanguage)) {
 			
-			AbstractDataSetTranslator translator = new AbstractDataSetTranslator(context);
+			DelegatingDataSetTranslator translator = new DelegatingDataSetTranslator(context);
 			translator.add(createNaturalLanguageTranslator(context, context.getPrintFile(), formatterFactory));
 			addPrintActions(translator, context);
 			translators.add(translator);
@@ -155,13 +155,13 @@ public class DataSetTranslatorFactory {
 	}
 	
 	private DataSetTranslator createPrintActions(DeltaContext context) throws DirectiveException {
-		AbstractDataSetTranslator translator = new AbstractDataSetTranslator(context);
+		DelegatingDataSetTranslator translator = new DelegatingDataSetTranslator(context);
 		
 		addPrintActions(translator, context);
 		return translator;
 	}
 	
-	private void addPrintActions(AbstractDataSetTranslator translator, DeltaContext context) throws DirectiveException {
+	private void addPrintActions(DelegatingDataSetTranslator translator, DeltaContext context) throws DirectiveException {
 		for (PrintActionType action : context.getPrintActions()) {
 			translator.add(createPrintAction(context, action));
 		}
@@ -266,13 +266,13 @@ public class DataSetTranslatorFactory {
 		return new Pair<IterativeTranslator, DataSetFilter>(translator, filter);
 	}
 	 
-	public AbstractDataSetTranslator createDeltaFormatTranslator(
+	public DelegatingDataSetTranslator createDeltaFormatTranslator(
 			DeltaContext context, PrintFile printer, ItemListTypeSetter itemTypeSetter) {
 		FormatterFactory factory = new FormatterFactory(context);
 		return createDeltaFormatTranslator(context, printer, factory, itemTypeSetter);
 	}
 	
-	public AbstractDataSetTranslator createDeltaFormatTranslator(
+	public DelegatingDataSetTranslator createDeltaFormatTranslator(
 			DeltaContext context, 
 			PrintFile printer, 
 			FormatterFactory formatterFactory) {
@@ -281,7 +281,7 @@ public class DataSetTranslatorFactory {
 		return createDeltaFormatTranslator(context, printer, formatterFactory, itemTypeSetter);
 	}
 	
-	public AbstractDataSetTranslator createDeltaFormatTranslator(
+	public DelegatingDataSetTranslator createDeltaFormatTranslator(
 			DeltaContext context, 
 			PrintFile printer, 
 			FormatterFactory formatterFactory,
@@ -404,8 +404,8 @@ public class DataSetTranslatorFactory {
 		return new Pair<IterativeTranslator, DataSetFilter>(translator, filter);
 	}
 	
-	private AbstractDataSetTranslator wrap(DeltaContext context, DataSetFilter filter, IterativeTranslator translator) {
-		return new AbstractDataSetTranslator(context, filter, translator);
+	private DelegatingDataSetTranslator wrap(DeltaContext context, DataSetFilter filter, IterativeTranslator translator) {
+		return new DelegatingDataSetTranslator(context, filter, translator);
 	}
 	
 }

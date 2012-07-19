@@ -19,6 +19,7 @@ import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import au.org.ala.delta.translation.DelegatingDataSetTranslator;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -30,7 +31,6 @@ import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
-import au.org.ala.delta.translation.AbstractDataSetTranslator;
 import au.org.ala.delta.translation.DataSetFilter;
 import au.org.ala.delta.translation.FormattedTextTypeSetter;
 import au.org.ala.delta.translation.FormatterFactory;
@@ -87,7 +87,7 @@ public class TypeSetNaturalLanguageTranslatorTest extends NaturalLangaugeTransla
         AttributeFormatter attributeFormatter = new TypeSettingAttributeFormatter();
         DataSetFilter filter = new NaturalLanguageDataSetFilter(_context);
 		IterativeTranslator translator = new NaturalLanguageTranslator(_context, _typeSetter, _printer, itemFormatter, characterFormatter, attributeFormatter);
-        _dataSetTranslator = new AbstractDataSetTranslator(_context, filter, translator);
+        _dataSetTranslator = new DelegatingDataSetTranslator(_context, filter, translator);
 			
         _dataSetTranslator.translateItems();
         checkResult("typeset.txt");
@@ -107,7 +107,7 @@ public class TypeSetNaturalLanguageTranslatorTest extends NaturalLangaugeTransla
         
         DataSetFilter filter = new NaturalLanguageDataSetFilter(_context);
         IterativeTranslator translator = new NaturalLanguageTranslator(_context, _typeSetter, _printer, itemFormatter, characterFormatter, attributeFormatter);
-        _dataSetTranslator = new AbstractDataSetTranslator(_context, filter, translator);
+        _dataSetTranslator = new DelegatingDataSetTranslator(_context, filter, translator);
 		
         _dataSetTranslator.translateItems();
         checkResult("/dataset/sample/expected_results/withtypesetting.txt");

@@ -14,40 +14,40 @@
  ******************************************************************************/
 package au.org.ala.delta.translation;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Logger;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.OutputParameters.OutputParameter;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.util.Pair;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
+
 
 /**
- * The DataSetTranslator iterates through the Items and Attributes of a DeltaDataSet, raising
- * events for translator classes to handle.
+ * The DelegatingDataSetTranslator iterates through the Items and Attributes of a DeltaDataSet, raising
+ * events for instances of the IterativeTranslator to handle.
  */
-public class AbstractDataSetTranslator implements DataSetTranslator {
+public class DelegatingDataSetTranslator implements DataSetTranslator {
 
-	private static Logger logger = Logger.getLogger(AbstractDataSetTranslator.class.getName());
+	private static Logger logger = Logger.getLogger(DelegatingDataSetTranslator.class.getName());
 	
 	protected DeltaContext _context;
 	private List<IterativeTranslator> _translators;
 	private List<DataSetFilter> _filters;
 	
 	
-	public AbstractDataSetTranslator(DeltaContext context) {
+	public DelegatingDataSetTranslator(DeltaContext context) {
 		_context = context;;
 		_translators = new ArrayList<IterativeTranslator>();
 		_filters = new ArrayList<DataSetFilter>();
 	}
 	
-	public AbstractDataSetTranslator(DeltaContext context, DataSetFilter filter, IterativeTranslator translator) {
+	public DelegatingDataSetTranslator(DeltaContext context, DataSetFilter filter, IterativeTranslator translator) {
 		this(context);
 		_translators.add(translator);
 		_filters.add(filter);

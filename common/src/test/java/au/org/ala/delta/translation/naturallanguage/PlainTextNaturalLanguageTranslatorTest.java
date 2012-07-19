@@ -20,7 +20,7 @@ import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
-import au.org.ala.delta.translation.AbstractDataSetTranslator;
+import au.org.ala.delta.translation.DelegatingDataSetTranslator;
 import au.org.ala.delta.translation.DataSetFilter;
 import au.org.ala.delta.translation.IterativeTranslator;
 import au.org.ala.delta.translation.PlainTextTypeSetter;
@@ -53,7 +53,7 @@ public class PlainTextNaturalLanguageTranslatorTest extends NaturalLangaugeTrans
 		AttributeFormatter attributeFormatter = new AttributeFormatter(false, true, CommentStrippingMode.RETAIN);
 		DataSetFilter filter = new NaturalLanguageDataSetFilter(_context);
 		IterativeTranslator translator = new NaturalLanguageTranslator(_context, _typeSetter, _printer, itemFormatter, characterFormatter, attributeFormatter);
-		_dataSetTranslator = new AbstractDataSetTranslator(_context, filter, translator);
+		_dataSetTranslator = new DelegatingDataSetTranslator(_context, filter, translator);
 		
 	}
 	

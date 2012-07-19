@@ -14,12 +14,16 @@
  ******************************************************************************/
 package au.org.ala.delta.translation.parameter;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import au.org.ala.delta.directives.OutputParameters.OutputParameter;
 import au.org.ala.delta.translation.DataSetTranslator;
 
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * The ParameterBasedTranslator performs translations triggered by the OUTPUT PARAMETER directive.
+ * The Nexus, Paup and Payne translations work in this manner.
+ */
 public abstract class ParameterBasedTranslator implements DataSetTranslator {
 	
 	private Map<String, ParameterTranslator> _supportedParameters;

@@ -14,14 +14,14 @@
  ******************************************************************************/
 package au.org.ala.delta.translation.naturallanguage;
 
-import au.org.ala.delta.translation.AbstractDataSetTranslator;
+import au.org.ala.delta.translation.DelegatingDataSetTranslator;
 import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.translation.TranslatorTest;
 import au.org.ala.delta.translation.ItemListTypeSetter;
 
 public abstract class NaturalLangaugeTranslatorTest extends TranslatorTest {
 
-	protected AbstractDataSetTranslator _dataSetTranslator;
+	protected DelegatingDataSetTranslator _dataSetTranslator;
 	protected ItemListTypeSetter _typeSetter;
 	protected PrintFile _printer;
 
