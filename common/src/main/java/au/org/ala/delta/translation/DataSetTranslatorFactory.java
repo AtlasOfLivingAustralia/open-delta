@@ -137,7 +137,7 @@ public class DataSetTranslatorFactory {
 
     private PrintFile getOutputFile(DeltaContext context, boolean errorIfNull) throws DirectiveException {
         PrintFile outputFile = context.getOutputFileSelector().getOutputFile();
-        if (outputFile == null) {
+        if (errorIfNull && outputFile == null) {
             throw DirectiveError.asException(DirectiveError.Error.MISSING_OUTPUT_FILE, 0, "output");
         }
         return outputFile;
