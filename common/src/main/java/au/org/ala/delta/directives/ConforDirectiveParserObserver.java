@@ -119,19 +119,12 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 		outputToListingFile(directive);
 
 		handleErrors();
-		try {
-			if (isCharacterList(directive)) {
-				postProcessCharacters();
-			} else if (isItemDescriptions(directive)) {
-				postProcessItems();
-			}
-		} catch (DirectiveException e) {
-			try {
-				handleDirectiveProcessingException(_context, directive, e);
-			} catch (Exception ex) {
-				throw new RuntimeException(ex);
-			}
-		}
+
+        if (isCharacterList(directive)) {
+            postProcessCharacters();
+        } else if (isItemDescriptions(directive)) {
+            postProcessItems();
+        }
 	}
 
 	@Override
@@ -160,8 +153,8 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 	}
 
 	private void postProcessCharacters() throws DirectiveException {
-		DataSetTranslator translator = _factory.createTranslator(_context);
-		translator.translateCharacters();
+		DataSetTranslator translator = _factory.createTranslator(_context, DataSetTranslator.TranslationPhase.CHARACTERS);
+        translator.translateCharacters();
 	}
 
 	private void postProcessItems() throws DirectiveException {
@@ -169,7 +162,7 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 		validateItemDescriptions();
 		_helper.addItemImages(_context.getImages(ImageType.IMAGE_TAXON));
 
-		DataSetTranslator translator = _factory.createTranslator(_context);
+		DataSetTranslator translator = _factory.createTranslator(_context, DataSetTranslator.TranslationPhase.ITEMS);
 		translator.translateItems();
 	}
 

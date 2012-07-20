@@ -21,7 +21,7 @@ import au.org.ala.delta.translation.DataSetTranslatorFactory;
 public class DataSetTranslatorFactoryStub extends DataSetTranslatorFactory {
 
 	@Override
-	public DataSetTranslator createTranslator(DeltaContext context) {
+	public DataSetTranslator createTranslator(DeltaContext context, DataSetTranslator.TranslationPhase translationPhase) {
 		return new DataSetTranslatorStub();
 	}
 }

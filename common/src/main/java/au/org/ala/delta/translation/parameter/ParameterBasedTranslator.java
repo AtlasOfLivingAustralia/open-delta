@@ -42,7 +42,7 @@ public abstract class ParameterBasedTranslator implements DataSetTranslator {
 
 	@Override
 	public void translateOutputParameter(OutputParameter parameter) {
-		
+
 		String name = extractMatchString(parameter.parameter);
 		ParameterTranslator translator = _supportedParameters.get(name);
 		if (translator == null) {

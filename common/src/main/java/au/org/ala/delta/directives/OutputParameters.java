@@ -14,12 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
-import java.io.Reader;
-import java.io.StringReader;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArgsParser;
@@ -27,6 +21,12 @@ import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.directives.args.TextArgParser;
 import au.org.ala.delta.translation.DataSetTranslator;
 import au.org.ala.delta.translation.DataSetTranslatorFactory;
+
+import java.io.Reader;
+import java.io.StringReader;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Processes the OUTPUT PARAMETERS directive.
@@ -71,7 +71,7 @@ public class OutputParameters extends AbstractCustomDirective {
 		OutputParametersParser parser = new OutputParametersParser(context, new StringReader(data));
 		parser.parse();
 		
-		DataSetTranslator translator = _factory.createTranslator(context);
+		DataSetTranslator translator = _factory.createTranslator(context, DataSetTranslator.TranslationPhase.OUTPUT_PARAMETERS);
 		for (OutputParameter outputParameter : parser.getOutputParameters()) {
 			translator.translateOutputParameter(outputParameter);
 		}

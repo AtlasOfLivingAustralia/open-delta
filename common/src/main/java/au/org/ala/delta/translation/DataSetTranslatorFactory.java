@@ -60,7 +60,8 @@ import java.util.List;
  * Creates appropriate instances of DataSetTranslator for the supplied DeltaContext.
  */
 public class DataSetTranslatorFactory {
-	
+
+
 	/**
 	 * Creates a DataSetTranslator instance that is appropriate for the
 	 * supplied DeltaContext.  If more than one output action (e.g. 
@@ -69,8 +70,9 @@ public class DataSetTranslatorFactory {
 	 * multiple translators responsible for specific output formats.
 	 * @param context determines the translators to create and the
 	 * configuration to use when creating them.
+     * @param translationPhase specifies what is being translated.
 	 */
-	public DataSetTranslator createTranslator(DeltaContext context) throws DirectiveException {
+	public DataSetTranslator createTranslator(DeltaContext context, DataSetTranslator.TranslationPhase translationPhase) throws DirectiveException {
 		
 		TranslateType translation = context.getTranslateType();
 		
@@ -89,7 +91,7 @@ public class DataSetTranslatorFactory {
 			DataSetTranslator translator = null;
 
 			if (translation.equals(TranslateType.Delta)) {
-				translator = createDeltaFormatTranslator(context, getOutputFile(context), formatterFactory);
+				translator = createDeltaFormatTranslator(context, getOutputFile(context, true), formatterFactory);
 			}
 			else if (translation.equals(TranslateType.IntKey)) {
 				translator = createIntkeyFormatTranslator(context, formatterFactory);
@@ -101,16 +103,24 @@ public class DataSetTranslatorFactory {
 				translator = createDistFormatTranslator(context, formatterFactory);
 			}
 			else if (translation.equals(TranslateType.NexusFormat)) {
-				translator = createNexusFormatTranslator(context,  getOutputFile(context), formatterFactory);
+				translator = createNexusFormatTranslator(context,
+                        getOutputFile(context, translationPhase == DataSetTranslator.TranslationPhase.OUTPUT_PARAMETERS),
+                        formatterFactory);
 			}
 			else if (translation.equals(TranslateType.PAUP)) {
-				translator = createPaupFormatTranslator(context,  getOutputFile(context), formatterFactory);
+				translator = createPaupFormatTranslator(context,
+                        getOutputFile(context, translationPhase == DataSetTranslator.TranslationPhase.OUTPUT_PARAMETERS),
+                        formatterFactory);
 			}
 			else if (translation.equals(TranslateType.Payne)) {
-				translator = createPayneFormatTranslator(context,  getOutputFile(context), formatterFactory);
+				translator = createPayneFormatTranslator(context,
+                        getOutputFile(context, translationPhase == DataSetTranslator.TranslationPhase.OUTPUT_PARAMETERS),
+                        formatterFactory);
 			}
 			else if (translation.equals(TranslateType.Hennig86)) {
-				translator = createHenningFormatTranslator(context,  getOutputFile(context), formatterFactory);
+				translator = createHenningFormatTranslator(context,
+                        getOutputFile(context, translationPhase == DataSetTranslator.TranslationPhase.OUTPUT_PARAMETERS),
+                        formatterFactory);
 			}
 			else if (translation.equals(TranslateType.None)) {
 				translator = new NullTranslator();
@@ -125,7 +135,7 @@ public class DataSetTranslatorFactory {
 		return new CompositeDataSetTranslator(translators);
 	}
 
-    private PrintFile getOutputFile(DeltaContext context) throws DirectiveException {
+    private PrintFile getOutputFile(DeltaContext context, boolean errorIfNull) throws DirectiveException {
         PrintFile outputFile = context.getOutputFileSelector().getOutputFile();
         if (outputFile == null) {
             throw DirectiveError.asException(DirectiveError.Error.MISSING_OUTPUT_FILE, 0, "output");

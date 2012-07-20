@@ -17,8 +17,20 @@ package au.org.ala.delta.translation;
 import au.org.ala.delta.directives.OutputParameters.OutputParameter;
 import au.org.ala.delta.directives.validation.DirectiveException;
 
-
+/**
+ * A DataSetTranslator is responsible for turning a DeltaDataSet into another format.
+ * Translations are potentially triggered at three points in the directive processing procedure:
+ * <ul>
+ *     <li>when the CHARACTER LIST directive is encountered.  This will result in a call on the translateCharacters method.</li>
+ *     <li>when the ITEM DESCRIPTIONS directive is encountered.  This will result in a call on the translateItems method.</li>
+ *     <li>when the OUTPUT PARAMETERS directive is encountered.  This will result in one of more calls to the translateOutputParameter method.</li>
+ * </ul>
+ * Implementations are not required to handle each of these directives, if they do not support a particular translation
+ * they should implement a method that does nothing.
+ */
 public interface DataSetTranslator {
+
+    public enum TranslationPhase {CHARACTERS, ITEMS, OUTPUT_PARAMETERS};
 
 	public void translateCharacters() throws DirectiveException;
 	
