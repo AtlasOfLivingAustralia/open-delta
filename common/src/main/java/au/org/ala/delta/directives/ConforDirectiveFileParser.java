@@ -43,6 +43,7 @@ public class ConforDirectiveFileParser extends DirectiveParser<DeltaContext> {
         ConforDirectiveFileParser instance = new ConforDirectiveFileParser();
         
         instance.registerDirective(new AbsoluteError());
+        instance.registerDirective(new AcceptDuplicateValues());
         instance.registerDirective(new AddCharacters());
         instance.registerDirective(new AlternateComma());
         instance.registerDirective(new ApplicableCharacters());

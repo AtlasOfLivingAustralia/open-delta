@@ -86,7 +86,7 @@ class ItemsParser extends AbstractStreamParser {
 	public ItemsParser(DeltaContext context, Reader reader, boolean normalizeBeforeParsing) {
 		super(context, reader);
 		_normalizeBeforeParsing = normalizeBeforeParsing;
-        _allowDuplicates = false; //context.getAllowDuplicateValues();
+        _allowDuplicates = context.getAcceptDuplicateValues();
 	}
 
 	@Override
@@ -111,9 +111,7 @@ class ItemsParser extends AbstractStreamParser {
 		assert _currentChar == '#';
 		readNext();
 
-		Item item = null;
-	
-		item = createItem(itemIndex);
+		Item item = createItem(itemIndex);
 		
 		String itemName = readToNextEndSlashSpace();
 		Logger.debug("Parsing Item %s", itemName);
@@ -152,13 +150,20 @@ class ItemsParser extends AbstractStreamParser {
 				value.append(strValue);
 			}
 
+            Attribute attribute;
             if (encounteredChars.contains(ch.getCharacterId())) {
                 if (!_allowDuplicates) {
                     throw DirectiveError.asException(DirectiveError.Error.CHARACTER_ALREADY_SPECIFIED, _position, ch.getCharacterId());
                 }
+                else {
+                    attribute = dataSet.getAttribute(item.getItemNumber(), ch.getCharacterId());
+                    getContext().addError(new DirectiveError(DirectiveError.Warning.EQUIVALENT_DIRECTIVE_USED, _position, ch.getCharacterId()));
+                }
             }
-            encounteredChars.add(ch.getCharacterId());
-            Attribute attribute = dataSet.addAttribute(item.getItemNumber(), ch.getCharacterId());
+            else {
+                encounteredChars.add(ch.getCharacterId());
+                attribute = dataSet.addAttribute(item.getItemNumber(), ch.getCharacterId());
+            }
 
 			try {
 				String theValue = value.toString();

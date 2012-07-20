@@ -14,26 +14,23 @@
  ******************************************************************************/
 package au.org.ala.delta.directives;
 
-import java.io.InputStream;
-import java.io.StringReader;
-
+import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.validation.DirectiveException;
+import au.org.ala.delta.model.DefaultDataSetFactory;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import junit.framework.TestCase;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-import au.org.ala.delta.DeltaContext;
-import au.org.ala.delta.directives.validation.DirectiveException;
-import au.org.ala.delta.model.DefaultDataSetFactory;
-import au.org.ala.delta.model.MutableDeltaDataSet;
+import java.io.InputStream;
+import java.io.StringReader;
 
 public class ItemDescriptionsTest extends TestCase {
 
 	private MutableDeltaDataSet _dataSet;
 	private DeltaContext _context;
-	// private ItemDescriptions _itemDescriptions;
 
 	@Before
 	public void setUp() {
@@ -41,41 +38,58 @@ public class ItemDescriptionsTest extends TestCase {
 		_dataSet = factory.createDataSet("test");
 		_context = new DeltaContext(_dataSet);
 		_context.setMaximumNumberOfItems(1);
-		// _itemDescriptions = new ItemDescriptions();
 	}
 	
-	private void confor(String scriptName, int expectedError) throws Exception {
+	private void runConforExpectingError(String scriptName, int expectedError) throws Exception {
 		try {
-			String directives = getConforResoure(scriptName);
-			ConforDirectiveFileParser parser = ConforDirectiveFileParser.createInstance();
-			ConforDirectiveParserObserver observer = new ConforDirectiveParserObserver(_context);
-			parser.registerObserver(observer);
-			parser.parse(new StringReader(directives), _context);
+            runCONFOR(scriptName);
 			fail(String.format("Exception (error %d) expected", expectedError));
 		} catch (DirectiveException ex) {
 			assertEquals(expectedError, ex.getErrorNumber());
 		}
 		
 	}
-	
-	private String getConforResoure(String name) throws Exception {
+
+    private void runCONFOR(String scriptName) throws Exception {
+        String directives = getConforResoure(scriptName);
+        ConforDirectiveFileParser parser = ConforDirectiveFileParser.createInstance();
+        ConforDirectiveParserObserver observer = new ConforDirectiveParserObserver(_context);
+        parser.registerObserver(observer);
+        parser.parse(new StringReader(directives), _context);
+    }
+
+    private String getConforResoure(String name) throws Exception {
 		InputStream is = ItemDescriptionsTest.class.getResourceAsStream(String.format("/confor/%s", name));
 		return StringUtils.join(IOUtils.readLines(is), "\n");
 	}
 
 	@Test
 	public void testParsing() throws Exception {		
-		confor("prereqtest", 36);
+		runConforExpectingError("prereqtest", 36);
 	}
 	
 	@Test
 	public void test1() throws Exception {
-		confor("test1", 12);
+		runConforExpectingError("test1", 12);
 	}
 	
 	@Test
 	public void test2() throws Exception {
-		confor("test2", 46);
+		runConforExpectingError("test2", 46);
 	}
+
+
+    /**
+     * Ensures the Item parser handles the ACCEPT DUPLICATE VALUES directive correctly.
+     */
+    @Test
+    public void testDuplicateValues() throws Exception {
+
+        runCONFOR("acceptDuplicateValues");
+
+        // The context should have raised a warning by the ConforDirectiveParserObserver will have removed it
+        // by this point.  Instead we just check the value has been overwritten.
+        assertEquals("1", _context.getDataSet().getAttribute(3, 2).getValueAsString());
+    }
 
 }

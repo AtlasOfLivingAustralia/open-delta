@@ -130,13 +130,12 @@ public class DeltaContext extends AbstractDeltaContext {
     private boolean _listItems = false;
     private boolean _treatVariableAsUnknown = false;
     private boolean _useLastValueCoded = false;
+    private boolean _acceptDuplicateValues = false;
 
     private Map<HeadingType, String> _headings = new HashMap<HeadingType, String>();
     private Integer _characterForTaxonImages = null;
     private Integer _stopAfterItem = null;
     private String _credits;
-
-    // private StateValueMatrix _matrix;
 
     private BigDecimal[] _characterWeights;
 
@@ -1067,11 +1066,29 @@ public class DeltaContext extends AbstractDeltaContext {
         _useLastValueCoded = true;
     }
 
+    /**
+     * Instructs translation and Print actions to stop after the supplied Item number instead of processing all Items
+     * in the dataset.
+     * @param itemNumber the Item number to stop processing at.
+     */
     public void stopAfterItem(int itemNumber) {
         _stopAfterItem = itemNumber;
     }
 
     public Integer getStopAfterItem() {
         return _stopAfterItem;
+    }
+
+
+    /**
+     * Instructs the Item validation routine to allow duplicate attributes to be specified for an Item, with the
+     * second declaration overwriting the first.
+     */
+    public void acceptDuplicateValues() {
+        _acceptDuplicateValues = true;
+    }
+
+    public boolean getAcceptDuplicateValues() {
+        return _acceptDuplicateValues;
     }
 }
