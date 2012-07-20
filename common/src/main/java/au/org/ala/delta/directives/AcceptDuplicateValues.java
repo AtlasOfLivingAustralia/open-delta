@@ -18,4 +18,9 @@ public class AcceptDuplicateValues extends AbstractNoArgDirective {
         context.acceptDuplicateValues();
     }
 
+    @Override
+    public int getOrder() {
+        return 4;
+    }
+
 }

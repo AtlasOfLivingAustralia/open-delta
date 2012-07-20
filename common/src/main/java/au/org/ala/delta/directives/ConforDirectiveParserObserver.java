@@ -195,6 +195,8 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 			throw (DirectiveException) ex;
 
 		} else {
+            DirectiveError error = new DirectiveError(DirectiveError.Error.FATAL_ERROR, 0);
+            writeError(context, error, pc);
 			if (pc.getFile() != null) {
 				Logger.error(String.format("Exception occured trying to process directive: %s (%s %d:%d)", directive.getName(), pc.getFile().getName(), pc.getCurrentDirectiveStartLine(),
 						pc.getCurrentDirectiveStartOffset()));
@@ -203,6 +205,7 @@ public class ConforDirectiveParserObserver implements DirectiveParserObserver {
 				Logger.error(String.format("Exception occured trying to process directive: %s (%d:%d)", directive.getName(), pc.getCurrentDirectiveStartLine(), pc.getCurrentDirectiveStartOffset()));
 				Logger.error(ex);
 			}
+            throw error.asException();
 		}
 
 	}

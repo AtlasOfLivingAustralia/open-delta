@@ -44,6 +44,7 @@ import au.org.ala.delta.translation.print.CharacterListPrinter;
 import au.org.ala.delta.translation.print.CharacterListTypeSetter;
 import au.org.ala.delta.translation.print.ItemDescriptionsPrinter;
 import au.org.ala.delta.translation.print.ItemNamesPrinter;
+import au.org.ala.delta.translation.print.PrintAllCharactersFilter;
 import au.org.ala.delta.translation.print.SummaryPrinter;
 import au.org.ala.delta.translation.print.UncodedCharactersFilter;
 import au.org.ala.delta.translation.print.UncodedCharactersPrinter;
@@ -342,13 +343,42 @@ public class DataSetTranslatorFactory {
 		CharacterFormatter charFormatter  = formatterFactory.createCharacterFormatter(true, true, mode);
 		charFormatter.setDespaceRtf(true);
 		CharacterListTypeSetter typeSetter = new TypeSetterFactory().createCharacterListTypeSetter(context, printer);
-		DataSetFilter filter = new DeltaFormatDataSetFilter(context);
+        DataSetFilter filter = createCharacterListOrItemDescriptionsFilter(context);
 		IterativeTranslator translator = new CharacterListPrinter(context, printer, charFormatter, typeSetter);
 		
 		return new Pair<IterativeTranslator, DataSetFilter>(translator, filter);
 	}
-	
-	private Pair<IterativeTranslator, DataSetFilter> createItemNamesPrinter(DeltaContext context) {
+
+
+    private Pair<IterativeTranslator, DataSetFilter> createItemDescriptionsPrinter(DeltaContext context) {
+        FormatterFactory formatterFactory = new FormatterFactory(context);
+        PrintFile printer = context.getPrintFile();
+        ItemListTypeSetter typeSetter = new TypeSetterFactory().createItemListTypeSetter(context, printer);
+
+        ItemFormatter itemFormatter  = formatterFactory.createItemFormatter(typeSetter, false);
+        AttributeFormatter attributeFormatter = formatterFactory.createAttributeFormatter();
+        DataSetFilter filter = createCharacterListOrItemDescriptionsFilter(context);
+        IterativeTranslator translator = new ItemDescriptionsPrinter(context, printer, itemFormatter, attributeFormatter, typeSetter);
+        return new Pair<IterativeTranslator, DataSetFilter>(translator, filter);
+    }
+
+    /**
+     * Creates a DataSetFilter of the appropriate type for the ItemDescriptionsPrinter or CharacterListPrinter based
+     * on whether the PRINT ALL CHARACTERS directive is in force or not.
+     * @param context the DeltaContext in which the translation is being run.
+     * @return a DataSetFilter for use by the printer.
+     */
+    private DataSetFilter createCharacterListOrItemDescriptionsFilter(DeltaContext context) {
+        if (context.getPrintAllCharacters()) {
+            TranslateType type = context.getTranslateType();
+            if (type == TranslateType.None || type == TranslateType.NaturalLanguage || type == TranslateType.Key) {
+                return new PrintAllCharactersFilter(context);
+            }
+        }
+        return new DeltaFormatDataSetFilter(context);
+    }
+
+    private Pair<IterativeTranslator, DataSetFilter> createItemNamesPrinter(DeltaContext context) {
 		FormatterFactory formatterFactory = new FormatterFactory(context);
 		PrintFile printer = context.getPrintFile();
 		ItemListTypeSetter typeSetter = new TypeSetterFactory().createItemListTypeSetter(context, printer);
@@ -360,18 +390,7 @@ public class DataSetTranslatorFactory {
 		return new Pair<IterativeTranslator, DataSetFilter>(translator, filter);
 	}
 	
-	private Pair<IterativeTranslator, DataSetFilter> createItemDescriptionsPrinter(DeltaContext context) {
-		FormatterFactory formatterFactory = new FormatterFactory(context);
-		PrintFile printer = context.getPrintFile();
-		ItemListTypeSetter typeSetter = new TypeSetterFactory().createItemListTypeSetter(context, printer);
-		
-		ItemFormatter itemFormatter  = formatterFactory.createItemFormatter(typeSetter, false);
-		AttributeFormatter attributeFormatter = formatterFactory.createAttributeFormatter();
-		DataSetFilter filter = new DeltaFormatDataSetFilter(context);
-		IterativeTranslator translator = new ItemDescriptionsPrinter(context, printer, itemFormatter, attributeFormatter, typeSetter);
-		return new Pair<IterativeTranslator, DataSetFilter>(translator, filter);
-	}
-	
+
 	private Pair<IterativeTranslator, DataSetFilter> createUncodedCharactersPrinter(DeltaContext context) {
 		PrintFile printer = context.getPrintFile();
 		TypeSetterFactory typeSetterFactory = new TypeSetterFactory();

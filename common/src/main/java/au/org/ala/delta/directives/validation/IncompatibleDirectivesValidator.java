@@ -14,13 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.directives.validation;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.lang.StringUtils;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.directives.AddCharacters;
@@ -38,6 +31,12 @@ import au.org.ala.delta.directives.IncludeItems;
 import au.org.ala.delta.directives.ItemAbundances;
 import au.org.ala.delta.directives.ItemWeights;
 import au.org.ala.delta.directives.KeyCharacterList;
+import org.apache.commons.lang.StringUtils;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Some directives must not appear together during a CONFOR run.  The

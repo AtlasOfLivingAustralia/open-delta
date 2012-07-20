@@ -15,8 +15,9 @@
 package au.org.ala.delta.translation.print;
 
 import au.org.ala.delta.DeltaContext;
-import au.org.ala.delta.model.Attribute;
-import au.org.ala.delta.model.Item;
+import au.org.ala.delta.directives.OutputParameters;
+import au.org.ala.delta.model.*;
+import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.translation.ItemListTypeSetter;
@@ -69,4 +70,18 @@ public class ItemDescriptionsPrinter extends DeltaFormatTranslator {
 		String value = super.getAttributeValue(attribute);
 		return _attributeFormatter.formatComment(value);
 	}
+
+    @Override
+    public void beforeFirstCharacter() {}
+
+    @Override
+    public void beforeCharacter(au.org.ala.delta.model.Character character) {}
+
+    @Override
+    public void afterCharacter(Character character) {}
+
+    @Override
+    public void translateOutputParameter(OutputParameters.OutputParameter parameter) {}
+
+
 }

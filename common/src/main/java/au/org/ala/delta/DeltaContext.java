@@ -131,6 +131,7 @@ public class DeltaContext extends AbstractDeltaContext {
     private boolean _treatVariableAsUnknown = false;
     private boolean _useLastValueCoded = false;
     private boolean _acceptDuplicateValues = false;
+    private boolean _printAllCharacters = false;
 
     private Map<HeadingType, String> _headings = new HashMap<HeadingType, String>();
     private Integer _characterForTaxonImages = null;
@@ -1090,5 +1091,17 @@ public class DeltaContext extends AbstractDeltaContext {
 
     public boolean getAcceptDuplicateValues() {
         return _acceptDuplicateValues;
+    }
+
+    /**
+     * Instructs the PRINT ITEM DESCRIPTIONS and PRINT CHARACTER LIST actions to ignore the EXCLUDE CHARACTERS
+     * and EXCLUDE ITEMS directives.
+     */
+    public void printAllCharacters() {
+        _printAllCharacters = true;
+    }
+
+    public boolean getPrintAllCharacters() {
+        return _printAllCharacters;
     }
 }
