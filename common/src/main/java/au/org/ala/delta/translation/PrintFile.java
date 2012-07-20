@@ -383,7 +383,7 @@ public class PrintFile {
     }
 
     public void writeTypeSettingMark(String mark) {
-
+        writeFileHeader();
         boolean tmpCapitalise = _capitalise;
         _capitalise = false;
         if (!spaceRequired()) {

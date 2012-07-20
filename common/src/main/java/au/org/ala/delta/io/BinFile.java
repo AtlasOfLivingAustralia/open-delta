@@ -14,6 +14,8 @@
  ******************************************************************************/
 package au.org.ala.delta.io;
 
+import org.apache.commons.io.IOUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -21,6 +23,7 @@ import java.io.SyncFailedException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 
 /**
  * //binfile.cpp
@@ -53,12 +56,8 @@ public class BinFile {
 	}
 
 	public void write(byte[] data) {
-		// try {
-		// _file.write(data);
+
 		writeBytes(data);
-		// } catch (IOException ioex) {
-		// throw new RuntimeException(ioex);
-		// }
 	}
 
 	public byte[] read(int length) {
@@ -94,30 +93,25 @@ public class BinFile {
 
 			// Attempt to lock the file to prevent concurrent access.
 			if (ra_mode.contains("w")) {
-				_channel.tryLock();
+				FileLock lock = _channel.tryLock();
+                if (lock == null) {
+                    IOUtils.closeQuietly(_file);
+                    throw new RuntimeException("Unable to open file for writing.  Possibly another program has this file open.");
+                }
 			}
-			/*
-			 * if (mode == BinFileMode.FM_READONLY) { CodeTimer t = new
-			 * CodeTimer("loading file buffer"); _file.seek(0); _buffer = new
-			 * byte[(int) _file.length()]; _file.read(_buffer); t.stop(true);
-			 * _file.seek(0); }
-			 */
 
 		} catch (IOException ioex) {
-			throw new RuntimeException(ioex);
+            IOUtils.closeQuietly(_file);
+			throw new RuntimeException(ioex.getMessage(), ioex);
 		}
 	}
 
 	public void close() {
-		// System.out.println("closing "+_filename);
-		/*
-		 * if (_file != null) { try { _file.close(); _file = null; } catch
-		 * (IOException ioex) { throw new RuntimeException(ioex); } }
-		 */
-		if (_channel != null) {
+
+		if (_file != null) {
 			try {
-				_channel.close();
-				_channel = null;
+				_file.close();
+				_file = null;
 			} catch (IOException ioex) {
 				throw new RuntimeException(ioex);
 			}

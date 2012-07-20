@@ -65,7 +65,7 @@ public class SlotFileRepository implements DeltaDataSetRepository {
 	 * @param name the absolute path of the DELTA file.
 	 * @param observer allows the progress of the file load to be tracked if required.
 	 *  
-	 * @see au.org.ala.delta.model.DeltaDataSetRepository#findByName(java.lang.String)
+	 * @see au.org.ala.delta.model.DeltaDataSetRepository#findByName(java.lang.String, IProgressObserver)
 	 */
 	@Override
 	public MutableDeltaDataSet findByName(String name, IProgressObserver observer) {
