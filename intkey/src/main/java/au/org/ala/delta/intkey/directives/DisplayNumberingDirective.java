@@ -15,7 +15,7 @@
 package au.org.ala.delta.intkey.directives;
 
 import au.org.ala.delta.intkey.directives.invocation.DisplayNumberingDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.OnOffDirectiveInvocation;
 
 public class DisplayNumberingDirective extends OnOffDirective {
 
@@ -24,7 +24,7 @@ public class DisplayNumberingDirective extends OnOffDirective {
     }
 
     @Override
-    protected BasicIntkeyDirectiveInvocation buildCommandObject() {
+    public OnOffDirectiveInvocation buildCommandObject() {
         return new DisplayNumberingDirectiveInvocation();
     }
 

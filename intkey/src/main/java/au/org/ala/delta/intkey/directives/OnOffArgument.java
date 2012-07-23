@@ -20,8 +20,8 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class OnOffArgument extends IntkeyDirectiveArgument<Boolean> {
 
-    private static final String ON_VALUE = "ON";
-    private static final String OFF_VALUE = "OFF";
+    public static final String ON_VALUE = "ON";
+    public static final String OFF_VALUE = "OFF";
 
     public OnOffArgument(String name, String promptText, boolean initialValue) {
         super(name, promptText, initialValue);

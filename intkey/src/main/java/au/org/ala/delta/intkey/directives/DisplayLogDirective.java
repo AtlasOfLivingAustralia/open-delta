@@ -15,7 +15,7 @@
 package au.org.ala.delta.intkey.directives;
 
 import au.org.ala.delta.intkey.directives.invocation.DisplayLogDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.OnOffDirectiveInvocation;
 
 public class DisplayLogDirective extends OnOffDirective {
 
@@ -24,7 +24,7 @@ public class DisplayLogDirective extends OnOffDirective {
     }
 
     @Override
-    protected BasicIntkeyDirectiveInvocation buildCommandObject() {
+    public OnOffDirectiveInvocation buildCommandObject() {
         return new DisplayLogDirectiveInvocation();
     }
 }

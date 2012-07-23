@@ -22,7 +22,7 @@ public class SetDiagTypeSpecimensDirectiveInvocation extends BasicIntkeyDirectiv
     @Override
     public boolean execute(IntkeyContext context) {
         context.setDiagType(DiagType.SPECIMENS);
-        return false;
+        return true;
     }
 
 }

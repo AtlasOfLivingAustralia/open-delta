@@ -21,6 +21,9 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 import au.org.ala.delta.directives.AbstractDirective;
+import au.org.ala.delta.intkey.directives.NewIntkeyDirective;
+import au.org.ala.delta.intkey.directives.OnOffArgument;
+import au.org.ala.delta.intkey.directives.OnOffDirective;
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.OnOffDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
@@ -81,17 +84,12 @@ public class MenuBuilder {
         getCurrentMenu().add(directiveMenuItem);
     }
 
-    public void addDirectiveInvocationMenuItem(String mnuItemName, BasicIntkeyDirectiveInvocation invoc) {
+    public void addOnOffDirectiveMenuItem(String mnuItemName, OnOffDirective directive, boolean value) {
         JMenuItem invocMenuItem = new JMenuItem();
         invocMenuItem.setName(mnuItemName);
-        invocMenuItem.setAction(new DirectiveInvocationAction(invoc, _context));
-        getCurrentMenu().add(invocMenuItem);
-    }
-
-    public void addOnOffDirectiveInvocationMenuItem(String mnuItemName, OnOffDirectiveInvocation invoc, boolean value) {
-        JMenuItem invocMenuItem = new JMenuItem();
-        invocMenuItem.setName(mnuItemName);
+        OnOffDirectiveInvocation invoc = directive.buildCommandObject();
         invoc.setValue(value);
+        invoc.setStringRepresentation(directive.getControlWordsAsString() + " " + (value ? OnOffArgument.ON_VALUE : OnOffArgument.OFF_VALUE));
         invocMenuItem.setAction(new DirectiveInvocationAction(invoc, _context));
         getCurrentMenu().add(invocMenuItem);
     }

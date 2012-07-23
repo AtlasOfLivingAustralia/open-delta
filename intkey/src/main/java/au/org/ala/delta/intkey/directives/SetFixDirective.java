@@ -14,7 +14,7 @@
  ******************************************************************************/
 package au.org.ala.delta.intkey.directives;
 
-import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.OnOffDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.SetFixDirectiveInvocation;
 
 public class SetFixDirective extends OnOffDirective {
@@ -24,7 +24,7 @@ public class SetFixDirective extends OnOffDirective {
     }
 
     @Override
-    protected BasicIntkeyDirectiveInvocation buildCommandObject() {
+    public OnOffDirectiveInvocation buildCommandObject() {
         return new SetFixDirectiveInvocation();
     }
 

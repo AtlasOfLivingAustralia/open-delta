@@ -15,7 +15,7 @@
 package au.org.ala.delta.intkey.directives;
 
 import au.org.ala.delta.intkey.directives.invocation.DisplayContinuousDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.OnOffDirectiveInvocation;
 
 public class DisplayContinuousDirective extends OnOffDirective {
     public DisplayContinuousDirective() {
@@ -23,7 +23,7 @@ public class DisplayContinuousDirective extends OnOffDirective {
     }
 
     @Override
-    protected BasicIntkeyDirectiveInvocation buildCommandObject() {
+    public OnOffDirectiveInvocation buildCommandObject() {
         return new DisplayContinuousDirectiveInvocation();
     }
 }

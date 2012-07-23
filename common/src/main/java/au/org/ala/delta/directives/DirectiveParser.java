@@ -248,7 +248,7 @@ public abstract class DirectiveParser<C extends AbstractDeltaContext> {
                 }
                 i += word.length() + 1;
             }
-            if (result != null && result.getResultType() == ResultType.NotFound) {
+            if (result != null && (result.getResultType() == ResultType.NotFound || result.getResultType() == ResultType.MoreSpecificityRequired)) {
                 handleUnrecognizedDirective(context, controlWords);
             }
         }

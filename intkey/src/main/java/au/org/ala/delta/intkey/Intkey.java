@@ -116,7 +116,17 @@ import au.org.ala.delta.intkey.directives.DirectivePopulator;
 import au.org.ala.delta.intkey.directives.DisplayCharacterOrderBestDirective;
 import au.org.ala.delta.intkey.directives.DisplayCharacterOrderNaturalDirective;
 import au.org.ala.delta.intkey.directives.DisplayCharacterOrderSeparateDirective;
+import au.org.ala.delta.intkey.directives.DisplayCommentsDirective;
+import au.org.ala.delta.intkey.directives.DisplayContinuousDirective;
+import au.org.ala.delta.intkey.directives.DisplayEndIdentifyDirective;
 import au.org.ala.delta.intkey.directives.DisplayImagesDirective;
+import au.org.ala.delta.intkey.directives.DisplayInapplicablesDirective;
+import au.org.ala.delta.intkey.directives.DisplayInputDirective;
+import au.org.ala.delta.intkey.directives.DisplayKeywordsDirective;
+import au.org.ala.delta.intkey.directives.DisplayLogDirective;
+import au.org.ala.delta.intkey.directives.DisplayNumberingDirective;
+import au.org.ala.delta.intkey.directives.DisplayScaledDirective;
+import au.org.ala.delta.intkey.directives.DisplayUnknownsDirective;
 import au.org.ala.delta.intkey.directives.ExcludeCharactersDirective;
 import au.org.ala.delta.intkey.directives.ExcludeTaxaDirective;
 import au.org.ala.delta.intkey.directives.FileCharactersDirective;
@@ -137,8 +147,13 @@ import au.org.ala.delta.intkey.directives.IntkeyDirectiveParseException;
 import au.org.ala.delta.intkey.directives.NewDatasetDirective;
 import au.org.ala.delta.intkey.directives.PreferencesDirective;
 import au.org.ala.delta.intkey.directives.RestartDirective;
+import au.org.ala.delta.intkey.directives.SetAutoToleranceDirective;
+import au.org.ala.delta.intkey.directives.SetDemonstrationDirective;
 import au.org.ala.delta.intkey.directives.SetDiagLevelDirective;
+import au.org.ala.delta.intkey.directives.SetDiagTypeSpecimensDirective;
+import au.org.ala.delta.intkey.directives.SetDiagTypeTaxaDirective;
 import au.org.ala.delta.intkey.directives.SetExactDirective;
+import au.org.ala.delta.intkey.directives.SetFixDirective;
 import au.org.ala.delta.intkey.directives.SetImagePathDirective;
 import au.org.ala.delta.intkey.directives.SetInfoPathDirective;
 import au.org.ala.delta.intkey.directives.SetMatchDirective;
@@ -151,32 +166,15 @@ import au.org.ala.delta.intkey.directives.ShowDirective;
 import au.org.ala.delta.intkey.directives.SimilaritiesDirective;
 import au.org.ala.delta.intkey.directives.StatusAllDirective;
 import au.org.ala.delta.intkey.directives.StatusDisplayDirective;
+import au.org.ala.delta.intkey.directives.StatusExcludeCharactersDirective;
+import au.org.ala.delta.intkey.directives.StatusExcludeTaxaDirective;
 import au.org.ala.delta.intkey.directives.StatusFilesDirective;
+import au.org.ala.delta.intkey.directives.StatusIncludeCharactersDirective;
+import au.org.ala.delta.intkey.directives.StatusIncludeTaxaDirective;
 import au.org.ala.delta.intkey.directives.StatusSetDirective;
 import au.org.ala.delta.intkey.directives.SummaryDirective;
 import au.org.ala.delta.intkey.directives.TaxaDirective;
 import au.org.ala.delta.intkey.directives.UseDirective;
-import au.org.ala.delta.intkey.directives.invocation.DisplayCharacterOrderBestDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.DisplayCharacterOrderNaturalDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.DisplayCommentsDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.DisplayContinuousDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.DisplayEndIdentifyDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.DisplayInapplicablesDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.DisplayInputDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.DisplayKeywordsDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.DisplayLogDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.DisplayNumberingDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.DisplayScaledDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.DisplayUnknownsDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.SetAutoToleranceDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.SetDemonstrationDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.SetDiagTypeSpecimensDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.SetDiagTypeTaxaDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.SetFixDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.StatusExcludeCharactersDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.StatusExcludeTaxaDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.StatusIncludeCharactersDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.StatusIncludeTaxaDirectiveInvocation;
 import au.org.ala.delta.intkey.model.DisplayImagesReportType;
 import au.org.ala.delta.intkey.model.ImageDisplayMode;
 import au.org.ala.delta.intkey.model.IntkeyCharacterOrder;
@@ -1151,27 +1149,27 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         MenuBuilder mnuSetBuilder = new MenuBuilder("mnuSet", _context);
 
         mnuSetBuilder.startSubMenu("mnuAutotolerance", true);
-        mnuSetBuilder.addOnOffDirectiveInvocationMenuItem("mnuItAutotoleranceOn", new SetAutoToleranceDirectiveInvocation(), true);
-        mnuSetBuilder.addOnOffDirectiveInvocationMenuItem("mnuItAutotoleranceOff", new SetAutoToleranceDirectiveInvocation(), false);
+        mnuSetBuilder.addOnOffDirectiveMenuItem("mnuItAutotoleranceOn", new SetAutoToleranceDirective(), true);
+        mnuSetBuilder.addOnOffDirectiveMenuItem("mnuItAutotoleranceOff", new SetAutoToleranceDirective(), false);
         mnuSetBuilder.endSubMenu();
 
         mnuSetBuilder.startSubMenu("mnuDemonstration", true);
-        mnuSetBuilder.addOnOffDirectiveInvocationMenuItem("mnuItDemonstrationOn", new SetDemonstrationDirectiveInvocation(), true);
-        mnuSetBuilder.addOnOffDirectiveInvocationMenuItem("mnuItDemonstrationOff", new SetDemonstrationDirectiveInvocation(), false);
+        mnuSetBuilder.addOnOffDirectiveMenuItem("mnuItDemonstrationOn", new SetDemonstrationDirective(), true);
+        mnuSetBuilder.addOnOffDirectiveMenuItem("mnuItDemonstrationOff", new SetDemonstrationDirective(), false);
         mnuSetBuilder.endSubMenu();
 
         mnuSetBuilder.addDirectiveMenuItem("mnuItDiagLevel", new SetDiagLevelDirective());
 
         mnuSetBuilder.startSubMenu("mnuDiagType", true);
-        mnuSetBuilder.addDirectiveInvocationMenuItem("mnuItDiagTypeSpecimens", new SetDiagTypeSpecimensDirectiveInvocation());
-        mnuSetBuilder.addDirectiveInvocationMenuItem("mnuItDiagTypeTaxa", new SetDiagTypeTaxaDirectiveInvocation());
+        mnuSetBuilder.addDirectiveMenuItem("mnuItDiagTypeSpecimens", new SetDiagTypeSpecimensDirective());
+        mnuSetBuilder.addDirectiveMenuItem("mnuItDiagTypeTaxa", new SetDiagTypeTaxaDirective());
         mnuSetBuilder.endSubMenu();
 
         mnuSetBuilder.addDirectiveMenuItem("mnuItExact", new SetExactDirective());
 
         mnuSetBuilder.startSubMenu("mnuFix", true);
-        mnuSetBuilder.addOnOffDirectiveInvocationMenuItem("mnuItFixOn", new SetFixDirectiveInvocation(), true);
-        mnuSetBuilder.addOnOffDirectiveInvocationMenuItem("mnuItFixOff", new SetFixDirectiveInvocation(), false);
+        mnuSetBuilder.addOnOffDirectiveMenuItem("mnuItFixOn", new SetFixDirective(), true);
+        mnuSetBuilder.addOnOffDirectiveMenuItem("mnuItFixOff", new SetFixDirective(), false);
         mnuSetBuilder.endSubMenu();
 
         mnuSetBuilder.addDirectiveMenuItem("mnuItImagePath", new SetImagePathDirective());
@@ -1195,61 +1193,61 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         // "Display" submenu
         MenuBuilder mnuDisplayBuilder = new MenuBuilder("mnuDisplay", _context);
         mnuDisplayBuilder.startSubMenu("mnuCharacterOrder", true);
-        mnuDisplayBuilder.addDirectiveInvocationMenuItem("mnuItCharacterOrderBest", new DisplayCharacterOrderBestDirectiveInvocation());
-        mnuDisplayBuilder.addDirectiveInvocationMenuItem("mnuItCharacterOrderNatural", new DisplayCharacterOrderNaturalDirectiveInvocation());
+        mnuDisplayBuilder.addDirectiveMenuItem("mnuItCharacterOrderBest", new DisplayCharacterOrderBestDirective());
+        mnuDisplayBuilder.addDirectiveMenuItem("mnuItCharacterOrderNatural", new DisplayCharacterOrderNaturalDirective());
         mnuDisplayBuilder.addDirectiveMenuItem("mnuItCharacterOrderSeparate", new DisplayCharacterOrderSeparateDirective());
         mnuDisplayBuilder.endSubMenu();
 
         mnuDisplayBuilder.startSubMenu("mnuComments", true);
-        mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItCommentsOn", new DisplayCommentsDirectiveInvocation(), true);
-        mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItCommentsOff", new DisplayCommentsDirectiveInvocation(), false);
+        mnuDisplayBuilder.addOnOffDirectiveMenuItem("mnuItCommentsOn", new DisplayCommentsDirective(), true);
+        mnuDisplayBuilder.addOnOffDirectiveMenuItem("mnuItCommentsOff", new DisplayCommentsDirective(), false);
         mnuDisplayBuilder.endSubMenu();
 
         mnuDisplayBuilder.startSubMenu("mnuContinuous", true);
-        mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItContinuousOn", new DisplayContinuousDirectiveInvocation(), true);
-        mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItContinuousOff", new DisplayContinuousDirectiveInvocation(), false);
+        mnuDisplayBuilder.addOnOffDirectiveMenuItem("mnuItContinuousOn", new DisplayContinuousDirective(), true);
+        mnuDisplayBuilder.addOnOffDirectiveMenuItem("mnuItContinuousOff", new DisplayContinuousDirective(), false);
         mnuDisplayBuilder.endSubMenu();
 
         mnuDisplayBuilder.startSubMenu("mnuEndIdentify", true);
-        mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItEndIdentifyOn", new DisplayEndIdentifyDirectiveInvocation(), true);
-        mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItEndIdentifyOff", new DisplayEndIdentifyDirectiveInvocation(), false);
+        mnuDisplayBuilder.addOnOffDirectiveMenuItem("mnuItEndIdentifyOn", new DisplayEndIdentifyDirective(), true);
+        mnuDisplayBuilder.addOnOffDirectiveMenuItem("mnuItEndIdentifyOff", new DisplayEndIdentifyDirective(), false);
         mnuDisplayBuilder.endSubMenu();
 
         mnuDisplayBuilder.addDirectiveMenuItem("mnuItImages", new DisplayImagesDirective());
 
         mnuDisplayBuilder.startSubMenu("mnuInapplicables", true);
-        mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItInapplicablesOn", new DisplayInapplicablesDirectiveInvocation(), true);
-        mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItInapplicablesOff", new DisplayInapplicablesDirectiveInvocation(), false);
+        mnuDisplayBuilder.addOnOffDirectiveMenuItem("mnuItInapplicablesOn", new DisplayInapplicablesDirective(), true);
+        mnuDisplayBuilder.addOnOffDirectiveMenuItem("mnuItInapplicablesOff", new DisplayInapplicablesDirective(), false);
         mnuDisplayBuilder.endSubMenu();
 
         mnuDisplayBuilder.startSubMenu("mnuInput", true);
-        mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItInputOn", new DisplayInputDirectiveInvocation(), true);
-        mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItInputOff", new DisplayInputDirectiveInvocation(), false);
+        mnuDisplayBuilder.addOnOffDirectiveMenuItem("mnuItInputOn", new DisplayInputDirective(), true);
+        mnuDisplayBuilder.addOnOffDirectiveMenuItem("mnuItInputOff", new DisplayInputDirective(), false);
         mnuDisplayBuilder.endSubMenu();
 
         mnuDisplayBuilder.startSubMenu("mnuKeywords", true);
-        mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItKeywordsOn", new DisplayKeywordsDirectiveInvocation(), true);
-        mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItKeywordsOff", new DisplayKeywordsDirectiveInvocation(), false);
+        mnuDisplayBuilder.addOnOffDirectiveMenuItem("mnuItKeywordsOn", new DisplayKeywordsDirective(), true);
+        mnuDisplayBuilder.addOnOffDirectiveMenuItem("mnuItKeywordsOff", new DisplayKeywordsDirective(), false);
         mnuDisplayBuilder.endSubMenu();
 
         mnuDisplayBuilder.startSubMenu("mnuLog", true);
-        mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItLogOn", new DisplayLogDirectiveInvocation(), true);
-        mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItLogOff", new DisplayLogDirectiveInvocation(), false);
+        mnuDisplayBuilder.addOnOffDirectiveMenuItem("mnuItLogOn", new DisplayLogDirective(), true);
+        mnuDisplayBuilder.addOnOffDirectiveMenuItem("mnuItLogOff", new DisplayLogDirective(), false);
         mnuDisplayBuilder.endSubMenu();
 
         mnuDisplayBuilder.startSubMenu("mnuNumbering", true);
-        mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItNumberingOn", new DisplayNumberingDirectiveInvocation(), true);
-        mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItNumberingOff", new DisplayNumberingDirectiveInvocation(), false);
+        mnuDisplayBuilder.addOnOffDirectiveMenuItem("mnuItNumberingOn", new DisplayNumberingDirective(), true);
+        mnuDisplayBuilder.addOnOffDirectiveMenuItem("mnuItNumberingOff", new DisplayNumberingDirective(), false);
         mnuDisplayBuilder.endSubMenu();
 
         mnuDisplayBuilder.startSubMenu("mnuScaled", true);
-        mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItScaledOn", new DisplayScaledDirectiveInvocation(), true);
-        mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItScaledOff", new DisplayScaledDirectiveInvocation(), false);
+        mnuDisplayBuilder.addOnOffDirectiveMenuItem("mnuItScaledOn", new DisplayScaledDirective(), true);
+        mnuDisplayBuilder.addOnOffDirectiveMenuItem("mnuItScaledOff", new DisplayScaledDirective(), false);
         mnuDisplayBuilder.endSubMenu();
 
         mnuDisplayBuilder.startSubMenu("mnuUnknowns", true);
-        mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItUnknownsOn", new DisplayUnknownsDirectiveInvocation(), true);
-        mnuDisplayBuilder.addOnOffDirectiveInvocationMenuItem("mnuItUnknownsOff", new DisplayUnknownsDirectiveInvocation(), false);
+        mnuDisplayBuilder.addOnOffDirectiveMenuItem("mnuItUnknownsOn", new DisplayUnknownsDirective(), true);
+        mnuDisplayBuilder.addOnOffDirectiveMenuItem("mnuItUnknownsOff", new DisplayUnknownsDirective(), false);
         mnuDisplayBuilder.endSubMenu();
 
         mnuSettings.add(mnuDisplayBuilder.getMenu());
@@ -1283,13 +1281,13 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         mnuStatusBuilder.addDirectiveMenuItem("mnuItStatusDisplay", new StatusDisplayDirective());
 
         mnuStatusBuilder.startSubMenu("mnuStatusInclude", true);
-        mnuStatusBuilder.addDirectiveInvocationMenuItem("mnuItStatusIncludeCharacters", new StatusIncludeCharactersDirectiveInvocation());
-        mnuStatusBuilder.addDirectiveInvocationMenuItem("mnuItStatusIncludeTaxa", new StatusIncludeTaxaDirectiveInvocation());
+        mnuStatusBuilder.addDirectiveMenuItem("mnuItStatusIncludeCharacters", new StatusIncludeCharactersDirective());
+        mnuStatusBuilder.addDirectiveMenuItem("mnuItStatusIncludeTaxa", new StatusIncludeTaxaDirective());
         mnuStatusBuilder.endSubMenu();
 
         mnuStatusBuilder.startSubMenu("mnuStatusExclude", true);
-        mnuStatusBuilder.addDirectiveInvocationMenuItem("mnuItStatusExcludeCharacters", new StatusExcludeCharactersDirectiveInvocation());
-        mnuStatusBuilder.addDirectiveInvocationMenuItem("mnuItStatusExcludeTaxa", new StatusExcludeTaxaDirectiveInvocation());
+        mnuStatusBuilder.addDirectiveMenuItem("mnuItStatusExcludeCharacters", new StatusExcludeCharactersDirective());
+        mnuStatusBuilder.addDirectiveMenuItem("mnuItStatusExcludeTaxa", new StatusExcludeTaxaDirective());
         mnuStatusBuilder.endSubMenu();
 
         mnuStatusBuilder.addDirectiveMenuItem("mnuItStatusFiles", new StatusFilesDirective());

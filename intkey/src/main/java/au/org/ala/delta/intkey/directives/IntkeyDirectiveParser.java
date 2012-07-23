@@ -161,7 +161,9 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
         // intkey dataset can be used with milestone release without implemented
         // directives causing
         // errors
-        Logger.log(String.format("Ignoring unrecognized directive: %s ", StringUtils.join(controlWords, " ")));
+        String message = String.format("Unrecognized command - '%s' ", StringUtils.join(controlWords, " "));
+        Logger.log(message);
+        context.getUI().displayErrorMessage(message);
     }
 
     @Override
