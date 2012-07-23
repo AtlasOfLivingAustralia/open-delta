@@ -211,7 +211,7 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
                 _vop.deleteObject(itemDesc);
             }
 
-            fireItemDeleted(item);
+            fireItemDeleted(itemNumber);
         }
     }
 
@@ -306,7 +306,7 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
 
             // Next remove the character from the master list
             _vop.getDeltaMaster().removeCharacter(characterId);
-            fireCharacterDeleted(character);
+            fireCharacterDeleted(characterNumber);
         }
     }
 

@@ -234,7 +234,11 @@ public class TableRowHeader extends JTable implements ReorderableList {
             }
 
             private int getRowIndex(DeltaDataSetChangeEvent event) {
-                return event.getItem().getItemNumber() - 1;
+            	if (event.getItem() != null) {
+            		return event.getItem().getItemNumber() - 1;
+            	} else {
+            		return (Integer) event.getExtraInformation();
+            	}
             }
 
         }

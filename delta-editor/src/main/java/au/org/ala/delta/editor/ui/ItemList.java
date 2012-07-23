@@ -82,7 +82,7 @@ public class ItemList extends SelectionList {
 			@Override
 			public void itemDeleted(DeltaDataSetChangeEvent event) {
 				int selection = getSelectedIndex();
-				int deletedItem = event.getItem().getItemNumber();
+				int deletedItem = (Integer) event.getExtraInformation();
 				fireIntervalRemoved(ItemListModel.this, deletedItem-1, deletedItem-1);
 				if (selection == deletedItem -1) {
 					selection = Math.min(selection, getSize()-1);

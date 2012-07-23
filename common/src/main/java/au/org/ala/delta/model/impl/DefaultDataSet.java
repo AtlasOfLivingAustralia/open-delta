@@ -108,12 +108,13 @@ public class DefaultDataSet extends AbstractObservableDataSet {
     @Override
     public void deleteCharacter(Character character) {
 
+    	int characterId = character.getCharacterId();
         int numCharacters = _characters.size();
         _characters.remove(character);
 
         renumberCharacters(character.getCharacterId() + 1, numCharacters, -1);
 
-        fireCharacterDeleted(character);
+        fireCharacterDeleted(characterId);
     }
 
     @Override
@@ -162,12 +163,13 @@ public class DefaultDataSet extends AbstractObservableDataSet {
     @Override
     public void deleteItem(Item item) {
 
+    	int itemId = item.getItemNumber();
         int numItems = _items.size();
         _items.remove(item);
 
         renumberItems(item.getItemNumber() + 1, numItems, -1);
 
-        fireItemDeleted(item);
+        fireItemDeleted(itemId);
     }
 
     @Override

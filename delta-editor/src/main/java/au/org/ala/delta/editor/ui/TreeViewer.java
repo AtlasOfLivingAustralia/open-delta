@@ -740,7 +740,7 @@ class CharacterTreeModel extends DefaultTreeModel implements SearchableModel<Cha
         @Override
         public void characterDeleted(DeltaDataSetChangeEvent event) {
             ContextRootNode root = (ContextRootNode) getRoot();
-            int charNumber = event.getCharacter().getCharacterId();
+            int charNumber = (Integer) event.getExtraInformation();
             CharacterTreeNode node = root.removeCharacter(charNumber);
             fireTreeNodesRemoved(this, new Object[] { root }, new int[] { charNumber - 1 }, new Object[] { node });
 

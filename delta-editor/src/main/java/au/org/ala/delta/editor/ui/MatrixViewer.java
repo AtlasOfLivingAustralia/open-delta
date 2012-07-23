@@ -79,17 +79,17 @@ public class MatrixViewer extends AbstractDeltaView {
 
 			@Override
 			public void characterAdded(DeltaDataSetChangeEvent event) {
-				restoreSelection(event);
+				restoreSelection(event.getCharacter().getCharacterId());
 			}
 
 			@Override
 			public void characterMoved(DeltaDataSetChangeEvent event) {
-				restoreSelection(event);
+				restoreSelection(event.getCharacter().getCharacterId());
 			}
 
 			@Override
 			public void characterDeleted(DeltaDataSetChangeEvent event) {
-				restoreSelection(event);
+				restoreSelection((Integer) event.getExtraInformation());
 			}
 			
 			@Override
@@ -97,9 +97,9 @@ public class MatrixViewer extends AbstractDeltaView {
 				_table.revalidate();
 			}
 
-			private void restoreSelection(DeltaDataSetChangeEvent event) {
+			private void restoreSelection(int characterId) {
 				int row = _fixedColumns.getSelectedRow();
-				int column = event.getCharacter().getCharacterId() - 1;
+				int column = characterId - 1;
 				_table.getSelectionModel().setSelectionInterval(row, row);
 				_table.getColumnModel().getSelectionModel().setSelectionInterval(column, column);
 				scrollCellToVisible(row, column);

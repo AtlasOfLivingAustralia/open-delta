@@ -33,16 +33,113 @@ public class SlotFileConsistencyTest extends TestCase {
 			attr.setValueFromString("1");
 			
 		}
-		
-//		for (int i = 0; i < 100; i += 2) {
-//			Item item1 = addItem(dataset, "Item " + i);
-//			Item item2 = addItem(dataset, "Item " + (i + 1));
-//			dataset.deleteItem(item1);
-//		}
-		
+				
 		dumpDataset(dataset);
 		dataset.close();
 				
+	}
+	
+	@Test
+	public void testSlotFile2() throws DirectiveException {
+		
+		SlotFileRepository repo = new SlotFileRepository();
+		MutableDeltaDataSet dataset = repo.newDataSet();
+		for (int i = 0; i < 100; i++) {
+			au.org.ala.delta.model.Character ch1 = addUnorderedCharacter(dataset, "character " + i, "state1_" + i, "state2_" + i, "state3_" + i );
+		}
+		
+		for (int i = 0; i < 100; ++i) {
+			Item item1 = addItem(dataset, "Item " + i);			
+		}
+		
+		for (int i = 0; i <= 25; ++i) {
+			Character ch = dataset.getCharacter(50);
+			dataset.deleteCharacter(ch);
+		}
+								
+		for (int i = 0; i <= 25; ++i) {
+			Item item = dataset.getItem(50);
+			dataset.deleteItem(item);
+		}
+		
+		for (int i = 0; i < 25; ++i) {
+			au.org.ala.delta.model.Character ch1 = addUnorderedCharacter(dataset, "character " + i, "state1_" + i, "state2_" + i, "state3_" + i );			
+		}
+		
+		for (int i = 0; i < 25; ++i) {
+			Item item1 = addItem(dataset, "Item " + i);					
+		}
+				
+		dumpDataset(dataset);
+		dataset.close();
+				
+	}
+
+	@Test
+	public void testSlotFile3() throws DirectiveException {
+		
+		SlotFileRepository repo = new SlotFileRepository();
+		MutableDeltaDataSet dataset = repo.newDataSet();
+		for (int i = 0; i < 100; i++) {
+			au.org.ala.delta.model.Character ch1 = addUnorderedCharacter(dataset, "character " + i, "state1_" + i, "state2_" + i, "state3_" + i );
+		}
+		
+		for (int i = 0; i < 100; ++i) {
+			Item item1 = addItem(dataset, "Item " + i);
+			for (int j = 1; j <= dataset.getNumberOfCharacters(); ++j) {
+				Attribute attr = dataset.addAttribute(item1.getItemNumber(), j);
+				attr.setValueFromString("1&2");
+			}
+		}
+		
+		for (int i = 0; i <= 25; ++i) {
+			Character ch = dataset.getCharacter(50);
+			dataset.deleteCharacter(ch);
+		}
+								
+		for (int i = 0; i <= 25; ++i) {
+			Item item = dataset.getItem(50);
+			dataset.deleteItem(item);
+		}
+		
+		for (int i = 0; i < 25; ++i) {
+			addUnorderedCharacter(dataset, "character " + i, "state1_" + i, "state2_" + i, "state3_" + i );			
+		}
+		
+		for (int i = 0; i < 25; ++i) {
+			addItem(dataset, "Item " + i);					
+		}
+				
+		dumpDataset(dataset);
+		dataset.close();
+				
+	}
+	
+	@Test
+	public void testSlotFile4() throws DirectiveException {
+		SlotFileRepository repo = new SlotFileRepository();
+		MutableDeltaDataSet dataset = repo.newDataSet();
+		for (int i = 0; i < 100; i++) {
+			addTextCharacter(dataset, "character " + i);
+		}
+		
+		for (int x = 0; x < 10; ++x) {
+			for (int i = 0; i < 100; i++) {
+				Character ch = dataset.getCharacter(dataset.getNumberOfCharacters());
+				dataset.deleteCharacter(ch);
+				addItem(dataset, "Item " + i);
+			}
+			
+			for (int i = 0; i < 100; i++) {
+				Item item = dataset.getItem(dataset.getMaximumNumberOfItems());
+				dataset.deleteItem(item);
+				addUnorderedCharacter(dataset, "character " + i );
+			}			
+		}
+		
+		dumpDataset(dataset);
+		dataset.close();
+
 	}
 	
 	private Item addItem(MutableDeltaDataSet dataset, String itemDesc) {
@@ -69,6 +166,7 @@ public class SlotFileConsistencyTest extends TestCase {
 	}
 	
 	private void dumpDataset(DeltaDataSet dataset) {
+		out("Dumping...");
 		for (int i = 1; i <= dataset.getNumberOfCharacters(); ++i) {
 			Character ch = dataset.getCharacter(i);
 			out("Character %d: %s", i, ch.getDescription());
