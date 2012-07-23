@@ -32,6 +32,7 @@ import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.beans.PropertyVetoException;
 
 /**
  * Allows the user to edit image settings (fonts, defaults when creating new overlays and the image path).
@@ -513,12 +514,20 @@ public class ImageSettingsDialog extends AbstractDeltaView {
 	@Action
 	public void okImageSettingsChanges() {
 		applyChanges();
-		setVisible(false);
+        try {
+            setClosed(true);
+        } catch (PropertyVetoException e) {
+        }
+
 	}
 
 	@Action
 	public void cancelImageSettingsChanges() {
-		setVisible(false);
+        try {
+            setClosed(true);
+        } catch (PropertyVetoException e) {
+        }
+
 	}
 
 	@Action

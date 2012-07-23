@@ -50,6 +50,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -303,7 +304,10 @@ public class ActionSetsDialog extends AbstractDeltaView {
 
 	@Action
 	public void doneWithActionSets() {
-		setVisible(false);
+        try {
+            setClosed(true);
+        }
+        catch (PropertyVetoException e) {}
 	}
 
 	private DirectiveFile getSelectedFile() {
