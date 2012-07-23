@@ -16,8 +16,8 @@ package au.org.ala.delta.model;
 
 public class UnorderedMultiStateCharacter extends MultiStateCharacter {
 
-	public UnorderedMultiStateCharacter(int number) {
-		super(number, CharacterType.UnorderedMultiState);
+	public UnorderedMultiStateCharacter() {
+		super(CharacterType.UnorderedMultiState);
 	}
 
 }

@@ -40,10 +40,19 @@ public class VOItemAdaptor extends ImageHolderAdaptor implements ItemData {
 	private VOItemDesc _voItemDesc;
 	private DeltaVOP _vop;
 	
-	
-	public VOItemAdaptor(DeltaVOP vop, VOItemDesc voItem, int i) {
+	public VOItemAdaptor(DeltaVOP vop, VOItemDesc voItem) {
 		_vop = vop;
 		_voItemDesc = voItem;
+	}
+	
+	@Override
+	public int getNumber() {
+		return _vop.getDeltaMaster().itemNoFromUniId(_voItemDesc.getUniId());
+	}
+
+	@Override
+	public void setNumber(int number) {
+		throw new RuntimeException("Internal Error: Attempt to set number on VOItemAdaptor!");
 	}
 	
 	public void setDescription(String itemName) {		
@@ -146,6 +155,5 @@ public class VOItemAdaptor extends ImageHolderAdaptor implements ItemData {
     public void setLinkFiles(List<Pair<String, String>> linkFiles) {
         throw new NotImplementedException();
     }
-    
    
 }

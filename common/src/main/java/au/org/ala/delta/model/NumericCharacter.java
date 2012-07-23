@@ -19,8 +19,8 @@ import org.apache.commons.lang.StringUtils;
 
 public abstract class NumericCharacter<T extends Number> extends Character{
 	
-	protected NumericCharacter(int number, CharacterType characterType) {
-		super(number, characterType);
+	protected NumericCharacter(CharacterType characterType) {
+		super(characterType);
 	}
 	
 	public String getUnits() {

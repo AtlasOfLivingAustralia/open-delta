@@ -46,25 +46,23 @@ public class DefaultDataSetFactory implements DeltaDataSetFactory {
 
 	@Override
 	public Item createItem(int number) {
-		ItemData defaultData = new DefaultItemData();
-		Item item = new Item(defaultData, number);
+		ItemData defaultData = new DefaultItemData(number);
+		Item item = new Item(defaultData);
 		
 		return item;
 	}
 	
 	@Override
 	public Item createVariantItem(Item parent, int itemNumber) {
-		ItemData defaultData = new DefaultItemData();
-		Item item = new VariantItem(parent, defaultData, itemNumber);
+		ItemData defaultData = new DefaultItemData(itemNumber);
+		Item item = new VariantItem(parent, defaultData);
 		
 		return item;
 	}
 
 	@Override
 	public Character createCharacter(CharacterType type, int number) {
-		Character character = CharacterFactory.newCharacter(type, number);
-		character.setImpl(new DefaultCharacterData());
-		
+		Character character = CharacterFactory.newCharacter(type, new DefaultCharacterData(number));		
 		return character;
 	}
 

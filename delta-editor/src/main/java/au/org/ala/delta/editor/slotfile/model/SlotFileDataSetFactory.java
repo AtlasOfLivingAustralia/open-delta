@@ -83,10 +83,9 @@ public class SlotFileDataSetFactory implements DeltaDataSetFactory {
 	 * @param number identifies the item. Items in a DeltaDataSet must have unique numbers.
 	 */
 	@Override
-	public Item createItem(int number) {
-		
+	public Item createItem(int number) {		
 		VOItemAdaptor adaptor = createSlotFileItem(number);
-		return new Item(adaptor, number);
+		return new Item(adaptor);
 	}
 
 	private VOItemAdaptor createSlotFileItem(int number) {
@@ -97,14 +96,14 @@ public class SlotFileDataSetFactory implements DeltaDataSetFactory {
 		int itemId = itemDesc.getUniId();
 		_vop.getDeltaMaster().insertItem(itemId, number);
 
-		VOItemAdaptor adaptor = new VOItemAdaptor(_vop, itemDesc, number);
+		VOItemAdaptor adaptor = new VOItemAdaptor(_vop, itemDesc);
 		return adaptor;
 	}
 	
 	@Override
 	public Item createVariantItem(Item parent, int number) {
 		VOItemAdaptor adaptor = createSlotFileItem(number);
-		return new VariantItem(parent, adaptor, number);
+		return new VariantItem(parent, adaptor);
 	}
 
 	/**
@@ -143,13 +142,10 @@ public class SlotFileDataSetFactory implements DeltaDataSetFactory {
 	 * @param number the character number of the new character.
 	 * @return a new Character that delegates to the supplied VOCharBaseDesc.
 	 */
-	public Character wrapCharacter(VOCharBaseDesc characterDesc, int number) {
-		
+	public Character wrapCharacter(VOCharBaseDesc characterDesc, int number) {		
 		CharacterType type = CharacterTypeConverter.fromCharType(characterDesc.getCharType());
-		Character character = CharacterFactory.newCharacter(type, number);
 		VOCharTextDesc textDesc = characterDesc.readCharTextInfo(0, (short) 0);
-		VOCharacterAdaptor characterAdaptor = new VOCharacterAdaptor(_vop, characterDesc, textDesc);		
-		character.setImpl(characterAdaptor);	
+		Character character = CharacterFactory.newCharacter(type, new VOCharacterAdaptor(_vop, characterDesc, textDesc));
 		return character;
 	}
 

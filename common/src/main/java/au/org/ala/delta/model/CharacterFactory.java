@@ -14,25 +14,36 @@
  ******************************************************************************/
 package au.org.ala.delta.model;
 
+import au.org.ala.delta.model.impl.CharacterData;
+
 public class CharacterFactory {
 
-	public static Character newCharacter(CharacterType type, int number) {
+	public static Character newCharacter(CharacterType type, CharacterData impl) {
+		Character ch = null;
 		switch (type) {
 			case IntegerNumeric:
-				return new IntegerCharacter(number);
+				ch = new IntegerCharacter();
+				break;
 			case OrderedMultiState:
-				return new OrderedMultiStateCharacter(number);
+				ch = new OrderedMultiStateCharacter();
+				break;
 			case RealNumeric:
-				return new RealCharacter(number);
+				ch = new RealCharacter();
+				break;
 			case Text:
-				return new TextCharacter(number);
+				ch = new TextCharacter();
+				break;
 			case UnorderedMultiState:
-				return new UnorderedMultiStateCharacter(number);
+				ch = new UnorderedMultiStateCharacter();
+				break;
 			case Unknown:
-				return new UnknownCharacter(number);
+				ch = new UnknownCharacter();
+				break;
 			default:
 				throw new RuntimeException("Unhandled character type: " + type);
 		}
+		ch.setImpl(impl);
+		return ch;
 	}
 
 }

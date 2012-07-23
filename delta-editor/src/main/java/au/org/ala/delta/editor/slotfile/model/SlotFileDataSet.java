@@ -78,8 +78,8 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
 
             int itemId = _vop.getDeltaMaster().uniIdFromItemNo(number);
             VOItemDesc itemDesc = (VOItemDesc) _vop.getDescFromId(itemId);
-            VOItemAdaptor adaptor = new VOItemAdaptor(_vop, itemDesc, number);
-            return new Item(adaptor, number);
+            VOItemAdaptor adaptor = new VOItemAdaptor(_vop, itemDesc);
+            return new Item(adaptor);
         }
     }
 
@@ -340,7 +340,6 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
         synchronized (_vop) {
             int oldNumber = character.getCharacterId();
             _vop.getDeltaMaster().moveCharacter(oldNumber, newCharacterNumber);
-            character.setCharacterNumber(newCharacterNumber);
             fireCharacterMoved(character, oldNumber);
         }
     }

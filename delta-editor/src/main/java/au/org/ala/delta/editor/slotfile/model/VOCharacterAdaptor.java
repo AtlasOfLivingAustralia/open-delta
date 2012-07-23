@@ -56,6 +56,16 @@ public class VOCharacterAdaptor extends ImageHolderAdaptor implements CharacterD
         _charDesc = charBase;
         _textDesc = textDesc;
     }
+    
+    @Override
+    public int getNumber() {
+    	return _vop.getDeltaMaster().charNoFromUniId(_charDesc.getUniId());
+    }
+    
+    public void setNumber(int number) {
+    	// NOP - numbers are managed by the VOP 
+    	throw new RuntimeException("InternalError: setNumber called on VOCharacterAdapter");
+    }
 
     @Override
     public String getDescription() {

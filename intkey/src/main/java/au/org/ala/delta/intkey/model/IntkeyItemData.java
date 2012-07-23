@@ -26,7 +26,11 @@ public class IntkeyItemData extends DefaultItemData {
     // Intkey has to read this data off disk using methods provided 
     // in the IntkeyDataset class.
 
-    @Override
+    public IntkeyItemData(int number) {
+		super(number);
+	}
+
+	@Override
     public List<Attribute> getAttributes() {
         throw new UnsupportedOperationException();
     }

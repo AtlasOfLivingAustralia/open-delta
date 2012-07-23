@@ -18,8 +18,8 @@ import java.util.List;
 
 public class RealCharacter extends NumericCharacter<Double> {
 
-    public RealCharacter(int number) {
-        super(number, CharacterType.RealNumeric);
+    public RealCharacter() {
+        super(CharacterType.RealNumeric);
     }
 
     public List<Float> getKeyStateBoundaries() {

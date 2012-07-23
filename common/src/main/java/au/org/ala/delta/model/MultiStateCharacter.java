@@ -23,8 +23,8 @@ import java.util.List;
  */
 public abstract class MultiStateCharacter extends Character {
 
-	public MultiStateCharacter(int number, CharacterType characterType) {
-		super(number, characterType);
+	public MultiStateCharacter(CharacterType characterType) {
+		super(characterType);
 	}
 
 	public int getNumberOfStates() {

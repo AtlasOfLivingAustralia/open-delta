@@ -14,6 +14,8 @@
  ******************************************************************************/
 package au.org.ala.delta.ui.image.overlay;
 
+import junit.framework.TestCase;
+
 import org.jdesktop.application.ResourceMap;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,8 +29,6 @@ import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.OverlayLocation;
 import au.org.ala.delta.model.image.OverlayType;
 
-import junit.framework.TestCase;
-
 /**
  * Tests the OverlayTextBuilder class.
  */
@@ -39,8 +39,9 @@ public class OverlayTextBuilderTest extends TestCase {
 	
 	class ItemStub extends Item {
 		private String _description;
+		private int _number;
 		public ItemStub(int itemNumber, String description) {
-			super(itemNumber);
+			_number = itemNumber;
 			_description = description;
 		}
 		
@@ -53,13 +54,27 @@ public class OverlayTextBuilderTest extends TestCase {
 		public boolean isVariant() {
 			return false;
 		}
+		
+		@Override
+		public int getItemNumber() {
+			return  _number;
+		}
+		
+		@Override
+		public void setItemNumber(int number) {
+			_number = number;
+		}
+		
 	}
 	
 	class MultiStateCharacterStub extends MultiStateCharacter {
 		private String _description;
-		public MultiStateCharacterStub(int charNumber, String description) {
-			super(charNumber, CharacterType.Text);
+		private int _number;
+		
+		public MultiStateCharacterStub(int number, String description) {
+			super(CharacterType.Text);
 			_description = description;
+			_number = number;
 		}
 		
 		@Override
@@ -71,13 +86,26 @@ public class OverlayTextBuilderTest extends TestCase {
 		public String getState(int stateNum) {
 			return _description;
 		}
+		
+		@Override
+		public int getCharacterId() {
+			return _number;
+		}
+		
+		@Override
+		public void setCharacterNumber(int number) {
+			_number = number;
+		}
 	}
 	
 	class NumericCharacterStub<T extends Number> extends NumericCharacter<T> {
 		private String _units;
-		public NumericCharacterStub(int charNumber, String units) {
-			super(charNumber, CharacterType.IntegerNumeric);
+		private int _number;
+		
+		public NumericCharacterStub(int number, String units) {
+			super(CharacterType.IntegerNumeric);
 			_units = units;
+			_number = number;
 		}
 		
 		@Override
@@ -89,6 +117,17 @@ public class OverlayTextBuilderTest extends TestCase {
 		public String getUnits() {
 			return _units;
 		}
+		
+		@Override
+		public int getCharacterId() {
+			return _number;
+		}
+		
+		@Override
+		public void setCharacterNumber(int number) {
+			_number = number;
+		}
+		
 	}
 	
 	@Before
@@ -139,6 +178,7 @@ public class OverlayTextBuilderTest extends TestCase {
 		_overlay.overlayText = "Additional text";
 		_overlay.type = OverlayType.OLFEATURE;
 		MultiStateCharacterStub character = new MultiStateCharacterStub(1, "char description <Comment>");
+		character.setCharacterNumber(1);
 		
 		// Defaults. (no comments, use item description).
 		String text = _builder.getText(_overlay, character);

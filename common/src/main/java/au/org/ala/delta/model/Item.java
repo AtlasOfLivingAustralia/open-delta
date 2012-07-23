@@ -33,33 +33,24 @@ import au.org.ala.delta.util.Pair;
 public class Item implements AttributeObserver, ImageObserver, Illustratable, Comparable<Item> {
 
     private ItemData _impl;
-
-	private int _itemNumber;
 	
 	private List<ItemObserver> _observers;
 	
-	public Item(ItemData impl, int itemNum) {
+	public Item(ItemData impl) {
 		setItemData(impl);
-		_itemNumber = itemNum;
 	}
 	
-	public Item(int itemId) {
-		_itemNumber = itemId;
+	public Item() {	
 	}
 	
 	public int getItemNumber() {
-		return _itemNumber;
+		return _impl.getNumber();
 	}
 	
-	/**
-	 * This needs to be done when items are inserted or deleted - the remaining items
-	 * may need to be renumbered to account for the change.
-	 * @param number the new number for this item.
-	 */
 	public void setItemNumber(int number) {
-		_itemNumber = number;
+		_impl.setNumber(number);
 	}
-
+	
 	public void setDescription(String description) {
 		_impl.setDescription(description);
 		notifyObservers();
@@ -248,14 +239,14 @@ public class Item implements AttributeObserver, ImageObserver, Illustratable, Co
 			return false;
 		}
 		
-		return _itemNumber == ((Item)item).getItemNumber();
+		return getItemNumber() == ((Item)item).getItemNumber();
 	}
 	
 	/**
 	 * The item number is unique so makes a decent hashcode.
 	 */
 	public int hashCode() {
-		return _itemNumber;
+		return getItemNumber();
 	}
 
     @Override
@@ -265,6 +256,6 @@ public class Item implements AttributeObserver, ImageObserver, Illustratable, Co
     
     @Override
     public String toString() {
-        return _itemNumber + ". " + getDescription();
+        return getItemNumber() + ". " + getDescription();
     }
 }

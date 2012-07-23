@@ -41,6 +41,22 @@ public class DefaultItemData implements ItemData {
     private Map<Character, Attribute> _attributes = new HashMap<Character, Attribute>();
     private List<Image> _images = new ArrayList<Image>();
     
+    private int _itemNumber;
+    
+    public DefaultItemData(int number) {
+    	_itemNumber = number;
+    }
+    
+    @Override
+    public int getNumber() {
+    	return _itemNumber;
+    }
+    
+    @Override
+    public void setNumber(int number) {
+    	_itemNumber = number;
+    }
+    
     @Override
     public String getDescription() {
         return _description;

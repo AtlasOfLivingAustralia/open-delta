@@ -28,8 +28,8 @@ public class VariantItem extends Item {
 	/** The Item to retrieve uncoded attributes from */
 	private Item _parent;
 	
-	public VariantItem(Item parent, ItemData impl, int itemNumber) {
-		super(impl, itemNumber);
+	public VariantItem(Item parent, ItemData impl) {
+		super(impl);
 		_parent = parent;
 	}
 	

@@ -54,10 +54,23 @@ public class DefaultCharacterData implements CharacterData {
     private boolean _nonAutoCc;
     private List<CharacterDependency> _dependentCharacters = new ArrayList<CharacterDependency>();
     private List<CharacterDependency> _controllingCharacters = new ArrayList<CharacterDependency>();
+    private int _number;
 
     // For INTKEY only - in intkey datasets some integer characters are
     // represented as real characters
     private boolean isIntegerRepresentedAsReal;
+    
+    public DefaultCharacterData(int number) {
+    	_number = number;
+    }
+    
+    public int getNumber() {
+    	return _number;
+    }
+    
+    public void setNumber(int number) {
+    	_number = number;
+    }
 
     private List<Image> _images = new ArrayList<Image>();
 

@@ -22,8 +22,8 @@ package au.org.ala.delta.model;
  */
 public class UnknownCharacter extends Character {
 
-	protected UnknownCharacter(int number) {
-		super(number, CharacterType.Unknown);
+	protected UnknownCharacter() {
+		super(CharacterType.Unknown);
 	}
 
 }

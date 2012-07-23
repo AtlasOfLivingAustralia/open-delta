@@ -23,6 +23,10 @@ import au.org.ala.delta.util.Pair;
 
 public interface ItemData {
 	
+	int getNumber();
+	
+	void setNumber(int number);
+	
 	String getDescription();
 	
 	void setDescription(String description);

@@ -16,8 +16,8 @@ package au.org.ala.delta.model;
 
 public class OrderedMultiStateCharacter extends MultiStateCharacter {
 
-	public OrderedMultiStateCharacter(int number) {
-		super(number, CharacterType.OrderedMultiState);
+	public OrderedMultiStateCharacter() {
+		super(CharacterType.OrderedMultiState);
 	}
 
 }

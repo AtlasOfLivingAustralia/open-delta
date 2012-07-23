@@ -26,16 +26,13 @@ import au.org.ala.delta.model.observer.CharacterObserver;
 import au.org.ala.delta.model.observer.ImageObserver;
 
 public abstract class Character implements Illustratable, Comparable<Character>, ImageObserver {
-
-    private int _number;
     
     protected CharacterData _impl;
     private CharacterType _characterType;
     private List<CharacterObserver> _observers;
 
-    protected Character(int number, CharacterType characterType) {
+    protected Character(CharacterType characterType) {
         _characterType = characterType;
-        _number = number;
     }
 
     public CharacterType getCharacterType() {
@@ -43,7 +40,7 @@ public abstract class Character implements Illustratable, Comparable<Character>,
     }
 
     public int getCharacterId() {
-        return _number;
+        return _impl.getNumber();
     }
     
     /**
@@ -52,7 +49,7 @@ public abstract class Character implements Illustratable, Comparable<Character>,
 	 * @param number the new number for this Character.
 	 */
 	public void setCharacterNumber(int number) {
-		_number = number;
+		_impl.setNumber(number);
 	}
 
     public String getDescription() {
@@ -193,7 +190,7 @@ public abstract class Character implements Illustratable, Comparable<Character>,
 
     @Override
     public String toString() {
-        return _number + ". " + getDescription();
+        return getImpl().getNumber() + ". " + getDescription();
     }
 
     public CharacterData getImpl() {
@@ -322,14 +319,14 @@ public abstract class Character implements Illustratable, Comparable<Character>,
 			return false;
 		}		
 		Character other = (Character) character;		
-		return _number == other._number && _characterType == other._characterType;
+		return getCharacterId() == other.getCharacterId() && _characterType == other._characterType;
 	}
 	
 	/**
 	 * The character number is unique so makes a decent hashcode.
 	 */
 	public int hashCode() {
-		return _number;
+		return getCharacterId();
 	}
 	
     @Override

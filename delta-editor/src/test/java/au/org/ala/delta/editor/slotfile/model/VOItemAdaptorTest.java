@@ -103,8 +103,7 @@ public class VOItemAdaptorTest extends DeltaTestCase {
 	}
 	
 	protected VOItemAdaptor getItemAdaptor(VOItemDesc desc) {
-		int itemNumber = _vop.getDeltaMaster().itemNoFromUniId(desc.getUniId());
-		return new VOItemAdaptor(_vop, desc, itemNumber);
+		return new VOItemAdaptor(_vop, desc);
 	}
 	
 	protected VOItemAdaptor getItemAdaptor(int itemNumber) {

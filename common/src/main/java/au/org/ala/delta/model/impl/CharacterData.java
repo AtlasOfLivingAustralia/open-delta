@@ -22,6 +22,10 @@ import au.org.ala.delta.model.Item;
 
 public interface CharacterData extends Illustratable {
 	
+	int getNumber();
+	
+	void setNumber(int number);
+	
 	String getDescription();
 	
 	boolean isExclusive();

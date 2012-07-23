@@ -356,29 +356,28 @@ public final class IntkeyDatasetFileReader {
             int charType = Math.abs(charTypesList.get(i));
 
             au.org.ala.delta.model.Character newChar = null;
+            CharacterData impl = new DefaultCharacterData(i + 1);
+
 
             switch (charType) {
             case 1:
-                newChar = CharacterFactory.newCharacter(CharacterType.UnorderedMultiState, i + 1);
+                newChar = CharacterFactory.newCharacter(CharacterType.UnorderedMultiState, impl);
                 break;
             case 2:
-                newChar = CharacterFactory.newCharacter(CharacterType.OrderedMultiState, i + 1);
+                newChar = CharacterFactory.newCharacter(CharacterType.OrderedMultiState, impl);
                 break;
             case 3:
-                newChar = CharacterFactory.newCharacter(CharacterType.IntegerNumeric, i + 1);
+                newChar = CharacterFactory.newCharacter(CharacterType.IntegerNumeric, impl);
                 break;
             case 4:
-                newChar = CharacterFactory.newCharacter(CharacterType.RealNumeric, i + 1);
+                newChar = CharacterFactory.newCharacter(CharacterType.RealNumeric, impl);
                 break;
             case 5:
-                newChar = CharacterFactory.newCharacter(CharacterType.Text, i + 1);
+                newChar = CharacterFactory.newCharacter(CharacterType.Text, impl);
                 break;
             default:
                 throw new RuntimeException("Unrecognized character type");
             }
-
-            CharacterData impl = new DefaultCharacterData();
-            newChar.setImpl(impl);
 
             // A char type of -4 indicates that the character is an integer
             // represented as a real.
@@ -758,8 +757,8 @@ public final class IntkeyDatasetFileReader {
         int numItems = itemFileHeader.getNItem();
 
         for (int i = 0; i < numItems; i++) {
-            ItemData itemData = new IntkeyItemData();
-            Item item = new Item(itemData, i + 1);
+            ItemData itemData = new IntkeyItemData(i + 1);
+            Item item = new Item(itemData);
             taxa.add(item);
         }
 
