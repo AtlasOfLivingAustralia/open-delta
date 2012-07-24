@@ -14,21 +14,21 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile.model;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.junit.Test;
-
 import au.org.ala.delta.DeltaTestCase;
 import au.org.ala.delta.model.CharacterType;
-import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.TextAttribute;
 import au.org.ala.delta.model.TextCharacter;
+import org.junit.Test;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Tests the SlotFileDataSet class.
@@ -53,12 +53,12 @@ public class SlotFileDataSetTest  extends DeltaTestCase {
 		textChar.setDescription(description);
 		textChar.setMandatory(mandatory);
 		textChar.setNotes(notes);
-		
-		File temp = File.createTempFile("test", ".dlt");
-		_repo.saveAsName(_dataSet, temp.getAbsolutePath(), true, null);
+
+        String fileName = tempFileName();
+		_repo.saveAsName(_dataSet, fileName, true, null);
 		_dataSet.close();
 	
-		_dataSet = (SlotFileDataSet)_repo.findByName(temp.getAbsolutePath(), null);
+		_dataSet = (SlotFileDataSet)_repo.findByName(fileName, null);
 		
 		int number = textChar.getCharacterId();
 		textChar = (TextCharacter)_dataSet.getCharacter(number);
@@ -161,11 +161,11 @@ public class SlotFileDataSetTest  extends DeltaTestCase {
 		TextAttribute textAttr = (TextAttribute) _dataSet.addAttribute(item.getItemNumber(), textChar.getCharacterId());
 		textAttr.setText(attributeText);
 		
-		File temp = File.createTempFile("test", ".dlt");
-		_repo.saveAsName(_dataSet, temp.getAbsolutePath(), true, null);
+		String fileName = tempFileName();
+        _repo.saveAsName(_dataSet, fileName, true, null);
 		_dataSet.close();
 	
-		_dataSet = (SlotFileDataSet)_repo.findByName(temp.getAbsolutePath(), null);
+		_dataSet = (SlotFileDataSet)_repo.findByName(fileName, null);
 		
 		item = _dataSet.getItem(item.getItemNumber());
 		assertEquals(description, item.getDescription());
@@ -474,5 +474,13 @@ public class SlotFileDataSetTest  extends DeltaTestCase {
 		
 		
 	}
+
+    private String tempFileName() throws IOException {
+        File temp = File.createTempFile("test", ".dlt");
+        String name = temp.getAbsolutePath();
+        temp.delete();
+
+        return name;
+    }
 	
 }
