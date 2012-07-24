@@ -148,14 +148,9 @@ public class SlotFileConsistencyTest extends TestCase {
 			
 			out("Consistency Check 1");
 			((SlotFileDataSet) dataset).consistencyCheck();
-			
-			File f = new File("testdata");
-			if (f.exists()) {
-				f.delete();
-			}
-			
+						
 			out("Saving dataset");
-			repo.saveAsName(dataset, "testdata", null);
+			repo.saveAsName(dataset, "testdata", true, null);
 			dataset.close();
 			out("Reloading dataset");
 			dataset = repo.findByName("testdata", null);

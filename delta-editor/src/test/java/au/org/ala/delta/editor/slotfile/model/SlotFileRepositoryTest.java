@@ -83,7 +83,7 @@ public class SlotFileRepositoryTest {
 			copy = File.createTempFile("SlotFileRepositoryTest", ".dlt");
 			System.out.println(copy.getAbsolutePath());
 			
-			_slotFileRepository.saveAsName(data, copy.getAbsolutePath(), null);
+			_slotFileRepository.saveAsName(data, copy.getAbsolutePath(), true, null);
 			System.out.println(testFile.getAbsolutePath());
 			
 			data.close();

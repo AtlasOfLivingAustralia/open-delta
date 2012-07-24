@@ -54,11 +54,17 @@ public class SlotFileRepository implements DeltaDataSetRepository {
 	 * @see au.org.ala.delta.model.DeltaDataSetRepository#save(au.org.ala.delta.model.MutableDeltaDataSet)
 	 */
 	@Override
-	public void saveAsName(MutableDeltaDataSet dataSet, String name, IProgressObserver observer) {
+	public void saveAsName(MutableDeltaDataSet dataSet, String name, boolean overwriteExisting, IProgressObserver observer) {
 		
 		File f = new File(name);
 		if (f.exists()) {
-			throw new RuntimeException("File already exists! " + f.getAbsolutePath());
+			if (!overwriteExisting) {
+				throw new RuntimeException("File already exists! " + f.getAbsolutePath());
+			} else {
+				if (!f.delete()) {
+					throw new RuntimeException("Could not overwrite existing file: " + f.getAbsolutePath());					
+				}
+			}
 		}
 		
 		SlotFile newFile = new SlotFile(name, BinFileMode.FM_NEW);

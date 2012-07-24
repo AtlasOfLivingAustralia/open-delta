@@ -25,7 +25,7 @@ public interface DeltaDataSetRepository {
 	
 	public MutableDeltaDataSet findByName(String name, IProgressObserver observer);
 	
-	public void saveAsName(MutableDeltaDataSet dataSet, String name, IProgressObserver observer);
+	public void saveAsName(MutableDeltaDataSet dataSet, String name, boolean overwriteExisting, IProgressObserver observer);
 	
 	public MutableDeltaDataSet newDataSet();
 }

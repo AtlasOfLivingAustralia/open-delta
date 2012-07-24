@@ -55,7 +55,7 @@ public class SlotFileDataSetTest  extends DeltaTestCase {
 		textChar.setNotes(notes);
 		
 		File temp = File.createTempFile("test", ".dlt");
-		_repo.saveAsName(_dataSet, temp.getAbsolutePath(), null);
+		_repo.saveAsName(_dataSet, temp.getAbsolutePath(), true, null);
 		_dataSet.close();
 	
 		_dataSet = (SlotFileDataSet)_repo.findByName(temp.getAbsolutePath(), null);
@@ -162,7 +162,7 @@ public class SlotFileDataSetTest  extends DeltaTestCase {
 		textAttr.setText(attributeText);
 		
 		File temp = File.createTempFile("test", ".dlt");
-		_repo.saveAsName(_dataSet, temp.getAbsolutePath(), null);
+		_repo.saveAsName(_dataSet, temp.getAbsolutePath(), true, null);
 		_dataSet.close();
 	
 		_dataSet = (SlotFileDataSet)_repo.findByName(temp.getAbsolutePath(), null);
@@ -283,7 +283,7 @@ public class SlotFileDataSetTest  extends DeltaTestCase {
 		
 		// Save and load to ensure it saves correctly.
 		File temp = newTempFile();
-		_repo.saveAsName(dataSet, temp.getAbsolutePath(), null);
+		_repo.saveAsName(dataSet, temp.getAbsolutePath(), true, null);
 		dataSet.close();
 	
 		dataSet = (SlotFileDataSet)_repo.findByName(temp.getAbsolutePath(), null);

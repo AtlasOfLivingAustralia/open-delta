@@ -38,7 +38,7 @@ public class TextFileDataSetRepository implements DeltaDataSetRepository {
         throw new UnsupportedOperationException("Save is not supported by this implementation");
     }
     @Override
-    public void saveAsName(MutableDeltaDataSet dataSet, String name, IProgressObserver observer) {
+    public void saveAsName(MutableDeltaDataSet dataSet, String name, boolean overwriteExisting, IProgressObserver observer) {
         throw new UnsupportedOperationException("Save is not supported by this implementation");
     }
 
