@@ -563,9 +563,15 @@ public class DeltaEditor extends InternalFrameApplication implements PreferenceC
 		@Override
 		protected void succeeded(AbstractObservableDataSet result) {
 
-			EditorPreferences.addFileToMRU(_deltaFile.getAbsolutePath());
-			_activeController = createController(result);
-			newTree();
+            try {
+			    EditorPreferences.addFileToMRU(_deltaFile.getAbsolutePath());
+			    _activeController = createController(result);
+			    newTree();
+            }
+            catch (Throwable e) {
+
+                failed(e);
+            }
 		}
 
 		/**
@@ -573,6 +579,7 @@ public class DeltaEditor extends InternalFrameApplication implements PreferenceC
 		 */
 		@Override
 		protected void failed(Throwable cause) {
+
 			JOptionPane.showMessageDialog(getMainFrame(), cause.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
 		}
 
