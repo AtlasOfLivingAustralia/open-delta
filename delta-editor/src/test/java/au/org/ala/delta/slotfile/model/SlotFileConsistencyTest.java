@@ -1,9 +1,14 @@
 package au.org.ala.delta.slotfile.model;
 
+import java.io.File;
+
+import junit.framework.TestCase;
+
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 
 import au.org.ala.delta.directives.validation.DirectiveException;
+import au.org.ala.delta.editor.slotfile.model.SlotFileDataSet;
 import au.org.ala.delta.editor.slotfile.model.SlotFileRepository;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
@@ -13,7 +18,6 @@ import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.UnorderedMultiStateCharacter;
-import junit.framework.TestCase;
 
 public class SlotFileConsistencyTest extends TestCase {
 	
@@ -23,6 +27,7 @@ public class SlotFileConsistencyTest extends TestCase {
 		SlotFileRepository repo = new SlotFileRepository();
 		MutableDeltaDataSet dataset = repo.newDataSet();
 		for (int i = 0; i < 100; i += 2) {
+			System.out.println(i);
 			au.org.ala.delta.model.Character ch1 = addUnorderedCharacter(dataset, "character " + i, "state1_" + i, "state2_" + i, "state3_" + i );
 			au.org.ala.delta.model.Character ch2 = addUnorderedCharacter(dataset, "character " + (i+1), "state1_" + (i+1), "state2_" + (i+1), "state3_" + (i+1));
 			dataset.deleteCharacter(ch1);
@@ -31,7 +36,7 @@ public class SlotFileConsistencyTest extends TestCase {
 			dataset.deleteItem(item1);					
 			Attribute attr = dataset.addAttribute(ch2.getCharacterId(), item2.getItemNumber());
 			attr.setValueFromString("1");
-			
+			((SlotFileDataSet) dataset).consistencyCheck();
 		}
 				
 		dumpDataset(dataset);
@@ -123,18 +128,40 @@ public class SlotFileConsistencyTest extends TestCase {
 			addTextCharacter(dataset, "character " + i);
 		}
 		
+		for (int i = 0; i < 100; i++) {
+			addItem(dataset, "Item " + i);
+		}
+		
 		for (int x = 0; x < 10; ++x) {
+			
+			for (int i = 0; i < 100; i++) {
+				Item item = dataset.getItem(dataset.getMaximumNumberOfItems());
+				dataset.deleteItem(item);
+				addUnorderedCharacter(dataset, "character " + i );
+			}
+			
 			for (int i = 0; i < 100; i++) {
 				Character ch = dataset.getCharacter(dataset.getNumberOfCharacters());
 				dataset.deleteCharacter(ch);
 				addItem(dataset, "Item " + i);
 			}
 			
-			for (int i = 0; i < 100; i++) {
-				Item item = dataset.getItem(dataset.getMaximumNumberOfItems());
-				dataset.deleteItem(item);
-				addUnorderedCharacter(dataset, "character " + i );
-			}			
+			out("Consistency Check 1");
+			((SlotFileDataSet) dataset).consistencyCheck();
+			
+			File f = new File("testdata");
+			if (f.exists()) {
+				f.delete();
+			}
+			
+			out("Saving dataset");
+			repo.saveAsName(dataset, "testdata", null);
+			dataset.close();
+			out("Reloading dataset");
+			dataset = repo.findByName("testdata", null);
+			
+			out("Consistency Check 2");
+			((SlotFileDataSet) dataset).consistencyCheck();
 		}
 		
 		dumpDataset(dataset);

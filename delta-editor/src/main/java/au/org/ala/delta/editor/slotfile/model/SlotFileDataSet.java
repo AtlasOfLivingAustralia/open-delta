@@ -64,6 +64,10 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
     public DeltaVOP getVOP() {
         return _vop;
     }
+    
+    public void consistencyCheck() {
+    	_vop.consistencyCheck();
+    }
 
     private SlotFileDataSetFactory getFactory() {
         return (SlotFileDataSetFactory) _factory;
@@ -305,8 +309,13 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
             }
 
             // Next remove the character from the master list
-            _vop.getDeltaMaster().removeCharacter(characterId);
-            fireCharacterDeleted(characterNumber);
+            if (_vop.getDeltaMaster().removeCharacter(characterId)) {
+            	_vop.deleteObject(charDesc);
+                fireCharacterDeleted(characterNumber);                
+            } else {
+            	throw new RuntimeException("Internal Error: Failed to delete character " + characterNumber);
+            }
+            
         }
     }
 

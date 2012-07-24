@@ -44,6 +44,33 @@ public class DeltaVOP extends VOP {
 	public DeltaVOP(String filename, boolean readonly) {
 		super(filename, readonly, null);
 	}
+	
+	public void consistencyCheck() {
+		// Go through the finder map, and check that everything item and character exists in the delta master...
+		for (Integer uid : getFinderMap().keySet()) {
+			VOAnyDesc obj = getFinderMap().get(uid);
+			if (obj instanceof VOCharBaseDesc) {
+				int charNo = _deltaMaster.charNoFromUniId(uid);
+				
+				if (charNo <= 0) {
+					VOCharBaseDesc ch = (VOCharBaseDesc) obj;
+					int charDescId = ch.readCharTextInfo().get(0).charDesc;
+					VOCharTextDesc t = (VOCharTextDesc) this.getDescFromId(charDescId);
+					if (t != null) {
+						System.err.println(t.readFeatureText(TextType.ANSI));
+					}
+					
+					throw new RuntimeException("Inconsistent SlotFile - Character UID " + uid + " exists in finder map, but not in master character list");
+				}				
+			} else if (obj instanceof VOItemDesc) {
+				int itemNo = _deltaMaster.itemNoFromUniId(uid);
+				if (itemNo <= 0) {
+					throw new RuntimeException("Inconsistent SlotFile - Item UID " + uid + " exists in finder map, but not in master item list");
+				}								
+			}
+		}
+		
+	}
 
 	public VODeltaMasterDesc getDeltaMaster() {
 		return _deltaMaster;

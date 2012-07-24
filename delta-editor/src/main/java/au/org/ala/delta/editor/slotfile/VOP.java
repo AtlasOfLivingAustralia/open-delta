@@ -47,6 +47,10 @@ public class VOP {
 		open(filename, readonly, useIds);
 	}
 	
+	protected Map<Integer, VOAnyDesc> getFinderMap() {
+		return _finderMap;
+	}
+	
 	public void open(String filename, boolean readonly, int[] useIds) {
 		_useIds = useIds;
 		BinFileMode mode = readonly ? BinFileMode.FM_READONLY
@@ -127,7 +131,6 @@ public class VOP {
 	// return the removed desc or NULL if not found
 	//
 	protected VOAnyDesc removeDesc(VOAnyDesc desc) {
-
 		// TODO the semantics of the existing code is a little different - 
 		// because the _finderMap is a multimap it allows duplicate keys, in which case this
 		// method will only remove the matching VOAnyDesc.  In our case we only allow one per unique id
@@ -378,7 +381,7 @@ public class VOP {
 		for (int i : uids) {
 	      
 	        if (_finderMap.containsKey(i)) {
-	       
+	        		
 	            VOAnyDesc d = _finderMap.get(i);
 	            deleteObjectR(d);
 	        }

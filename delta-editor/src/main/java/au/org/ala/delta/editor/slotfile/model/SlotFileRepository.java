@@ -14,12 +14,14 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile.model;
 
+import java.io.File;
+
 import au.org.ala.delta.editor.DeltaFileReader;
 import au.org.ala.delta.editor.slotfile.DeltaVOP;
 import au.org.ala.delta.editor.slotfile.SlotFile;
 import au.org.ala.delta.io.BinFileMode;
-import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.DeltaDataSetRepository;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.util.IProgressObserver;
 
 /**
@@ -53,6 +55,11 @@ public class SlotFileRepository implements DeltaDataSetRepository {
 	 */
 	@Override
 	public void saveAsName(MutableDeltaDataSet dataSet, String name, IProgressObserver observer) {
+		
+		File f = new File(name);
+		if (f.exists()) {
+			throw new RuntimeException("File already exists! " + f.getAbsolutePath());
+		}
 		
 		SlotFile newFile = new SlotFile(name, BinFileMode.FM_NEW);
 		getVOP(dataSet).commit(newFile);
