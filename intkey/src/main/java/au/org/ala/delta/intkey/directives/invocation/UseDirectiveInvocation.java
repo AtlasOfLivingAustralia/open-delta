@@ -258,6 +258,7 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
         _stringRepresentationBuilder.append(StringUtils.join(_stringRepresentationParts, " "));
 
+        context.appendToLog("*" +_stringRepresentationBuilder.toString());
         context.specimenUpdateComplete();
         return true;
     }
@@ -466,11 +467,10 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
                 context.setSpecimenAttributeForCharacter(cc, attr);
             }
 
-            // TODO output USEd controlling characters directly to the log
+            // output USEd controlling characters directly to the log
             // window
-            // set the "used type" - by user or auto for the controlling
-            // character
-
+            
+            context.appendToLog(MessageFormat.format("    *USE {0},{1}", cc.getCharacterId(), StringUtils.join(applicableStates, "/")));
         }
 
         return true;

@@ -17,6 +17,7 @@ package au.org.ala.delta.intkey.directives.invocation;
 import java.util.Map;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Character;
 
 public class SetReliabilitiesDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
@@ -44,6 +45,9 @@ public class SetReliabilitiesDirectiveInvocation extends BasicIntkeyDirectiveInv
             context.getUI().handleUpdateAll();
         }
 
+        // Write a message to the log
+        context.appendToLog(UIUtils.getResourceString("ReliabilitiesSet.log"));
+        
         return true;
     }
 }

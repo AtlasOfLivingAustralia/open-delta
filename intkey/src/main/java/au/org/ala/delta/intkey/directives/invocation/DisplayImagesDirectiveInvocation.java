@@ -86,6 +86,8 @@ public class DisplayImagesDirectiveInvocation extends BasicIntkeyDirectiveInvoca
 
         int imgCount = 0;
 
+        boolean missingImages = false;
+
         for (Character ch : characters) {
             List<Image> images = ch.getImages();
             for (Image image : images) {
@@ -94,6 +96,7 @@ public class DisplayImagesDirectiveInvocation extends BasicIntkeyDirectiveInvoca
                 URL fileURL = imgSettings.findFileOnResourcePath(fileName, true);
                 if (fileURL == null) {
                     builder.appendText(UIUtils.getResourceString("MissingCharactersList.CharacterImageFileNotFound", fileName, ch.getCharacterId()));
+                    missingImages = true;
                 }
             }
         }
@@ -106,6 +109,7 @@ public class DisplayImagesDirectiveInvocation extends BasicIntkeyDirectiveInvoca
                 URL fileURL = imgSettings.findFileOnResourcePath(fileName, true);
                 if (fileURL == null) {
                     builder.appendText(UIUtils.getResourceString("MissingCharactersList.TaxonImageFileNotFound", fileName, _itemFormatter.formatItemDescription(taxon)));
+                    missingImages = true;
                 }
             }
         }
@@ -113,6 +117,8 @@ public class DisplayImagesDirectiveInvocation extends BasicIntkeyDirectiveInvoca
         // Display message if there are no images
         if (imgCount == 0) {
             builder.appendText(UIUtils.getResourceString("MissingImageList.NoImages"));
+        } else {
+            builder.appendText(UIUtils.getResourceString("MissingImageList.AllPresent"));
         }
     }
 

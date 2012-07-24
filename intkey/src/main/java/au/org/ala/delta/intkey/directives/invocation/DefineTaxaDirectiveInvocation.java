@@ -18,14 +18,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
-
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.Item;
 
 public class DefineTaxaDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
-
-    public static final String LABEL = "DEFINE TAXA";
 
     private String keyword;
     private List<Item> taxa;
@@ -45,13 +41,8 @@ public class DefineTaxaDirectiveInvocation extends BasicIntkeyDirectiveInvocatio
             taxaNumbers.add(taxon.getItemNumber());
         }
 
-        context.addTaxaKeyword(keyword, taxaNumbers);
+        context.setTaxaKeyword(keyword, taxaNumbers);
         return true;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("%s %s %s", LABEL, keyword, StringUtils.join(taxa, " "));
     }
 
 }

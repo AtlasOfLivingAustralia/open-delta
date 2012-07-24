@@ -16,11 +16,13 @@ public class LongRunningDirectiveSwingWorker extends SwingWorker<Object, String>
     private IntkeyContext _context;
     private IntkeyUI _appUI;
     private int _executedDirectivesIndex;
+    private int _logInsertionIndex;
 
-    public LongRunningDirectiveSwingWorker(LongRunningIntkeyDirectiveInvocation<?> invoc, IntkeyContext context, IntkeyUI ui, int executedDirectivesIndex) {
+    public LongRunningDirectiveSwingWorker(LongRunningIntkeyDirectiveInvocation<?> invoc, IntkeyContext context, IntkeyUI ui, int executedDirectivesIndex, int logInsertionIndex) {
         _invoc = invoc;
         _context = context;
         _executedDirectivesIndex = executedDirectivesIndex;
+        _logInsertionIndex = logInsertionIndex;
         _appUI = ui;
     }
 
@@ -68,6 +70,7 @@ public class LongRunningDirectiveSwingWorker extends SwingWorker<Object, String>
         } catch (Exception ex) {
             ex.printStackTrace();
             _appUI.displayErrorMessage(ex.getMessage());
+            _context.handleDirectiveExecutionFailed(_invoc, _logInsertionIndex);
         }
     }
 

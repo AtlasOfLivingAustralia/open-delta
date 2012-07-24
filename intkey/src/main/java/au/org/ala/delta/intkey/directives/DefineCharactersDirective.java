@@ -31,7 +31,7 @@ public class DefineCharactersDirective extends NewIntkeyDirective {
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
         arguments.add(new StringArgument("keyword", "Enter keyword", null, true));
-        arguments.add(new CharacterListArgument("characters", null, false, false));
+        arguments.add(new CharacterListArgument("characters", null, false, true));
         return arguments;
     }
 

@@ -40,7 +40,7 @@ public class DefineNamesDirectiveInvocation extends BasicIntkeyDirectiveInvocati
         }
 
         try {
-            context.addTaxaKeyword(_keyword, taxaNumbers);
+            context.setTaxaKeyword(_keyword, taxaNumbers);
         } catch (IllegalArgumentException ex) {
             context.getUI().displayErrorMessage(String.format("'%s' is a system keyword and cannot be redefined", _keyword));
             return false;

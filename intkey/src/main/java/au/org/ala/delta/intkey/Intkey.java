@@ -2306,8 +2306,14 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Override
     public void displayContents(LinkedHashMap<String, String> contentsMap) {
-        ContentsDialog dlg = new ContentsDialog(getMainFrame(), contentsMap, _context);
-        show(dlg);
+        final ContentsDialog dlg = new ContentsDialog(getMainFrame(), contentsMap, _context);
+        SwingUtilities.invokeLater(new Runnable() {
+            
+            @Override
+            public void run() {
+                show(dlg);                
+            }
+        });
     }
 
     @Override
@@ -2336,16 +2342,15 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Override
     public void updateLog() {
-        String logContent = _context.getLogText();
+        List<String> logEntries = _context.getLogEntries();
         RTFBuilder builder = new RTFBuilder();
         builder.startDocument();
         builder.setFont(1);
-        String[] lines = logContent.split("\n");
-        for (String line : lines) {
+        for (String line : logEntries) {
             // directive calls are identified by a leading asterisk. They should
             // be colored blue.
             // All other lines should be colored red.
-            if (line.startsWith("*")) {
+            if (line.trim().startsWith("*")) {
                 builder.setTextColor(Color.BLUE);
             } else {
                 builder.setTextColor(Color.RED);
@@ -2927,7 +2932,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     }
 
     private void openPreviouslyOpenedFile(String fileName) {
-        _context.newDataSetFile(new File(fileName));
+        executeDirective(new NewDatasetDirective(), fileName);
     }
 
     private void saveCurrentlyOpenedDataset() {

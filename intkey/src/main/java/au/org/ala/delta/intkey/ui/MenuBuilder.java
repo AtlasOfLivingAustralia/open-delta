@@ -21,10 +21,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 import au.org.ala.delta.directives.AbstractDirective;
-import au.org.ala.delta.intkey.directives.NewIntkeyDirective;
 import au.org.ala.delta.intkey.directives.OnOffArgument;
 import au.org.ala.delta.intkey.directives.OnOffDirective;
-import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.OnOffDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 

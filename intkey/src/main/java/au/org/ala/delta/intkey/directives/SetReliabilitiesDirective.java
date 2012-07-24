@@ -50,11 +50,11 @@ public class SetReliabilitiesDirective extends IntkeyDirective {
                 || data.toUpperCase().startsWith(IntkeyDirectiveArgument.LIST_DIALOG_WILDCARD)) {
             SelectionMode selectionMode = context.displayKeywords() ? SelectionMode.KEYWORD : SelectionMode.LIST;
 
-            if (data.startsWith(IntkeyDirectiveArgument.DEFAULT_DIALOG_WILDCARD)) {
+            if (data != null && data.startsWith(IntkeyDirectiveArgument.DEFAULT_DIALOG_WILDCARD)) {
                 // do nothing - default selection mode is already set above.
-            } else if (data.startsWith(IntkeyDirectiveArgument.KEYWORD_DIALOG_WILDCARD)) {
+            } else if (data != null && data.startsWith(IntkeyDirectiveArgument.KEYWORD_DIALOG_WILDCARD)) {
                 selectionMode = SelectionMode.KEYWORD;
-            } else if (data.startsWith(IntkeyDirectiveArgument.LIST_DIALOG_WILDCARD)) {
+            } else if (data != null && data.startsWith(IntkeyDirectiveArgument.LIST_DIALOG_WILDCARD)) {
                 selectionMode = SelectionMode.LIST;
             }
 
@@ -72,12 +72,12 @@ public class SetReliabilitiesDirective extends IntkeyDirective {
             } else {
                 characters = context.getDirectivePopulator().promptForCharactersByList(getControlWordsAsString(), false, selectedKeywords);
             }
-            
+
             if (characters == null) {
                 // cancelled
                 return null;
             }
-            
+
             Float reliability = Float.parseFloat(context.getDirectivePopulator().promptForString("Enter reliability value", null, getControlWordsAsString()));
             for (Character ch : characters) {
                 reliabilitiesMap.put(ch, reliability);

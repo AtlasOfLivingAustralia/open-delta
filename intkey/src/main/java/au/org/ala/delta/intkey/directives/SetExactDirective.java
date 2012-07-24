@@ -30,7 +30,7 @@ public class SetExactDirective extends NewIntkeyDirective {
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new CharacterListArgument("characters", null, false, false));
+        arguments.add(new CharacterListArgument("characters", null, false, true));
         return arguments;
     }
 

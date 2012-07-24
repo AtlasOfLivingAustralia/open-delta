@@ -40,7 +40,7 @@ public class DefineCharactersDirectiveInvocation extends BasicIntkeyDirectiveInv
             characterNumbers.add(ch.getCharacterId());
         }
 
-        context.addCharacterKeyword(_keyword, characterNumbers);
+        context.setCharacterKeyword(_keyword, characterNumbers);
         return true;
     }
 

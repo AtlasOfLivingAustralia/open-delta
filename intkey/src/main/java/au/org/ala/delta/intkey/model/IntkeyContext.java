@@ -36,6 +36,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.IntRange;
 
 import au.org.ala.delta.Logger;
@@ -52,6 +53,7 @@ import au.org.ala.delta.intkey.directives.invocation.DirectiveInvocationProgress
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocationException;
 import au.org.ala.delta.intkey.directives.invocation.LongRunningIntkeyDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.UseDirectiveInvocation;
 import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
@@ -217,8 +219,8 @@ public class IntkeyContext extends AbstractDeltaContext {
     private File _currentOutputFile;
     private PrintFile _currentOutputPrintFile;
 
-    private StringBuilder _logCache;
-    private StringBuilder _journalCache;
+    private List<String> _logCache;
+    private List<String> _journalCache;
 
     /**
      * Constructor
@@ -241,8 +243,8 @@ public class IntkeyContext extends AbstractDeltaContext {
         _processingInputFile = false;
 
         _directiveParser = IntkeyDirectiveParser.createInstance();
-        _logCache = new StringBuilder();
-        _journalCache = new StringBuilder();
+        _logCache = new ArrayList<String>();
+        _journalCache = new ArrayList<String>();
 
         initializeIdentification();
     }
@@ -557,18 +559,34 @@ public class IntkeyContext extends AbstractDeltaContext {
         // run (such as in the case of the File Input directive).
         int executedDirectivesIndex = _executedDirectives.size();
 
+        // Record correct insertion index for the directive call here so that if
+        // unsuccessful the directive call can be removed from the log. It is
+        // necessary to add the directive call to the log here to ensure that it
+        // appears above any subsequent status messages in the log.
+        int logInsertionIndex = _logCache.size();
+
+        // The use directive is a special case. The use directive logic handles
+        // appending to the log itself.
+        if (!(invoc instanceof UseDirectiveInvocation)) {
+            if (!_processingDirectivesFile || (_processingInputFile && _displayInput)) {
+                appendToLog("*" + invoc.toString());
+            }
+        }
+
         // If this is a long running directive and we are on the event dispatch
         // thread, run the task in the
         // background using a SwingWorker.
         if (invoc instanceof LongRunningIntkeyDirectiveInvocation && SwingUtilities.isEventDispatchThread()) {
             LongRunningIntkeyDirectiveInvocation<?> longInvoc = (LongRunningIntkeyDirectiveInvocation<?>) invoc;
-            LongRunningDirectiveSwingWorker worker = new LongRunningDirectiveSwingWorker(longInvoc, this, _appUI, executedDirectivesIndex);
+            LongRunningDirectiveSwingWorker worker = new LongRunningDirectiveSwingWorker(longInvoc, this, _appUI, executedDirectivesIndex, logInsertionIndex);
             worker.execute();
         } else {
             try {
                 boolean success = invoc.execute(this);
                 if (success) {
                     handleDirectiveExecutionComplete(invoc, executedDirectivesIndex);
+                } else {
+                    handleDirectiveExecutionFailed(invoc, logInsertionIndex);
                 }
             } catch (IntkeyDirectiveInvocationException ex) {
                 _appUI.displayErrorMessage(ex.getMessage());
@@ -589,9 +607,17 @@ public class IntkeyContext extends AbstractDeltaContext {
             } else {
                 _executedDirectives.add(executedDirectivesIndex, invoc);
             }
-
-            appendToLog("*" + invoc.toString());
             appendToJournal("*" + invoc.toString());
+        }
+    }
+
+    public void handleDirectiveExecutionFailed(IntkeyDirectiveInvocation invoc, int logInsertionIndex) {
+        // The directive failed so remove the directive call from the log. The
+        // use case is a special case. The use directive logic handles appending
+        // to
+        // the log itself.
+        if (!(invoc instanceof UseDirectiveInvocation)) {
+            _logCache.remove(logInsertionIndex);
         }
     }
 
@@ -666,6 +692,14 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         updateUI();
 
+        // write remaining number of taxa to the log
+        int numAvailableTaxa = getAvailableTaxa().size();
+        if (numAvailableTaxa == 1) {
+            appendToLog(UIUtils.getResourceString("OneTaxonRemains.log"));
+        } else {
+            appendToLog(UIUtils.getResourceString("MultipleTaxaRemain.log", numAvailableTaxa));
+        }
+
         // If a taxon has been identified, run commands specified by the DEFINE
         // ENDIDENTIFY directive. Only do this
         // if DISPLAY ENDIDENTIFY is set to ON.
@@ -675,16 +709,18 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
 
     /**
-     * Add a new character keyword
+     * Add, modify or remove a character keyword
      * 
      * @param keyword
      *            The keyword. Note that the system-defined keywords "all",
-     *            "used" and "available" cannot be used.
+     *            "used", "available" and "none" cannot be used.
      * @param characterNumbers
-     *            The set of characters to be represented by the keyword
+     *            The set of characters to be represented by the keyword. If
+     *            empty, the specified keyword will be removed. Otherwise the
+     *            keyword will be added, modified to point to the specified
+     *            characters
      */
-    // TODO check character number is a valid character number
-    public synchronized void addCharacterKeyword(String keyword, Set<Integer> characterNumbers) {
+    public synchronized void setCharacterKeyword(String keyword, Set<Integer> characterNumbers) {
         if (_dataset == null) {
             throw new IllegalStateException("Cannot define a character keyword if no dataset loaded");
         }
@@ -694,13 +730,17 @@ public class IntkeyContext extends AbstractDeltaContext {
             throw new IllegalArgumentException(UIUtils.getResourceString("RedefineSystemKeyword.error", keyword));
         }
 
-        for (int chNum : characterNumbers) {
-            if (chNum < 1 || chNum > _dataset.getNumberOfCharacters()) {
-                throw new IllegalArgumentException(String.format("Invalid character number %s", chNum));
+        if (characterNumbers.isEmpty()) {
+            _userDefinedCharacterKeywords.remove(keyword);
+            appendToLog(UIUtils.getResourceString("KeywordDeleted.log"));
+        } else {
+            for (int chNum : characterNumbers) {
+                if (chNum < 1 || chNum > _dataset.getNumberOfCharacters()) {
+                    throw new IllegalArgumentException(String.format("Invalid character number %s", chNum));
+                }
             }
+            _userDefinedCharacterKeywords.put(keyword, characterNumbers);
         }
-
-        _userDefinedCharacterKeywords.put(keyword, characterNumbers);
     }
 
     /**
@@ -806,7 +846,20 @@ public class IntkeyContext extends AbstractDeltaContext {
         return retList;
     }
 
-    public synchronized void addTaxaKeyword(String keyword, Set<Integer> taxaNumbers) {
+    /**
+     * Add, modify or remove a taxa keyword
+     * 
+     * @param keyword
+     *            The keyword. Note that the system-defined keywords "all",
+     *            "eliminated", "remaining", "selected", "none" and "specimen"
+     *            cannot be used.
+     * @param characterNumbers
+     *            The set of characters to be represented by the keyword. If
+     *            empty, the specified keyword will be removed. Otherwise the
+     *            keyword will be added, modified to point to the specified
+     *            characters
+     */
+    public synchronized void setTaxaKeyword(String keyword, Set<Integer> taxaNumbers) {
         if (_dataset == null) {
             throw new IllegalStateException("Cannot define a taxa keyword if no dataset loaded");
         }
@@ -1046,6 +1099,8 @@ public class IntkeyContext extends AbstractDeltaContext {
         if (_dataset != null) {
             updateUI();
         }
+        
+        appendToLog(UIUtils.getResourceString("ErrorToleranceSet.log", _tolerance));
     }
 
     /**
@@ -1270,6 +1325,8 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     public synchronized void setDiagType(DiagType diagType) {
         this._diagType = diagType;
+        
+        appendToLog(UIUtils.getResourceString("DiagtypeSet.log", diagType.toString()));
     }
 
     // Returns included characters ordered by character number
@@ -1313,6 +1370,16 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
 
     public synchronized void setIncludedCharacters(Set<Integer> includedCharacters) {
+        doSetIncludedCharacters(includedCharacters);
+
+        if (_includedCharacters.size() == 1) {
+            appendToLog(UIUtils.getResourceString("OneCharacterIncluded.log"));
+        } else {
+            appendToLog(UIUtils.getResourceString("MultipleCharactersIncluded.log", _includedCharacters.size()));
+        }
+    }
+
+    private synchronized void doSetIncludedCharacters(Set<Integer> includedCharacters) {
         if (includedCharacters == null || includedCharacters.isEmpty()) {
             throw new IllegalArgumentException("Cannot exclude all characters");
         }
@@ -1331,6 +1398,16 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
 
     public synchronized void setIncludedTaxa(Set<Integer> includedTaxa) {
+        doSetIncludedTaxa(includedTaxa);
+
+        if (_includedTaxa.size() == 1) {
+            appendToLog(UIUtils.getResourceString("OneTaxonIncluded.log"));
+        } else {
+            appendToLog(UIUtils.getResourceString("MultipleTaxaIncluded.log", _includedTaxa.size()));
+        }
+    }
+
+    private synchronized void doSetIncludedTaxa(Set<Integer> includedTaxa) {
         if (includedTaxa == null || includedTaxa.isEmpty()) {
             throw new IllegalArgumentException("Cannot exclude all taxa");
         }
@@ -1356,7 +1433,13 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         includedCharacters.removeAll(excludedCharacters);
 
-        setIncludedCharacters(includedCharacters);
+        doSetIncludedCharacters(includedCharacters);
+
+        if (excludedCharacters.size() == 1) {
+            appendToLog(UIUtils.getResourceString("OneCharacterExcluded.log"));
+        } else {
+            appendToLog(UIUtils.getResourceString("MultipleCharactersExcluded.log", excludedCharacters.size()));
+        }
     }
 
     // Use all available taxa aside from those specified.
@@ -1368,7 +1451,13 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         includedTaxa.removeAll(excludedTaxa);
 
-        setIncludedTaxa(includedTaxa);
+        doSetIncludedTaxa(includedTaxa);
+
+        if (excludedTaxa.size() == 1) {
+            appendToLog(UIUtils.getResourceString("OneTaxonExcluded.log"));
+        } else {
+            appendToLog(UIUtils.getResourceString("MultipleTaxaExcluded.log", excludedTaxa.size()));
+        }
     }
 
     // The currently included characters minus the characters
@@ -1483,6 +1572,8 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     public synchronized void setImagePaths(List<String> imagePaths) {
         _imagePathLocations = new ArrayList<String>(imagePaths);
+        
+        appendToLog(UIUtils.getResourceString("ImagepathSet.log", StringUtils.join(imagePaths, ";")));
     }
 
     // Only used for saving settings when SET DEMONSTRATION is set to ON.
@@ -1492,6 +1583,7 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     public synchronized void setInfoPaths(List<String> infoPaths) {
         _infoPathLocations = new ArrayList<String>(infoPaths);
+        appendToLog(UIUtils.getResourceString("InfopathSet.log", StringUtils.join(infoPaths, ";")));
     }
 
     public synchronized void addTaxonInformationDialogCommand(String subject, String command) {
@@ -1566,7 +1658,9 @@ public class IntkeyContext extends AbstractDeltaContext {
                 for (Character usedCharacter : getUsedCharacters()) {
                     _fixedCharactersList.add(usedCharacter.getCharacterId());
                 }
+                appendToLog(UIUtils.getResourceString("CharactersFixed.log"));
             } else {
+                appendToLog(UIUtils.getResourceString("FixOff.log"));
                 _fixedCharactersList = new ArrayList<Integer>();
                 // If in demonstration mode, need to temporarily disable it,
                 // otherwise
@@ -1641,6 +1735,12 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     public synchronized void setExactCharacters(Set<Integer> characters) {
         _exactCharactersSet = new HashSet<Integer>(characters);
+
+        if (_exactCharactersSet.isEmpty()) {
+            appendToLog(UIUtils.getResourceString("NoExactCharacters.log"));
+        } else {
+            appendToLog(UIUtils.getResourceString("ExactCharacters.log"));
+        }
     }
 
     private boolean isCharacterExact(Character ch) {
@@ -1769,7 +1869,12 @@ public class IntkeyContext extends AbstractDeltaContext {
         _journalPrintFile = new PrintFile(new PrintStream(journalFile), OUTPUT_FILE_WIDTH);
         _journalFile = journalFile;
 
-        _journalPrintFile.outputLine(_journalCache.toString());
+        StringBuilder journalContentBuilder = new StringBuilder();
+        for (String line : _journalCache) {
+            journalContentBuilder.append(line);
+            journalContentBuilder.append("\n");
+        }
+        _journalPrintFile.outputLine(journalContentBuilder.toString());
         _journalPrintFile.setTrimInput(false, true);
     }
 
@@ -1853,8 +1958,7 @@ public class IntkeyContext extends AbstractDeltaContext {
             _logPrintFile.outputLine(text);
         }
 
-        _logCache.append(text);
-        _logCache.append("\n");
+        _logCache.add(text);
 
         _appUI.updateLog();
     }
@@ -1864,12 +1968,11 @@ public class IntkeyContext extends AbstractDeltaContext {
             _journalPrintFile.outputLine(text);
         }
 
-        _journalCache.append(text);
-        _journalCache.append("\n");
+        _journalCache.add(text);
     }
 
-    public synchronized String getLogText() {
-        return _logCache.toString();
+    public synchronized List<String> getLogEntries() {
+        return new ArrayList<String>(_logCache);
     }
 
     private void updateUI() {

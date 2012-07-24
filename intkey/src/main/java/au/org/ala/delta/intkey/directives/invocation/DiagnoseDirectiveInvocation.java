@@ -78,18 +78,18 @@ public class DiagnoseDirectiveInvocation extends AbstractDiagnoseDirectiveInvoca
         _builder.appendText(_itemFormatter.formatItemDescription(taxon));
         _builder.increaseIndent();
     }
-
+    
     @Override
     protected void handleDiagLevelAttained(int diagLevel) {
         _builder.setTextColor(Color.RED);
-        _builder.appendText(MessageFormat.format("Diagnostic level {0} attained.", diagLevel));
+        _builder.appendText(UIUtils.getResourceString("DiagnoseDirective.DiagnosticLevelAttained", diagLevel));
         _builder.setTextColor(Color.BLACK);
     }
 
     @Override
     protected void handleDiagLevelNotAttained(int diagLevel) {
         _builder.setTextColor(Color.RED);
-        _builder.appendText(MessageFormat.format("Diagnostic level {0} not attained.", diagLevel));
+        _builder.appendText(UIUtils.getResourceString("DiagnoseDirective.DiagnosticLevelNotAttained", diagLevel));
         _builder.setTextColor(Color.BLACK);
     }
 
@@ -97,7 +97,7 @@ public class DiagnoseDirectiveInvocation extends AbstractDiagnoseDirectiveInvoca
     protected void handleEndProcessingTaxon(Item taxon, boolean diagLevelNotAttained, Specimen specimen, List<Item> remainingTaxa) {
         if (diagLevelNotAttained) {
             _builder.setTextColor(Color.RED);
-            _builder.appendText(MessageFormat.format("Diagnosis for {0} is incomplete.", _noNumberingRTFCommentsItemFormatter.formatItemDescription(taxon)));
+            _builder.appendText(UIUtils.getResourceString("DiagnoseDirective.DiagnoseIncomplete", _noNumberingRTFCommentsItemFormatter.formatItemDescription(taxon)));
             _builder.setTextColor(Color.BLACK);
         }
 
@@ -106,7 +106,12 @@ public class DiagnoseDirectiveInvocation extends AbstractDiagnoseDirectiveInvoca
         // Output number of differences for each remaining taxon if the desired diagLevel was not reached.
         if (diagLevelNotAttained) {
             _builder.setTextColor(Color.RED);
-            _builder.appendText(MessageFormat.format("{0} taxa remain.", remainingTaxa.size()));
+            if (remainingTaxa.size() == 1) {
+                _builder.appendText(UIUtils.getResourceString("OneTaxonRemains.log"));
+            } else {
+                _builder.appendText(UIUtils.getResourceString("MultipleTaxaRemain.log", remainingTaxa.size()));
+            }
+            
             _builder.setTextColor(Color.BLACK);
             Map<Item, Set<Character>> taxonDifferences = specimen.getTaxonDifferences();
             for (Item remainingTaxon: remainingTaxa) {
