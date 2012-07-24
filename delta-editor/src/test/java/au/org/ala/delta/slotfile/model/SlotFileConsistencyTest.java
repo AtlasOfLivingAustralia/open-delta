@@ -1,12 +1,5 @@
 package au.org.ala.delta.slotfile.model;
 
-import java.io.File;
-
-import junit.framework.TestCase;
-
-import org.apache.commons.lang.StringUtils;
-import org.junit.Test;
-
 import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.editor.slotfile.model.SlotFileDataSet;
 import au.org.ala.delta.editor.slotfile.model.SlotFileRepository;
@@ -18,6 +11,12 @@ import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.UnorderedMultiStateCharacter;
+import junit.framework.TestCase;
+import org.apache.commons.lang.StringUtils;
+import org.junit.Test;
+
+import java.io.File;
+import java.io.IOException;
 
 public class SlotFileConsistencyTest extends TestCase {
 	
@@ -121,7 +120,7 @@ public class SlotFileConsistencyTest extends TestCase {
 	}
 	
 	@Test
-	public void testSlotFile4() throws DirectiveException {
+	public void testSlotFile4() throws DirectiveException, IOException {
 		SlotFileRepository repo = new SlotFileRepository();
 		MutableDeltaDataSet dataset = repo.newDataSet();
 		for (int i = 0; i < 100; i++) {
@@ -150,10 +149,11 @@ public class SlotFileConsistencyTest extends TestCase {
 			((SlotFileDataSet) dataset).consistencyCheck();
 						
 			out("Saving dataset");
-			repo.saveAsName(dataset, "testdata", true, null);
+            String fileName = tempFileName();
+			repo.saveAsName(dataset, fileName, true, null);
 			dataset.close();
 			out("Reloading dataset");
-			dataset = repo.findByName("testdata", null);
+			dataset = repo.findByName(fileName, null);
 			
 			out("Consistency Check 2");
 			((SlotFileDataSet) dataset).consistencyCheck();
@@ -207,6 +207,14 @@ public class SlotFileConsistencyTest extends TestCase {
 	private static void out(String format, Object ...args) {
 		System.out.println(String.format(format, args));
 	}
+
+    private String tempFileName() throws IOException {
+        File temp = File.createTempFile("test", ".dlt");
+        String name = temp.getAbsolutePath();
+        temp.delete();
+
+        return name;
+    }
 	
 
 }
