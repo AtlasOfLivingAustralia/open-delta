@@ -14,46 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.ui;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.MouseEvent;
-import java.util.Collection;
-import java.util.EventObject;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.swing.DefaultCellEditor;
-import javax.swing.DropMode;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTextField;
-import javax.swing.JTree;
-import javax.swing.UIManager;
-import javax.swing.event.CellEditorListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellEditor;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
-
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.application.Resource;
-import org.jdesktop.application.ResourceMap;
-
 import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.editor.EditorPreferences;
 import au.org.ala.delta.editor.model.EditorViewModel;
@@ -80,6 +40,31 @@ import au.org.ala.delta.ui.AboutBox;
 import au.org.ala.delta.util.Predicate;
 import au.org.ala.delta.util.SearchableModel;
 import au.org.ala.delta.util.Visitor;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Resource;
+import org.jdesktop.application.ResourceMap;
+
+import javax.swing.*;
+import javax.swing.event.CellEditorListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellEditor;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
+import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.MouseEvent;
+import java.util.Collection;
+import java.util.EventObject;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The TreeViewer presents the data model as a list of items and a tree
@@ -397,6 +382,16 @@ public class TreeViewer extends AbstractDeltaView {
             editorComponent = editor;
         }
 
+        public void requestFocus() {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    textField.requestFocusInWindow();
+                }
+            });
+
+        }
+
         private void createEditorComponent() {
             editor = new EditorPanel();
             editor.setOpaque(false);
@@ -473,6 +468,9 @@ public class TreeViewer extends AbstractDeltaView {
         public AttributeCellEditor(JCheckBox checkBox) {
             super(checkBox);
         }
+
+
+        public void requestFocus() {}
 
         @Override
         public Component getTreeCellEditorComponent(JTree tree, Object value, boolean isSelected, boolean expanded, boolean leaf, int row) {
@@ -553,6 +551,7 @@ public class TreeViewer extends AbstractDeltaView {
             _multistateEditor = new MultiStateAttributeCellEditor();
             _numericTextEditor = (NumericTextAttributeCellEditor) realEditor;
             _renderer = renderer;
+            tree.setInvokesStopCellEditing(true);
         }
 
         @Override
@@ -578,6 +577,14 @@ public class TreeViewer extends AbstractDeltaView {
                 return inHitRegion(me.getX(), me.getY());
             }
             return false;
+        }
+
+        @Override
+        protected void prepareForEditing() {
+            super.prepareForEditing();
+            if (realEditor instanceof AttributeCellEditor) {
+                ((AttributeCellEditor)realEditor).requestFocus();
+            }
         }
 
         @Override
