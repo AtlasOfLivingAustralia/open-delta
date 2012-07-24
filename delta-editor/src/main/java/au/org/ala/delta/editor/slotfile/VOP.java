@@ -14,14 +14,14 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile;
 
+import au.org.ala.delta.editor.slotfile.SlotFile.SlotHeader;
+import au.org.ala.delta.io.BinFileMode;
+
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
-import au.org.ala.delta.editor.slotfile.SlotFile.SlotHeader;
-import au.org.ala.delta.io.BinFileMode;
 
 public class VOP {
 
@@ -349,7 +349,7 @@ public class VOP {
 	 *
 	 * Objects that are referenced or embedded are not deleted.
 	 * If the object references other objects, than these will be unreferenced.
-	 * If the object embedds other objecte, than these are deleted too.
+	 * If the object embeds other objects, than these are deleted too.
 	 * The actual work is done by a recursive delete function.
 	 */
 	public void deleteObject(VOAnyDesc desc) {
