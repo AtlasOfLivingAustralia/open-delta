@@ -14,46 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.ui;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.beans.PropertyVetoException;
-
-import javax.swing.AbstractListModel;
-import javax.swing.AbstractSpinnerModel;
-import javax.swing.ActionMap;
-import javax.swing.ComboBoxModel;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JInternalFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
-import javax.swing.JTabbedPane;
-import javax.swing.JToggleButton;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.InternalFrameAdapter;
-import javax.swing.event.InternalFrameEvent;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.plaf.basic.BasicComboBoxRenderer;
-
-import org.jdesktop.application.Action;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.application.Resource;
-import org.jdesktop.application.ResourceMap;
-
 import au.org.ala.delta.editor.CharacterController;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.util.MessageDialogHelper;
@@ -68,6 +28,26 @@ import au.org.ala.delta.model.observer.AbstractDataSetObserver;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import au.org.ala.delta.ui.rtf.RtfEditor;
 import au.org.ala.delta.ui.rtf.RtfToolBar;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Resource;
+import org.jdesktop.application.ResourceMap;
+
+import javax.swing.*;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameEvent;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.plaf.basic.BasicComboBoxRenderer;
+import java.awt.*;
+import java.beans.PropertyVetoException;
 
 /**
  * Provides a user interface that allows a character to be edited.
@@ -226,24 +206,29 @@ public class CharacterEditor extends AbstractDeltaView {
 	}
 
 	private boolean validateCharacter() {
-		if (_validator != null) {
+        if (_validator != null) {
 			ValidationResult result = _validator.validateDescription(rtfEditor.getText());
-			if (!result.isValid()) {
-				_dialogHelper.displayValidationResult(result);
-				return false;
+			if (result.isValid()) {
+				result = _validator.validateStates();
+
+                if (result.isValid()) {
+
+                    if (_selectedCharacter.getCharacterType() == CharacterType.Unknown) {
+                        result = ValidationResult.error("unknown.character.type");
+                    }
+
+			    }
+            }
+            if (!result.isValid()) {
+                final ValidationResult finalResult = result;
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        _dialogHelper.displayValidationResult(finalResult);
+                    }
+                });
+                return false;
 			}
-			
-			result = _validator.validateStates();
-			if (!result.isValid()) {
-				_dialogHelper.displayValidationResult(result);
-				return false;
-			}
-			
-			if (_selectedCharacter.getCharacterType() == CharacterType.Unknown) {
-				_dialogHelper.displayValidationResult(ValidationResult.error("unknown.character.type"));
-				return false;
-			}
-			
 		}
 
 		return true;
@@ -521,8 +506,6 @@ public class CharacterEditor extends AbstractDeltaView {
 	 * 
 	 * @param dataSet
 	 *            the data set the dialog operates from.
-	 * @param itemNumber
-	 *            the currently selected item
 	 */
 	public void bind(EditorViewModel dataSet) {
 		_dataSet = dataSet;
