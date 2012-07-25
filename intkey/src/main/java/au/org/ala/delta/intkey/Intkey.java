@@ -145,6 +145,14 @@ import au.org.ala.delta.intkey.directives.IncludeTaxaDirective;
 import au.org.ala.delta.intkey.directives.InformationDirective;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParseException;
 import au.org.ala.delta.intkey.directives.NewDatasetDirective;
+import au.org.ala.delta.intkey.directives.OutputCharactersDirective;
+import au.org.ala.delta.intkey.directives.OutputCommentDirective;
+import au.org.ala.delta.intkey.directives.OutputDescribeDirective;
+import au.org.ala.delta.intkey.directives.OutputDiagnoseDirective;
+import au.org.ala.delta.intkey.directives.OutputDifferencesDirective;
+import au.org.ala.delta.intkey.directives.OutputSimilaritiesDirective;
+import au.org.ala.delta.intkey.directives.OutputSummaryDirective;
+import au.org.ala.delta.intkey.directives.OutputTaxaDirective;
 import au.org.ala.delta.intkey.directives.PreferencesDirective;
 import au.org.ala.delta.intkey.directives.RestartDirective;
 import au.org.ala.delta.intkey.directives.SetAutoToleranceDirective;
@@ -1009,7 +1017,15 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             mnuFileBuilder.addDirectiveMenuItem("mnuItFileTaxa", new FileCharactersDirective());
             mnuFileBuilder.endSubMenu();
 
-            mnuFileBuilder.startSubMenu("mnuOutputCmds", false);
+            mnuFileBuilder.startSubMenu("mnuOutputCmds", true);
+            mnuFileBuilder.addDirectiveMenuItem("mnuItOutputCharacters", new OutputCharactersDirective());
+            mnuFileBuilder.addDirectiveMenuItem("mnuItOutputTaxa", new OutputTaxaDirective());
+            mnuFileBuilder.addDirectiveMenuItem("mnuItOutputDescribe", new OutputDescribeDirective());
+            mnuFileBuilder.addDirectiveMenuItem("mnuItOutputSummary", new OutputSummaryDirective());
+            mnuFileBuilder.addDirectiveMenuItem("mnuItOutputDiagnose", new OutputDiagnoseDirective());
+            mnuFileBuilder.addDirectiveMenuItem("mnuItOutputDifferences", new OutputDifferencesDirective());
+            mnuFileBuilder.addDirectiveMenuItem("mnuItOutputSimilarities", new OutputSimilaritiesDirective());
+            mnuFileBuilder.addDirectiveMenuItem("mnuItOutputComment", new OutputCommentDirective());
             mnuFileBuilder.endSubMenu();
             mnuFileBuilder.addSeparator();
 

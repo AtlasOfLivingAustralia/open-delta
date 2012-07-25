@@ -39,6 +39,7 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
+import au.org.ala.delta.intkey.directives.SetMatchDirective;
 import au.org.ala.delta.model.MatchType;
 
 public class SetMatchPromptDialog extends IntkeyDialog {
@@ -269,8 +270,8 @@ public class SetMatchPromptDialog extends IntkeyDialog {
     }
 
     @Action
-    public void setMatchPromptDialog_helpAction() {
-
+    public void setMatchPromptDialog_helpAction(ActionEvent e) {
+        UIUtils.displayHelpTopic(UIUtils.getHelpIDForDirective(new SetMatchDirective().getControlWordsAsString().toUpperCase()), this, e);
     }
 
     public boolean wasOkButtonPressed() {

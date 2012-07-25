@@ -188,9 +188,11 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
         // work for subclasses
         // of ImageDialog
         _mnuSubject = new JMenu(resourceMap.getString("ImageDialog.mnuSubjectCaption"));
+        _mnuSubject.setMnemonic(resourceMap.getString("ImageDialog.mnuSubjectMnemonic").charAt(0));
         _menuBar.add(_mnuSubject);
 
         _mnuControl = new JMenu(resourceMap.getString("ImageDialog.mnuControlCaption"));
+        _mnuControl.setMnemonic(resourceMap.getString("ImageDialog.mnuControlMnemonic").charAt(0));
         _menuBar.add(_mnuControl);
 
         _mnuItNextImage = new JMenuItem();
@@ -202,6 +204,7 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
         _mnuControl.add(_mnuItPreviousImage);
 
         _mnuWindow = new JMenu(resourceMap.getString("ImageDialog.mnuWindowCaption"));
+        _mnuWindow.setMnemonic(resourceMap.getString("ImageDialog.mnuWindowMnemonic").charAt(0));
         _menuBar.add(_mnuWindow);
 
         _mnuItScaled = new JCheckBoxMenuItem();
@@ -219,10 +222,10 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
         _mnuItReplaySound.setAction(actionMap.get("replaySound"));
         _mnuWindow.add(_mnuItReplaySound);
 
-        _mnuItReplayVideo = new JMenuItem();
-        _mnuItReplayVideo.setAction(actionMap.get("replayVideo"));
-        _mnuItReplayVideo.setEnabled(false);
-        _mnuWindow.add(_mnuItReplayVideo);
+//        _mnuItReplayVideo = new JMenuItem();
+//        _mnuItReplayVideo.setAction(actionMap.get("replayVideo"));
+//        _mnuItReplayVideo.setEnabled(false);
+//        _mnuWindow.add(_mnuItReplayVideo);
 
         _mnuWindow.addSeparator();
 
