@@ -14,19 +14,12 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.ui;
 
-import javax.swing.AbstractListModel;
-import javax.swing.ActionMap;
-import javax.swing.JComponent;
-import javax.swing.ListSelectionModel;
-
-import org.jdesktop.application.Application;
-
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.SearchDirection;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
-import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.observer.AbstractDataSetObserver;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import au.org.ala.delta.ui.GenericSearchController;
@@ -35,6 +28,10 @@ import au.org.ala.delta.ui.SearchDialog;
 import au.org.ala.delta.ui.SearchOptions;
 import au.org.ala.delta.util.Predicate;
 import au.org.ala.delta.util.SearchableModel;
+import org.jdesktop.application.Application;
+
+import javax.swing.*;
+import javax.swing.text.Position;
 
 /**
  * A specialized List for displaying DELTA Items.
@@ -163,8 +160,20 @@ public class ItemList extends SelectionList {
 		setModel(new ItemListModel(dataSet));
 		
 	}
-	
-	private SearchDialog _search;
+
+    /**
+     * Overriding the default getNextMatch method to disable list item selection based on first character matching.
+     * @param prefix unused.
+     * @param startIndex unused.
+     * @param bias unused.
+     * @return always returns -1.
+     */
+    @Override
+    public int getNextMatch(String prefix, int startIndex, Position.Bias bias) {
+        return -1;
+    }
+
+    private SearchDialog _search;
 
 	@org.jdesktop.application.Action
 	public void find() {

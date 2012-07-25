@@ -27,6 +27,7 @@ import org.jdesktop.application.Application;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
@@ -235,6 +236,18 @@ public class CharacterTree extends JTree {
 		}
 
 	}
+
+    /**
+     * Overriding the default getNextMatch method to disable list item selection based on first character matching.
+     * @param prefix unused.
+     * @param startIndex unused.
+     * @param bias unused.
+     * @return always returns -1.
+     */
+    @Override
+    public TreePath getNextMatch(String prefix, int startIndex, Position.Bias bias) {
+        return null;
+    }
 	
 	@Override
 	public String getToolTipText(MouseEvent event) {

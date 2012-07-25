@@ -60,8 +60,11 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.EventObject;
@@ -105,14 +108,16 @@ public class TreeViewer extends AbstractDeltaView {
             }
 
         });
-
+        KeyEventDispatcher keyDispatcher = new KeyEventDispatcher();
         _itemList = new ItemList(_dataModel);
         _itemList.setDragEnabled(true);
         _itemList.setDropMode(DropMode.INSERT);
+        _itemList.addKeyListener(keyDispatcher);
+
 
         _tree = new CharacterTree();
         final CharacterTreeModel treeModel = new CharacterTreeModel(_dataModel);
-
+        _tree.addKeyListener(keyDispatcher);
         _tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         _tree.setModel(treeModel);
         _tree.setRootVisible(false);
@@ -291,6 +296,42 @@ public class TreeViewer extends AbstractDeltaView {
         return windowTitle;
     }
 
+
+    /**
+     * The KeyEventDispatcher class is responsible for transferring focus to the AttributeEditor when keyboard
+     * input is used with the ItemList or CharacterTree has keyboard focus.
+     * The reason for this is to duplicate the behaviour of the original DELTA Editor.
+     */
+    public class KeyEventDispatcher extends KeyAdapter {
+        @Override
+        public void keyTyped(KeyEvent e) {
+            if (shouldRetargetKeyEvent(e)) {
+                _stateEditor.acceptKeyEvent(e);
+                e.consume();
+            }
+        }
+
+        /**
+         * Checks to see if the targetted component has an Action in it's InputMap to handle the supplied
+         * KeyEvent.  If so it is allowed to handle it, otherwise focus is transferred to the AttributeEditor
+         * and the KeyEvent dispatched to it.
+         * @param e the KeyEvent being processed.
+         * @return true if the KeyEvent should be dispatched to the AttributeEditor.
+         */
+        private boolean shouldRetargetKeyEvent(KeyEvent e) {
+
+            KeyStroke ks = KeyStroke.getKeyStrokeForEvent(e);
+
+            if (e.getComponent() instanceof JComponent) {
+                JComponent jComp = (JComponent)e.getComponent();
+                ActionListener action = jComp.getActionForKeyStroke(ks);
+                if (action == null) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
     /**
      * Provides the mechanism for editing multistate attributes.
      */
