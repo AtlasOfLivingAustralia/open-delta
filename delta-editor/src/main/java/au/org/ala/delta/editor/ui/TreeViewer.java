@@ -47,6 +47,8 @@ import org.jdesktop.application.ResourceMap;
 
 import javax.swing.*;
 import javax.swing.event.CellEditorListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
@@ -336,7 +338,7 @@ public class TreeViewer extends AbstractDeltaView {
         private boolean _valid;
         private TextComponentValidator _validator;
         private CharacterFormatter _formatter;
-
+        private boolean _readyForEdits;
 
         class EditorPanel extends JPanel {
 
@@ -390,7 +392,9 @@ public class TreeViewer extends AbstractDeltaView {
                 private static final long serialVersionUID = 2456039012400902726L;
 
                 public void setValue(Object value) {
+                    _readyForEdits = false;
                     textField.setText((value != null) ? value.toString() : "");
+                    _readyForEdits = true;
                 }
 
                 public Object getCellEditorValue() {
@@ -398,6 +402,31 @@ public class TreeViewer extends AbstractDeltaView {
                 }
             };
             textField.addActionListener(delegate);
+            // The purpose of this is to enable the dataset save function (even though the edit has not
+            // yet committed which would normally trigger the enabling of the save menu items).  The save function itself
+            // will commit the edit if it is invoked while this editor is still active.
+            textField.getDocument().addDocumentListener(new DocumentListener() {
+                @Override
+                public void insertUpdate(DocumentEvent e) {
+                    maybeSetModified();
+                }
+
+                @Override
+                public void removeUpdate(DocumentEvent e) {
+                    maybeSetModified();
+                }
+
+                @Override
+                public void changedUpdate(DocumentEvent e) {
+                    maybeSetModified();
+                }
+
+                private void maybeSetModified() {
+                    if (_readyForEdits) {
+                        _dataModel.setModified(true);
+                    }
+                }
+            });
             editorComponent = editor;
         }
 
@@ -430,7 +459,7 @@ public class TreeViewer extends AbstractDeltaView {
         @Override
         protected Component configureEditingComponent(Attribute attribute, DefaultMutableTreeNode nodeUserObject) {
             String attributeText = _dataModel.displayTextFromAttributeValue(attribute, attribute.getValueAsString());
-        	getTextField().setText(attributeText);
+        	delegate.setValue(attributeText);
             Character character = attribute.getCharacter();
 
             if ((character != null) && (character instanceof NumericCharacter<?>)) {

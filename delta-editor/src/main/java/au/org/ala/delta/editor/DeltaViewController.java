@@ -306,6 +306,7 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 
                 _repository.saveAsName(_dataSet.getDeltaDataSet(), newFile.getAbsolutePath(), false, null);
                 _dataSet.setName(_dataSet.getName());
+                _dataSet.setModified(false);
                 EditorPreferences.addFileToMRU(newFile.getAbsolutePath());
             }
 			

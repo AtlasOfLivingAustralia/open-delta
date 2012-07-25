@@ -86,6 +86,7 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 		_selectedCharacter = null;
 		_selectedItem = null;
         _tempName = "";
+        _modified = false;
 		EditorPreferences.addPreferencesChangeListener(this);
 	}
 
@@ -267,15 +268,16 @@ public class EditorDataModel extends DataSetWrapper implements EditorViewModel, 
 	}
 
 	public boolean isModified() {
-		return _wrappedDataSet.isModified();
+		return _modified || _wrappedDataSet.isModified();
 	}
 
 	public void setModified(boolean modified) {
 
-		if (modified != _modified) {
-			_propertyChangeSupport.firePropertyChange("modified", _modified, modified);
+        boolean oldModified = _modified;
+        _modified = modified;
+		if (oldModified != _modified) {
+			_propertyChangeSupport.firePropertyChange("modified", oldModified, _modified);
 		}
-		_modified = modified;
 	}
 
 	public void addPreferenceChangeListener(PreferenceChangeListener listener) {

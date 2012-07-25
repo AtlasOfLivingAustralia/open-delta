@@ -14,12 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.model;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.prefs.PreferenceChangeEvent;
-import java.util.prefs.PreferenceChangeListener;
-
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
 import au.org.ala.delta.model.Attribute;
@@ -32,6 +26,12 @@ import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import au.org.ala.delta.util.Predicate;
 import au.org.ala.delta.util.Visitor;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.prefs.PreferenceChangeEvent;
+import java.util.prefs.PreferenceChangeListener;
 
 /**
  * The DeltaViewModel is designed to provide each view with a separate instance of the model to work with. The main reason for this is to allow components of the view to register themselves as
@@ -232,5 +232,10 @@ public class DeltaViewModel extends DataSetWrapper implements EditorViewModel, P
     @Override
     public void setImageSettings(ImageSettings imageSettings) {
         _editorDataModel.setImageSettings(imageSettings);
+    }
+
+    @Override
+    public void setModified(boolean modified) {
+        _editorDataModel.setModified(modified);
     }
 }

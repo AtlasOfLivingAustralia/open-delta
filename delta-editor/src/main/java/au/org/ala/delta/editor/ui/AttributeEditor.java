@@ -344,7 +344,7 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 				_textPane.setInputVerifier(null);
 
 			}
-			_modified = false;
+			setModified(false);
 			
 		} finally {
 			// Re-enable the change listener
@@ -407,21 +407,21 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 		@Override
 		public void insertUpdate(DocumentEvent e) {
 			if (!_disabled) {
-				_modified = true;
+				setModified(true);
 			}
 		}
 
 		@Override
 		public void removeUpdate(DocumentEvent e) {
 			if (!_disabled) {
-				_modified = true;
+                setModified(true);
 			}
 		}
 
 		@Override
 		public void changedUpdate(DocumentEvent e) {
 			if (!_disabled) {
-				_modified = true;
+                setModified(true);
 			}
 		}
 
@@ -453,7 +453,7 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 				} else {
 					System.err.println("No Attribute! should I be allowed to edit this?");
 				}
-				_modified = false;
+				setModified(false);
 			} catch (Exception ex) {
 				_textPane.requestFocusInWindow();
 				return false;
@@ -465,6 +465,16 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 
 		return true;
 	}
+
+    protected void setModified(boolean modified) {
+        _modified = modified;
+        if (modified) {
+            // The purpose of this is to enable the dataset save function (even though the edit has not
+            // yet committed which would normally trigger the enabling of the save menu items).  The save function itself
+            // will commit the edit if it is invoked while this editor is still active.
+            _dataSet.setModified(true);
+        }
+    }
 
 	/**
 	 * Edits are committed on focus lost events. TODO a failed validate prevents focus transferal but it doesn't prevent a selection on the table or list from updating the text in the document!

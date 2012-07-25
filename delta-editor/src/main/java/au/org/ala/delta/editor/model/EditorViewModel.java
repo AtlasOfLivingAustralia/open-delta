@@ -14,9 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.model;
 
-import java.util.Collection;
-import java.util.prefs.PreferenceChangeListener;
-
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
 import au.org.ala.delta.model.Attribute;
@@ -28,6 +25,9 @@ import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.util.Predicate;
 import au.org.ala.delta.util.Visitor;
+
+import java.util.Collection;
+import java.util.prefs.PreferenceChangeListener;
 
 public interface EditorViewModel extends ObservableDeltaDataSet {
 
@@ -96,4 +96,6 @@ public interface EditorViewModel extends ObservableDeltaDataSet {
 	public String displayTextFromAttributeValue(Attribute attribute, String attributeText);
 	
 	public String attributeValueFromDisplayText(Attribute attribute, String attributeDisplayText);
+
+    public void setModified(boolean modified);
 }
