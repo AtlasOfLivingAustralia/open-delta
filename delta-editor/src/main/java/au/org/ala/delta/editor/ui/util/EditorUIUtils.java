@@ -14,13 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.ui.util;
 
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.swing.ImageIcon;
-
 import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.OrderedMultiStateCharacter;
@@ -30,6 +23,12 @@ import au.org.ala.delta.model.UnorderedMultiStateCharacter;
 import au.org.ala.delta.ui.util.IconHelper;
 import au.org.ala.delta.util.Platform;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.HashMap;
+import java.util.Map;
+
 public class EditorUIUtils {
 
     private static final String ICON_PATH = "/au/org/ala/delta/editor/resources/icons";
@@ -38,6 +37,7 @@ public class EditorUIUtils {
     private static final ImageIcon _intIcon = IconHelper.createImageIconFromAbsolutePath(ICON_PATH + "/intchar.png");
     private static final ImageIcon _omIcon = IconHelper.createImageIconFromAbsolutePath(ICON_PATH + "/omchar.png");
     private static final ImageIcon _umIcon = IconHelper.createImageIconFromAbsolutePath(ICON_PATH + "/umchar.png");
+    private static final ImageIcon _unknownIcon = IconHelper.createImageIconFromAbsolutePath(ICON_PATH+ "/unknownchar.png");
     private static final ImageIcon _inapplicableOverlay = IconHelper.createImageIconFromAbsolutePath(ICON_PATH + "/inapplicable_overlay.png");
     
     private static final Map<CharacterType, ImageIcon> _inapplicableIcons = new HashMap<CharacterType, ImageIcon>();
@@ -80,6 +80,9 @@ public class EditorUIUtils {
             icon = _omIcon;
         } else if (ch instanceof UnorderedMultiStateCharacter) {
             icon = _umIcon;
+        }
+        else if (ch.getCharacterType() == CharacterType.Unknown) {
+            icon = _unknownIcon;
         }
         if (!inapplicable) {
         	return icon;
