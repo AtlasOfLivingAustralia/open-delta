@@ -340,6 +340,14 @@ public class CharacterEditor extends AbstractDeltaView {
 		if (!result) {
 			comboBox.getModel().setSelectedItem(existingType);
 		}
+        else {
+            if (type.isMultistate()) {
+                tabbedPane.setSelectedComponent(stateEditor);
+            }
+            else if (type.isNumeric()) {
+                tabbedPane.setSelectedComponent(unitsEditor);
+            }
+        }
 	}
 
 	/**
