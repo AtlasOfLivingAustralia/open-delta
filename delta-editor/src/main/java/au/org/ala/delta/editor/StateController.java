@@ -14,13 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.editor;
 
-import java.awt.event.ActionEvent;
-
-import javax.swing.JComponent;
-import javax.swing.TransferHandler;
-
-import org.jdesktop.application.Action;
-
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.ReorderableList;
 import au.org.ala.delta.editor.ui.dnd.SimpleTransferHandler;
@@ -28,6 +21,10 @@ import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
+import org.jdesktop.application.Action;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
 
 /**
  * Handles actions performed on Character states.
@@ -39,14 +36,14 @@ public class StateController {
 	private au.org.ala.delta.editor.ui.util.MessageDialogHelper _dialogHelper;
 	
 	/**
-	 * Creates a new ItemController.
-	 * @param view the view of the Items.
-	 * @param model the model containing Item data.
+	 * Creates a new StateController.
+	 * @param view the view of the Character states.
+	 * @param model the model containing Character and state data.
 	 */
 	public StateController(ReorderableList view, EditorViewModel model) {
 		_view = view;
 		setModel(model);
-		JComponent viewComponent = (JComponent)_view;
+		JComponent viewComponent = _view.getListViewComponent();
 		
 		viewComponent.setTransferHandler(new StateTransferHandler());
 		_dialogHelper = new au.org.ala.delta.editor.ui.util.MessageDialogHelper();
@@ -57,7 +54,7 @@ public class StateController {
 	}
 	
 	/**
-	 * Adds a new Item to the dataset after the last existing one.
+	 * Adds a new state to the currently selected Character at the position of the current selection.
 	 */
 	@Action
 	public void addState(ActionEvent e) {

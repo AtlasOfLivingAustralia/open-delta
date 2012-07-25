@@ -14,25 +14,21 @@
  ******************************************************************************/
 package au.org.ala.delta.editor;
 
-import java.awt.event.ActionEvent;
-
-import javax.swing.ActionMap;
-import javax.swing.JComponent;
-import javax.swing.JPopupMenu;
-
-import org.jdesktop.application.Action;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ApplicationContext;
-
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.ReorderableList;
 import au.org.ala.delta.editor.ui.dnd.SimpleTransferHandler;
 import au.org.ala.delta.editor.ui.util.MenuBuilder;
 import au.org.ala.delta.editor.ui.util.PopupMenuListener;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
-import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ApplicationContext;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
 
 /**
  * Handles actions performed on the ItemList.
@@ -54,7 +50,7 @@ public class ItemController {
 		_view = view;
 		_model = model;
 		_context = Application.getInstance().getContext();
-		JComponent viewComponent = (JComponent)_view;
+		JComponent viewComponent = _view.getListViewComponent();
 		
 		viewComponent.setTransferHandler(new ItemTransferHandler());
 		_itemActions = _context.getActionMap(ItemController.class, this);
@@ -214,7 +210,7 @@ public class ItemController {
 	
 	class PopupBuilder extends PopupMenuListener {
 		public PopupBuilder() {
-			super(null, (JComponent)_view);
+			super(null, _view.getListViewComponent());
 		}
 		
 		@Override

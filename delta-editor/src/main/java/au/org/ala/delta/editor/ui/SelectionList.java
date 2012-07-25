@@ -14,14 +14,11 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.ui;
 
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
-import javax.swing.Action;
-import javax.swing.JList;
-import javax.swing.KeyStroke;
 
 
 /**
@@ -78,5 +75,10 @@ public class SelectionList extends JList implements ReorderableList {
 		}
 		return -1;
 	}
+
+    @Override
+    public JComponent getListViewComponent() {
+        return this;
+    }
 
 }

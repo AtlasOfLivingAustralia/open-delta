@@ -216,12 +216,17 @@ public class TreeViewer extends AbstractDeltaView {
 
     @Override
     public ReorderableList getCharacterListView() {
-        return _tree;
+        return _tree.getCharacterListView();
     }
 
     @Override
     public ReorderableList getItemListView() {
         return _itemList;
+    }
+
+    @Override
+    public ReorderableList getStateListView() {
+        return _tree.getStateListView();
     }
 
     private void updateSelection(int increment) {

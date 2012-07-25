@@ -14,30 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.ui;
 
-import java.awt.Cursor;
-import java.awt.Graphics;
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JTree;
-import javax.swing.SwingUtilities;
-import javax.swing.ToolTipManager;
-import javax.swing.TransferHandler;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
-
-import org.apache.commons.lang.StringEscapeUtils;
-import org.jdesktop.application.Application;
-
 import au.org.ala.delta.editor.ui.dnd.SimpleTransferHandler;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.ui.GenericSearchController;
@@ -45,13 +21,26 @@ import au.org.ala.delta.ui.GenericSearchPredicate;
 import au.org.ala.delta.ui.SearchDialog;
 import au.org.ala.delta.ui.SearchOptions;
 import au.org.ala.delta.util.SearchableModel;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.jdesktop.application.Application;
+
+import javax.swing.*;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * The CharacterTree extends JTree to provide 1-click cell editing and to implement the ReorderableList interface to help our Drag and Drop implementation.
  * 
  * A CharacterTree can behave as both a list of Characters and a list of States depending on the selection and what is being dragged and dropped.
  */
-public class CharacterTree extends JTree implements ReorderableList {
+public class CharacterTree extends JTree {
 
 	private static final long serialVersionUID = 1462521823171738637L;
 	private boolean _doubleProcessingMouseEvent = false;
@@ -66,8 +55,6 @@ public class CharacterTree extends JTree implements ReorderableList {
 
 	private ReorderableList _stateListBehaviour;
 
-	private ReorderableList _reorderableListBehaviour;
-
 	private class StateListBehaviour implements ReorderableList {
 
 		private int _selectedCharacter;
@@ -80,8 +67,13 @@ public class CharacterTree extends JTree implements ReorderableList {
 			_selectedCharacter = pathToCharacterNumber(selectedPath);
 
 			if (selectedPath.getPathCount() >= 3) {
-				int stateNum = ((MultistateStateNode) selectedPath.getPathComponent(2)).getStateNo();
-				return stateNum - 1;
+
+                Object node = selectedPath.getPathComponent(2);
+                if (node instanceof MultistateStateNode) {
+                    int stateNum = ((MultistateStateNode) selectedPath.getPathComponent(2)).getStateNo();
+                    return stateNum - 1;
+                }
+				return 0;
 			}
 
 			return -1;
@@ -119,8 +111,14 @@ public class CharacterTree extends JTree implements ReorderableList {
 
 		@Override
 		public void setSelectionAction(Action action) {
-		}
-	}
+		    getActionMap().put("SelectionAction", action);
+	    }
+
+        @Override
+        public JComponent getListViewComponent() {
+            return CharacterTree.this;
+        }
+    }
 
 	private class CharacterListBehaviour implements ReorderableList {
 		@Override
@@ -167,7 +165,13 @@ public class CharacterTree extends JTree implements ReorderableList {
 
 		@Override
 		public void setSelectionAction(Action action) {
-		}
+            getActionMap().put("SelectionAction", action);
+        }
+
+        @Override
+        public JComponent getListViewComponent() {
+            return CharacterTree.this;
+        }
 	}
 
 	public CharacterTree() {
@@ -176,8 +180,6 @@ public class CharacterTree extends JTree implements ReorderableList {
 		_characterListBehaviour = new CharacterListBehaviour();
 		_stateListBehaviour = new StateListBehaviour();
 
-		_reorderableListBehaviour = _characterListBehaviour;
-		
 		ToolTipManager.sharedInstance().registerComponent(this);
 
 		addMouseListener(new MouseAdapter() {
@@ -211,10 +213,8 @@ public class CharacterTree extends JTree implements ReorderableList {
 						DefaultMutableTreeNode node = (DefaultMutableTreeNode) lastComponent;
 
 						if (node.isLeaf()) {
-							_reorderableListBehaviour = _stateListBehaviour;
 							CharacterTree.super.setTransferHandler(_stateTransferHandler);
 						} else {
-							_reorderableListBehaviour = _characterListBehaviour;
 							CharacterTree.super.setTransferHandler(_characterTransferHandler);
 						}
 					}
@@ -303,31 +303,18 @@ public class CharacterTree extends JTree implements ReorderableList {
 		}
 	}
 
-	@Override
-	public int getSelectedIndex() {
-		return _reorderableListBehaviour.getSelectedIndex();
-	}
+    public ReorderableList getCharacterListView() {
+        return _characterListBehaviour;
+    }
 
-	@Override
-	public void setSelectedIndex(int index) {
-		_reorderableListBehaviour.setSelectedIndex(index);
-	}
-
-	@Override
-	public int getDropLocationIndex(javax.swing.TransferHandler.DropLocation dropLocation) {
-		return _reorderableListBehaviour.getDropLocationIndex(dropLocation);
-	}
-
-	@Override
-	public void setSelectionAction(Action action) {
-		getActionMap().put("SelectionAction", action);
-	}
+    public ReorderableList getStateListView() {
+        return _stateListBehaviour;
+    }
 
 	/**
 	 * Returns the character number of the Character at the supplied TreePath.
 	 * 
-	 * @param location
-	 *            the current drop location.
+	 * @param path the TreePath of interest.
 	 * @return the character number representing the drop position.
 	 */
 	private int pathToCharacterNumber(TreePath path) {
@@ -376,7 +363,7 @@ public class CharacterTree extends JTree implements ReorderableList {
 		@Override
 		protected void selectItem(Character character) {
 			int index = character.getCharacterId() - 1;
-			setSelectedIndex(index);
+			_characterListBehaviour.setSelectedIndex(index);
 			TreePath path = getPathForRow(index);
 			makeVisible(path);
 			scrollPathToVisible(path);
@@ -394,7 +381,7 @@ public class CharacterTree extends JTree implements ReorderableList {
 
 		@Override
 		protected int getSelectedIndex() {
-			return CharacterTree.this.getSelectedIndex();
+			return _characterListBehaviour.getSelectedIndex();
 		}
 
 		@Override

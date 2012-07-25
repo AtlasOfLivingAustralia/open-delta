@@ -14,35 +14,26 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.ui;
 
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.SystemColor;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-
-import javax.swing.Action;
-import javax.swing.JTable;
-import javax.swing.KeyStroke;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
-
+import au.org.ala.delta.editor.model.EditorViewModel;
+import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
+import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
+import au.org.ala.delta.model.format.ItemFormatter;
+import au.org.ala.delta.model.observer.AbstractDataSetObserver;
+import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
+import au.org.ala.delta.ui.AboutBox;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
-import au.org.ala.delta.editor.model.EditorViewModel;
-import au.org.ala.delta.model.Item;
-import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
-import au.org.ala.delta.model.format.ItemFormatter;
-import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
-import au.org.ala.delta.model.observer.AbstractDataSetObserver;
-import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
-import au.org.ala.delta.ui.AboutBox;
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * The TableRowHeader is a JTable suitable for use as a row header for another
@@ -93,6 +84,11 @@ public class TableRowHeader extends JTable implements ReorderableList {
             return ((DropLocation) dropLocation).getRow();
         }
         return -1;
+    }
+
+    @Override
+    public JComponent getListViewComponent() {
+        return this;
     }
 
     /**

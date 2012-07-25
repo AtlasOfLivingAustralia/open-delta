@@ -14,16 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.editor;
 
-import java.awt.event.ActionEvent;
-
-import javax.swing.ActionMap;
-import javax.swing.JComponent;
-import javax.swing.JPopupMenu;
-
-import org.jdesktop.application.Action;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ApplicationContext;
-
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.ReorderableList;
 import au.org.ala.delta.editor.ui.dnd.SimpleTransferHandler;
@@ -34,6 +24,12 @@ import au.org.ala.delta.model.CharacterType;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ApplicationContext;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
 
 /**
  * Handles actions performed on the Characters.
@@ -55,9 +51,7 @@ public class CharacterController {
 		_view = view;
 		_model = model;
 		_context = Application.getInstance().getContext();
-		JComponent viewComponent = (JComponent)_view;
-		
-		viewComponent.setTransferHandler(new CharacterTransferHandler());
+		_view.getListViewComponent().setTransferHandler(new CharacterTransferHandler());
 		_characterActions = _context.getActionMap(CharacterController.class, this);
 		_view.setSelectionAction(_characterActions.get("editCharacter"));
 		_dialogHelper = new au.org.ala.delta.editor.ui.util.MessageDialogHelper();
@@ -257,7 +251,7 @@ public class CharacterController {
 	
 	class PopupBuilder extends PopupMenuListener {
 		public PopupBuilder() {
-			super(null, (JComponent)_view);
+			super(null, _view.getListViewComponent());
 		}
 		
 		@Override

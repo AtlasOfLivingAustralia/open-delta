@@ -14,9 +14,14 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.ui;
 
-import javax.swing.Action;
+import javax.swing.*;
 import javax.swing.TransferHandler.DropLocation;
 
+/**
+ * An interface to be implemented by user interface components presenting lists of Characters, Items or Character
+ * States.
+ * Its use allows the controller classes to be reused across multiple views.
+ */
 public interface ReorderableList {
 	
 	public int getSelectedIndex();
@@ -26,4 +31,6 @@ public interface ReorderableList {
 	public int getDropLocationIndex(DropLocation dropLocation);
 	
 	public void setSelectionAction(Action action);
+
+    public JComponent getListViewComponent();
 }

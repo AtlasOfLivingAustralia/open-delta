@@ -50,6 +50,11 @@ public abstract class AbstractDeltaView extends JInternalFrame implements DeltaV
 		return null;
 	}
 
+    @Override
+    public ReorderableList getStateListView() {
+        return null;
+    }
+
 	@Override
 	public boolean canClose() {
 		return true;

@@ -14,11 +14,13 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.ui;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.SystemColor;
+import javax.swing.*;
+import javax.swing.TransferHandler.DropLocation;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumnModel;
+import java.awt.*;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragGestureEvent;
 import java.awt.dnd.DragGestureListener;
@@ -33,17 +35,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.TooManyListenersException;
-
-import javax.swing.Action;
-import javax.swing.JTable;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
-import javax.swing.TransferHandler;
-import javax.swing.TransferHandler.DropLocation;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableColumnModel;
 
 /**
  * Overrides JTableHeader to provide column reordering via drag and drop in 
@@ -233,6 +224,11 @@ implements DragGestureListener, ListSelectionListener, ReorderableList {
 	public int getDropLocationIndex(DropLocation dropLocation) {
 		return _dropLocation;
 	}
+
+    @Override
+    public JComponent getListViewComponent() {
+        return this;
+    }
 
 	/**
 	 * Registers the action to take when a selection (double click or Enter key) has been made on

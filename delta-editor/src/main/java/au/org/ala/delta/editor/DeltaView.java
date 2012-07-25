@@ -49,6 +49,13 @@ public interface DeltaView {
      */
 	public ReorderableList getCharacterListView();
 
+    /**
+     * A DeltaView may provide an interface that displays a list of Character states - if so this method should return
+     * it so the controller can add appropriate event handlers to the view.
+     * @return the view's implementation of the state list or null if the view does not provide a way to
+     * interact with a list of Character states.
+     */
+    public ReorderableList getStateListView();
 
     /**
      * A DeltaView may provide an interface that displays a list of Items - if so this method should return
