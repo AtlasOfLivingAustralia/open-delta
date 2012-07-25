@@ -217,9 +217,14 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 	}
 	
 	/**
-	 * Saves the model.
+	 * First commits any outstanding edits, then saves the model.  The save will not happen if there are outstanding
+     * validation errors.
 	 */
 	public void save() {
+        if (!commitEditsAndValidate()) {
+            return;
+        }
+
         String name = _dataSet.getName();
         if (!new File(name).exists()) {
 			saveAs();
@@ -229,7 +234,16 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 			_dataSet.setModified(false);
 		}
 	}
-	
+
+    private boolean commitEditsAndValidate() {
+        DeltaView activeView = (DeltaView)getCurrentView();
+
+        if (activeView != null) {
+            return activeView.editsValid();
+        }
+        return true;
+    }
+
 	/**
 	 * Closes all views of the model, asking the user to save first if the model has been
 	 * modified.
@@ -270,6 +284,10 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 	 * Saves the model using a different name.
 	 */
 	public void saveAs() {
+
+        if (!commitEditsAndValidate()) {
+            return;
+        }
 
 		File newFile = _deltaEditor.selectFile(false);
 		

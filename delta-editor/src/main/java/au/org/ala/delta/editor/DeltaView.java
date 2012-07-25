@@ -24,13 +24,47 @@ import au.org.ala.delta.ui.help.HelpController;
  */
 public interface DeltaView {
 
+    /**
+     * @return the title to be displayed for this view.
+     */
 	public String getViewTitle();
+
+    /**
+     * Callback when the view is opened.
+     */
 	public void open();
+
+    /**
+     * Should return true if any edits made on the view are currently valid.  Implementations of this method should
+     * attempt to commit any in progress edits when this method is invoked.
+     * @return false if there are invalid edits current, true otherwise.
+     */
 	public boolean editsValid();
-	
+
+    /**
+     * A DeltaView may provide an interface that displays a list of Characters - if so this method should return
+     * it so the controller can add appropriate event handlers to the view.
+     * @return the view's implementation of the Character list or null if the view does not provide a way to
+     * interact with a list of Characters.
+     */
 	public ReorderableList getCharacterListView();
-	public ReorderableList getItemListView();
-	public boolean canClose();
+
+
+    /**
+     * A DeltaView may provide an interface that displays a list of Items - if so this method should return
+     * it so the controller can add appropriate event handlers to the view.
+     * @return the view's implementation of the Item list or null if the view does not provide a way to
+     * interact with a list of Items.
+     */
+    public ReorderableList getItemListView();
+
+
+    /**
+     * A callback to the view when the view has been attempted to be closed by the user.  If the view shouldn't
+     * be closed (for example there are invalid edits) then this method should return false.
+     * @return true if the view can be closed, false otherwise.
+     */
+    public boolean canClose();
 
     /**
      * Gives the view the opportunity to create the appropriate associations with the HelpController to support

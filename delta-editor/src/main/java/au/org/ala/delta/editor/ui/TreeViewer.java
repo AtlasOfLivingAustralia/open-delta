@@ -260,9 +260,23 @@ public class TreeViewer extends AbstractDeltaView {
         return 0;
     }
 
+    /**
+     * Attempts to commit any current edits in the tree or attribute editor and then returns whether those
+     * edits are valid or not.
+     * @return true if all edits are valid, false otherwise.
+     */
     @Override
     public boolean editsValid() {
-        return _stateEditor.isAttributeValid();
+        boolean valid = true;
+        // Commit any uncommited edit in the tree view.
+        if (_tree.isEditing()) {
+            valid = _tree.stopEditing();
+        }
+        if (valid) {
+            _stateEditor.commitChanges();
+            valid = _stateEditor.isAttributeValid();
+        }
+        return valid;
     }
 
     @Override
@@ -768,6 +782,14 @@ class CharacterTreeModel extends DefaultTreeModel implements SearchableModel<Cha
             removeNodeFromParent(toMove);
             insertNodeInto(toMove, root, charNumber - 1);
         }
+
+        @Override
+        public void itemEdited(DeltaDataSetChangeEvent event) {
+            if (event.getItem() != null) {
+                itemChanged();
+            }
+        }
+
 
         private void updateNode(CharacterTreeNode node, int newCharacterNumber) {
 
