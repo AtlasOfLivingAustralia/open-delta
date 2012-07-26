@@ -23,16 +23,16 @@ import au.org.ala.delta.model.MatchType;
 
 public class SetMatchDirective extends IntkeyDirective {
 
-    private static final String OVERLAP_LETTER = "o";
-    private static final String OVERLAP_WORD = "overlap";
-    private static final String SUBSET_LETTER = "s";
-    private static final String SUBSET_WORD = "subset";
-    private static final String EXACT_LETTER = "e";
-    private static final String EXACT_WORD = "exact";
-    private static final String UNKNOWNS_LETTER = "u";
-    private static final String UNKNOWNS_WORD = "unknowns";
-    private static final String INAPPLICABLES_LETTER = "i";
-    private static final String INAPPLICABLES_WORD = "inapplicables";
+    public static final String OVERLAP_LETTER = "o";
+    public static final String OVERLAP_WORD = "overlap";
+    public static final String SUBSET_LETTER = "s";
+    public static final String SUBSET_WORD = "subset";
+    public static final String EXACT_LETTER = "e";
+    public static final String EXACT_WORD = "exact";
+    public static final String UNKNOWNS_LETTER = "u";
+    public static final String UNKNOWNS_WORD = "unknowns";
+    public static final String INAPPLICABLES_LETTER = "i";
+    public static final String INAPPLICABLES_WORD = "inapplicables";
 
     public SetMatchDirective() {
         super(true, "set", "match");

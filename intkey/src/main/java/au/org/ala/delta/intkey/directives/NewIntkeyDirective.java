@@ -80,6 +80,7 @@ public abstract class NewIntkeyDirective extends IntkeyDirective {
                                     BeanUtils.setProperty(invoc, flag.getName(), flagStringValue);
                                     tokenQueue.remove();
                                     tokenMatched = true;
+                                    stringRepresentationBuilder.append(" ");
                                     stringRepresentationBuilder.append(token);
                                     break;
                                 }
@@ -90,6 +91,7 @@ public abstract class NewIntkeyDirective extends IntkeyDirective {
                                 BeanUtils.setProperty(invoc, flag.getName(), true);
                                 tokenQueue.remove();
                                 tokenMatched = true;
+                                stringRepresentationBuilder.append(" ");
                                 stringRepresentationBuilder.append(token);
                                 break;
                             }

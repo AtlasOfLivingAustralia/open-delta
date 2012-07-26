@@ -104,9 +104,10 @@ public class UIUtils {
             RtfReportDisplayDialog dlg = new RtfReportDisplayDialog(getMainFrame(), new SimpleRtfEditorKit(null), rtfSource, description);
             ((SingleFrameApplication) Application.getInstance()).show(dlg);
         } else if (fileName.toLowerCase().endsWith(".html")) {
-            if (desktop.isSupported(Desktop.Action.BROWSE)) {
-                desktop.browse(fileURL.toURI());
+            if (desktop == null || !desktop.isSupported(Desktop.Action.BROWSE)) {
+                throw new IllegalArgumentException("Desktop is null or browse not supported");
             }
+            desktop.browse(fileURL.toURI());
         } else if (fileName.toLowerCase().endsWith(".ink")) {
             File file = convertURLToFile(fileURL, 60000);
             Utils.launchIntkeyInSeparateProcess(System.getProperty("user.dir"), file.getAbsolutePath());
@@ -116,14 +117,16 @@ public class UIUtils {
             // Open a http link that does not point to a .rtf, .ink or .wav in
             // the browser
             if (fileURL.getProtocol().equalsIgnoreCase("http")) {
-                if (desktop.isSupported(Desktop.Action.BROWSE)) {
-                    desktop.browse(fileURL.toURI());
+                if (desktop == null || !desktop.isSupported(Desktop.Action.BROWSE)) {
+                    throw new IllegalArgumentException("Desktop is null or browse not supported");
                 }
+                desktop.browse(fileURL.toURI());
             } else {
-                if (desktop.isSupported(Desktop.Action.OPEN)) {
-                    File file = convertURLToFile(fileURL, 60000);
-                    desktop.open(file);
+                if (desktop == null || !desktop.isSupported(Desktop.Action.OPEN)) {
+                    throw new IllegalArgumentException("Desktop is null or open not supported");
                 }
+                File file = convertURLToFile(fileURL, 60000);
+                desktop.open(file);
             }
         }
     }
@@ -165,9 +168,10 @@ public class UIUtils {
         helpController.helpAction().actionPerformed(event);
         helpController.displayHelpTopic(activationWindow, helpID);
     }
-    
+
     /**
      * For a given directive, return the helpID for the directive
+     * 
      * @param directiveName
      * @return the helpID for the directive
      */

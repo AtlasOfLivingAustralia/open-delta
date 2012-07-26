@@ -48,6 +48,7 @@ import au.org.ala.delta.intkey.LongRunningDirectiveSwingWorker;
 import au.org.ala.delta.intkey.directives.DirectivePopulator;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParseException;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParser;
+import au.org.ala.delta.intkey.directives.SetMatchDirective;
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.DirectiveInvocationProgressHandler;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
@@ -1099,7 +1100,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         if (_dataset != null) {
             updateUI();
         }
-        
+
         appendToLog(UIUtils.getResourceString("ErrorToleranceSet.log", _tolerance));
     }
 
@@ -1307,6 +1308,20 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
 
         updateSpecimenMatchSettings();
+        
+        // Write a log message informing if the new match setting.
+        List<String> matchSettingWords = new ArrayList<String>();
+        if (matchInapplicables) {
+            matchSettingWords.add(SetMatchDirective.INAPPLICABLES_WORD);
+        }
+        
+        if (matchUnknowns) {
+            matchSettingWords.add(SetMatchDirective.UNKNOWNS_WORD);
+        }
+        
+        matchSettingWords.add(matchType.toString().toLowerCase());
+        
+        appendToLog(UIUtils.getResourceString("SetMatch.log", StringUtils.join(matchSettingWords, ", ")));
     }
 
     // Update the specimen with new match settings. This needs to be called each
@@ -1325,7 +1340,7 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     public synchronized void setDiagType(DiagType diagType) {
         this._diagType = diagType;
-        
+
         appendToLog(UIUtils.getResourceString("DiagtypeSet.log", diagType.toString()));
     }
 
@@ -1572,7 +1587,7 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     public synchronized void setImagePaths(List<String> imagePaths) {
         _imagePathLocations = new ArrayList<String>(imagePaths);
-        
+
         appendToLog(UIUtils.getResourceString("ImagepathSet.log", StringUtils.join(imagePaths, ";")));
     }
 

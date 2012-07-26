@@ -15,9 +15,6 @@ public class KeyPrintWidthDirective extends AbstractIntegerDirective {
 
     @Override
     protected void processInteger(DeltaContext context, int value) throws Exception {
-        if (value < 0) {
-            throw new IllegalArgumentException("Print width cannot be negative");
-        }
         context.getOutputFileSelector().setOutputWidth(value);
     }
 

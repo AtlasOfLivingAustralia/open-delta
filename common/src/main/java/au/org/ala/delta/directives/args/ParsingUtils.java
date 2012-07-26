@@ -17,6 +17,7 @@ package au.org.ala.delta.directives.args;
 import au.org.ala.delta.directives.ParsingContext;
 import au.org.ala.delta.directives.validation.DirectiveError;
 import au.org.ala.delta.directives.validation.DirectiveError.Error;
+import au.org.ala.delta.directives.validation.RealValidator;
 
 import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.directives.validation.IntegerValidator;
@@ -45,4 +46,23 @@ public class ParsingUtils {
 		}
 
 	}
+	
+	   public static double readReal(ParsingContext context, RealValidator validator, String value) throws DirectiveException {
+	        try {
+	            int currentPos = (int)context.getCurrentOffset();
+	            double realValue = Double.parseDouble(value);
+	            if (validator != null) {
+	                DirectiveError error = validator.validateReal(realValue);
+	                if (error != null) {
+	                    error.setPosition(currentPos);
+	                    throw error.asException();
+	                }
+	            }
+	            return realValue;
+	        }
+	        catch (NumberFormatException e) {
+	            throw DirectiveError.asException(Error.INTEGER_EXPECTED, (int)context.getCurrentOffset());
+	        }
+
+	    }
 }

@@ -16,6 +16,7 @@ package au.org.ala.delta.intkey.directives.invocation;
 
 import au.org.ala.delta.best.DiagType;
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.MatchType;
 
 public class RestartDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
@@ -23,7 +24,7 @@ public class RestartDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
     boolean _identificationParameters = false;
     boolean _queryParameters = false;
     boolean _zeroTolerance = false;
-    
+
     public void setIdentificationParameters(boolean identificationParameters) {
         this._identificationParameters = identificationParameters;
     }
@@ -38,23 +39,45 @@ public class RestartDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
     @Override
     public boolean execute(IntkeyContext context) {
-        
+
         if (_identificationParameters) {
             context.setMatchSettings(true, true, MatchType.OVERLAP);
             context.setDiagType(DiagType.SPECIMENS);
-        }
-        
-        if (_queryParameters) {
+        } else if (_queryParameters) {
             context.setMatchSettings(false, false, MatchType.OVERLAP);
             context.setDiagType(DiagType.TAXA);
         }
-        
+
         context.restartIdentification();
-        
+
         if (_zeroTolerance) {
             context.setTolerance(0);
         }
-        
+
+        // Write a message to the log
+        int numIncludedTaxa = context.getIncludedTaxa().size();
+        int numExcludedTaxa = context.getExcludedTaxa().size();
+
+        if (_identificationParameters) {
+            if (numExcludedTaxa > 0) {
+                context.appendToLog(UIUtils.getResourceString("NewIdentificationTaxaExcluded.log", numIncludedTaxa));
+            } else {
+                context.appendToLog(UIUtils.getResourceString("NewIdentification.log", numIncludedTaxa));
+            }
+        } else if (_queryParameters) {
+            if (numExcludedTaxa > 0) {
+                context.appendToLog(UIUtils.getResourceString("NewQueryTaxaExcluded.log", numIncludedTaxa));
+            } else {
+                context.appendToLog(UIUtils.getResourceString("NewQuery.log", numIncludedTaxa));
+            }
+        } else {
+            if (numExcludedTaxa > 0) {
+                context.appendToLog(UIUtils.getResourceString("SpecimenDataClearedTaxaExcluded.log", numIncludedTaxa));
+            } else {
+                context.appendToLog(UIUtils.getResourceString("SpecimenDataCleared.log", numIncludedTaxa));
+            }
+        }
+
         return true;
     }
 }

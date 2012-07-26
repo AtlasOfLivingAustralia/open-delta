@@ -20,8 +20,6 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.Line;
-import javax.sound.sampled.LineEvent;
-import javax.sound.sampled.LineListener;
 import javax.sound.sampled.LineUnavailableException;
 
 /**
@@ -48,17 +46,6 @@ public class AudioPlayer {
 			Clip clip = (Clip) line;
 			AudioInputStream ais = AudioSystem.getAudioInputStream(sound);
 			clip.open(ais);
-
-			clip.addLineListener(new LineListener() {
-				public void update(LineEvent evt) {
-
-					if (evt.getType() == LineEvent.Type.STOP) {
-						evt.getLine().close();
-					}
-
-				}
-
-			});
 
 			clip.start();
 		} catch (LineUnavailableException laex) {

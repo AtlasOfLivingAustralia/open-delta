@@ -14,6 +14,9 @@
  ******************************************************************************/
 package au.org.ala.delta.key.directives;
 
+import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.validation.RealRangeValidator;
+import au.org.ala.delta.directives.validation.RealValidator;
 import au.org.ala.delta.key.KeyContext;
 
 /**
@@ -30,4 +33,11 @@ public class ABaseDirective extends AbstractRealDirective {
     protected void processReal(KeyContext context, double value) throws Exception {
         context.setABase(value);
     }
+
+    @Override
+    protected RealValidator createValidator(DeltaContext context) {
+        return new RealRangeValidator(1.0, 5.0);
+    }
+    
+    
 }

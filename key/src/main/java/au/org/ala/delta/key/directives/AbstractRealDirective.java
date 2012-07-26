@@ -16,11 +16,15 @@ package au.org.ala.delta.key.directives;
 
 import java.text.ParseException;
 
+import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.directives.args.DirectiveArgType;
 import au.org.ala.delta.directives.args.DirectiveArguments;
+import au.org.ala.delta.directives.args.ParsingUtils;
 import au.org.ala.delta.directives.validation.DirectiveError;
+import au.org.ala.delta.directives.validation.IntegerValidator;
 import au.org.ala.delta.directives.validation.DirectiveError.Error;
+import au.org.ala.delta.directives.validation.RealValidator;
 import au.org.ala.delta.key.KeyContext;
 
 public abstract class AbstractRealDirective extends AbstractDirective<KeyContext> {
@@ -46,11 +50,7 @@ public abstract class AbstractRealDirective extends AbstractDirective<KeyContext
 
     @Override
     public void parse(KeyContext context, String data) throws ParseException {
-        try {
-            _value = Double.parseDouble(data.trim());
-        } catch (Exception ex) {
-            throw DirectiveError.asException(Error.INVALID_REAL_NUMBER, 0, context.getCurrentParsingContext().getCurrentOffset());
-        }
+        _value = ParsingUtils.readReal(context.getCurrentParsingContext(), createValidator(context), data.trim());
     }
     
     @Override
@@ -60,5 +60,12 @@ public abstract class AbstractRealDirective extends AbstractDirective<KeyContext
     }
 
     protected abstract void processReal(KeyContext context, double value) throws Exception;
+    
+    /**
+     * Subclasses should override this method to create a validator appropriate for the directive type.
+     * @param context the current parsing/processing context.
+     * @return either an appropriate instance of IntegerValidator or null if validation is not required.
+     */
+    protected abstract RealValidator createValidator(DeltaContext context);
 
 }

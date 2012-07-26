@@ -30,6 +30,7 @@ import javax.swing.border.EmptyBorder;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
+import java.awt.Dimension;
 
 public class OnOffPromptDialog extends IntkeyDialog {
 
@@ -50,6 +51,7 @@ public class OnOffPromptDialog extends IntkeyDialog {
 
     public OnOffPromptDialog(Frame owner, String title, boolean initialValue) {
         super(owner, true);
+        setMinimumSize(new Dimension(330, 144));
 
         setTitle(title);
 
