@@ -86,6 +86,13 @@ public class ItemDescriptions extends AbstractTextDirective {
         return item;
     }
 
+    protected void checkItemCount(DeltaContext context, int itemIndex, int position) throws DirectiveException {
+        if (itemIndex > context.getMaximumNumberOfItems()) {
+            throw new DirectiveError(DirectiveError.Error.TOO_MANY_ITEMS, position).asException();
+        }
+    }
+
+
 
     class ItemsParser extends AbstractStreamParser {
 
@@ -109,14 +116,13 @@ public class ItemDescriptions extends AbstractTextDirective {
             int itemIndex = 1;
             while (skipTo('#') && _currentInt >= 0) {
 
-                if (itemIndex > getContext().getMaximumNumberOfItems()) {
-                    throw new DirectiveError(DirectiveError.Error.TOO_MANY_ITEMS, _position).asException();
-                }
+                checkItemCount(getContext(), itemIndex, _position);
 
                 parseItem(itemIndex);
                 itemIndex++;
             }
         }
+
 
         private void parseItem(int itemIndex) throws ParseException {
 
@@ -134,62 +140,66 @@ public class ItemDescriptions extends AbstractTextDirective {
             item.setDescription(cleanWhiteSpace(itemName.trim()));
             skipWhitespace();
             while (_currentChar != '#' && _currentInt >= 0) {
-                int charIdx = readInteger();
-
-                long oldOffset = _position;
-
-                au.org.ala.delta.model.Character ch = getContext().getCharacter(charIdx);
-                String strValue = null;
-                String comment = null;
-
-                if (_currentChar == '<') {
-                    comment = readComment();
-                }
-                if (_currentChar == ',') {
-                    readNext();
-                    strValue = readStateValue(ch);
-                } else if (isWhiteSpace(_currentChar)) {
-                    if (comment == null) {
-                        strValue = "U";
-                    } else {
-                        strValue = "";
-                    }
-                }
-
-                StringBuilder value = new StringBuilder();
-                if (comment != null) {
-                    value.append(comment);
-                }
-                if (strValue != null) {
-                    value.append(strValue);
-                }
-
-                Attribute attribute;
-                if (encounteredChars.contains(ch.getCharacterId())) {
-                    if (!_allowDuplicates) {
-                        throw DirectiveError.asException(DirectiveError.Error.CHARACTER_ALREADY_SPECIFIED, _position, ch.getCharacterId());
-                    } else {
-                        attribute = dataSet.getAttribute(item.getItemNumber(), ch.getCharacterId());
-                        getContext().addError(new DirectiveError(DirectiveError.Warning.EQUIVALENT_DIRECTIVE_USED, _position, ch.getCharacterId()));
-                    }
-                } else {
-                    encounteredChars.add(ch.getCharacterId());
-                    attribute = dataSet.addAttribute(item.getItemNumber(), ch.getCharacterId());
-                }
-
-                try {
-                    String theValue = value.toString();
-                    if (_normalizeBeforeParsing) {
-                        theValue = cleanWhiteSpace(theValue.trim());
-                    }
-                    attribute.setValueFromString(theValue);
-                } catch (DirectiveException e) {
-                    e.getError().setPosition(e.getErrorOffset() + oldOffset + 1);
-                    getContext().addError(e.getError());
-                }
-
-                skipWhitespace();
+                parseAttribute(encounteredChars, dataSet, item);
             }
+        }
+
+        private void parseAttribute(Set<Integer> encounteredChars, MutableDeltaDataSet dataSet, Item item) throws ParseException {
+            int charIdx = readInteger();
+
+            long oldOffset = _position;
+
+            Character ch = getContext().getCharacter(charIdx);
+            String strValue = null;
+            String comment = null;
+
+            if (_currentChar == '<') {
+                comment = readComment();
+            }
+            if (_currentChar == ',') {
+                readNext();
+                strValue = readStateValue(ch);
+            } else if (isWhiteSpace(_currentChar)) {
+                if (comment == null) {
+                    strValue = "U";
+                } else {
+                    strValue = "";
+                }
+            }
+
+            StringBuilder value = new StringBuilder();
+            if (comment != null) {
+                value.append(comment);
+            }
+            if (strValue != null) {
+                value.append(strValue);
+            }
+
+            Attribute attribute;
+            if (encounteredChars.contains(ch.getCharacterId())) {
+                if (!_allowDuplicates) {
+                    throw DirectiveError.asException(DirectiveError.Error.CHARACTER_ALREADY_SPECIFIED, _position, ch.getCharacterId());
+                } else {
+                    attribute = dataSet.getAttribute(item.getItemNumber(), ch.getCharacterId());
+                    getContext().addError(new DirectiveError(DirectiveError.Warning.CHARACTER_ALREADY_SPECIFIED, _position, ch.getCharacterId()));
+                }
+            } else {
+                encounteredChars.add(ch.getCharacterId());
+                attribute = dataSet.addAttribute(item.getItemNumber(), ch.getCharacterId());
+            }
+
+            try {
+                String theValue = value.toString();
+                if (_normalizeBeforeParsing) {
+                    theValue = cleanWhiteSpace(theValue.trim());
+                }
+                attribute.setValueFromString(theValue);
+            } catch (DirectiveException e) {
+                e.getError().setPosition(e.getErrorOffset() + oldOffset + 1);
+                getContext().addError(e.getError());
+            }
+
+            skipWhitespace();
         }
 
         private boolean isVariant(int itemIndex) throws ParseException {

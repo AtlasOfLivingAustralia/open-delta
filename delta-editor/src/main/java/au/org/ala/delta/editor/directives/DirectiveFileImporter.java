@@ -16,7 +16,6 @@ package au.org.ala.delta.editor.directives;
 
 import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.directives.DirectiveParser;
-import au.org.ala.delta.directives.ItemDescriptions;
 import au.org.ala.delta.editor.slotfile.Directive;
 import au.org.ala.delta.editor.slotfile.DirectiveArgType;
 import au.org.ala.delta.editor.slotfile.DirectiveInstance;
@@ -118,11 +117,9 @@ public class DirectiveFileImporter extends DirectiveParser<ImportContext> {
 	private void registerInternalDirective(Directive directive) throws InstantiationException, IllegalAccessException {
 		
 		Class<? extends AbstractDirective<?>> dirClass = directive.getImplementationClass();
-		if (dirClass.equals(ItemDescriptions.class)) {
-			registerDirective(new ItemDescriptions(true));
-		} else {
-			registerDirective(dirClass.newInstance());
-		}
+
+	    registerDirective(dirClass.newInstance());
+
 	}
 	
 	public Directive typeOf(AbstractDirective<?> directive) {

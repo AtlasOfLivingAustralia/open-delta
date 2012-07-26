@@ -14,47 +14,12 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile.directive;
 
-import java.util.Arrays;
-import java.util.Comparator;
-
-import au.org.ala.delta.directives.ApplicableCharacters;
-import au.org.ala.delta.directives.CharacterForTaxonImages;
-import au.org.ala.delta.directives.CharacterImages;
-import au.org.ala.delta.directives.CharacterList;
-import au.org.ala.delta.directives.CharacterNotes;
-import au.org.ala.delta.directives.CharacterReliabilities;
-import au.org.ala.delta.directives.CharacterTypes;
-import au.org.ala.delta.directives.CharacterWeights;
-import au.org.ala.delta.directives.Comment;
-import au.org.ala.delta.directives.DataBufferSize;
-import au.org.ala.delta.directives.DependentCharacters;
-import au.org.ala.delta.directives.ExcludeCharacters;
-import au.org.ala.delta.directives.Heading;
-import au.org.ala.delta.directives.ImplicitValues;
-import au.org.ala.delta.directives.InapplicableCharacters;
-import au.org.ala.delta.directives.InputFile;
-import au.org.ala.delta.directives.InsertImplicitValues;
-import au.org.ala.delta.directives.ItemDescriptions;
-import au.org.ala.delta.directives.ItemSubHeadings;
-import au.org.ala.delta.directives.MandatoryCharacters;
-import au.org.ala.delta.directives.MaximumNumberOfItems;
-import au.org.ala.delta.directives.MaximumNumberOfStates;
-import au.org.ala.delta.directives.NewParagraphAtCharacters;
-import au.org.ala.delta.directives.NumberOfCharacters;
-import au.org.ala.delta.directives.NumbersOfStates;
-import au.org.ala.delta.directives.OmitCharacterNumbers;
-import au.org.ala.delta.directives.OmitInapplicables;
-import au.org.ala.delta.directives.OmitInnerComments;
-import au.org.ala.delta.directives.OmitTypeSettingMarks;
-import au.org.ala.delta.directives.OutputFormatHtml;
-import au.org.ala.delta.directives.OverlayFonts;
-import au.org.ala.delta.directives.PrintFile;
-import au.org.ala.delta.directives.PrintWidth;
-import au.org.ala.delta.directives.ReplaceAngleBrackets;
-import au.org.ala.delta.directives.Show;
-import au.org.ala.delta.directives.TypeSettingMarks;
+import au.org.ala.delta.directives.*;
 import au.org.ala.delta.editor.slotfile.Directive;
 import au.org.ala.delta.editor.slotfile.DirectiveArgType;
+
+import java.util.Arrays;
+import java.util.Comparator;
 
 public class ConforDirType {
 	
@@ -273,7 +238,7 @@ public class ConforDirType {
         new Directive(new String[] {"INSERT", "REDUNDANT", "VARIANT", "ATTRIBUTES"}, 4, ConforDirType.INSERT_REDUNDANT_VARIANT_ATTRIBUTES, DirectiveArgType.DIRARG_NONE, new DirInDefault(), new DirOutDefault()),
         new Directive(new String[] {"INTKEY", "OUTPUT", "FILE", ""}, 0, ConforDirType.INTKEY_OUTPUT_FILE, DirectiveArgType.DIRARG_FILE, new DirInDefault(), new DirOutDefault()),
         new Directive(new String[] {"ITEM", "ABUNDANCES", "", ""}, 4, ConforDirType.ITEM_ABUNDANCES, DirectiveArgType.DIRARG_ITEMREALLIST, new DirInDefault(), new DirOutDefault()),
-        new Directive(new String[] {"ITEM", "DESCRIPTIONS", "", ""}, 5, ConforDirType.ITEM_DESCRIPTIONS, DirectiveArgType.DIRARG_INTERNAL, ItemDescriptions.class, new DirInItemDescriptions(), new DirOutItemDescriptions()),
+        new Directive(new String[] {"ITEM", "DESCRIPTIONS", "", ""}, 5, ConforDirType.ITEM_DESCRIPTIONS, DirectiveArgType.DIRARG_INTERNAL, DirInItemDescriptions.class, new DirInItemDescriptions(), new DirOutItemDescriptions()),
         new Directive(new String[] {"ITEM", "HEADINGS", "", ""}, 4, ConforDirType.ITEM_HEADINGS, DirectiveArgType.DIRARG_ITEMTEXTLIST, new DirInDefault(), new DirOutDefault()),
         new Directive(new String[] {"ITEM", "OUTPUT", "FILES", ""}, 4, ConforDirType.ITEM_OUTPUT_FILES, DirectiveArgType.DIRARG_ITEMFILELIST, new DirInDefault(), new DirOutDefault()),
         new Directive(new String[] {"ITEM", "SUBHEADINGS", "", ""}, 4, ConforDirType.ITEM_SUBHEADINGS, DirectiveArgType.DIRARG_CHARTEXTLIST, ItemSubHeadings.class, new DirInDefault(), new DirOutDefault()),
