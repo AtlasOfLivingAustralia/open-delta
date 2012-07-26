@@ -38,7 +38,7 @@ public class SelectionList extends JList implements ReorderableList {
 	 */
 	public void setSelectionAction(Action action) {
 		addMouseListener(new DoubleClickToAction());
-		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), SELECTION_ACTION_NAME);
+		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.CTRL_MASK), SELECTION_ACTION_NAME);
 		getActionMap().put(SELECTION_ACTION_NAME, action);
 	}
 	

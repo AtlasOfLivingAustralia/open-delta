@@ -60,6 +60,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -219,6 +220,23 @@ public class TreeViewer extends AbstractDeltaView {
 
         });
 
+        Action advanceSelection = new AbstractAction("advanceSelection") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                updateCharacterSelection(1);
+            }
+        };
+        Action reverseSelection = new AbstractAction("reverseSelection") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                updateCharacterSelection(-1);
+            }
+        };
+
+        _tree.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), advanceSelection.getValue(Action.NAME));
+        _tree.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.SHIFT_MASK), reverseSelection.getValue(Action.NAME));
+        _tree.getActionMap().put(advanceSelection.getValue(Action.NAME), advanceSelection);
+        _tree.getActionMap().put(reverseSelection.getValue(Action.NAME), reverseSelection);
     }
 
     @Override
@@ -240,9 +258,7 @@ public class TreeViewer extends AbstractDeltaView {
         switch (EditorPreferences.getEditorAdvanceMode()) {
         case Character:
             // find the next character in the tree and select it...
-            int nextCharRow = findCharacterRow(increment);
-            _tree.setSelectionRow(nextCharRow);
-            _tree.scrollRowToVisible(nextCharRow);
+            updateCharacterSelection(increment);
             break;
         case Item:
             int candidateIndex = _itemList.getSelectedIndex() + increment;
@@ -252,6 +268,13 @@ public class TreeViewer extends AbstractDeltaView {
             }
             break;
         }
+    }
+
+    private void updateCharacterSelection(int increment) {
+        int nextCharRow = findCharacterRow(increment);
+        _tree.setSelectionRow(nextCharRow);
+        _tree.scrollRowToVisible(nextCharRow);
+
     }
 
     private int findCharacterRow(int searchIncrement) {
@@ -303,9 +326,16 @@ public class TreeViewer extends AbstractDeltaView {
      * The reason for this is to duplicate the behaviour of the original DELTA Editor.
      */
     public class KeyEventDispatcher extends KeyAdapter {
+
+        boolean _preventDispatch = false;
+        @Override
+        public void keyPressed(KeyEvent e) {
+            _preventDispatch = !shouldRetargetKeyEvent(e);
+        }
+
         @Override
         public void keyTyped(KeyEvent e) {
-            if (shouldRetargetKeyEvent(e)) {
+            if (!_preventDispatch && shouldRetargetKeyEvent(e)) {
                 _stateEditor.acceptKeyEvent(e);
                 e.consume();
             }
@@ -319,6 +349,11 @@ public class TreeViewer extends AbstractDeltaView {
          * @return true if the KeyEvent should be dispatched to the AttributeEditor.
          */
         private boolean shouldRetargetKeyEvent(KeyEvent e) {
+
+            final int COMMAND_KEYS_MASK = KeyEvent.ALT_MASK | KeyEvent.CTRL_MASK | KeyEvent.META_MASK;
+            if ((e.getModifiers() & COMMAND_KEYS_MASK) > 0) {
+                return false;
+            }
 
             KeyStroke ks = KeyStroke.getKeyStrokeForEvent(e);
 

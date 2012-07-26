@@ -32,6 +32,7 @@ import org.jdesktop.application.Application;
 
 import javax.swing.*;
 import javax.swing.text.Position;
+import java.awt.event.KeyEvent;
 
 /**
  * A specialized List for displaying DELTA Items.
@@ -154,6 +155,9 @@ public class ItemList extends SelectionList {
 			getActionMap().put("findNext", findNext);
 		}
 
+        // The actions "selectNextRow" and "selectPreviousRow" are defined in the BasicListUI
+        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "selectNextRow");
+        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.SHIFT_MASK), "selectPreviousRow");
 	}
 	
 	public void setDataSet(EditorViewModel dataSet) {
