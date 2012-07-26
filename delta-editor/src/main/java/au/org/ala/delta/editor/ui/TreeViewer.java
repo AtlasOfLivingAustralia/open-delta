@@ -81,7 +81,7 @@ public class TreeViewer extends AbstractDeltaView {
     private static final long serialVersionUID = 1L;
 
     private EditorViewModel _dataModel;
-    private AttributeEditor _stateEditor;
+    private AttributeEditor _attributeEditor;
     private CharacterTree _tree;
     private ItemList _itemList;
 
@@ -150,7 +150,7 @@ public class TreeViewer extends AbstractDeltaView {
                 } else {
                     _dataModel.setSelectedCharacter(null);
                 }
-                _stateEditor.bind(_dataModel.getSelectedCharacter(), _dataModel.getSelectedItem());
+                _attributeEditor.bind(_dataModel.getSelectedCharacter(), _dataModel.getSelectedItem());
             }
         });
 
@@ -167,7 +167,7 @@ public class TreeViewer extends AbstractDeltaView {
 
                 treeModel.itemChanged();
                 _tree.repaint();
-                _stateEditor.bind(_dataModel.getSelectedCharacter(), _dataModel.getSelectedItem());
+                _attributeEditor.bind(_dataModel.getSelectedCharacter(), _dataModel.getSelectedItem());
             }
         });
 
@@ -178,17 +178,17 @@ public class TreeViewer extends AbstractDeltaView {
         content.setRightComponent(new JScrollPane(_tree));
         content.setLeftComponent(new JScrollPane(_itemList));
 
-        _stateEditor = new AttributeEditor(_dataModel, this);
+        _attributeEditor = new AttributeEditor(_dataModel, this);
 
         final JSplitPane divider = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 
         divider.setResizeWeight(1);
 
         divider.setTopComponent(content);
-        divider.setBottomComponent(_stateEditor);
+        divider.setBottomComponent(_attributeEditor);
         divider.setBorder(null);
 
-        _stateEditor.add(new AttributeEditorListener() {
+        _attributeEditor.add(new AttributeEditorListener() {
             @Override
             public void advance() {
                 updateSelection(1);
@@ -308,8 +308,8 @@ public class TreeViewer extends AbstractDeltaView {
             valid = _tree.stopEditing();
         }
         if (valid) {
-            _stateEditor.commitChanges();
-            valid = _stateEditor.isAttributeValid();
+            _attributeEditor.commitChanges();
+            valid = _attributeEditor.isAttributeValid();
         }
         return valid;
     }
@@ -336,7 +336,7 @@ public class TreeViewer extends AbstractDeltaView {
         @Override
         public void keyTyped(KeyEvent e) {
             if (!_preventDispatch && shouldRetargetKeyEvent(e)) {
-                _stateEditor.acceptKeyEvent(e);
+                _attributeEditor.acceptKeyEvent(e);
                 e.consume();
             }
         }
