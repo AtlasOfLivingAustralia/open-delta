@@ -135,14 +135,7 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (isSelectionNavigationKeyCombination(e)) {
-					
-					InputVerifier validator = _textPane.getInputVerifier();
-					if (validator != null) {
-						if (!validator.verify(_textPane)) {
-							e.consume();
-							return;
-						}
-					}
+
 					if (commitChanges()) {
 						
 						if (EditorPreferences.getEditorAdvanceMode() == EditorAdvanceMode.None) {
@@ -158,16 +151,14 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 							}
 						}
 					}
+                    else {
+                        e.consume();
+                    }
 				}
 				
 				if (noModifiersOrShift(e.getModifiers()) && e.getKeyCode() == KeyEvent.VK_ESCAPE) {
 					e.consume();
-					InputVerifier validator = _textPane.getInputVerifier();
-					if (validator != null) {
-						if (!validator.verify(_textPane)) {
-							return;
-						}
-					}
+
 					if (commitChanges()) {
 						fireFocusOnViewer();
 					}
@@ -295,7 +286,8 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 	 * @param item the Item to edit.
 	 */
 	public void bind(Character ch, Item item) {
-		if (!_valid) {
+
+        if (!_valid) {
 			return;
 		}
 		
@@ -435,13 +427,21 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 
 		try {
 			_committing = true;
-			if (!_valid || _item == null) {
-				return false;
-			}
-	
+
+            if ((_item == null) || (_character == null)) {
+                return false;
+            }
+            InputVerifier validator = _textPane.getInputVerifier();
+            if (validator != null) {
+                if (!validator.verify(_textPane)) {
+                    return false;
+                }
+            }
+
 			if (!_modified) {
 				return true;
 			}
+
 	
 			try {
 				String attributeText = _textPane.getRtfTextBody();

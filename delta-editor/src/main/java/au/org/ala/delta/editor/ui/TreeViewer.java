@@ -308,8 +308,7 @@ public class TreeViewer extends AbstractDeltaView {
             valid = _tree.stopEditing();
         }
         if (valid) {
-            _attributeEditor.commitChanges();
-            valid = _attributeEditor.isAttributeValid();
+            valid = _attributeEditor.commitChanges();
         }
         return valid;
     }

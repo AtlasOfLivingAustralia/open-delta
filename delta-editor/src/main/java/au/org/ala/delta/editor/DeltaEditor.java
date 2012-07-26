@@ -30,6 +30,7 @@ import au.org.ala.delta.ui.util.IconHelper;
 import au.org.ala.delta.ui.util.UIUtils;
 import au.org.ala.delta.util.IProgressObserver;
 import com.l2fprod.common.swing.JFontChooser;
+import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ProxyActions;
@@ -571,6 +572,7 @@ public class DeltaEditor extends InternalFrameApplication implements PreferenceC
             catch (Throwable e) {
 
                 failed(e);
+                e.printStackTrace();
             }
 		}
 
@@ -580,7 +582,11 @@ public class DeltaEditor extends InternalFrameApplication implements PreferenceC
 		@Override
 		protected void failed(Throwable cause) {
 
-			JOptionPane.showMessageDialog(getMainFrame(), cause.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
+            String message = cause.getMessage();
+            if (StringUtils.isEmpty(message)) {
+                message = "An internal error occured.";
+            }
+			JOptionPane.showMessageDialog(getMainFrame(), message, getTitle(), JOptionPane.ERROR_MESSAGE);
 		}
 
 		@Override
