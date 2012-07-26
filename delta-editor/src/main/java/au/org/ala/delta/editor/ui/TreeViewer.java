@@ -132,6 +132,8 @@ public class TreeViewer extends AbstractDeltaView {
         _tree.setCellEditor(new DeltaTreeEditor(_tree, renderer));
         _tree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
 
+            private TreePath _currentSelection;
+
             @Override
             public void valueChanged(TreeSelectionEvent e) {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) _tree.getLastSelectedPathComponent();
@@ -140,17 +142,32 @@ public class TreeViewer extends AbstractDeltaView {
                     return;
                 }
 
-                if (node instanceof CharacterTreeNode) {
-                    _dataModel.setSelectedCharacter(((CharacterTreeNode) node).getCharacter());
-                } else if (node.getParent() instanceof CharacterTreeNode) {
-                    _dataModel.setSelectedCharacter(((CharacterTreeNode) node.getParent()).getCharacter());
-                    if (node instanceof MultistateStateNode) {
-                        _dataModel.setSelectedState(((MultistateStateNode) node).getStateNo());
-                    }
-                } else {
-                    _dataModel.setSelectedCharacter(null);
+                if (_currentSelection != null && _currentSelection.equals(e.getNewLeadSelectionPath())) {
+                    return;
                 }
-                _attributeEditor.bind(_dataModel.getSelectedCharacter(), _dataModel.getSelectedItem());
+                Character newSelection = null;
+                int newStateSelection = -1;
+                if (node instanceof CharacterTreeNode) {
+                    newSelection = ((CharacterTreeNode) node).getCharacter();
+                } else if (node.getParent() instanceof CharacterTreeNode) {
+                    newSelection = ((CharacterTreeNode) node.getParent()).getCharacter();
+                    if (node instanceof MultistateStateNode) {
+                        newStateSelection = ((MultistateStateNode) node).getStateNo();
+                    }
+                }
+                if (editsValid()) {
+                    _currentSelection = e.getNewLeadSelectionPath();
+                    _dataModel.setSelectedCharacter(newSelection);
+                    _dataModel.setSelectedState(newStateSelection);
+
+                    _attributeEditor.bind(_dataModel.getSelectedCharacter(), _dataModel.getSelectedItem());
+                }
+                else {
+
+                    _tree.setSelectionPath(e.getOldLeadSelectionPath());
+
+                }
+
             }
         });
 
@@ -160,7 +177,17 @@ public class TreeViewer extends AbstractDeltaView {
             public void valueChanged(ListSelectionEvent e) {
 
                 int selectedItemNum = _itemList.getSelectedIndex() + 1;
-                if (selectedItemNum <= 0) {
+                Item item = _dataModel.getSelectedItem();
+                int previousSelectedItem = -1;
+                if (item != null) {
+                    previousSelectedItem = item.getItemNumber();
+                }
+
+                if (selectedItemNum <= 0 || selectedItemNum == previousSelectedItem) {
+                    return;
+                }
+                if (!editsValid()) {
+                    _itemList.setSelectedIndex(previousSelectedItem-1);
                     return;
                 }
                 _dataModel.setSelectedItem(_dataModel.getItem(selectedItemNum));

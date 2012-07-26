@@ -429,7 +429,7 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 			_committing = true;
 
             if ((_item == null) || (_character == null)) {
-                return false;
+                return true;
             }
             InputVerifier validator = _textPane.getInputVerifier();
             if (validator != null) {

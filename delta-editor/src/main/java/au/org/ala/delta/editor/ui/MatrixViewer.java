@@ -302,6 +302,8 @@ public class MatrixViewer extends AbstractDeltaView {
 		return _fixedColumns;
 	}
 
+
+
 	/**
 	 * Updates the current table selection index.
 	 * 
@@ -367,8 +369,9 @@ public class MatrixViewer extends AbstractDeltaView {
 
 	@Override
 	public boolean editsValid() {
-		return _attributeEditor.isAttributeValid();
+		return _attributeEditor.commitChanges();
 	}
+
 
 	@Override
 	public String getViewTitle() {

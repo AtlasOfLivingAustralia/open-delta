@@ -196,7 +196,6 @@ public class TextComponentValidator extends InputVerifier {
 	}
 
     protected void displayMessage(JComponent component) {
-        System.out.println(component.getParent());
         if (component.getParent() instanceof JViewport) {
             _errorMessageDisplay.showAbove((JViewport)component.getParent());
         }
