@@ -14,16 +14,14 @@
  ******************************************************************************/
 package au.org.ala.delta.editor;
 
-import java.awt.event.ActionEvent;
-
-import javax.swing.JPopupMenu;
-
-import org.jdesktop.application.Action;
-
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.CharacterTree;
 import au.org.ala.delta.editor.ui.ReorderableList;
 import au.org.ala.delta.editor.ui.util.MenuBuilder;
+import org.jdesktop.application.Action;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
 
 public class TreeCharacterController extends CharacterController {
 	
@@ -31,8 +29,9 @@ public class TreeCharacterController extends CharacterController {
 
 	public TreeCharacterController(ReorderableList view, EditorViewModel model) {
 		super(view, model);
-		if (view instanceof CharacterTree) {
-			_tree = (CharacterTree) view;
+        JComponent viewImpl = view.getListViewComponent();
+		if (viewImpl instanceof CharacterTree) {
+			_tree = (CharacterTree) viewImpl;
 		}
 	}
 	

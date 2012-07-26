@@ -33,6 +33,7 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -44,7 +45,11 @@ import java.awt.event.MouseEvent;
 public class CharacterTree extends JTree {
 
 	private static final long serialVersionUID = 1462521823171738637L;
-	private boolean _doubleProcessingMouseEvent = false;
+
+    /** Used as the Key in the inputMap and actionMap for the selection action */
+    private static final String SELECTION_ACTION_KEY = "SelectionAction";
+
+    private boolean _doubleProcessingMouseEvent = false;
 
 	/** Handles drag and drop of states */
 	private TransferHandler _stateTransferHandler;
@@ -112,7 +117,7 @@ public class CharacterTree extends JTree {
 
 		@Override
 		public void setSelectionAction(Action action) {
-		    getActionMap().put("SelectionAction", action);
+		    getActionMap().put(SELECTION_ACTION_KEY, action);
 	    }
 
         @Override
@@ -166,7 +171,7 @@ public class CharacterTree extends JTree {
 
 		@Override
 		public void setSelectionAction(Action action) {
-            getActionMap().put("SelectionAction", action);
+            getActionMap().put(SELECTION_ACTION_KEY, action);
         }
 
         @Override
@@ -193,7 +198,7 @@ public class CharacterTree extends JTree {
 					int selectedRow = getClosestRowForLocation(e.getX(), e.getY());
 
 					if ((selectedRow >= 0) && (e.getClickCount() == 2) && SwingUtilities.isLeftMouseButton(e)) {
-						Action action = getActionMap().get("SelectionAction");
+						Action action = getActionMap().get(SELECTION_ACTION_KEY);
 						if (action != null) {
 							action.actionPerformed(new ActionEvent(this, -1, ""));
 						}
@@ -234,6 +239,8 @@ public class CharacterTree extends JTree {
 		if (findNext != null) {
 			getActionMap().put("findNext", findNext);
 		}
+
+        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.CTRL_MASK), SELECTION_ACTION_KEY);
 
 	}
 
