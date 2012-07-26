@@ -17,7 +17,7 @@ package au.org.ala.delta.editor.ui;
 import au.org.ala.delta.editor.EditorPreferences;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.dnd.DropIndicationTable;
-import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.*;
 import au.org.ala.delta.model.observer.AbstractDataSetObserver;
 import au.org.ala.delta.model.observer.DeltaDataSetChangeEvent;
 import org.jdesktop.application.Action;
@@ -55,7 +55,7 @@ public class MatrixViewer extends AbstractDeltaView {
 
 	private EditorViewModel _dataSet;
 	private DropIndicationTable _table;
-	private TableRowHeader _fixedColumns;
+	private TableRowHeader _tableRowHeader;
 	private MatrixTableModel _model;
 	private AttributeEditor _attributeEditor;
 
@@ -98,7 +98,7 @@ public class MatrixViewer extends AbstractDeltaView {
 			}
 
 			private void restoreSelection(int characterId) {
-				int row = _fixedColumns.getSelectedRow();
+				int row = _tableRowHeader.getSelectedRow();
 				int column = characterId - 1;
 				_table.getSelectionModel().setSelectionInterval(row, row);
 				_table.getColumnModel().getSelectionModel().setSelectionInterval(column, column);
@@ -111,28 +111,28 @@ public class MatrixViewer extends AbstractDeltaView {
 
 		this.setSize(new Dimension(600, 500));
 
-		_fixedColumns = new TableRowHeader(dataSet);
-		_fixedColumns.setDragEnabled(true);
-		_fixedColumns.setDropMode(DropMode.INSERT_ROWS);
-		_fixedColumns.setFillsViewportHeight(true);
+		_tableRowHeader = new TableRowHeader(dataSet);
+		_tableRowHeader.setDragEnabled(true);
+		_tableRowHeader.setDropMode(DropMode.INSERT_ROWS);
+		_tableRowHeader.setFillsViewportHeight(true);
 
-		_table = new DropIndicationTable(_model, _fixedColumns);
-		_fixedColumns.setTable(_table);
-		_fixedColumns.getTableHeader().setReorderingAllowed(false);
+		_table = new DropIndicationTable(_model, _tableRowHeader);
+		_tableRowHeader.setTable(_table);
+		_tableRowHeader.getTableHeader().setReorderingAllowed(false);
 
-		_fixedColumns.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+		_tableRowHeader.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				if (!e.getValueIsAdjusting()) {
-					int row = _fixedColumns.getSelectedRow();
+					int row = _tableRowHeader.getSelectedRow();
 					_table.getSelectionModel().setSelectionInterval(row, row);
 				}
 			}
 
 		});
 
-		new TableRowResizer(_fixedColumns, _table);
+		new TableRowResizer(_tableRowHeader, _table);
 
 		_table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		_table.getTableHeader().setSize(new Dimension(_table.getColumnModel().getTotalColumnWidth(), 100));
@@ -145,22 +145,36 @@ public class MatrixViewer extends AbstractDeltaView {
 
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
-				int row = _table.getSelectedRow();
-				_fixedColumns.getSelectionModel().setSelectionInterval(row, row);
-				int charId = _table.getSelectedColumn() + 1;
-				int itemId = _table.getSelectedRow() + 1;
 
-				if (itemId > 0) {
-					Item selectedItem = _dataSet.getItem(itemId);
-					_dataSet.setSelectedItem(selectedItem);
-				}
-				if (charId > 0 && charId <= _dataSet.getNumberOfCharacters()) {
-					au.org.ala.delta.model.Character selectedCharacter = _dataSet.getCharacter(charId);
-					_dataSet.setSelectedCharacter(selectedCharacter);
-				}
-				if ((itemId > 0) && (charId > 0) && charId <= _dataSet.getNumberOfCharacters()) {
-					_attributeEditor.bind(_dataSet.getSelectedCharacter(), _dataSet.getSelectedItem());
-				}
+                Item item = _dataSet.getSelectedItem();
+                int previousItemNumber = (item != null) ? item.getItemNumber() : -1;
+                au.org.ala.delta.model.Character character = _dataSet.getSelectedCharacter();
+                int previousCharNumber = (character != null) ? character.getCharacterId() : -1;
+
+                int charId = _table.getSelectedColumn() + 1;
+                int itemId = _table.getSelectedRow() + 1;
+
+                if (editsValid()) {
+                    int row = _table.getSelectedRow();
+                    _tableRowHeader.getSelectionModel().setSelectionInterval(row, row);
+
+                    if (itemId > 0) {
+                        Item selectedItem = _dataSet.getItem(itemId);
+                        _dataSet.setSelectedItem(selectedItem);
+                    }
+                    if (charId > 0 && charId <= _dataSet.getNumberOfCharacters()) {
+                        au.org.ala.delta.model.Character selectedCharacter = _dataSet.getCharacter(charId);
+                        _dataSet.setSelectedCharacter(selectedCharacter);
+                    }
+                    if ((itemId > 0) && (charId > 0) && charId <= _dataSet.getNumberOfCharacters()) {
+                        _attributeEditor.bind(_dataSet.getSelectedCharacter(), _dataSet.getSelectedItem());
+                    }
+                }
+                else {
+                    _tableRowHeader.getSelectionModel().setSelectionInterval(previousItemNumber-1, previousItemNumber-1);
+                    _table.getSelectionModel().setSelectionInterval(previousItemNumber-1, previousItemNumber-1);
+                    _table.getColumnModel().getSelectionModel().setSelectionInterval(previousCharNumber-1, previousCharNumber-1);
+                }
 			}
 		};
 
@@ -183,7 +197,7 @@ public class MatrixViewer extends AbstractDeltaView {
 		scrollpane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scrollpane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
-		final JScrollPane fixedScrollPane = new JScrollPane(_fixedColumns);
+		final JScrollPane fixedScrollPane = new JScrollPane(_tableRowHeader);
 		fixedScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
 		fixedScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		fixedScrollPane.setPreferredSize(new Dimension(120, 200));
@@ -299,7 +313,7 @@ public class MatrixViewer extends AbstractDeltaView {
 
 	@Override
 	public ReorderableList getItemListView() {
-		return _fixedColumns;
+		return _tableRowHeader;
 	}
 
 
@@ -339,9 +353,9 @@ public class MatrixViewer extends AbstractDeltaView {
 	}
 
 	private void configureDefaultRowHeight() {
-		TableCellRenderer renderer = _fixedColumns.getDefaultRenderer(Object.class);
-		Component comp = renderer.getTableCellRendererComponent(_fixedColumns, "Example Text", true, true, 0, 0);
-		_fixedColumns.setRowHeight(comp.getPreferredSize().height);
+		TableCellRenderer renderer = _tableRowHeader.getDefaultRenderer(Object.class);
+		Component comp = renderer.getTableCellRendererComponent(_tableRowHeader, "Example Text", true, true, 0, 0);
+		_tableRowHeader.setRowHeight(comp.getPreferredSize().height);
 		_table.setRowHeight(comp.getPreferredSize().height);
 	}
 
@@ -479,7 +493,7 @@ public class MatrixViewer extends AbstractDeltaView {
 			for (int i = 0; i < rows.length; ++i) {
 				int row = rows[i];
 				// Emit the row header...
-				b.append(_fixedColumns.getModel().getValueAt(row, 0));
+				b.append(_tableRowHeader.getModel().getValueAt(row, 0));
 				b.append(CELL_SEPERATOR);
 				for (int j = 0; j < cols.length; ++j) {
 					int col = cols[j];
