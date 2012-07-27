@@ -14,20 +14,19 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.directives;
 
-import java.io.File;
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-import org.jdesktop.application.Task;
-import org.jdesktop.application.TaskEvent;
-import org.jdesktop.application.TaskListener;
-
 import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.directives.ui.ImportExportStatusDialog;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.ui.RichTextDialog;
+import org.apache.commons.lang.StringUtils;
+import org.jdesktop.application.Task;
+import org.jdesktop.application.TaskEvent;
+import org.jdesktop.application.TaskListener;
+
+import java.io.File;
+import java.util.List;
 
 /**
  * The ImportExportTask is a helper class for the import and export 
@@ -62,6 +61,9 @@ public abstract class ImportExportTask extends Task<Void, ImportExportStatus> im
 		if (!silent) {
 			addTaskListener(new StatusUpdater(editor, resourcePrefix));
 		}
+        else {
+            _status.setPauseOnError(false);
+        }
 	}
 	
 	@Override
