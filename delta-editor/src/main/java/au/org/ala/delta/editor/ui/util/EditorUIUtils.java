@@ -39,6 +39,7 @@ public class EditorUIUtils {
     private static final ImageIcon _umIcon = IconHelper.createImageIconFromAbsolutePath(ICON_PATH + "/umchar.png");
     private static final ImageIcon _unknownIcon = IconHelper.createImageIconFromAbsolutePath(ICON_PATH+ "/unknownchar.png");
     private static final ImageIcon _inapplicableOverlay = IconHelper.createImageIconFromAbsolutePath(ICON_PATH + "/inapplicable_overlay.png");
+    private static final ImageIcon _editIcon = IconHelper.createImageIconFromAbsolutePath(ICON_PATH + "/edit.png");
     
     private static final Map<CharacterType, ImageIcon> _inapplicableIcons = new HashMap<CharacterType, ImageIcon>();
     
@@ -114,6 +115,10 @@ public class EditorUIUtils {
      */
     public static ImageIcon iconForCharacter(au.org.ala.delta.model.Character ch) {
     	return iconForCharacter(ch, false);
+    }
+
+    public static ImageIcon getEditIcon(boolean editable) {
+        return _editIcon;
     }
    
 }
