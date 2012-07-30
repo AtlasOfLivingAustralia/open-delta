@@ -39,6 +39,7 @@ public class ItemDescriptions extends AbstractTextDirective {
     public static final String[] CONTROL_WORDS = {"item", "descriptions"};
 
     private boolean _normalizeBeforeParsing = false;
+    private boolean _allowDuplicates;
 
     public ItemDescriptions() {
         super(CONTROL_WORDS);
@@ -54,6 +55,7 @@ public class ItemDescriptions extends AbstractTextDirective {
         registerPrerequiste(MaximumNumberOfItems.class);
         registerPrerequiste(MaximumNumberOfStates.class);
         _normalizeBeforeParsing = normalizeBeforeParsing;
+
     }
 
 
@@ -64,6 +66,7 @@ public class ItemDescriptions extends AbstractTextDirective {
 
     @Override
     public void process(DeltaContext context, DirectiveArguments data) throws Exception {
+        _allowDuplicates = context.getAcceptDuplicateValues();
         StringReader reader = new StringReader(data.getFirstArgumentText());
         ItemsParser parser = new ItemsParser(context, reader, _normalizeBeforeParsing);
         parser.parse();
@@ -92,6 +95,30 @@ public class ItemDescriptions extends AbstractTextDirective {
         }
     }
 
+    protected void addAttribute(DeltaContext context, Set<Integer> encounteredChars, Item item, int charIdx, int startOffset, String value) throws DirectiveException {
+        MutableDeltaDataSet dataSet = context.getDataSet();
+
+        Character ch = context.getCharacter(charIdx);
+        if (encounteredChars.contains(ch.getCharacterId())) {
+            if (!_allowDuplicates) {
+                throw DirectiveError.asException(DirectiveError.Error.CHARACTER_ALREADY_SPECIFIED, startOffset, ch.getCharacterId());
+            } else {
+
+                context.addError(new DirectiveError(DirectiveError.Warning.CHARACTER_ALREADY_SPECIFIED, startOffset, ch.getCharacterId()));
+            }
+        } else {
+            encounteredChars.add(ch.getCharacterId());
+
+        }
+        Attribute attribute = dataSet.getAttribute(item.getItemNumber(), ch.getCharacterId());
+        try {
+
+            attribute.setValueFromString(value);
+        } catch (DirectiveException e) {
+            e.getError().setPosition(e.getErrorOffset() + startOffset + 1);
+            context.addError(e.getError());
+        }
+    }
 
 
     class ItemsParser extends AbstractStreamParser {
@@ -102,12 +129,12 @@ public class ItemDescriptions extends AbstractTextDirective {
         private int _lastMaster;
 
         private boolean _normalizeBeforeParsing = false;
-        private boolean _allowDuplicates;
+
 
         public ItemsParser(DeltaContext context, Reader reader, boolean normalizeBeforeParsing) {
             super(context, reader);
             _normalizeBeforeParsing = normalizeBeforeParsing;
-            _allowDuplicates = context.getAcceptDuplicateValues();
+
         }
 
         @Override
@@ -147,9 +174,9 @@ public class ItemDescriptions extends AbstractTextDirective {
         private void parseAttribute(Set<Integer> encounteredChars, MutableDeltaDataSet dataSet, Item item) throws ParseException {
             int charIdx = readInteger();
 
-            long oldOffset = _position;
+            int startOffset = _position;
 
-            Character ch = getContext().getCharacter(charIdx);
+
             String strValue = null;
             String comment = null;
 
@@ -158,7 +185,7 @@ public class ItemDescriptions extends AbstractTextDirective {
             }
             if (_currentChar == ',') {
                 readNext();
-                strValue = readStateValue(ch);
+                strValue = readStateValue();
             } else if (isWhiteSpace(_currentChar)) {
                 if (comment == null) {
                     strValue = "U";
@@ -175,32 +202,16 @@ public class ItemDescriptions extends AbstractTextDirective {
                 value.append(strValue);
             }
 
-            Attribute attribute;
-            if (encounteredChars.contains(ch.getCharacterId())) {
-                if (!_allowDuplicates) {
-                    throw DirectiveError.asException(DirectiveError.Error.CHARACTER_ALREADY_SPECIFIED, _position, ch.getCharacterId());
-                } else {
-                    attribute = dataSet.getAttribute(item.getItemNumber(), ch.getCharacterId());
-                    getContext().addError(new DirectiveError(DirectiveError.Warning.CHARACTER_ALREADY_SPECIFIED, _position, ch.getCharacterId()));
-                }
-            } else {
-                encounteredChars.add(ch.getCharacterId());
-                attribute = dataSet.addAttribute(item.getItemNumber(), ch.getCharacterId());
+            String theValue = value.toString();
+            if (_normalizeBeforeParsing) {
+                theValue = cleanWhiteSpace(theValue.trim());
             }
-
-            try {
-                String theValue = value.toString();
-                if (_normalizeBeforeParsing) {
-                    theValue = cleanWhiteSpace(theValue.trim());
-                }
-                attribute.setValueFromString(theValue);
-            } catch (DirectiveException e) {
-                e.getError().setPosition(e.getErrorOffset() + oldOffset + 1);
-                getContext().addError(e.getError());
-            }
+            addAttribute(getContext(), encounteredChars, item, charIdx, startOffset, theValue);
 
             skipWhitespace();
         }
+
+
 
         private boolean isVariant(int itemIndex) throws ParseException {
             boolean variant = (_currentChar == '+');
@@ -231,7 +242,7 @@ public class ItemDescriptions extends AbstractTextDirective {
             return (DeltaContext) _context;
         }
 
-        private String readStateValue(Character character) throws ParseException {
+        private String readStateValue() throws ParseException {
             String value = readToNextSpaceComments();
             return value;
         }

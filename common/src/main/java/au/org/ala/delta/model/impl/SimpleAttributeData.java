@@ -14,16 +14,15 @@
  ******************************************************************************/
 package au.org.ala.delta.model.impl;
 
+import au.org.ala.delta.model.NumericRange;
+import au.org.ala.delta.model.attribute.ParsedAttribute;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.FloatRange;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.FloatRange;
-
-import au.org.ala.delta.model.NumericRange;
-import au.org.ala.delta.model.attribute.ParsedAttribute;
 
 public class SimpleAttributeData implements AttributeData {
 
@@ -151,5 +150,9 @@ public class SimpleAttributeData implements AttributeData {
 	public ParsedAttribute parsedAttribute() {
 		throw new UnsupportedOperationException();
 	}
-    
+
+    @Override
+    public boolean isInherited() {
+        return false;
+    }
 }

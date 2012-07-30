@@ -14,11 +14,12 @@
  ******************************************************************************/
 package au.org.ala.delta.intkey.model;
 
-import java.util.List;
-
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.impl.DefaultItemData;
+
+import java.util.List;
 
 public class IntkeyItemData extends DefaultItemData {
     
@@ -27,7 +28,7 @@ public class IntkeyItemData extends DefaultItemData {
     // in the IntkeyDataset class.
 
     public IntkeyItemData(int number) {
-		super(number);
+		super(number, null);
 	}
 
 	@Override
@@ -36,7 +37,7 @@ public class IntkeyItemData extends DefaultItemData {
     }
 
     @Override
-    public Attribute getAttribute(Character character) {
+    public Attribute getAttribute(Character character, Item item) {
         throw new UnsupportedOperationException();
     }
 

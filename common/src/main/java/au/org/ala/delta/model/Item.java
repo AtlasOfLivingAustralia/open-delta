@@ -14,17 +14,16 @@
  ******************************************************************************/
 package au.org.ala.delta.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.impl.ItemData;
 import au.org.ala.delta.model.observer.AttributeObserver;
 import au.org.ala.delta.model.observer.ImageObserver;
 import au.org.ala.delta.model.observer.ItemObserver;
 import au.org.ala.delta.util.Pair;
+import org.apache.commons.lang.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents an Item in the DELTA system.
@@ -63,7 +62,14 @@ public class Item implements AttributeObserver, ImageObserver, Illustratable, Co
 	public List<Attribute> getAttributes() {
 		return _impl.getAttributes();
 	}
-	
+
+
+    /**
+     * Returns the Attribute that has been coded for the supplied Character.  If no such Attribute currently exists
+     * a new, uncoded Attribute is created and returned.
+     * @param character the Character to get the Attribute for.
+     * @return the Attribute of this Item for the supplied Character.
+     */
 	public Attribute getAttribute(Character character) {
 		Attribute attribute = doGetAttribute(character);
 
@@ -75,7 +81,7 @@ public class Item implements AttributeObserver, ImageObserver, Illustratable, Co
 	}
 	
 	protected Attribute doGetAttribute(Character character) {
-		return _impl.getAttribute(character);
+		return _impl.getAttribute(character, this);
 	}
 	
 	public void addAttribute(Character character, Attribute attribute) {
@@ -90,12 +96,22 @@ public class Item implements AttributeObserver, ImageObserver, Illustratable, Co
 		_impl.addAttribute(character, attribute);
 		notifyObservers();
 	}
-	
+
+    /**
+     * Returns true if this Item has an Attribute coded for the supplied Character.  This method will return true if
+     * pseudo Attributes such as Unknown or Inapplicable have been explicitly coded.
+     * @param character identifies the Attribute to check.
+     * @return true if this Item has a value coded for the Attribute identified by the supplied Character.
+     */
 	public boolean hasAttribute(Character character) {
 		Attribute attribute = getAttribute(character);
 		return ((attribute != null) && StringUtils.isNotEmpty(attribute.getValueAsString()));
 	}
-	
+
+    /**
+     * Returns true if this item is a variant of another Item.
+     * @return true if this is a variant item.
+     */
 	public boolean isVariant() {
 		return _impl.isVariant();
 	}

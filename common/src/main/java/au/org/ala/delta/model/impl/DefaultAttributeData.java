@@ -14,15 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.model.impl;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.FloatRange;
-import org.apache.commons.lang.math.NumberRange;
-
 import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.NumericRange;
@@ -30,6 +21,14 @@ import au.org.ala.delta.model.attribute.AttrChunk;
 import au.org.ala.delta.model.attribute.ChunkType;
 import au.org.ala.delta.model.attribute.DefaultParsedAttribute;
 import au.org.ala.delta.model.attribute.ParsedAttribute;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.FloatRange;
+import org.apache.commons.lang.math.NumberRange;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -39,8 +38,8 @@ import au.org.ala.delta.model.attribute.ParsedAttribute;
 public class DefaultAttributeData implements AttributeData {
 
     private String _value;
-    private DefaultParsedAttribute _parsedAttribute;
-    private Character _character;
+    protected DefaultParsedAttribute _parsedAttribute;
+    protected Character _character;
     
     public DefaultAttributeData(Character character) {
     	_character = character;
@@ -55,12 +54,12 @@ public class DefaultAttributeData implements AttributeData {
     @Override
     public void setValueFromString(String value) throws DirectiveException {
         _value = value.replaceAll("\\s+", " ");
-        _parsedAttribute.parse(value, false);
+        defaultParsedAttribute().parse(value, false);
     }
 
     @Override
     public boolean isStatePresent(int stateNumber) {
-        return _parsedAttribute.encodesState(stateNumber, true);
+        return defaultParsedAttribute().encodesState(stateNumber, true);
     }
 
     public void setStatePresent(int stateNumber, boolean present) {
@@ -74,25 +73,26 @@ public class DefaultAttributeData implements AttributeData {
 
     @Override
     public boolean isUnknown() {
-    	if (StringUtils.isEmpty(_value)) {
+        String value = getValueAsString();
+    	if (StringUtils.isEmpty(value)) {
     		return true;
     	}
-    	return _parsedAttribute.isUnknown();
+    	return defaultParsedAttribute().isUnknown();
     }
     
     @Override 
     public boolean isCodedUnknown() {
-    	return _parsedAttribute.isUnknown();
+    	return defaultParsedAttribute().isUnknown();
     }
 
     @Override
     public boolean isInapplicable() {
-        return _parsedAttribute.isInapplicable();
+        return defaultParsedAttribute().isInapplicable();
     }
 
     @Override
     public boolean isExclusivelyInapplicable(boolean ignoreComments) {
-        return _parsedAttribute.isExclusivelyInapplicable(ignoreComments);
+        return defaultParsedAttribute().isExclusivelyInapplicable(ignoreComments);
     }
 
 
@@ -115,7 +115,7 @@ public class DefaultAttributeData implements AttributeData {
     @Override
     public List<Integer> getPresentStatesAsList() {
     	List<Integer> states = new ArrayList<Integer>();
-    	_parsedAttribute.getEncodedStates(states, new short[1]);
+        defaultParsedAttribute().getEncodedStates(states, new short[1]);
     	return states;
     }
     
@@ -126,7 +126,7 @@ public class DefaultAttributeData implements AttributeData {
 
 	@Override
 	public boolean isVariable() {
-		for (AttrChunk chunk : _parsedAttribute) {
+		for (AttrChunk chunk : defaultParsedAttribute()) {
 			if (chunk.getType() == ChunkType.CHUNK_VARIABLE) {
 				return true;
 			}
@@ -136,17 +136,17 @@ public class DefaultAttributeData implements AttributeData {
 
     @Override
     public boolean hasValueSet() {
-        return !StringUtils.isEmpty(_value);
+        return !StringUtils.isEmpty(getValueAsString());
     }
 	
 	@Override
 	public boolean isRangeEncoded() {
-		return (_value != null) && (_value.indexOf("-") >= 0);
+		return (getValueAsString() != null) && (getValueAsString().indexOf("-") >= 0);
 	}
 
 	@Override
 	public boolean isCommentOnly() {
-		for (AttrChunk chunk : _parsedAttribute) {
+		for (AttrChunk chunk : defaultParsedAttribute()) {
         	if ((chunk.getType() != ChunkType.CHUNK_TEXT) &&
         	    (chunk.getType() != ChunkType.CHUNK_LONGTEXT) &&
         	    (chunk.getType() != ChunkType.CHUNK_STOP)) {
@@ -161,7 +161,7 @@ public class DefaultAttributeData implements AttributeData {
 		List<NumericRange> ranges = new ArrayList<NumericRange>();
 		NumericRange range = new NumericRange();
 		List<Number> numbers = new ArrayList<Number>();
-		for (AttrChunk chunk : _parsedAttribute) {
+		for (AttrChunk chunk : defaultParsedAttribute()) {
 			switch (chunk.getType()) {
 			case ChunkType.CHUNK_AND:
 			case ChunkType.CHUNK_OR:
@@ -185,7 +185,12 @@ public class DefaultAttributeData implements AttributeData {
 		return ranges;
 	}
 
-	private void addNumericRange(List<NumericRange> ranges, NumericRange range, List<Number> numbers) {
+    @Override
+    public boolean isInherited() {
+        return false;
+    }
+
+    private void addNumericRange(List<NumericRange> ranges, NumericRange range, List<Number> numbers) {
 		if (!range.hasExtremeHigh() && !range.hasExtremeLow() && numbers.isEmpty()) {
 			return;
 		}
@@ -206,7 +211,11 @@ public class DefaultAttributeData implements AttributeData {
 	@Override
 	public ParsedAttribute parsedAttribute() {
 		return _parsedAttribute;
-	}	
+	}
+
+    protected DefaultParsedAttribute defaultParsedAttribute() {
+        return (DefaultParsedAttribute)_parsedAttribute;
+    }
 	
 	
 	

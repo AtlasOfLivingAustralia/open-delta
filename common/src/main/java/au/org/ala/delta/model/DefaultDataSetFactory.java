@@ -14,9 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.model;
 
-import java.io.File;
-import java.util.Set;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.ConforDirectiveFileParser;
 import au.org.ala.delta.model.impl.DefaultAttributeData;
@@ -25,6 +22,10 @@ import au.org.ala.delta.model.impl.DefaultCharacterDependencyData;
 import au.org.ala.delta.model.impl.DefaultDataSet;
 import au.org.ala.delta.model.impl.DefaultItemData;
 import au.org.ala.delta.model.impl.ItemData;
+import au.org.ala.delta.model.impl.VariantAttributeData;
+
+import java.io.File;
+import java.util.Set;
 
 
 /**
@@ -46,7 +47,7 @@ public class DefaultDataSetFactory implements DeltaDataSetFactory {
 
 	@Override
 	public Item createItem(int number) {
-		ItemData defaultData = new DefaultItemData(number);
+		ItemData defaultData = new DefaultItemData(number, this);
 		Item item = new Item(defaultData);
 		
 		return item;
@@ -54,7 +55,7 @@ public class DefaultDataSetFactory implements DeltaDataSetFactory {
 	
 	@Override
 	public Item createVariantItem(Item parent, int itemNumber) {
-		ItemData defaultData = new DefaultItemData(itemNumber);
+		ItemData defaultData = new DefaultItemData(itemNumber, this);
 		Item item = new VariantItem(parent, defaultData);
 		
 		return item;
@@ -68,7 +69,17 @@ public class DefaultDataSetFactory implements DeltaDataSetFactory {
 
     @Override
     public Attribute createAttribute(Character character, Item item) {
-        Attribute attribute = AttributeFactory.newAttribute(character, new DefaultAttributeData(character));
+
+        DefaultAttributeData attributeData;
+        if (item.isVariant() && item instanceof VariantItem) {
+            Item masterItem = ((VariantItem)item).getMasterItem();
+            attributeData = new VariantAttributeData(masterItem, character);
+        }
+        else {
+            attributeData = new DefaultAttributeData(character);
+        }
+        Attribute attribute = AttributeFactory.newAttribute(character, attributeData);
+
         attribute.setItem(item);
         return attribute;
     }

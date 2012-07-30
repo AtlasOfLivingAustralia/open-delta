@@ -14,9 +14,9 @@
  ******************************************************************************/
 package au.org.ala.delta.model;
 
-import java.util.Set;
-
 import au.org.ala.delta.model.image.ImageSettings;
+
+import java.util.Set;
 
 
 /**
@@ -78,7 +78,14 @@ public interface MutableDeltaDataSet extends DeltaDataSet {
 	public Item addItem(int itemNumber);
 	
 	public Item addVariantItem(int parentItemNumber, int itemNumber);
-	
+
+    /**
+     * Adds a new attribute to the data set.  If one is already defined for the supplied Item and Character, it
+     * is overwritten.
+     * @param itemNumber identifies the Item the attribute is for.
+     * @param characterNumber identifies the Character the attribute is for.
+     * @return the newly added Attribute.
+     */
 	public Attribute addAttribute(int itemNumber, int characterNumber);
 	
 

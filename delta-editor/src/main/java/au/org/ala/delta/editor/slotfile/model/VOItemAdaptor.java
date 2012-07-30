@@ -14,10 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile.model;
 
-import java.util.List;
-
-import org.apache.commons.lang.NotImplementedException;
-
 import au.org.ala.delta.editor.slotfile.AttrChunk;
 import au.org.ala.delta.editor.slotfile.Attribute;
 import au.org.ala.delta.editor.slotfile.DeltaVOP;
@@ -27,10 +23,14 @@ import au.org.ala.delta.editor.slotfile.VOImageHolderDesc;
 import au.org.ala.delta.editor.slotfile.VOItemDesc;
 import au.org.ala.delta.model.AttributeFactory;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.impl.AttributeData;
 import au.org.ala.delta.model.impl.ItemData;
 import au.org.ala.delta.util.Pair;
 import au.org.ala.delta.util.Utils;
+import org.apache.commons.lang.NotImplementedException;
+
+import java.util.List;
 
 /**
  * Adapts a slot file VOItemDesc to the model Item interface.
@@ -91,7 +91,7 @@ public class VOItemAdaptor extends ImageHolderAdaptor implements ItemData {
 	}
 
 	@Override
-	public au.org.ala.delta.model.Attribute getAttribute(Character character) {
+	public au.org.ala.delta.model.Attribute getAttribute(Character character, Item item) {
 		synchronized (_vop) {
 			if (character == null) {
 				return null;

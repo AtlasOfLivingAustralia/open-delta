@@ -56,7 +56,7 @@ public interface DeltaDataSetFactory {
 	 * @param item the Item that the Character will reference
 	 * @return a new Attribute
 	 */
-	public Attribute createAttribute(Character character, Item item);
+	public Attribute  createAttribute(Character character, Item item);
 
 	
 	public CharacterDependency createCharacterDependency(

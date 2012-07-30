@@ -14,13 +14,13 @@
  ******************************************************************************/
 package au.org.ala.delta.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.model.attribute.ParsedAttribute;
 import au.org.ala.delta.model.impl.AttributeData;
 import au.org.ala.delta.model.observer.AttributeObserver;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * An attribute is the value of a single character associated with an item.
@@ -92,12 +92,11 @@ public abstract class Attribute {
     /**
      * An unknown attribute is one that has not been coded, or has been coded
      * explicitly with the value "U".
+     * Note that a variant Item or Characters with implicit values are not considered unknown.
      * 
      * @return true if the value of this attribute is unknown.
      */
     public boolean isUnknown() {
-        // TODO variant items or characters with implicit values can result
-        // in an uncoded attribute that is not unknown.
         return _impl.isUnknown();
     }
 
@@ -187,6 +186,14 @@ public abstract class Attribute {
         if (!_observers.contains(observer)) {
             _observers.add(observer);
         }
+    }
+
+    /**
+     * @return true if this is an Attribute of a variant Item and the value of this Attribute has been inherited
+     * from the master Item.
+     */
+    public boolean isInherited() {
+        return _impl.isInherited();
     }
 
     /**

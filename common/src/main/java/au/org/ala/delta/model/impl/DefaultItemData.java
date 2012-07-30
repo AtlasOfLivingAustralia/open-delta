@@ -14,26 +14,29 @@
  ******************************************************************************/
 package au.org.ala.delta.model.impl;
 
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import au.org.ala.delta.model.Attribute;
-import au.org.ala.delta.model.AttributeFactory;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.DeltaDataSetFactory;
+import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.ImageOverlayParser;
 import au.org.ala.delta.model.image.ImageType;
 import au.org.ala.delta.util.Pair;
 
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Implements ItemData and stores the data in memory.
  */
 public class DefaultItemData implements ItemData {
 
+    /** Used to create Attributes as required */
+    private DeltaDataSetFactory _factory;
     private String _description;
     private boolean _variant;
     
@@ -43,8 +46,9 @@ public class DefaultItemData implements ItemData {
     
     private int _itemNumber;
     
-    public DefaultItemData(int number) {
+    public DefaultItemData(int number, DeltaDataSetFactory factory) {
     	_itemNumber = number;
+        _factory = factory;
     }
     
     @Override
@@ -74,11 +78,12 @@ public class DefaultItemData implements ItemData {
     }
 
     @Override
-    public Attribute getAttribute(Character character) {
+    public Attribute getAttribute(Character character, Item item) {
 
         Attribute attribute = _attributes.get(character);
         if (attribute == null) {
-            attribute = AttributeFactory.newAttribute(character, new DefaultAttributeData(character));
+            attribute = _factory.createAttribute(character, item);
+            addAttribute(character, attribute);
         }
 
         return attribute;

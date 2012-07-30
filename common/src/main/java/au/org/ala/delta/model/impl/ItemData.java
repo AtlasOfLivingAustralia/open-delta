@@ -14,12 +14,13 @@
  ******************************************************************************/
 package au.org.ala.delta.model.impl;
 
-import java.util.List;
-
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.util.Pair;
+
+import java.util.List;
 
 public interface ItemData {
 	
@@ -33,7 +34,7 @@ public interface ItemData {
 	
 	List<Attribute> getAttributes();
 	
-	Attribute getAttribute(Character character);
+	Attribute getAttribute(Character character, Item item);
 
 	void addAttribute(Character character, Attribute attribute);
 

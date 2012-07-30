@@ -14,14 +14,13 @@
  ******************************************************************************/
 package au.org.ala.delta.model.impl;
 
-import java.util.List;
-import java.util.Set;
-
-import org.apache.commons.lang.math.FloatRange;
-
 import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.model.NumericRange;
 import au.org.ala.delta.model.attribute.ParsedAttribute;
+import org.apache.commons.lang.math.FloatRange;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * The AttributeData interface is used by the Attribute class (and subclasses) to access attribute data from
@@ -70,4 +69,6 @@ public interface AttributeData {
 	List<Integer> getPresentStatesAsList();
 
 	public ParsedAttribute parsedAttribute();
+
+    boolean isInherited();
 }

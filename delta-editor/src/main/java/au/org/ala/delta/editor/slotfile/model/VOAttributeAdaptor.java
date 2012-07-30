@@ -14,14 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile.model;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.FloatRange;
-
 import au.org.ala.delta.editor.slotfile.AttrChunk;
 import au.org.ala.delta.editor.slotfile.Attribute;
 import au.org.ala.delta.editor.slotfile.Attribute.AttrIterator;
@@ -33,6 +25,13 @@ import au.org.ala.delta.editor.slotfile.VOItemDesc;
 import au.org.ala.delta.model.NumericRange;
 import au.org.ala.delta.model.attribute.ParsedAttribute;
 import au.org.ala.delta.model.impl.AttributeData;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.FloatRange;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Implements AttributeData using the functionality provided by the VOItemDesc, VOCharBaseDesc
@@ -332,6 +331,10 @@ public class VOAttributeAdaptor implements AttributeData {
 	@Override
 	public ParsedAttribute parsedAttribute() {
 		throw new UnsupportedOperationException();
-	}	
-	
+	}
+
+    @Override
+    public boolean isInherited() {
+        return false;
+    }
 }
