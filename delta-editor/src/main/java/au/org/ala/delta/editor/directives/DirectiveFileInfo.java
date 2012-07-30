@@ -30,7 +30,10 @@ public class DirectiveFileInfo {
 	private DirectiveType _type;
 	private DirectiveFile _directiveFile;
 	private String _name;
-	
+    private boolean _itemsFile;
+	private boolean _charsFile;
+    private boolean _specsFile;
+
 	public DirectiveFileInfo(String fileName) {
 		this(fileName, fileName, null, null);
 	}
@@ -60,7 +63,52 @@ public class DirectiveFileInfo {
 		setType(type);
 		setDirectiveFile(file);
 	}
-	
+
+    public boolean isItemsFile() {
+        if (_directiveFile != null) {
+            return _directiveFile.isItemsFile();
+        }
+
+        return _itemsFile;
+    }
+
+    public void setItemsFile(boolean itemsFile) {
+        if (_directiveFile != null) {
+            _directiveFile.setItemsFile(itemsFile);
+        }
+        _itemsFile = itemsFile;
+    }
+
+    public boolean isCharsFile() {
+        if (_directiveFile != null) {
+            return _directiveFile.isCharsFile();
+        }
+
+        return _charsFile;
+    }
+
+    public void setCharsFile(boolean charsFile) {
+        if (_directiveFile != null) {
+            _directiveFile.setCharsFile(charsFile);
+        }
+        _charsFile = charsFile;
+    }
+
+    public boolean isSpecsFile() {
+        if (_directiveFile != null) {
+            return _directiveFile.isSpecsFile();
+        }
+
+        return _specsFile;
+    }
+
+    public void setSpecsFile(boolean specsFile) {
+        if (_directiveFile != null) {
+            _directiveFile.setCharsFile(specsFile);
+        }
+        _specsFile = specsFile;
+    }
+
 	/**
 	 * @return the desired name of the DirectiveFile, which may be different
 	 * to the fileName (in the case of importing template directive files

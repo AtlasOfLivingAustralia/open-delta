@@ -52,11 +52,17 @@ public abstract class ImportExportViewModel {
 		file.setType(_selectedDirectiveType);
 		_includedDirectivesFiles.add(file);
 		_excludedDirectiveFiles.remove(file);
+        file.setItemsFile(false);
+        file.setCharsFile(false);
+        file.setSpecsFile(false);
 	}
 
 	public void exclude(DirectiveFileInfo file) {
 		_excludedDirectiveFiles.add(file);
 		_includedDirectivesFiles.remove(file);
+        file.setItemsFile(false);
+        file.setCharsFile(false);
+        file.setSpecsFile(false);
 	}
 
 	public void moveToSpecs(DirectiveFileInfo file) {
@@ -75,6 +81,7 @@ public abstract class ImportExportViewModel {
 		_excludedDirectiveFiles.remove(file);
 		_specsFile = file;
 		file.setType(DirectiveType.CONFOR);
+        file.setSpecsFile(true);
 
 	}
 	
@@ -102,6 +109,7 @@ public abstract class ImportExportViewModel {
 		_excludedDirectiveFiles.remove(file);
 		_charactersFile = file;
 		file.setType(DirectiveType.CONFOR);
+        file.setCharsFile(true);
 	}
 	
 	public void moveToChars(String fileName) {
@@ -123,6 +131,7 @@ public abstract class ImportExportViewModel {
 		_excludedDirectiveFiles.remove(file);
 		_itemsFile = file;
 		file.setType(DirectiveType.CONFOR);
+        file.setItemsFile(true);
 	}
 
 	public void moveToItems(String fileName) {
@@ -193,6 +202,7 @@ public abstract class ImportExportViewModel {
 
 	public void setItemsFile(DirectiveFileInfo itemsFile) {
 		this._itemsFile = itemsFile;
+        itemsFile.setItemsFile(true);
 	}
 
 	public List<DirectiveFileInfo> getIncludedDirectivesFiles() {

@@ -14,12 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.directives;
 
-import java.text.DateFormat;
-import java.util.Date;
-
-import org.apache.commons.lang.StringUtils;
-import org.jdesktop.application.ResourceMap;
-
 import au.org.ala.delta.directives.AbstractDeltaContext;
 import au.org.ala.delta.directives.AbstractDirective;
 import au.org.ala.delta.directives.Heading;
@@ -27,9 +21,14 @@ import au.org.ala.delta.directives.Show;
 import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.editor.slotfile.DirectiveInstance;
 import au.org.ala.delta.editor.slotfile.directive.ConforDirType;
-import au.org.ala.delta.rtf.RTFBuilder;
 import au.org.ala.delta.rtf.RTFAlignment;
+import au.org.ala.delta.rtf.RTFBuilder;
 import au.org.ala.delta.util.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
+import org.jdesktop.application.ResourceMap;
+
+import java.text.DateFormat;
+import java.util.Date;
 
 
 /**
@@ -160,7 +159,9 @@ public class ImportExportStatus  {
 	}
 
 	/**
-	 * @param currentDirective the currentDirective to set
+	 * @param directive the current directive being processed
+     * @param data the data supplied to the directive being processed.
+     *
 	 */
 	public void setCurrentDirective(AbstractDirective<? extends AbstractDeltaContext> directive, String data) {
 		directivesInCurentFile++;

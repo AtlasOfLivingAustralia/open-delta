@@ -34,7 +34,7 @@ public class DirectivesFileImporter {
 	
 	private EditorViewModel _model;
 	private ImportContext _context;
-	
+
 	public DirectivesFileImporter(EditorViewModel model, ImportContext context) {
 		_model = model;
 		_context = context;
@@ -75,7 +75,16 @@ public class DirectivesFileImporter {
 		
 		DirectiveFile existing =  _model.getDirectiveFile(name);
 		DirectiveFile directiveFile = _model.addDirectiveFile(_model.getDirectiveFileCount()+1, name, fileInfo.getType());
-		directiveFile.setLastModifiedTime(System.currentTimeMillis());
+        if (fileInfo.isItemsFile()) {
+            directiveFile.setItemsFile(true);
+        }
+        if (fileInfo.isCharsFile()) {
+            directiveFile.setCharsFile(true);
+        }
+        if (fileInfo.isSpecsFile()) {
+            directiveFile.setSpecsFile(true);
+        }
+ 		directiveFile.setLastModifiedTime(System.currentTimeMillis());
 		DirectiveFileImporter importer = new DirectiveFileImporter(handler, directivesOfType(directiveFile.getType()));
 		
 		_context.setDirectiveFile(directiveFile);
