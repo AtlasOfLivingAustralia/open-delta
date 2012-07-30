@@ -41,7 +41,7 @@ public class VariantAttributeData extends DefaultAttributeData {
                 return (DefaultParsedAttribute)masterAttribute.parsedAttribute();
             }
         }
-        return (DefaultParsedAttribute)_parsedAttribute;
+        return _parsedAttribute;
     }
 
     @Override
@@ -49,8 +49,7 @@ public class VariantAttributeData extends DefaultAttributeData {
         if (isInherited()) {
             Attribute masterAttribute = _masterItem.getAttribute(_character);
             if (masterAttribute != null) {
-
-                return _masterItem.getAttribute(_character).parsedAttribute();
+                return masterAttribute.parsedAttribute();
             }
         }
         return _parsedAttribute;

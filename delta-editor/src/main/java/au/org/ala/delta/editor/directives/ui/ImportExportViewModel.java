@@ -14,13 +14,14 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.directives.ui;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 import au.org.ala.delta.editor.directives.DirectiveFileInfo;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
+import org.apache.commons.lang.StringUtils;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Manages the data displayed in the ImportExportDialog.
@@ -59,7 +60,16 @@ public abstract class ImportExportViewModel {
 	}
 
 	public void moveToSpecs(DirectiveFileInfo file) {
-		if (_specsFile != null) {
+
+        if (file == null || StringUtils.isEmpty(file.getFileName())) {
+            if (_specsFile != null) {
+                _excludedDirectiveFiles.add(_specsFile);
+            }
+            _specsFile = null;
+            return;
+        }
+
+        if (_specsFile != null) {
 			_excludedDirectiveFiles.add(_specsFile);
 		}
 		_excludedDirectiveFiles.remove(file);
@@ -77,7 +87,16 @@ public abstract class ImportExportViewModel {
 	}
 
 	public void moveToChars(DirectiveFileInfo file) {
-		if (_charactersFile != null) {
+
+        if (file == null || StringUtils.isEmpty(file.getFileName())) {
+            if (_charactersFile != null) {
+                _excludedDirectiveFiles.add(_charactersFile);
+            }
+            _charactersFile = null;
+            return;
+        }
+
+        if (_charactersFile != null) {
 			_excludedDirectiveFiles.add(_charactersFile);
 		}
 		_excludedDirectiveFiles.remove(file);
@@ -90,6 +109,14 @@ public abstract class ImportExportViewModel {
 	}
 
 	public void moveToItems(DirectiveFileInfo file) {
+
+        if (file == null || StringUtils.isEmpty(file.getFileName())) {
+            if (_itemsFile != null) {
+                _excludedDirectiveFiles.add(_itemsFile);
+            }
+            _itemsFile = null;
+            return;
+        }
 		if (_itemsFile != null) {
 			_excludedDirectiveFiles.add(_itemsFile);
 		}
@@ -124,8 +151,8 @@ public abstract class ImportExportViewModel {
 		if (!_specsDisabled) {
 			addIfNotEmpty(_specsFile, files);
 			addIfNotEmpty(_charactersFile, files);
-			addIfNotEmpty(_itemsFile, files);
 		}
+        addIfNotEmpty(_itemsFile, files);
 		files.addAll(_includedDirectivesFiles);
 
 		return files;

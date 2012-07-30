@@ -95,22 +95,10 @@ public class ItemDescriptions extends AbstractTextDirective {
         }
     }
 
-    protected void addAttribute(DeltaContext context, Set<Integer> encounteredChars, Item item, int charIdx, int startOffset, String value) throws DirectiveException {
+    protected void addAttribute(DeltaContext context, Item item, int charIdx, int startOffset, String value) throws DirectiveException {
         MutableDeltaDataSet dataSet = context.getDataSet();
 
-        Character ch = context.getCharacter(charIdx);
-        if (encounteredChars.contains(ch.getCharacterId())) {
-            if (!_allowDuplicates) {
-                throw DirectiveError.asException(DirectiveError.Error.CHARACTER_ALREADY_SPECIFIED, startOffset, ch.getCharacterId());
-            } else {
-
-                context.addError(new DirectiveError(DirectiveError.Warning.CHARACTER_ALREADY_SPECIFIED, startOffset, ch.getCharacterId()));
-            }
-        } else {
-            encounteredChars.add(ch.getCharacterId());
-
-        }
-        Attribute attribute = dataSet.getAttribute(item.getItemNumber(), ch.getCharacterId());
+        Attribute attribute = dataSet.getAttribute(item.getItemNumber(), charIdx);
         try {
 
             attribute.setValueFromString(value);
@@ -194,6 +182,18 @@ public class ItemDescriptions extends AbstractTextDirective {
                 }
             }
 
+            Character ch = getContext().getCharacter(charIdx);
+            if (encounteredChars.contains(ch.getCharacterId())) {
+                if (!_allowDuplicates) {
+                    throw DirectiveError.asException(DirectiveError.Error.CHARACTER_ALREADY_SPECIFIED, startOffset, ch.getCharacterId());
+                } else {
+
+                    getContext().addError(new DirectiveError(DirectiveError.Warning.CHARACTER_ALREADY_SPECIFIED, startOffset, ch.getCharacterId()));
+                }
+            } else {
+                encounteredChars.add(ch.getCharacterId());
+
+            }
             StringBuilder value = new StringBuilder();
             if (comment != null) {
                 value.append(comment);
@@ -206,7 +206,7 @@ public class ItemDescriptions extends AbstractTextDirective {
             if (_normalizeBeforeParsing) {
                 theValue = cleanWhiteSpace(theValue.trim());
             }
-            addAttribute(getContext(), encounteredChars, item, charIdx, startOffset, theValue);
+            addAttribute(getContext(), item, charIdx, startOffset, theValue);
 
             skipWhitespace();
         }

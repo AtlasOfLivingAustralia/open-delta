@@ -86,19 +86,24 @@ public class ImportExportDialog extends JDialog {
 	private JComboBox cmbLineSeparator;
 	private JPanel pnlLineSeparator;
 
+    private boolean _importMode;
+
 	public ImportExportDialog(Window parent, ImportExportViewModel model, String resourcePrefix) {
 
 		super(parent);
 		_model = model;
 		setName("ImportExportDialogBox");
-		_resources = Application.getInstance().getContext().getResourceMap(ImportExportDialog.class);
+        _importMode = resourcePrefix.contains("Import");
+
+        _resources = Application.getInstance().getContext().getResourceMap(ImportExportDialog.class);
 		loadResources(resourcePrefix);
 
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setModal(true);
 		createUI();
 
-		if (resourcePrefix.contains("Import")) {
+
+        if (_importMode) {
 			pnlLineSeparator.setVisible(false);
 		} else {
 			// Line endings...
@@ -308,7 +313,8 @@ public class ImportExportDialog extends JDialog {
 		itemsFileTextField.setColumns(10);
 		itemsFileTextField.setEditable(false);
 
-		moveToItemsButton = new JButton("<<");
+        String moveSpecsCharsItemsButtonText = _importMode ? "<<" : ">>";
+		moveToItemsButton = new JButton(moveSpecsCharsItemsButtonText);
 		GroupLayout gl_panel_2 = new GroupLayout(panel_2);
 		gl_panel_2.setHorizontalGroup(gl_panel_2.createParallelGroup(Alignment.LEADING).addGroup(
 				gl_panel_2.createSequentialGroup().addComponent(itemsFileTextField, GroupLayout.DEFAULT_SIZE, 217, Short.MAX_VALUE).addGap(59).addComponent(moveToItemsButton).addGap(50)));
@@ -324,7 +330,7 @@ public class ImportExportDialog extends JDialog {
 		charactersFileTextField.setColumns(10);
 		charactersFileTextField.setEditable(false);
 
-		moveToCharsButton = new JButton("<<");
+		moveToCharsButton = new JButton(moveSpecsCharsItemsButtonText);
 		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
 		gl_panel_1.setHorizontalGroup(gl_panel_1.createParallelGroup(Alignment.TRAILING).addGroup(
 				gl_panel_1.createSequentialGroup().addComponent(charactersFileTextField, GroupLayout.DEFAULT_SIZE, 218, Short.MAX_VALUE).addGap(58).addComponent(moveToCharsButton).addGap(50)));
@@ -340,7 +346,7 @@ public class ImportExportDialog extends JDialog {
 		specificationsFileTextField.setColumns(10);
 		specificationsFileTextField.setEditable(false);
 
-		moveToSpecsButton = new JButton("<<");
+		moveToSpecsButton = new JButton(moveSpecsCharsItemsButtonText);
 
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(gl_panel.createParallelGroup(Alignment.TRAILING).addGroup(
@@ -496,20 +502,32 @@ public class ImportExportDialog extends JDialog {
 	}
 
 	public void moveToSpecs() {
-		DirectiveFileInfo file = (DirectiveFileInfo) possibleDirectivesList.getSelectedValue();
-		_model.moveToSpecs(file);
+        DirectiveFileInfo file = null;
+        if (_importMode) {
+		    file = (DirectiveFileInfo) possibleDirectivesList.getSelectedValue();
+        }
+        _model.moveToSpecs(file);
 		updateUI();
 	}
 
 	public void moveToChars() {
-		DirectiveFileInfo file = (DirectiveFileInfo) possibleDirectivesList.getSelectedValue();
-		_model.moveToChars(file);
+        DirectiveFileInfo file = null;
+
+        if (_importMode) {
+		    file = (DirectiveFileInfo) possibleDirectivesList.getSelectedValue();
+        }
+        _model.moveToChars(file);
 		updateUI();
 	}
 
 	public void moveToItems() {
-		DirectiveFileInfo file = (DirectiveFileInfo) possibleDirectivesList.getSelectedValue();
-		_model.moveToItems(file);
+        DirectiveFileInfo file = null;
+
+        if (_importMode) {
+            file = (DirectiveFileInfo) possibleDirectivesList.getSelectedValue();
+
+        }
+        _model.moveToItems(file);
 		updateUI();
 	}
 
@@ -524,22 +542,28 @@ public class ImportExportDialog extends JDialog {
 		if (charsFile != null) {
 			charactersFileTextField.setText(charsFile.getFileName());
 		}
+        else {
+            charactersFileTextField.setText("");
+        }
 		DirectiveFileInfo itemsFile = _model.getItemsFile();
 		if (itemsFile != null) {
 			itemsFileTextField.setText(itemsFile.getFileName());
 		}
+        else {
+            itemsFileTextField.setText("");
+        }
 		DirectiveFileInfo specsFile = _model.getSpecsFile();
 		if (specsFile != null) {
 			specificationsFileTextField.setText(specsFile.getFileName());
 		}
+        else {
+            specificationsFileTextField.setText("");
+        }
 		if (_model.isSpecsDisabled()) {
 			charactersFileTextField.setEnabled(false);
-			itemsFileTextField.setEnabled(false);
 			specificationsFileTextField.setEnabled(false);
 			moveToSpecsButton.setEnabled(false);
 			moveToCharsButton.setEnabled(false);
-			moveToItemsButton.setEnabled(false);
-
 		}
 
 		currentImportFilterTextField.setText(_currentFilter);
@@ -562,7 +586,6 @@ public class ImportExportDialog extends JDialog {
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
 						btnChange.getAction().actionPerformed(new ActionEvent(this, 0, ""));
-						;
 					}
 				});
 			}

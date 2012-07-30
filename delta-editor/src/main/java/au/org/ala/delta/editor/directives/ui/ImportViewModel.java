@@ -14,26 +14,29 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.directives.ui;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-
 import au.org.ala.delta.editor.directives.DirectiveFileInfo;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
+import org.apache.commons.lang.StringUtils;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Manages the data displayed in the ImportExportDialog during an import 
  * operation.
  */
 public class ImportViewModel extends ImportExportViewModel {
-	
+
+    private boolean _includeItemsFile;
+
 	@Override
 	public void populate(EditorViewModel model) {
-		
+
+        _includeItemsFile = model.getMaximumNumberOfItems() <= 0;
+
 		populateExcludedFiles(model);
 		
 		populateIncludedFiles(model);
@@ -49,22 +52,23 @@ public class ImportViewModel extends ImportExportViewModel {
 		
 		_includedDirectivesFiles = new ArrayList<DirectiveFileInfo>();
 
-		for (int i = 1; i <= directiveFileCount; i++) {
+        for (int i = 1; i <= directiveFileCount; i++) {
 			DirectiveFile dirFile = model.getDirectiveFile(i);
 
 			DirectiveFileInfo info = new DirectiveFileInfo(
 					dirFile.getShortFileName(), dirFile.getType());
 			info.setDirectiveFile(dirFile);
-			
-			if (isOnImportPath(info)) {
+
+
+			if ((_includeItemsFile || !dirFile.isItemsFile()) && isOnImportPath(info)) {
 
 				_excludedDirectiveFiles.remove(info);
 				if (dirFile.isSpecsFile()) {
 					setSpecsFile(info);
-				} else if (dirFile.isItemsFile()) {
-					setItemsFile(info);
 				} else if (dirFile.isCharsFile()) {
 					setCharactersFile(info);
+                } else if (dirFile.isItemsFile()) {
+                    setItemsFile(info);
 				} else {
 					_includedDirectivesFiles.add(info);
 				}
@@ -111,7 +115,7 @@ public class ImportViewModel extends ImportExportViewModel {
 			_charactersFile = new DirectiveFileInfo(DEFAULT_CHARS_DIRECTIVE_FILE, DirectiveType.CONFOR);
 			_excludedDirectiveFiles.remove(DEFAULT_CHARS_DIRECTIVE_FILE);
 		}
-		if (_itemsFile == null && containsFileNamed(_excludedDirectiveFiles, DEFAULT_ITEMS_DIRECTIVE_FILE)) {
+		if (_includeItemsFile && _itemsFile == null && containsFileNamed(_excludedDirectiveFiles, DEFAULT_ITEMS_DIRECTIVE_FILE)) {
 			_itemsFile = new DirectiveFileInfo(DEFAULT_ITEMS_DIRECTIVE_FILE, DirectiveType.CONFOR);
 			_excludedDirectiveFiles.remove(DEFAULT_ITEMS_DIRECTIVE_FILE);
 		}
