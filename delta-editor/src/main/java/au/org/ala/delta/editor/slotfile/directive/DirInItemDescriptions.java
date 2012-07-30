@@ -37,9 +37,9 @@ public class DirInItemDescriptions extends ItemDescriptions implements Directive
 
     public DirInItemDescriptions() {
         super(true);
-        _alwaysOverwriteItem = false;
+        _alwaysOverwriteItem = true;
         _alwaysRetainItem = false;
-        _overwrite = false;
+        _overwrite = true;
     }
 
     private void askWhatToDo(Item item) {
