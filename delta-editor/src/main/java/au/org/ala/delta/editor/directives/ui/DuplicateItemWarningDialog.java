@@ -119,7 +119,7 @@ public class DuplicateItemWarningDialog extends JDialog {
 		flowLayout.setAlignment(FlowLayout.LEFT);
 		bottomPanel.add(panel_1, BorderLayout.SOUTH);
 		
-		applyToAllCheckBox = new JCheckBox("Apply this choice to ALL duplicate items encountered in this file");
+		applyToAllCheckBox = new JCheckBox();
 		applyToAllCheckBox.setName("applyToAllCheckBox");
 		panel_1.add(applyToAllCheckBox);
 		

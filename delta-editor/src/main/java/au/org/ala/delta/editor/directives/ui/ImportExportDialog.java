@@ -237,7 +237,8 @@ public class ImportExportDialog extends JDialog {
 						.addComponent(panel_3, GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE).addPreferredGap(ComponentPlacement.RELATED)
 						.addComponent(pnlLineSeparator, GroupLayout.PREFERRED_SIZE, 55, GroupLayout.PREFERRED_SIZE)));
 
-		lblNewLabel = new JLabel("Line separator:");
+		lblNewLabel = new JLabel();
+        lblNewLabel.setName("exportLineSeparator");
 
 		cmbLineSeparator = new JComboBox();
 		GroupLayout gl_pnlLineSeparator = new GroupLayout(pnlLineSeparator);
@@ -372,7 +373,8 @@ public class ImportExportDialog extends JDialog {
 		JPanel panel_6 = new JPanel();
 		panel_5.add(panel_6, BorderLayout.SOUTH);
 
-		JLabel lblExclude = new JLabel("Exclude");
+		JLabel lblExclude = new JLabel();
+        lblExclude.setName("importExportExcludeLabel");
 
 		currentImportFilterTextField = new JTextField();
 		currentImportFilterTextField.setEditable(false);
@@ -401,16 +403,15 @@ public class ImportExportDialog extends JDialog {
 		JPanel buttonBar = new JPanel();
 		buttonBar.setBorder(new EmptyBorder(5, 0, 5, 0));
 
-		btnOk = new JButton("OK");
+		btnOk = new JButton();
 
-		btnCancel = new JButton("Cancel");
+		btnCancel = new JButton();
 
-		JButton btnHelp = new JButton("Help");
 		GroupLayout gl_buttonBar = new GroupLayout(buttonBar);
 		gl_buttonBar.setHorizontalGroup(gl_buttonBar.createParallelGroup(Alignment.TRAILING).addGroup(
-				gl_buttonBar.createSequentialGroup().addContainerGap(398, Short.MAX_VALUE).addComponent(btnOk).addGap(5).addComponent(btnCancel).addGap(5).addComponent(btnHelp).addContainerGap()));
+				gl_buttonBar.createSequentialGroup().addContainerGap(398, Short.MAX_VALUE).addComponent(btnOk).addGap(5).addComponent(btnCancel).addContainerGap()));
 		gl_buttonBar.setVerticalGroup(gl_buttonBar.createParallelGroup(Alignment.TRAILING).addGroup(
-				gl_buttonBar.createSequentialGroup().addGap(5).addGroup(gl_buttonBar.createParallelGroup(Alignment.BASELINE).addComponent(btnCancel).addComponent(btnOk).addComponent(btnHelp))));
+				gl_buttonBar.createSequentialGroup().addGap(5).addGroup(gl_buttonBar.createParallelGroup(Alignment.BASELINE).addComponent(btnCancel).addComponent(btnOk))));
 		buttonBar.setLayout(gl_buttonBar);
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
 		groupLayout.setHorizontalGroup(groupLayout

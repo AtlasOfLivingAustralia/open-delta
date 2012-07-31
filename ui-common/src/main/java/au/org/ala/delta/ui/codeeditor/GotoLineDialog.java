@@ -14,31 +14,26 @@
  ******************************************************************************/
 package au.org.ala.delta.ui.codeeditor;
 
-import java.awt.Color;
+import au.org.ala.delta.ui.BaseDialog;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 
-import javax.swing.AbstractAction;
-import javax.swing.ActionMap;
-import javax.swing.InputMap;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-
-import au.org.ala.delta.ui.BaseDialog;
-
+/**
+ * Displays a dialog asking the user which line they want to go to.
+ */
 public class GotoLineDialog extends BaseDialog {
 
-	/**
-     *
-     */
 	private static final long serialVersionUID = 1L;
 	/** The text area. */
 	private CodeTextArea textArea;
+
+    private ResourceMap _resources;
 
 	/**
 	 * Sets the current line number.
@@ -58,8 +53,10 @@ public class GotoLineDialog extends BaseDialog {
 	 */
 	public GotoLineDialog(CodeTextArea textArea) {
 		super(textArea.getFrame(), false);
+        setName("gotoLineDialog");
+        _resources = Application.getInstance().getContext().getResourceMap();
 		this.textArea = textArea;
-		setTitle("Goto line");
+		setTitle(_resources.getString("gotoLineDialog.title"));
 		initComponents();
 
 		// defining key bindings
@@ -108,7 +105,7 @@ public class GotoLineDialog extends BaseDialog {
 
 		mainPanel.setLayout(new java.awt.GridBagLayout());
 
-		lineNumberLabel.setText("Line number");
+		lineNumberLabel.setText(_resources.getString("gotoLineDialog.lineNumberLabel.text"));
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
 		gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
@@ -132,7 +129,7 @@ public class GotoLineDialog extends BaseDialog {
 
 		buttonPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-		okButton.setText("OK");
+		okButton.setText(_resources.getString("gotoLineDialog.okButton.text"));
 		okButton.addActionListener(new java.awt.event.ActionListener() {
 
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -142,7 +139,7 @@ public class GotoLineDialog extends BaseDialog {
 
 		buttonPanel.add(okButton);
 
-		cancelButton.setText("Cancel");
+		cancelButton.setText(_resources.getString("gotoLineDialog.cancelButton.text"));
 		cancelButton.addActionListener(new java.awt.event.ActionListener() {
 
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
