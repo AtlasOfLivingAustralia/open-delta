@@ -355,7 +355,7 @@ public class CharacterEditor extends AbstractDeltaView {
 	 */
 	private void createUI(EditorViewModel model) {
 
-		characterNumberLabel = new JLabel("Character Number:");
+		characterNumberLabel = new JLabel();
 		characterNumberLabel.setName("characterNumberLabel");
 
 		spinner = new JSpinner();
@@ -367,7 +367,7 @@ public class CharacterEditor extends AbstractDeltaView {
 			}
 		});
 
-		btnSelect = new JToggleButton("Select");
+		btnSelect = new JToggleButton();
 		btnSelect.setName("selectTaxonNumberButton");
 
 		lblEditCharacterName = new JLabel("");
@@ -379,21 +379,18 @@ public class CharacterEditor extends AbstractDeltaView {
 		mandatoryCheckBox = new JCheckBox();
 		mandatoryCheckBox.setName("mandatoryCheckbox");
 
-		btnDone = new JButton("Done");
+		btnDone = new JButton();
 		btnDone.setName("doneEditingTaxonButton");
-
-		JButton btnHelp = new JButton("Help");
-		btnHelp.setName("helpWithTaxonEditorButton");
 
 		characterSelectionList = new CharacterList();
 
-		exclusiveCheckBox = new JCheckBox("Exclusive");
+		exclusiveCheckBox = new JCheckBox();
 
 		comboBox = new JComboBox();
 		comboBox.setModel(new CharacterTypeComboModel());
 		comboBox.setRenderer(new CharacterTypeRenderer());
 
-		JLabel lblCharacterType = new JLabel("Character Type:");
+		JLabel lblCharacterType = new JLabel();
 		lblCharacterType.setName("characterTypeLabel");
 
 		RtfToolBar toolbar = new RtfToolBar(this);
@@ -435,7 +432,7 @@ public class CharacterEditor extends AbstractDeltaView {
 																		.createParallelGroup(Alignment.LEADING)
 																		.addGroup(
 																				groupLayout.createSequentialGroup().addGap(0, 543, Short.MAX_VALUE).addComponent(btnDone).addGap(5)
-																						.addComponent(btnHelp)).addComponent(tabbedPane, GroupLayout.DEFAULT_SIZE, 698, Short.MAX_VALUE)).addGap(1)))
+																						).addComponent(tabbedPane, GroupLayout.DEFAULT_SIZE, 698, Short.MAX_VALUE)).addGap(1)))
 						.addContainerGap()));
 		groupLayout.setVerticalGroup(groupLayout.createParallelGroup(Alignment.LEADING).addGroup(
 				groupLayout
@@ -468,7 +465,7 @@ public class CharacterEditor extends AbstractDeltaView {
 																						.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 																						.addComponent(mandatoryCheckBox))))
 										.addComponent(editorScroller, GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE)).addGap(9).addComponent(tabbedPane).addPreferredGap(ComponentPlacement.UNRELATED)
-						.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(btnDone).addComponent(btnHelp)).addGap(17)));
+						.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(btnDone)).addGap(17)));
 
 		mainPanel.setLayout(groupLayout);
 		setPreferredSize(new Dimension(827, 500));

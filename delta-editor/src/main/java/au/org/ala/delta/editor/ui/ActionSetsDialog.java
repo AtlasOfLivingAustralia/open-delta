@@ -345,15 +345,15 @@ public class ActionSetsDialog extends AbstractDeltaView {
 		JPanel buttonPanel = new JPanel();
 		getContentPane().add(buttonPanel, BorderLayout.EAST);
 
-		runButton = new JButton("Run");
+		runButton = new JButton();
 
-		addButton = new JButton("Add");
+		addButton = new JButton();
 
-		editButton = new JButton("Edit");
+		editButton = new JButton();
 
-		deleteButton = new JButton("Delete");
+		deleteButton = new JButton();
 
-		doneButton = new JButton("Done");
+		doneButton = new JButton();
 		GroupLayout gl_buttonPanel = new GroupLayout(buttonPanel);
 		gl_buttonPanel.setHorizontalGroup(gl_buttonPanel.createParallelGroup(Alignment.LEADING).addComponent(runButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 				.addComponent(addButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -370,7 +370,7 @@ public class ActionSetsDialog extends AbstractDeltaView {
 		flowLayout.setAlignment(FlowLayout.LEFT);
 		getContentPane().add(labelPanel, BorderLayout.NORTH);
 
-		JLabel actionSetLabel = new JLabel("Action Set:");
+		JLabel actionSetLabel = new JLabel();
 		actionSetLabel.setName("actionSetsActionSetsLabel");
 		labelPanel.add(actionSetLabel);
 

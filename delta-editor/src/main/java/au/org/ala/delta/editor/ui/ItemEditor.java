@@ -252,9 +252,6 @@ public class ItemEditor extends AbstractDeltaView implements ValidationListener 
 		btnDone = new JButton("Done");
 		btnDone.setName("doneEditingTaxonButton");
 
-		JButton btnHelp = new JButton("Help");
-		btnHelp.setName("helpWithTaxonEditorButton");
-
 		taxonSelectionList = new ItemList();
 
 		GroupLayout groupLayout = new GroupLayout(content);
@@ -293,7 +290,7 @@ public class ItemEditor extends AbstractDeltaView implements ValidationListener 
 																		.createParallelGroup(Alignment.LEADING)
 																		.addGroup(
 																				groupLayout.createSequentialGroup().addGap(0, 759, Short.MAX_VALUE).addComponent(btnDone).addGap(5)
-																						.addComponent(btnHelp)).addComponent(panel, GroupLayout.DEFAULT_SIZE, 850, Short.MAX_VALUE)).addGap(1)))
+																						).addComponent(panel, GroupLayout.DEFAULT_SIZE, 850, Short.MAX_VALUE)).addGap(1)))
 						.addGap(19)));
 		groupLayout.setVerticalGroup(groupLayout.createParallelGroup(Alignment.LEADING).addGroup(
 				groupLayout
@@ -313,7 +310,7 @@ public class ItemEditor extends AbstractDeltaView implements ValidationListener 
 																		.addComponent(btnSelect)).addPreferredGap(ComponentPlacement.RELATED, 90, Short.MAX_VALUE).addComponent(chckbxTreatAsVariant))
 										.addComponent(editorScroller, GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)).addGap(18)
 						.addComponent(panel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).addPreferredGap(ComponentPlacement.UNRELATED)
-						.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(btnDone).addComponent(btnHelp)).addGap(17)));
+						.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(btnDone)).addGap(17)));
 		panel.setLayout(new BorderLayout(0, 0));
 
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);

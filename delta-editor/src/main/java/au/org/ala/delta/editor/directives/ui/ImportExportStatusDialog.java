@@ -14,28 +14,17 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.directives.ui;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Window;
-
-import javax.swing.ActionMap;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.SwingConstants;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.EtchedBorder;
-import javax.swing.border.SoftBevelBorder;
-
+import au.org.ala.delta.editor.directives.ImportExportStatus;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 
-import au.org.ala.delta.editor.directives.ImportExportStatus;
+import javax.swing.*;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.SoftBevelBorder;
+import java.awt.*;
 
 /**
  * Displays the status of an import or export operation.
@@ -92,15 +81,17 @@ public class ImportExportStatusDialog extends JDialog {
 	}
 
 	private void createUI() {
-		setName("importExportStatusDialog");
+		setName(_resourcePrefix+"StatusDialog");
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setMinimumSize(new Dimension(465, 354));
 		setPreferredSize(new Dimension(465, 354));
 		JPanel statusPanel = new JPanel();
 		getContentPane().add(statusPanel, BorderLayout.CENTER);
 		
-		JLabel lblImportingDeltaData = new JLabel("Importing DELTA data set");
-		lblImportingDeltaData.setName(_resourcePrefix+"Heading");
+		JLabel lblImportingDeltaData = new JLabel();
+        String headingKey = _resourcePrefix+"Heading";
+		lblImportingDeltaData.setName(headingKey);
+
 		
 		lblImportingDeltaData.setHorizontalAlignment(SwingConstants.CENTER);
 		
@@ -119,10 +110,10 @@ public class ImportExportStatusDialog extends JDialog {
 		chckbxPauseOnErrors = new JCheckBox();
 		chckbxPauseOnErrors.setSelected(true);
 		
-		btnContinue = new JButton("Continue");
-		btnDone = new JButton("Done");
+		btnContinue = new JButton();
+		btnDone = new JButton();
 		
-		btnCancel = new JButton("Cancel");
+		btnCancel = new JButton();
 		GroupLayout gl_statusPanel = new GroupLayout(statusPanel);
 		gl_statusPanel.setHorizontalGroup(
 			gl_statusPanel.createParallelGroup(Alignment.LEADING)
@@ -258,7 +249,7 @@ public class ImportExportStatusDialog extends JDialog {
 		
 		JLabel lblCurrent = new JLabel();
 		lblCurrent.setName("importExportCurrentLabel");
-		JLabel lblCurrentFile = new JLabel("Current file:");
+		JLabel lblCurrentFile = new JLabel();
 		lblCurrentFile.setName("importExportCurrentFileLabel");
 		JLabel lblImportDirectory = new JLabel();
 		lblImportDirectory.setName(_resourcePrefix+"DirectoryLabel");
