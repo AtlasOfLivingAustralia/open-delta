@@ -202,7 +202,7 @@ public class CharacterEditor extends AbstractDeltaView {
 
 	@Override
 	public boolean canClose() {
-		return validateCharacter();
+        return validateCharacter();
 	}
 
 	private boolean validateCharacter() {
@@ -315,11 +315,11 @@ public class CharacterEditor extends AbstractDeltaView {
 		unitsEditor.bind(_dataSet, character);
 		controlledByEditor.bind(_dataSet, character);
 		controllingAttributeEditor.bind(_dataSet, character);
-		_validator = new CharacterValidator(_dataSet, _selectedCharacter);
 		TextComponentValidator validator = new TextComponentValidator(CharacterValidator.descriptionValidator(_dataSet, character));
 		rtfEditor.setInputVerifier(validator);
-		updateScreen();
-	}
+        _validator = new CharacterValidator(_dataSet, _selectedCharacter);
+        updateScreen();
+    }
 
 	@Action
 	public void characterSelected() {
@@ -358,14 +358,14 @@ public class CharacterEditor extends AbstractDeltaView {
 		characterNumberLabel = new JLabel();
 		characterNumberLabel.setName("characterNumberLabel");
 
-		spinner = new JSpinner();
-		
-		spinner.setModel(new CharacterSpinnerNumberModel(model) {
-			@Override
-			protected boolean canChange() {
-				return validateCharacter();
-			}
-		});
+		spinner = new JSpinner(new CharacterSpinnerNumberModel(model) {
+            @Override
+            protected boolean canChange() {
+                if (_selectedCharacter == null || _editsDisabled) {
+                    return false;
+                }
+                return validateCharacter();
+            }});
 
 		btnSelect = new JToggleButton();
 		btnSelect.setName("selectTaxonNumberButton");
@@ -554,10 +554,10 @@ public class CharacterEditor extends AbstractDeltaView {
 			_selectedCharacter = _dataSet.getCharacter(1);
 		}
 
-		CharacterSpinnerNumberModel model = (CharacterSpinnerNumberModel) spinner.getModel();
-		model.setValue(_selectedCharacter.getCharacterId());
+        CharacterSpinnerNumberModel model = (CharacterSpinnerNumberModel) spinner.getModel();
+        model.setValue(_selectedCharacter.getCharacterId());
 
-		// This check prevents update errors on the editor pane Document.
+        // This check prevents update errors on the editor pane Document.
 		if (!_selectedCharacter.getDescription().equals(rtfEditor.getRtfTextBody())) {
 			rtfEditor.setText(_selectedCharacter.getDescription());
 		}
@@ -593,7 +593,7 @@ public class CharacterEditor extends AbstractDeltaView {
 				}
 			}
 		}
-		_editsDisabled = false;
+        _editsDisabled = false;
 	}
 
 	@Override
