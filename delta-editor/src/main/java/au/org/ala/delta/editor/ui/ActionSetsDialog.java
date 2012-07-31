@@ -539,13 +539,14 @@ public class ActionSetsDialog extends AbstractDeltaView {
 		}
 
 		protected void showProgressDialog() {
+            SingleFrameApplication application = (SingleFrameApplication)Application.getInstance();
 			if (_dialog == null) {
-				_dialog = new RunDirectivesProgressDialog(((SingleFrameApplication) Application.getInstance()).getMainFrame(), "");
+				_dialog = new RunDirectivesProgressDialog(application.getMainFrame(), "");
 			}
 			_dialog.updateProgress(0);
 			_dialog.setMessage("Running : " + getInputFile());
 			_dialog.pack();
-			_dialog.setVisible(true);
+            application.show(_dialog);
 
 		}
 

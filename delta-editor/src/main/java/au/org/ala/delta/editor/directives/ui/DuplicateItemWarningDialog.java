@@ -28,7 +28,7 @@ public class DuplicateItemWarningDialog extends JDialog {
 	public DuplicateItemWarningDialog(String itemDescription) {
 		super(((SingleFrameApplication)Application.getInstance()).getMainFrame());
 		setModal(true);
-        setName("DuplicateItemWarningDialog");
+        setName("duplicateItemWarningDialog");
         _overwrite = false;
         _applyToAllItems = false;
 		createUI();

@@ -14,37 +14,28 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.directives.ui;
 
-import java.awt.Component;
-import java.awt.Desktop;
-import java.awt.Window;
+import au.org.ala.delta.ui.TextFileViewer;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
+import org.jdesktop.application.SingleFrameApplication;
+
+import javax.swing.*;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.border.EtchedBorder;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellEditor;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import javax.swing.AbstractCellEditor;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.border.EtchedBorder;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellEditor;
-
-import org.jdesktop.application.Application;
-import org.jdesktop.application.SingleFrameApplication;
-
-import au.org.ala.delta.ui.TextFileViewer;
-
+/**
+ * Displays progress and the output of running a directives file.
+ */
 public class RunDirectivesProgressDialog extends JDialog {
 
 	private static final long serialVersionUID = -2658247261229069862L;
@@ -55,12 +46,17 @@ public class RunDirectivesProgressDialog extends JDialog {
 	private JButton btnOk;
 	private JLabel lblDirectivesfilelabel;
 	private JTextArea textArea;
+
+    private ResourceMap _resources;
 	
 	public RunDirectivesProgressDialog(Window owner, String message) {
 		super(owner);
+        setName("runDirectivesProgressDialog");
+        _resources = Application.getInstance().getContext().getResourceMap();
 		createGUI();
 		addEventHandlers();
 		setMessage(message);
+
 	}
 	
 	public void setMessage(String message) {
@@ -78,25 +74,29 @@ public class RunDirectivesProgressDialog extends JDialog {
 	}
 
 	protected void createGUI() {
+
         setTitle("Actions - Results");
-		lblDirectivesfilelabel = new JLabel("directivesFileLabel");
+		lblDirectivesfilelabel = new JLabel("");
 		
 		progressBar = new JProgressBar();
 		progressBar.setIndeterminate(true);
 		
 		
-		JLabel progressLabel = new JLabel("Progress");
+		JLabel progressLabel = new JLabel("");
+        progressLabel.setName("runDirectivesProgressLabel");
 		
 		JScrollPane scrollPane = new JScrollPane();
 		
 		JPanel panel = new JPanel();
 		panel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		
-		JLabel lblNewLabel = new JLabel("Output files");
+		JLabel lblNewLabel = new JLabel("");
+        lblNewLabel.setName("runDirectivesOutputFilesLabel");
 		
 		JScrollPane scrollPane_1 = new JScrollPane();
 		
-		JLabel lblOutput = new JLabel("Output");
+		JLabel lblOutput = new JLabel("");
+        lblOutput.setName("runDirectivesOutputLabel");
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.TRAILING)
@@ -108,10 +108,8 @@ public class RunDirectivesProgressDialog extends JDialog {
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(progressLabel)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(progressBar, GroupLayout.DEFAULT_SIZE, 451, Short.MAX_VALUE))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 430, Short.MAX_VALUE)
-							.addPreferredGap(ComponentPlacement.RELATED))
+							.addComponent(progressBar, GroupLayout.DEFAULT_SIZE, 505, Short.MAX_VALUE))
+						.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 511, Short.MAX_VALUE)
 						.addComponent(panel, GroupLayout.DEFAULT_SIZE, 511, Short.MAX_VALUE)
 						.addComponent(lblNewLabel)
 						.addComponent(scrollPane, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 511, Short.MAX_VALUE))
@@ -129,21 +127,22 @@ public class RunDirectivesProgressDialog extends JDialog {
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(lblOutput)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
+					.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 116, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(lblNewLabel)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
+					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 91, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(panel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(21, Short.MAX_VALUE))
+					.addGap(32))
 		);
 		
 		textArea = new JTextArea();
 		textArea.setRows(8);
 		scrollPane_1.setViewportView(textArea);
 		
-		btnOk = new JButton("Close");
+		btnOk = new JButton("");
+        btnOk.setName("runDirectivesFileCloseButton");
 		panel.add(btnOk);
 		
 		table = new JTable();
@@ -208,8 +207,10 @@ public class RunDirectivesProgressDialog extends JDialog {
 		private static final long serialVersionUID = 6579566851056202044L;
 		
 		public OutputFileTableModel() {
+
+            String columnHeader = _resources.getString("runDirectivesProgressDialog.fileNameColumn.text");
 			setColumnCount(2);
-			setColumnIdentifiers(new String[]{"File name", ""});
+			setColumnIdentifiers(new String[]{columnHeader, ""});
 		}
 		
 	}
@@ -217,7 +218,7 @@ public class RunDirectivesProgressDialog extends JDialog {
 	class ButtonRenderer extends DefaultTableCellRenderer {
 		
 		private static final long serialVersionUID = -1030899285535143846L;
-		private JButton _viewButton = new JButton("View...");
+		private JButton _viewButton = new JButton(_resources.getString("runDirectivesProgressDialog.viewButton.text"));
 		
 		@Override
 		public Component getTableCellRendererComponent(JTable table, Object value,
@@ -228,17 +229,19 @@ public class RunDirectivesProgressDialog extends JDialog {
 	}
 	
 	class ButtonEditor extends AbstractCellEditor implements TableCellEditor {
-		
+
+        private static final String ROW_CLIENT_PROPERTY = "row";
 		private static final long serialVersionUID = -1030899285535143846L;
-		private JButton _viewButton = new JButton("View...");
+		private JButton _viewButton;
 		
 		public ButtonEditor() {
-			_viewButton = new JButton("View...");
+			_viewButton = new JButton();
+            _viewButton.setText(_resources.getString("runDirectivesProgressDialog.viewButton.text"));
 			_viewButton.addActionListener(new ActionListener() {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					Integer row = (Integer)_viewButton.getClientProperty("row");
+					Integer row = (Integer)_viewButton.getClientProperty(ROW_CLIENT_PROPERTY);
 					if (row != null && row >= 0) {
 						displayResults(_results.get(row));
 					}
@@ -247,7 +250,7 @@ public class RunDirectivesProgressDialog extends JDialog {
 		}
 		@Override
 		public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-			_viewButton.putClientProperty("row", row);
+			_viewButton.putClientProperty(ROW_CLIENT_PROPERTY, row);
 			return _viewButton;
 		}
 
