@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>au.org.ala.delta</groupId>
 	<artifactId>delta-editor</artifactId>
-	<version>1.0-RC1</version>
+	<version>1.0-RC2</version>
 	<name>DELTA Editor</name>
 	<repositories>
 		<repository>
