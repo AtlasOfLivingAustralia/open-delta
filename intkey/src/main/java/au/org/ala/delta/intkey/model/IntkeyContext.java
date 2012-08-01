@@ -14,31 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.intkey.model;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.StringReader;
-import java.lang.reflect.TypeVariable;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.IntRange;
-
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.best.Best;
 import au.org.ala.delta.best.DiagType;
@@ -49,8 +24,6 @@ import au.org.ala.delta.intkey.directives.DirectivePopulator;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParseException;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParser;
 import au.org.ala.delta.intkey.directives.SetMatchDirective;
-import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.DirectiveInvocationProgressHandler;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocationException;
 import au.org.ala.delta.intkey.directives.invocation.LongRunningIntkeyDirectiveInvocation;
@@ -67,6 +40,27 @@ import au.org.ala.delta.model.image.ImageSettings.FontInfo;
 import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.util.Pair;
 import au.org.ala.delta.util.Utils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.IntRange;
+
+import javax.swing.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.io.StringReader;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Model. Maintains global application state.
@@ -338,8 +332,7 @@ public class IntkeyContext extends AbstractDeltaContext {
      * set, calling this method will result in the new dataset being loaded. The
      * calling thread will block while the dataset is loaded.
      * 
-     * @param fileName
-     *            Path to the characters file
+     * @param charactersFile The characters file
      */
     public synchronized void setFileCharacters(File charactersFile) {
         Logger.log("Setting characters file to: %s", charactersFile.getAbsolutePath());
@@ -371,8 +364,7 @@ public class IntkeyContext extends AbstractDeltaContext {
      * previously been set, calling this method will result in the new dataset
      * being loaded. The calling thread will block while the dataset is loaded.
      * 
-     * @param fileName
-     *            Path to the taxa (items) file
+     * @param taxaFile The taxa (items) file
      */
     public synchronized void setFileTaxa(File taxaFile) {
         Logger.log("Setting taxa file to: %s", taxaFile.getAbsolutePath());
@@ -461,8 +453,7 @@ public class IntkeyContext extends AbstractDeltaContext {
      * This method will block while the calling thread while the file is read,
      * the dataset is loaded, and other directives in the file are executed.
      * 
-     * @param fileName
-     *            Path to the dataset initialization file
+     * @param datasetFile  The dataset initialization file
      * @return SwingWorker used to load the dataset in a separate thread - unit
      *         tests need this so that they can block until the dataset is
      *         loaded.
@@ -854,11 +845,11 @@ public class IntkeyContext extends AbstractDeltaContext {
      *            The keyword. Note that the system-defined keywords "all",
      *            "eliminated", "remaining", "selected", "none" and "specimen"
      *            cannot be used.
-     * @param characterNumbers
-     *            The set of characters to be represented by the keyword. If
+     * @param taxaNumbers
+     *            The set of taxa to be represented by the keyword. If
      *            empty, the specified keyword will be removed. Otherwise the
      *            keyword will be added, modified to point to the specified
-     *            characters
+     *            taxa
      */
     public synchronized void setTaxaKeyword(String keyword, Set<Integer> taxaNumbers) {
         if (_dataset == null) {
@@ -1969,6 +1960,9 @@ public class IntkeyContext extends AbstractDeltaContext {
      * @param text
      */
     public synchronized void appendToLog(String text) {
+        if (StringUtils.isBlank(text)) {
+            return;
+        }
         if (_logPrintFile != null) {
             _logPrintFile.outputLine(text);
         }
