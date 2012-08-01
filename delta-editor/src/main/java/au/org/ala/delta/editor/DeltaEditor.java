@@ -52,10 +52,12 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.beans.PropertyVetoException;
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.EventObject;
 import java.util.List;
+import java.util.Map;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 
@@ -132,8 +134,26 @@ public class DeltaEditor extends InternalFrameApplication implements PreferenceC
 		_closingAll = false;
         _viewSelected = false;
 		_propertyChangeSupport = new PropertyChangeSupport(this);
-
+        setLookAndFeel();
 	}
+
+    private void setLookAndFeel() {
+        // To avoid setting the look and feel twice, we are updating the resource bundle before the Swing
+        // Application Framework sets the look and feel.
+        try {
+            getContext().setApplicationClass(DeltaEditor.class);
+
+            ResourceMap resources = getContext().getResourceMap();
+            Method method = ResourceMap.class.getDeclaredMethod("getBundlesMap");
+            method.setAccessible(true);
+            Map<String, Object> resourceMap =  (Map<String, Object>)method.invoke(resources);
+            resourceMap.put("Application.lookAndFeel", EditorPreferences.getPreferredLookAndFeel());
+
+        }
+        catch (Throwable t) {
+            // Doesn't matter if we fail, going with the defaults is fine.
+        }
+    }
 
 	@Override
 	protected void initialize(String[] args) {
@@ -397,16 +417,19 @@ public class DeltaEditor extends InternalFrameApplication implements PreferenceC
 	@Action
 	public void systemLookAndFeel() {
 	    UIUtils.systemLookAndFeel(getMainFrame());
+        EditorPreferences.setPreferredLookAndFeel("system");
 	}
 
 	@Action
 	public void metalLookAndFeel() {
 	    UIUtils.metalLookAndFeel(getMainFrame());
+        EditorPreferences.setPreferredLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
 	}
 
 	@Action
 	public void nimbusLookAndFeel() {
 	    UIUtils.nimbusLookAndFeel(getMainFrame());
+        EditorPreferences.setPreferredLookAndFeel("nimbus");
 	}
 
 	/**

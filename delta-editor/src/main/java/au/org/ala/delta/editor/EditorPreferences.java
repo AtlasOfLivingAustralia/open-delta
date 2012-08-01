@@ -14,15 +14,14 @@
  ******************************************************************************/
 package au.org.ala.delta.editor;
 
+import au.org.ala.delta.editor.ui.EditorAdvanceMode;
+import org.apache.commons.lang.StringUtils;
+
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;
-
-import org.apache.commons.lang.StringUtils;
-
-import au.org.ala.delta.editor.ui.EditorAdvanceMode;
 
 /**
  * Preferences facade for the Delta Editor
@@ -46,6 +45,9 @@ public class EditorPreferences {
 	
 	public static String VIEWER_DIVIDER_OFFSET_KEY = "ViewerDividerOffset";
 	private static int DEFAULT_VIEWER_DIVIDER_OFFSET = 200;
+
+    public static String LOOK_AND_FEEL_KEY = "lookAndFeel";
+    private static String DEFAULT_LOOK_AND_FEEL = "system";
 
 	/**
 	 * @return An array of the most recently used filenames
@@ -177,7 +179,22 @@ public class EditorPreferences {
 		}
 	}
 
-	/**
+    public static void setPreferredLookAndFeel(String lookAndFeelName) {
+        Preferences prefs = Preferences.userNodeForPackage(DeltaEditor.class);
+        if (prefs != null) {
+            prefs.put(LOOK_AND_FEEL_KEY, lookAndFeelName);
+        }
+    }
+
+    public static String getPreferredLookAndFeel() {
+        Preferences prefs = Preferences.userNodeForPackage(DeltaEditor.class);
+        if (prefs != null) {
+            return prefs.get(LOOK_AND_FEEL_KEY, DEFAULT_LOOK_AND_FEEL);
+        }
+        return DEFAULT_LOOK_AND_FEEL;
+    }
+
+    /**
 	 * Allows the supplied PreferenceChangeListener to be notified of changes made to preferences managed by this class.
 	 * 
 	 * @param listener
@@ -197,5 +214,7 @@ public class EditorPreferences {
 		}
 
 	}
+
+
 
 }

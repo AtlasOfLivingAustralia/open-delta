@@ -16,6 +16,7 @@ package au.org.ala.delta.editor;
 
 import au.org.ala.delta.editor.model.DeltaViewModel;
 import au.org.ala.delta.editor.model.EditorDataModel;
+import au.org.ala.delta.editor.ui.AquaInternalFrameMaximiseListener;
 import au.org.ala.delta.editor.ui.InternalFrameDataModelListener;
 import au.org.ala.delta.model.DeltaDataSetRepository;
 import au.org.ala.delta.ui.MessageDialogHelper;
@@ -150,11 +151,19 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 		_activeViews.add(frameView);
 		frameView.addVetoableChangeListener(this);
 		frameView.addInternalFrameListener(this);
-		_models.put(view, model);
+
+        _models.put(view, model);
 		new InternalFrameDataModelListener(frameView, _dataSet, view.getViewTitle());
+        workAroundAquaLookAndFeel(frameView);
 	}
-	
-	
+
+    private void workAroundAquaLookAndFeel(JInternalFrame frame) {
+
+        if (DeltaEditor.isMac()) {
+            frame.addPropertyChangeListener(new AquaInternalFrameMaximiseListener());
+        }
+    }
+
 	/**
 	 * Removes the view from the ones being tracked.
 	 */
@@ -186,8 +195,6 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
             fireViewSelected(null);
         }
     }
-
-
 
 	/**
 	 * Asks the user whether they wish to save before closing.  If this method returns false
