@@ -1,7 +1,5 @@
 package au.org.ala.delta.editor.ui;
 
-import com.apple.laf.AquaInternalFrameUI;
-
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
@@ -27,7 +25,7 @@ public class AquaInternalFrameMaximiseListener implements PropertyChangeListener
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         JInternalFrame frame = (JInternalFrame)evt.getSource();
-        if (frame.getUI() instanceof AquaInternalFrameUI) {
+        if ("com.apple.laf.AquaInternalFrameUI".equals(frame.getUI().getClass().getName())) {
             if (JInternalFrame.IS_MAXIMUM_PROPERTY.equals(evt.getPropertyName())) {
 
                 Border border = frame.getBorder();

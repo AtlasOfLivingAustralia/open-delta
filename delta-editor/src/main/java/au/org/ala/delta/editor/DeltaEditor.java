@@ -205,7 +205,8 @@ public class DeltaEditor extends InternalFrameApplication implements PreferenceC
 		_dataSetRepository = new SlotFileRepository();
 
 		_statusBar = new StatusBar();
-		getMainView().setStatusBar(_statusBar);
+        // Hiding the status bar as it doesn't really convey much useful information and takes up screen space.
+		//getMainView().setStatusBar(_statusBar);
 
 		getMainView().setMenuBar(buildMenus());
 
