@@ -2083,7 +2083,12 @@ public class IntkeyContext extends AbstractDeltaContext {
             processInitializationFile(_startupFileData.getInitializationFileLocalCopy());
 
             if (startupFileData.getImagePath() != null) {
-                setImagePaths(Arrays.asList(_startupFileData.getImagePath()));
+                String startupImagePath = _startupFileData.getImagePath();
+                List<String> imagePaths = new ArrayList<String>();
+                if (imagePath != null) {
+                    imagePaths.addAll(Arrays.asList(startupImagePath.split(";")));
+                }
+                setImagePaths(imagePaths);
             }
 
             if (startupFileData.getInfoPath() != null) {

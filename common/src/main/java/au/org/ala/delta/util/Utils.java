@@ -40,6 +40,7 @@ import java.util.zip.ZipFile;
 import javax.swing.JFrame;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.rtf.RTFUtils;
@@ -1016,6 +1017,7 @@ public class Utils {
         // If the supplied file path starts with one of the file system
         // roots, then it is absolute. Otherwise, assume that
         // it is relative to the directory in which the dataset is located.
+        filePath = FilenameUtils.separatorsToSystem(filePath);
         boolean fileAbsolute = false;
         for (File root : File.listRoots()) {
             if (filePath.toLowerCase().startsWith(root.getAbsolutePath().toLowerCase())) {
