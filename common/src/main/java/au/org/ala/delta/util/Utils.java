@@ -37,7 +37,7 @@ import java.util.Locale;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import javax.swing.JFrame;
+import javax.swing.*;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -1096,10 +1096,9 @@ public class Utils {
         File f = new File(path);
         if (f.exists()) {
             try {
-                Runtime.getRuntime().exec(path + " " + args);
+                Runtime.getRuntime().exec(new String[]{path,args});
                 return true;
             } catch (Exception ex) {
-                ex.printStackTrace();
             }
         }
         return false;
