@@ -1960,16 +1960,21 @@ public class IntkeyContext extends AbstractDeltaContext {
      * @param text
      */
     public synchronized void appendToLog(String text) {
-        if (StringUtils.isBlank(text)) {
-            return;
-        }
-        if (_logPrintFile != null) {
-            _logPrintFile.outputLine(text);
-        }
+        try {
+            if (StringUtils.isBlank(text)) {
+                return;
+            }
+            if (_logPrintFile != null) {
+                _logPrintFile.outputLine(text);
+            }
 
-        _logCache.add(text);
+            _logCache.add(text);
 
-        _appUI.updateLog();
+            _appUI.updateLog();
+        }
+        catch (Exception e) {
+            Logger.error("Unable to update the Intkey log", e);
+        }
     }
 
     public synchronized void appendToJournal(String text) {
