@@ -14,9 +14,13 @@
  ******************************************************************************/
 package au.org.ala.delta.util;
 
-import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.awt.Window;
+import au.org.ala.delta.rtf.RTFUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
+
+import javax.swing.*;
+import java.awt.*;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -36,14 +40,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
-import javax.swing.*;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
-
-import au.org.ala.delta.rtf.RTFUtils;
 
 public class Utils {
 
@@ -497,8 +493,7 @@ public class Utils {
     /**
      * Removes DELTA style <> comments from the supplied string.
      * 
-     * @param src
-     *            the string to remove comments from.
+     * @param text the string to remove comments from.
      * @param level
      *            0 = don't remove, 1 = remove all, 2 = remove only if other
      *            text, 3 = same as 2, but outer brackets are removed if
@@ -1077,6 +1072,14 @@ public class Utils {
 
     private static boolean launchIntkeyViaScript(String startupDirectory, String inputFile) {
         String scriptFile = (Platform.isWindows() ? "Intkey.bat" : "Intkey.sh");
+        // The DELTA scripts set a System property "basedir" - this is more reliable than the current directory
+        // as if the script is on the path the current directory won't be the script directory.
+        if (StringUtils.isNotBlank(System.getProperty("basedir"))) {
+            String scriptDir = System.getProperty("basedir")+File.separator+"bin"+File.separator+scriptFile;
+            if (launchFile(scriptDir, inputFile)) {
+                return true;
+            }
+        }
         String fullpath = String.format("%s%s%s", startupDirectory, File.separator, scriptFile);
         if (!launchFile(fullpath, inputFile)) {
             String path = System.getenv("PATH");
