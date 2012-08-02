@@ -1,0 +1,5 @@
+Instructions for producing a Mac OS .dmg file
+---------------------------------------------
+1. Run mvn install from the project root.
+2. Change to this directory and run updateDmg.sh (may need to make it executable first).
+3. A file, Open DELTA.dmg will be created in the target folder of the project.

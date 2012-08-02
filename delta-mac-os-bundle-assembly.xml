@@ -17,6 +17,7 @@
 			</includes>
             <excludes>
                 <exclude>**/*.sh</exclude>
+                <exclude>*.dmg</exclude>
             </excludes>
 		</fileSet>
         <fileSet>
