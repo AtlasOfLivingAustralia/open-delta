@@ -35,8 +35,11 @@ public class DirectiveFileImporter extends DirectiveParser<ImportContext> {
 	private Directive[] _directives; 
 	private boolean _importFailed;
 	
-	public DirectiveFileImporter(DirectiveImportHandler handler, Directive[] directives) {
-		getDirectiveRegistry().setNumberOfSignificantCharacters(-1);
+	public DirectiveFileImporter(DirectiveImportHandler handler, Directive[] directives, Integer significantCharacters) {
+        if (significantCharacters == null) {
+            significantCharacters = -1;
+        }
+		getDirectiveRegistry().setNumberOfSignificantCharacters(significantCharacters);
 		_handler = handler;
 		_directives = directives;
 		_importFailed = false;

@@ -22,6 +22,7 @@ import au.org.ala.delta.editor.slotfile.directive.IntkeyDirType;
 import au.org.ala.delta.editor.slotfile.directive.KeyDirType;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
+import au.org.ala.delta.util.Pair;
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;
@@ -85,7 +86,8 @@ public class DirectivesFileImporter {
             directiveFile.setSpecsFile(true);
         }
  		directiveFile.setLastModifiedTime(System.currentTimeMillis());
-		DirectiveFileImporter importer = new DirectiveFileImporter(handler, directivesOfType(directiveFile.getType()));
+        Pair<Directive[] , Integer> directiveDetails = directivesOfType(directiveFile.getType());
+		DirectiveFileImporter importer = new DirectiveFileImporter(handler, directiveDetails.getFirst(), directiveDetails.getSecond());
 		
 		_context.setDirectiveFile(directiveFile);
 		
@@ -117,14 +119,16 @@ public class DirectivesFileImporter {
 		existing.setFlags(directiveFile.getFlags());
 	}
 	
-	protected Directive[] directivesOfType(DirectiveType type) {
+	protected Pair<Directive[], Integer> directivesOfType(DirectiveType type) {
 		Directive[] directives = null;
+        int significantCharacters = 3;
 		switch(type) {
 		case CONFOR:
 			directives = ConforDirType.ConforDirArray;
 			break;
 		case INTKEY:
 			directives = IntkeyDirType.IntkeyDirArray;
+            significantCharacters = -1;
 			break;
 		case KEY:
 			directives = KeyDirType.KeyDirArray;
@@ -133,6 +137,6 @@ public class DirectivesFileImporter {
 			directives = DistDirType.DistDirArray;
 			break;
 		}
-		return directives;
+		return new Pair<Directive[], Integer>(directives, significantCharacters);
 	}
 }

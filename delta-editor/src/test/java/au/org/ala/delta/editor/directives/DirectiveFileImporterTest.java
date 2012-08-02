@@ -14,19 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.directives;
 
-import java.io.File;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.List;
-
-import junit.framework.TestCase;
-
-import org.apache.commons.lang.StringUtils;
-import org.junit.Before;
-import org.junit.Test;
-
 import au.org.ala.delta.directives.DirectiveSearchResult;
 import au.org.ala.delta.directives.DirectiveSearchResult.ResultType;
 import au.org.ala.delta.directives.validation.DirectiveException;
@@ -39,6 +26,17 @@ import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
 import au.org.ala.delta.editor.slotfile.model.SlotFileDataSet;
 import au.org.ala.delta.editor.slotfile.model.SlotFileDataSetFactory;
 import au.org.ala.delta.model.CharacterType;
+import junit.framework.TestCase;
+import org.apache.commons.lang.StringUtils;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.File;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Tests the DirectiveFileImporter class. 
@@ -70,7 +68,7 @@ public class DirectiveFileImporterTest extends TestCase {
 	@Test
 	public void testToIntImport() throws Exception {
 	
-		_importer = new DirectiveFileImporter(_importHandler, ConforDirType.ConforDirArray);
+		_importer = new DirectiveFileImporter(_importHandler, ConforDirType.ConforDirArray, 3);
 		DirectiveFile file = importFile("toint", DirectiveType.CONFOR);
 		assertEquals(1, _dataSet.getDirectiveFileCount());
 		
@@ -165,7 +163,7 @@ public class DirectiveFileImporterTest extends TestCase {
 	
 	@Test
 	public void testDistImport() throws Exception {
-		_importer = new DirectiveFileImporter(_importHandler, DistDirType.DistDirArray);
+		_importer = new DirectiveFileImporter(_importHandler, DistDirType.DistDirArray, 3);
 		importFile("dist", DirectiveType.DIST);
 		DirectiveFile file = _dataSet.getDirectiveFile(1);
 		
@@ -213,7 +211,7 @@ public class DirectiveFileImporterTest extends TestCase {
 	@Test
 	public void testIntkeyFileImport() throws Exception {
 		
-		_importer = new DirectiveFileImporter(_importHandler, IntkeyDirType.IntkeyDirArray);
+		_importer = new DirectiveFileImporter(_importHandler, IntkeyDirType.IntkeyDirArray, -1);
 		List<String> directiveControlWords = Arrays.asList(IntkeyDirType.IntkeyDirArray[IntkeyDirType.DEFINE_BUTTON].getName());
 		DirectiveSearchResult result = _importer.getDirectiveRegistry().findDirective(directiveControlWords);
 		assertEquals(ResultType.Found, result.getResultType());

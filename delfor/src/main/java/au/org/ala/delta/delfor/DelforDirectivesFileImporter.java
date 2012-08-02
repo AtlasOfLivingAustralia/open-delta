@@ -14,8 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.delfor;
 
-import java.util.Arrays;
-
 import au.org.ala.delta.editor.directives.DirectivesFileImporter;
 import au.org.ala.delta.editor.directives.ImportContext;
 import au.org.ala.delta.editor.model.EditorViewModel;
@@ -23,6 +21,9 @@ import au.org.ala.delta.editor.slotfile.Directive;
 import au.org.ala.delta.editor.slotfile.DirectiveArgType;
 import au.org.ala.delta.editor.slotfile.directive.ConforDirType;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile.DirectiveType;
+import au.org.ala.delta.util.Pair;
+
+import java.util.Arrays;
 
 /**
  * This subclass of DirectivesFileImporter behaves in the same way as it's
@@ -51,10 +52,11 @@ public class DelforDirectivesFileImporter extends DirectivesFileImporter {
 	}
 
 	@Override
-	protected Directive[] directivesOfType(DirectiveType type) {
-		Directive[] directives = super.directivesOfType(type);
-		if (directives == ConforDirType.ConforDirArray) {
-			return _conforDirArray;
+	protected Pair<Directive[], Integer> directivesOfType(DirectiveType type) {
+		Pair<Directive[], Integer> directives = super.directivesOfType(type);
+
+		if (directives.getFirst() == ConforDirType.ConforDirArray) {
+			directives = new Pair<Directive[], Integer>(_conforDirArray, directives.getSecond());
 		}
 		return directives;
 	}
