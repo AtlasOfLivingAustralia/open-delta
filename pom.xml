@@ -56,6 +56,18 @@
 							</descriptors>
 						</configuration>
 					</execution>
+                    <execution>
+                        <id>bundle</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>delta-mac-os-bundle-assembly.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
 				</executions>
 			</plugin>
 		</plugins>

@@ -1,3 +1,6 @@
 #!/bin/bash
-cd /Applications/Open\ DELTA/.open-delta-1.0-RC2/bin
+export DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+export SCRIPT_DIR=$DIR/../../../../.open-delta/bin/
+cd "$SCRIPT_DIR"
+chmod u+x Intkey.sh
 ./Intkey.sh
