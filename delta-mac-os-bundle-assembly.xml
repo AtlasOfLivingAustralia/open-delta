@@ -15,7 +15,18 @@
 			<includes>
 				<include>**/*</include>
 			</includes>
+            <excludes>
+                <exclude>**/*.sh</exclude>
+            </excludes>
 		</fileSet>
+        <fileSet>
+            <directory>${project.basedir}/installer/mac_os</directory>
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>**/*.sh</include>
+            </includes>
+            <fileMode>0755</fileMode>
+        </fileSet>
 
         <fileSet>
             <directory>${project.basedir}/intkey/src/test/resources/dataset/sample</directory>
@@ -145,4 +156,5 @@
             </includes>
         </fileSet>
 	</fileSets>
+
 </assembly>
