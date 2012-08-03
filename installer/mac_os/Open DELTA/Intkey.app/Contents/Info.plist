@@ -24,5 +24,24 @@
 	<string>6.0</string>
 	<key>CFBundleIconFile</key>
 	<string>delta_intkey.icns</string>
+    <key>CFBundleDocumentTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeExtensions</key>
+            <array>
+                <string>ink</string>
+            </array>
+            <key>CFBundleTypeIconFile</key>
+            <string>delta_intkey.icns</string>
+            <key>CFBundleTypeName</key>
+            <string>Intkey data set</string>
+            <key>CFBundleTypeOSTypes</key>
+            <array>
+                <string>ink</string>
+            </array>
+            <key>CFBundleTypeRole</key>
+            <string>Viewer</string>
+        </dict>
+    </array>
 </dict>
 </plist>
