@@ -139,17 +139,38 @@ public abstract class DirectiveArgsParser extends AbstractStreamParser {
 	protected List<Integer> readSet(IntegerValidator validator) throws ParseException {
 		List<Integer> values = new ArrayList<Integer>();
 		while (_currentInt > 0 && !Character.isWhitespace(_currentChar)) {
-			if (_currentChar == SET_VALUE_SEPARATOR) {
-				readNext();
-			}
-			IntRange ids = readIds(validator);
-			for (int i : ids.toArray()) {
-				values.add(i);
-			}
+            values.addAll(readSetComponent(validator));
 		}
 		
 		return values;
 	}
+
+    /**
+     * Reads a component of a set based directive, optionally starting with the SET_VALUE_SEPARATOR character.
+     * @param validator validates the integers as they are read.
+     * @return a List of integers read by this method.
+     * @throws ParseException if the format of the set component is not as expected.
+     */
+    private List<Integer> readSetComponent(IntegerValidator validator) throws ParseException {
+        List<Integer> values = new ArrayList<Integer>();
+        if (_currentChar == SET_VALUE_SEPARATOR) {
+            readNext();
+        }
+        IntRange ids = readIds(validator);
+        for (int i : ids.toArray()) {
+            values.add(i);
+        }
+        return values;
+    }
+
+    protected List<Integer> readSet(IntegerValidator validator, char setTerminatorChar) throws ParseException {
+        List<Integer> values = new ArrayList<Integer>();
+        while (_currentInt > 0 && (Character.isDigit(_currentChar) || _currentChar == SET_VALUE_SEPARATOR)) {
+            values.addAll(readSetComponent(validator));
+        }
+
+        return values;
+    }
 	
 	protected void readValueSeparator() throws ParseException {
 		expect(VALUE_SEPARATOR);

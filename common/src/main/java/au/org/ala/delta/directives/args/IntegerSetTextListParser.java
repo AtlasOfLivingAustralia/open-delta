@@ -13,54 +13,53 @@
  * rights and limitations under the License.
  ******************************************************************************/
 package au.org.ala.delta.directives.args;
+
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.validation.IntegerValidator;
-import org.apache.commons.lang.math.IntRange;
 
 import java.io.Reader;
 import java.text.ParseException;
+import java.util.HashSet;
+import java.util.Set;
 
 
 /**
  * Parses directives of the form:
- * #<integer>. <optional delimiter><text><optional delimiter>
- * #<integer>. <optional delimiter><text><optional delimiter>
+ * #<integer set>. <optional delimiter><text><optional delimiter>
+ * #<integer set>. <optional delimiter><text><optional delimiter>
  *
- * For example, this parser is used by the CHARACTER HEADINGS and ITEM SUB HEADINGS directives.
+ * For example, this parser is used by the CHARACTER NOTES directive.
  */
-public class IntegerTextListParser extends TextListParser<IntRange> {
+public class IntegerSetTextListParser extends TextListParser<Set<Integer>> {
 
     /** Validates the integers parsed by this class */
     private IntegerValidator _validator;
 
-	public IntegerTextListParser(DeltaContext context, Reader reader, IntegerValidator validator) {
+    private static final char SET_TERMINATOR = '.';
+
+	public IntegerSetTextListParser(DeltaContext context, Reader reader, IntegerValidator validator) {
 		super(context, reader);
-        _validator = validator;
-	}
-	
-	public IntegerTextListParser(DeltaContext context, Reader reader, boolean cleanWhitespace, IntegerValidator validator) {
-		super(context, reader, cleanWhitespace);
         _validator = validator;
 	}
 	
 	@Override
 	protected void readSingle() throws ParseException {
 		
-		IntRange ids = readId();
+		Set<Integer> ids = readId();
 		String comment = readOptionalComment();
 		String value = readText();
-		for (int id : ids.toArray()) {
+		for (int id : ids) {
 			_args.addDirectiveArgument(id, comment, value);
 		}
 	}
 	
 	@Override
-	protected IntRange readId() throws ParseException {
+	protected Set<Integer> readId() throws ParseException {
 		expect(MARK_IDENTIFIER);
 		
 		readNext();
-		IntRange ids = readIds(_validator);
-		expect('.');
+        Set<Integer> ids = new HashSet<Integer>(readSet(_validator, SET_TERMINATOR));
+		expect(SET_TERMINATOR);
 	    readNext();  // consume the . character.
 	    return ids;
 		

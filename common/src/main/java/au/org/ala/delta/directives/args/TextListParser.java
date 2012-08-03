@@ -14,11 +14,11 @@
  ******************************************************************************/
 package au.org.ala.delta.directives.args;
 
-import java.io.Reader;
-import java.text.ParseException;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.directives.validation.DirectiveError;
+
+import java.io.Reader;
+import java.text.ParseException;
 
 /**
  * Parser for directives of the form:
@@ -165,7 +165,7 @@ public abstract class TextListParser<T> extends DirectiveArgsParser {
 	/**
 	 * Checks if the supplied delimiter is valid for this directive and throws a
 	 * ParseException if not.
-	 * @param delimeter the delimiter to check
+	 * @param delimiter the delimiter to check
 	 */
 	private void checkDelimiter(char delimiter) throws ParseException {
 		for (char invalid : INVALID_DELIMITERS) {
