@@ -205,7 +205,12 @@ public class CharacterEditor extends AbstractDeltaView {
         return validateCharacter();
 	}
 
-	private boolean validateCharacter() {
+    @Override
+    public boolean editsValid() {
+        return validateCharacter();
+    }
+
+    private boolean validateCharacter() {
         if (_validator != null) {
 			ValidationResult result = _validator.validateDescription(rtfEditor.getText());
 			if (result.isValid()) {
@@ -218,6 +223,11 @@ public class CharacterEditor extends AbstractDeltaView {
                     }
 
 			    }
+                if (result.isValid()) {
+                    if (selectedTab() instanceof CharacterEditTab) {
+                        result = ((CharacterEditTab)selectedTab()).isContentsValid() ? ValidationResult.success() : ValidationResult.error("");
+                    }
+                }
             }
             if (!result.isValid()) {
                 final ValidationResult finalResult = result;
@@ -505,6 +515,10 @@ public class CharacterEditor extends AbstractDeltaView {
 		String title = _resources.getString(titleKeyPrefix + ".tab.title");
 		tabbedPane.addTab(title, tab);
 	}
+
+    private JComponent selectedTab() {
+        return (JComponent)tabbedPane.getSelectedComponent();
+    }
 
 	/**
 	 * Provides the backing model for this Dialog.

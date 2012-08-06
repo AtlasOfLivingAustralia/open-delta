@@ -14,17 +14,17 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.ui;
 
-import java.awt.BorderLayout;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
-
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.ui.rtf.RtfEditor;
 import au.org.ala.delta.ui.rtf.RtfToolBar;
+
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import java.awt.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
 /**
  * Allows the user to add or edit notes for a Character.
@@ -34,11 +34,16 @@ public class CharacterNotesEditor extends CharacterEditTab {
 	private static final long serialVersionUID = 8286423277647757100L;
 
 	private RtfEditor editor;
-	
+	private boolean _updating;
+    private boolean _modified;
+
 	public CharacterNotesEditor(RtfToolBar toolbar) {
 		super(toolbar);
+        _modified = false;
+        _updating = true;
 		createUI();
 		addEventListeners();
+        _updating = false;
 	}
 	
 	private void createUI() {
@@ -57,21 +62,65 @@ public class CharacterNotesEditor extends CharacterEditTab {
 			
 			@Override
 			public void focusLost(FocusEvent e) {
-				_character.setNotes(editor.getRtfTextBody());
+                if (_modified) {
+				    commitChanges();
+                }
 			}
 			
 			@Override
 			public void focusGained(FocusEvent e) {}
 		});
+        editor.getDocument().addDocumentListener(new DocumentListener() {
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                setModified();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                setModified();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                setModified();
+            }
+
+            public void setModified() {
+                if (_updating || _model == null || _character == null) {
+                    return;
+                }
+                _modified = true;
+                _model.setModified(true);
+            }
+        });
 	}
-	
-	/**
+
+    @Override
+    public boolean isContentsValid() {
+        // Commit any current edits.
+        if (_modified) {
+            commitChanges();
+        }
+        return true;
+    }
+
+    private void commitChanges() {
+        _character.setNotes(editor.getRtfTextBody());
+        _modified = false;
+    }
+
+    /**
 	 * Sets the Character for editing.
 	 * @param character the Character to edit.
 	 */
 	public void bind(EditorViewModel model, Character character) {
+        _updating = true;
+        _modified = false;
 		_model = model;
 		_character = character;
 		editor.setText(_character.getNotes());
+        _updating = false;
 	}
 }

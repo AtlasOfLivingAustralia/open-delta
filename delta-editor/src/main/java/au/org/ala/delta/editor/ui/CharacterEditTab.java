@@ -14,14 +14,13 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.ui;
 
-import java.awt.LayoutManager;
-
-import javax.swing.JPanel;
-
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.ui.rtf.RtfEditor;
 import au.org.ala.delta.ui.rtf.RtfToolBar;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * The CharacterEditTab is a base class for tabs displayed on the CharacterEditor.
@@ -58,6 +57,10 @@ public abstract class CharacterEditTab extends JPanel {
 		super(layout, isDoubleBuffered);
 	}
 
+    /**
+     * Requests that any edits in progress are immediately validated and committed.
+     * @return true if the edits are valid and the commit succeeded.
+     */
 	public boolean isContentsValid() {
 		return true;
 	}
