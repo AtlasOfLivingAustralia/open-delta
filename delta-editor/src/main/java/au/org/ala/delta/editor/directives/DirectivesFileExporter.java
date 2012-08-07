@@ -14,19 +14,26 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.directives;
 
-import java.io.File;
-import java.util.List;
-
-import org.apache.commons.io.FilenameUtils;
-
 import au.org.ala.delta.editor.slotfile.Directive;
 import au.org.ala.delta.editor.slotfile.DirectiveInstance;
 import au.org.ala.delta.editor.slotfile.directive.DirectiveInOutState;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
 import au.org.ala.delta.util.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 
+import java.io.File;
+import java.util.List;
+
+/**
+ * The DirectivesFileExporter is responsible exporting the contents of a DirectivesFile to the file system.
+ */
 public class DirectivesFileExporter {
 
+    /**
+     * Exports the directives in the supplied DirectiveFile.
+     * @param file the DirectiveFile to export.
+     * @param state tracks the current directive and export location.
+     */
 	public void writeDirectivesFile(DirectiveFile file, DirectiveInOutState state) {
 		try {
 			List<DirectiveInstance> directives = file.getDirectives();
@@ -48,7 +55,14 @@ public class DirectivesFileExporter {
 			}
 		}
 	}
-	
+
+    /**
+     * Creates a file in the supplied path on the file system to export the contents of the supplied
+     * DirectivesFile.  If there is an existing file with the same name, it will be backed up and deleted.
+     * @param file the DirectiveFile to be exported.
+     * @param directoryPath the directory in which the file should be created.
+     * @return a File to which the directives can be written.
+     */
 	public File createExportFile(DirectiveFile file, String directoryPath) {
 		String fileName = file.getShortFileName();
 		FileUtils.backupAndDelete(fileName, directoryPath);

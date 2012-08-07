@@ -131,13 +131,34 @@ public class DeltaViewController extends InternalFrameAdapter implements Vetoabl
 			}
 		}
 		else if (JInternalFrame.IS_SELECTED_PROPERTY.equals(e.getPropertyName())) {
-			
-			for (JInternalFrame frame : _activeViews) {
-				DeltaView view = (DeltaView)frame;
-				if (!view.editsValid()) {
-					throw new PropertyVetoException("Select cancelled", e);
-				}
-			}
+            if (!(e.getSource() instanceof JInternalFrame)) {
+                return;
+            }
+            JInternalFrame eventSource = (JInternalFrame)e.getSource();
+            if (eventSource.getDesktopPane() == null) {
+                // This is happening on close, let the close property change event handle it.
+                return;
+            }
+            JInternalFrame selected = eventSource.getDesktopPane().getSelectedFrame();
+
+            if (Boolean.TRUE.equals(e.getNewValue())) {
+                if (selected != null && selected instanceof DeltaView) {
+                    DeltaView view = (DeltaView)selected;
+                    if (!view.editsValid()) {
+                        selected.moveToFront();
+                        throw new PropertyVetoException("Selected pane is invalid", e);
+                    }
+                }
+            }
+			if (Boolean.FALSE.equals(e.getNewValue())) {
+                if (e.getSource() instanceof DeltaView) {
+                    DeltaView view = (DeltaView)e.getSource();
+                    if (!view.editsValid()) {
+                        eventSource.moveToFront();
+                        throw new PropertyVetoException("Selected pane is invalid", e);
+                    }
+                }
+            }
 		}
 	}
 	
