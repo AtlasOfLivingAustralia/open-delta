@@ -14,16 +14,16 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile;
 
+import au.org.ala.delta.io.BinFileEncoding;
+import au.org.ala.delta.model.DeltaParseException;
+import au.org.ala.delta.util.ArrayUtils;
+import au.org.ala.delta.util.Utils;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-
-import au.org.ala.delta.io.BinFileEncoding;
-import au.org.ala.delta.model.DeltaParseException;
-import au.org.ala.delta.util.ArrayUtils;
-import au.org.ala.delta.util.Utils;
 
 public class Attribute implements Iterable<AttrChunk> {
 
@@ -90,6 +90,10 @@ public class Attribute implements Iterable<AttrChunk> {
 	public static short MAKEWORD(byte lo, byte hi) {
 		return (short) (((hi << 8) & 0xFF00) + (lo & 0x00FF));
 	}
+
+    public static int MAKE_UNSIGNED_SHORT(byte lo, byte hi) {
+        return (int) (((hi << 8) & 0xFF00) + (lo & 0x00FF));
+    }
 
 	public static int MAKEDWORD(byte[] buf, int start) {
 		ByteBuffer b = ByteBuffer.wrap(buf, start, 4);
@@ -598,7 +602,7 @@ public class Attribute implements Iterable<AttrChunk> {
 	 * 
 	 * @param source
 	 *            the source string
-	 * @param startPos
+	 * @param beginIndex
 	 *            the start position in the source String
 	 * @param length
 	 *            the desired length for the substring.
@@ -1048,7 +1052,7 @@ public class Attribute implements Iterable<AttrChunk> {
 					// No length data. Bad news. Convert to STOP
 					_data[pos--] = (byte) ChunkType.CHUNK_STOP;
 				} else {
-					short strLeng = MAKEWORD(_data[pos + 1], _data[pos + 2]);
+					int strLeng = MAKE_UNSIGNED_SHORT(_data[pos + 1], _data[pos + 2]);
 					if (pos + 2 + strLeng > leng) {
 						// Not enough string data.
 						_data[pos--] = (byte) ChunkType.CHUNK_STOP;
@@ -1207,7 +1211,7 @@ public class Attribute implements Iterable<AttrChunk> {
 			AttrChunk ret = new AttrChunk(_owner._data[_pos]);
 			switch (ret.getType()) {
 			case ChunkType.CHUNK_TEXT:
-				short varLeng = MAKEWORD(_owner._data[_pos + 1], _owner._data[_pos + 2]);
+				int varLeng = MAKE_UNSIGNED_SHORT(_owner._data[_pos + 1], _owner._data[_pos + 2]);
 				String val = BinFileEncoding.decode(_owner._data, _pos + 3, varLeng);
 				ret.setString(val);
 				break;
@@ -1250,7 +1254,7 @@ public class Attribute implements Iterable<AttrChunk> {
 			case ChunkType.CHUNK_STOP:
 				return false;
 			case ChunkType.CHUNK_TEXT:
-				_pos += 2 + MAKEWORD(_owner._data[_pos + 1], _owner._data[_pos + 2]);
+				_pos += 2 + MAKE_UNSIGNED_SHORT(_owner._data[_pos + 1], _owner._data[_pos + 2]);
 				;
 				break;
 			case ChunkType.CHUNK_LONGTEXT:
