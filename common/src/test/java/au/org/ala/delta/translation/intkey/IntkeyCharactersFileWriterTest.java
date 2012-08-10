@@ -14,16 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.translation.intkey;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.List;
-
-import junit.framework.TestCase;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.DeltaContext.HeadingType;
 import au.org.ala.delta.intkey.WriteOnceIntkeyCharsFile;
@@ -50,6 +40,14 @@ import au.org.ala.delta.translation.FilteredDataSet;
 import au.org.ala.delta.translation.Words;
 import au.org.ala.delta.translation.Words.Word;
 import au.org.ala.delta.translation.delta.DeltaFormatDataSetFilter;
+import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.List;
 
 /**
  * Tests the IntkeyCharactersFileWriter class.
@@ -218,23 +216,32 @@ public class IntkeyCharactersFileWriterTest extends TestCase {
 	@Test
 	public void testWriteCharacterImages() {
 		
-		String image1 = "test.jpg <@feature x=1 y=2 w=3 h=4>";
-		
-		au.org.ala.delta.model.Character character = _dataSet.getCharacter(1);
-		Image image = character.addImage("test.jpg", "");
-		ImageOverlay overlay = new ImageOverlay(OverlayType.OLFEATURE, 
-				(short)1 ,(short)2, (short)3, (short)4);
-		
-		image.addOverlay(overlay);
-		_charsFileWriter.writeCharacterImages();
-		
-		_charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES);
-		assertEquals(3, _charsFile.readInt());
-		assertEquals(0, _charsFile.readInt());
-		
-		assertEquals(image1.length(), readInt(3));
-		assertEquals(image1, readString(4, image1.length()));
+		testImage("test.jpg");
 	}
+
+    @Test
+    public void testWriteCharacterImageWithFullPath() {
+        testImage("c:\\path\\to\\images\\image.jpg <@feature x=1 y=2 w=3 h=4>");
+    }
+
+    private void testImage(String fileName) {
+        String expected = fileName + " <@feature x=1 y=2 w=3 h=4>";
+
+        au.org.ala.delta.model.Character character = _dataSet.getCharacter(1);
+        Image image = character.addImage(fileName, "");
+        ImageOverlay overlay = new ImageOverlay(OverlayType.OLFEATURE,
+                (short)1 ,(short)2, (short)3, (short)4);
+
+        image.addOverlay(overlay);
+        _charsFileWriter.writeCharacterImages();
+
+        _charsFile.seek(BinaryKeyFile.RECORD_LENGTH_BYTES);
+        assertEquals(3, _charsFile.readInt());
+        assertEquals(0, _charsFile.readInt());
+
+        assertEquals(expected.length(), readInt(3));
+        assertEquals(expected, readString(4, expected.length()));
+    }
 	
 	@Test
 	public void testWriteStartupImages() {

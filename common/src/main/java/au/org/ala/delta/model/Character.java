@@ -14,16 +14,15 @@
  ******************************************************************************/
 package au.org.ala.delta.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.impl.CharacterData;
 import au.org.ala.delta.model.impl.ControllingInfo;
 import au.org.ala.delta.model.observer.CharacterObserver;
 import au.org.ala.delta.model.observer.ImageObserver;
+import org.apache.commons.lang.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class Character implements Illustratable, Comparable<Character>, ImageObserver {
     
@@ -244,11 +243,13 @@ public abstract class Character implements Illustratable, Comparable<Character>,
 	@Override
 	public void deleteImage(Image image) {
 		_impl.deleteImage(image);
+        notifyObservers();
 	}
 
 	@Override
 	public void moveImage(Image image, int position) {
 		_impl.moveImage(image, position);
+        notifyObservers();
 	}
 
 	/**

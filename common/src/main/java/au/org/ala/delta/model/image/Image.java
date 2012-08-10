@@ -14,15 +14,14 @@
  ******************************************************************************/
 package au.org.ala.delta.model.image;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-
 import au.org.ala.delta.model.Illustratable;
 import au.org.ala.delta.model.impl.ImageData;
 import au.org.ala.delta.model.observer.ImageObserver;
 import au.org.ala.delta.rtf.RTFUtils;
+import org.apache.commons.lang.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * DELTA data sets support the inclusion of images to illustrate Taxa and
@@ -286,8 +285,8 @@ public class Image {
     }
 
     /**
-     * @param image
-     *            the image to get the text for.
+     * The image to get the text for.  If this image has a subject, it will be returned (after removing any
+     * RTF formatting).  Otherwise the image filename is returned.
      * @return the subject text of an image, or the filename if none has been
      *         specified.
      */

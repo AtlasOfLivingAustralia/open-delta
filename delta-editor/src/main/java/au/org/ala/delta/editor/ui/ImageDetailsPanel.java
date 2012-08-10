@@ -14,46 +14,9 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.ui;
 
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.io.File;
-import java.net.URL;
-import java.util.List;
-
-import javax.swing.ActionMap;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.DropMode;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.TransferHandler;
-import javax.swing.border.TitledBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.filechooser.FileFilter;
-
-import org.apache.commons.lang.StringUtils;
-import org.jdesktop.application.Action;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ResourceMap;
-
 import au.org.ala.delta.editor.DeltaEditor;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.dnd.SimpleTransferHandler;
-import au.org.ala.delta.editor.ui.image.ImageSettingsDialog;
 import au.org.ala.delta.editor.ui.util.MessageDialogHelper;
 import au.org.ala.delta.model.Illustratable;
 import au.org.ala.delta.model.image.Image;
@@ -66,6 +29,26 @@ import au.org.ala.delta.model.observer.DeltaDataSetObserver;
 import au.org.ala.delta.ui.image.AudioPlayer;
 import au.org.ala.delta.ui.image.SupportedFileTypes;
 import au.org.ala.delta.ui.rtf.RtfEditorPane;
+import org.apache.commons.lang.StringUtils;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
+
+import javax.swing.*;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.filechooser.FileFilter;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.io.File;
+import java.net.URL;
+import java.util.List;
 
 /**
  * Displays the details of images associated with an Item or Character.
@@ -543,7 +526,6 @@ public class ImageDetailsPanel extends JPanel {
 	 * a new one of the supplied type is created.  If the text is null and the overlay
 	 * is not, the overlay is deleted.
 	 * @param type the type of overlay to edit.
-	 * @param overlay the overlay to edit.
 	 * @param text the new text for the overlay.
 	 */
 	private void updateOverlayText(int type, String text) {

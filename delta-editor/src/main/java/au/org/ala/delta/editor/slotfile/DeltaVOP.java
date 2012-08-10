@@ -14,15 +14,14 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.apache.commons.lang.NotImplementedException;
-
 import au.org.ala.delta.io.BinFile;
 import au.org.ala.delta.io.BinFileMode;
 import au.org.ala.delta.util.Utils;
+import org.apache.commons.lang.NotImplementedException;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class DeltaVOP extends VOP {
 
@@ -196,7 +195,7 @@ public class DeltaVOP extends VOP {
 		    if (desc.isA(VOAnyDesc.VOTID_DELTA_BASE)) {
 		        _deltaMaster = null;
 		    }
-		    if (desc.isA(VODescFactory.VOImageDesc_TypeId)) {
+		    if (desc.isA(VODescFactory.VOImageInfoDesc_TypeId)) {
 		        _imageInfo = null;
 		    }
 		    if (desc.isA(VODescFactory.VOItemDesc_TypeId)) {

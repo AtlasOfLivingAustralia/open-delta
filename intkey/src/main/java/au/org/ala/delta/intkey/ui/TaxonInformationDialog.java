@@ -14,39 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.intkey.ui;
 
-import java.awt.BorderLayout;
-import java.awt.Desktop;
-import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.ActionMap;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
-import javax.swing.border.EmptyBorder;
-import javax.swing.event.MouseInputAdapter;
-
-import org.apache.commons.lang.StringUtils;
-import org.jdesktop.application.Action;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.Resource;
-import org.jdesktop.application.ResourceMap;
-import org.jdesktop.application.SingleFrameApplication;
-
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.ResourceSettings;
@@ -57,6 +24,23 @@ import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.util.Pair;
+import org.apache.commons.lang.StringUtils;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.Resource;
+import org.jdesktop.application.ResourceMap;
+import org.jdesktop.application.SingleFrameApplication;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.MouseInputAdapter;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TaxonInformationDialog extends IntkeyDialog {
 
@@ -357,7 +341,7 @@ public class TaxonInformationDialog extends IntkeyDialog {
         DefaultListModel illustrationsListModel = new DefaultListModel();
         for (Image img : selectedTaxon.getImages()) {
             _images.add(img);
-            illustrationsListModel.addElement(_imageDescriptionFormatter.defaultFormat(img.getSubjectTextOrFileName()));
+            illustrationsListModel.addElement(img.getSubjectTextOrFileName());
         }
 
         if (_images.isEmpty()) {
