@@ -14,20 +14,18 @@
  ******************************************************************************/
 package au.org.ala.delta.model;
 
+import au.org.ala.delta.util.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
-
-import au.org.ala.delta.util.FileUtils;
 
 /**
  * The resource settings class is used to configure multiple locations in which
@@ -48,6 +46,25 @@ public class ResourceSettings {
         _resourceLocations = new ArrayList<String>();
 		_remoteResourceLocations = new HashSet<String>();
 	}
+
+    /**
+     * Parses the supplied resource path (essentially a list of ";" separated paths) into a list of Strings.
+     * @param resourcePath the string to parse.
+     * @return a new List<String> containing each path in the supplied resourcePath.
+     */
+    public static List<String> parse(String resourcePath) {
+        List<String> pathList = new ArrayList<String>();
+        if (StringUtils.isEmpty(resourcePath)) {
+            return pathList;
+        }
+        String[] paths = resourcePath.split(RESOURCE_PATH_SEPARATOR);
+        for (String path : paths) {
+            if (path != null) {
+                pathList.add(path.trim());
+            }
+        }
+        return pathList;
+    }
 
 	/**
 	 * Set the dataset path. Any relative resource paths are looked up relative
@@ -122,9 +139,8 @@ public class ResourceSettings {
 	 *            a list of resource path locations as a ';' separated String.
 	 */
 	public void setResourcePath(String resourcePath) {
-		_resourceLocations = new ArrayList<String>();
-		_resourceLocations.addAll(Arrays.asList(resourcePath
-				.split(RESOURCE_PATH_SEPARATOR)));
+		_resourceLocations = ResourceSettings.parse(resourcePath);
+
 		determineRemoteResourceLocations();
 	}
 

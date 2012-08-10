@@ -2084,10 +2084,7 @@ public class IntkeyContext extends AbstractDeltaContext {
 
             if (startupFileData.getImagePath() != null) {
                 String startupImagePath = _startupFileData.getImagePath();
-                List<String> imagePaths = new ArrayList<String>();
-                if (imagePath != null) {
-                    imagePaths.addAll(Arrays.asList(startupImagePath.split(";")));
-                }
+                List<String> imagePaths = ResourceSettings.parse(startupImagePath);
                 setImagePaths(imagePaths);
             }
 

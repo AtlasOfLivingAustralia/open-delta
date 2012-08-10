@@ -14,20 +14,17 @@
  ******************************************************************************/
 package au.org.ala.delta.intkey.directives.invocation;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.model.ResourceSettings;
+
+import java.util.List;
 
 public class SetImagePathDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
     private List<String> _imagePaths;
 
     public void setImagePaths(String imagePathsAsString) {
-        _imagePaths = new ArrayList<String>();
-        for (String path : imagePathsAsString.split(";")) {
-            _imagePaths.add(path);
-        }
+        _imagePaths = ResourceSettings.parse(imagePathsAsString);
     }
 
     @Override
