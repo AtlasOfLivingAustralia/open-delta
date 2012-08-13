@@ -332,7 +332,8 @@ public class IntkeyContext extends AbstractDeltaContext {
      * set, calling this method will result in the new dataset being loaded. The
      * calling thread will block while the dataset is loaded.
      * 
-     * @param charactersFile The characters file
+     * @param charactersFile
+     *            The characters file
      */
     public synchronized void setFileCharacters(File charactersFile) {
         Logger.log("Setting characters file to: %s", charactersFile.getAbsolutePath());
@@ -364,7 +365,8 @@ public class IntkeyContext extends AbstractDeltaContext {
      * previously been set, calling this method will result in the new dataset
      * being loaded. The calling thread will block while the dataset is loaded.
      * 
-     * @param taxaFile The taxa (items) file
+     * @param taxaFile
+     *            The taxa (items) file
      */
     public synchronized void setFileTaxa(File taxaFile) {
         Logger.log("Setting taxa file to: %s", taxaFile.getAbsolutePath());
@@ -453,7 +455,8 @@ public class IntkeyContext extends AbstractDeltaContext {
      * This method will block while the calling thread while the file is read,
      * the dataset is loaded, and other directives in the file are executed.
      * 
-     * @param datasetFile  The dataset initialization file
+     * @param datasetFile
+     *            The dataset initialization file
      * @return SwingWorker used to load the dataset in a separate thread - unit
      *         tests need this so that they can block until the dataset is
      *         loaded.
@@ -846,10 +849,9 @@ public class IntkeyContext extends AbstractDeltaContext {
      *            "eliminated", "remaining", "selected", "none" and "specimen"
      *            cannot be used.
      * @param taxaNumbers
-     *            The set of taxa to be represented by the keyword. If
-     *            empty, the specified keyword will be removed. Otherwise the
-     *            keyword will be added, modified to point to the specified
-     *            taxa
+     *            The set of taxa to be represented by the keyword. If empty,
+     *            the specified keyword will be removed. Otherwise the keyword
+     *            will be added, modified to point to the specified taxa
      */
     public synchronized void setTaxaKeyword(String keyword, Set<Integer> taxaNumbers) {
         if (_dataset == null) {
@@ -1088,6 +1090,11 @@ public class IntkeyContext extends AbstractDeltaContext {
      */
     public synchronized void setTolerance(int toleranceValue) {
         _tolerance = toleranceValue;
+
+        // best characters need to be recalculated when the error tolerance is
+        // changed.
+        _bestOrSeparateCharacters = null;
+
         if (_dataset != null) {
             updateUI();
         }
@@ -1299,19 +1306,19 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
 
         updateSpecimenMatchSettings();
-        
+
         // Write a log message informing if the new match setting.
         List<String> matchSettingWords = new ArrayList<String>();
         if (matchInapplicables) {
             matchSettingWords.add(SetMatchDirective.INAPPLICABLES_WORD);
         }
-        
+
         if (matchUnknowns) {
             matchSettingWords.add(SetMatchDirective.UNKNOWNS_WORD);
         }
-        
+
         matchSettingWords.add(matchType.toString().toLowerCase());
-        
+
         appendToLog(UIUtils.getResourceString("SetMatch.log", StringUtils.join(matchSettingWords, ", ")));
     }
 
@@ -1971,8 +1978,7 @@ public class IntkeyContext extends AbstractDeltaContext {
             _logCache.add(text);
 
             _appUI.updateLog();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Logger.error("Unable to update the Intkey log", e);
         }
     }

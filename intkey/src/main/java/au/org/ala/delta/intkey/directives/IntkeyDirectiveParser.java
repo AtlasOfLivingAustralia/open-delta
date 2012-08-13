@@ -156,11 +156,6 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
 
     @Override
     protected void handleUnrecognizedDirective(IntkeyContext context, List<String> controlWords) {
-        // TODO eventually all unrecognized directives need to be properly
-        // handled. This is here so that
-        // intkey dataset can be used with milestone release without implemented
-        // directives causing
-        // errors
         String message = String.format("Unrecognized command - '%s' ", StringUtils.join(controlWords, " "));
         Logger.log(message);
         context.getUI().displayErrorMessage(message);
