@@ -1802,6 +1802,23 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             List<Item> eliminatedTaxa = _context.getEliminatedTaxa();
 
             _btnDiffSpecimenTaxa.setEnabled(availableTaxa.size() > 0 && eliminatedTaxa.size() > 0);
+            
+            // Disable button for selected best or natural order.
+            _btnNaturalOrder.setEnabled(true);
+            _btnBestOrder.setEnabled(true);
+            switch (_context.getCharacterOrder()) {
+            case NATURAL:
+                _btnNaturalOrder.setEnabled(false);
+                break;
+            case BEST:
+                _btnBestOrder.setEnabled(false);
+                break;
+            case SEPARATE:
+                // do nothing
+                break;
+            default:
+                throw new RuntimeException("Unrecognized character order");
+            }
 
             // Need to display a message in place of the list of available
             // characters
