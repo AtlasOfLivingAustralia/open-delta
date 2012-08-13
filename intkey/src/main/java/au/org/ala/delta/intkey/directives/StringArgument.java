@@ -47,6 +47,11 @@ public class StringArgument extends IntkeyDirectiveArgument<String> {
         String argumentValue = null;
         String token = inputTokens.peek();
         if (token == null || token.startsWith(DEFAULT_DIALOG_WILDCARD)) {
+            if (context.isProcessingDirectivesFile()) {
+                //ignore incomplete directives when processing an input file
+                return null;
+            }
+            
             argumentValue = context.getDirectivePopulator().promptForString(_promptText, _initialValue, directiveName);
         } else if (_spaceDelimited) {
             inputTokens.poll();

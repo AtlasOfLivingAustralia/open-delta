@@ -88,6 +88,11 @@ public class CharacterListArgument extends IntkeyDirectiveArgument<List<au.org.a
         }
 
         if (characters == null) {
+            if (context.isProcessingDirectivesFile()) {
+                //ignore incomplete directives when processing an input file
+                return null;
+            }
+            
             List<String> selectedKeywords = new ArrayList<String>();
             if (selectionMode == SelectionMode.KEYWORD) {
                 characters = populator.promptForCharactersByKeyword(directiveName, !(overrideExcludedCharacters || _selectFromAll), _noneSelectionPermitted, selectedKeywords);

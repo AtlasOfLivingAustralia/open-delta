@@ -40,6 +40,11 @@ public class FileArgument extends IntkeyDirectiveArgument<File> {
         File file = null;
 
         if (filePath == null || filePath.startsWith(DEFAULT_DIALOG_WILDCARD)) {
+            if (context.isProcessingDirectivesFile()) {
+                //ignore incomplete directives when processing an input file
+                return null;
+            }
+            
             try {
                 file = context.getDirectivePopulator().promptForFile(_fileExtensions, getPromptText(), _createFileIfNonExistant);
             } catch (IOException ex) {

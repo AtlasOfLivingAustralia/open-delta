@@ -29,6 +29,11 @@ public class RealArgument extends IntkeyDirectiveArgument<Double> {
         String token = inputTokens.poll();
 
         if (token == null || token.startsWith(DEFAULT_DIALOG_WILDCARD)) {
+            if (context.isProcessingDirectivesFile()) {
+                //ignore incomplete directives when processing an input file
+                return null;
+            }
+            
             token = context.getDirectivePopulator().promptForString(getPromptText(), Double.toString(_initialValue), directiveName);
         }
 

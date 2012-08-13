@@ -169,11 +169,14 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
     @Override
     protected void handleDirectiveProcessingException(IntkeyContext context, AbstractDirective<IntkeyContext> d, Exception ex) throws DirectiveException {
 
-        // this will cause the directive parsing loop to halt, preventing
-        // multiple errors of the same type
         if (ex instanceof DirectiveException) {
-            throw (DirectiveException) ex;
-        } else if (ex instanceof RuntimeException) {
+            // If this is a directive exception, display an error message and
+            // continue processing the remaining directive calls.
+            context.getUI().displayErrorMessage(ex.getMessage());
+        } else {
+            // If it is any other kind of exception, re-throw the exception
+            // wrapped in a RuntimeException - this will stop the directive
+            // parsing.
             throw new RuntimeException(ex);
         }
     }

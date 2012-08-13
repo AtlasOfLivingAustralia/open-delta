@@ -32,6 +32,11 @@ public class OnOffArgument extends IntkeyDirectiveArgument<Boolean> {
         String token = inputTokens.poll();
 
         if (token == null || token.startsWith(DEFAULT_DIALOG_WILDCARD)) {
+            if (context.isProcessingDirectivesFile()) {
+                //ignore incomplete directives when processing an input file
+                return null;
+            }
+            
             return context.getDirectivePopulator().promptForOnOffValue(directiveName, getInitialValue());
         } else {
             if (token.equalsIgnoreCase(ON_VALUE)) {
