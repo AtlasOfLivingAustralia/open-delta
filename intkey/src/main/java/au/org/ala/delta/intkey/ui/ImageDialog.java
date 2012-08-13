@@ -630,7 +630,7 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
                 handleNewImageSelected();
             } catch (Exception ex) {
                 Logger.error(ex);
-                JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(ImageDialog.this), "Error occurred loading image: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(ImageDialog.this, "Error occurred loading image: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
