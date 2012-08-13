@@ -101,16 +101,16 @@ import java.util.prefs.Preferences;
 public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, DirectivePopulator {
 
     public static final String HELPSET_PATH = "help/Intkey";
-    
+
     public static final String HELP_ID_TOPICS = "topics";
     public static final String HELP_ID_COMMANDS = "commands";
-    
+
     public static final String HELP_ID_NO_MATCHING_TAXA_REMAIN = "no_taxa_match_the_specimen";
     public static final String HELP_ID_IDENTIFICATION_COMPLETE = "checking_an_identification";
     public static final String HELP_ID_NO_CHARACTERS_REMAINING = "not_enough_characters_for_identification";
-    
+
     public static final String HELP_ID_CHARACTERS_TOOLBAR_RESTART = "characters_toolbar_restart";
-    public static final String HELP_ID_CHARACTERS_TOOLBAR_BEST= "characters_toolbar_best";
+    public static final String HELP_ID_CHARACTERS_TOOLBAR_BEST = "characters_toolbar_best";
     public static final String HELP_ID_CHARACTERS_TOOLBAR_SEPARATE = "characters_toolbar_separate";
     public static final String HELP_ID_CHARACTERS_TOOLBAR_NATURAL = "characters_toolbar_natural";
     public static final String HELP_ID_CHARACTERS_TOOLBAR_DIFF_SPECIMEN_REMAINING = "characters_toolbar_diff_specimen_remaining";
@@ -1228,7 +1228,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         JMenuItem mnuItHelpTopics = new JMenuItem();
         mnuItHelpTopics.setName("mnuItHelpTopics");
         mnuItHelpTopics.addActionListener(new ActionListener() {
-            
+
             @Override
             public void actionPerformed(ActionEvent e) {
                 UIUtils.displayHelpTopic(HELP_ID_TOPICS, getMainFrame(), e);
@@ -1245,7 +1245,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                 public void actionPerformed(ActionEvent e) {
                     UIUtils.displayHelpTopic(HELP_ID_COMMANDS, getMainFrame(), e);
                 }
-                
+
             });
             mnuHelp.add(mnuItHelpCommands);
         }
@@ -1444,10 +1444,13 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             selectedTaxa.add((Item) _eliminatedTaxaListModel.getElementAt(i));
         }
 
-        if (!selectedTaxa.isEmpty()) {
-            TaxonInformationDialog dlg = new TaxonInformationDialog(getMainFrame(), selectedTaxa, _context, _context.getImageDisplayMode() != ImageDisplayMode.OFF);
-            show(dlg);
+        // If no taxa were selected, show the information for all available taxa
+        if (selectedTaxa.isEmpty()) {
+            selectedTaxa.addAll(_context.getAvailableTaxa());
         }
+
+        TaxonInformationDialog dlg = new TaxonInformationDialog(getMainFrame(), selectedTaxa, _context, _context.getImageDisplayMode() != ImageDisplayMode.OFF);
+        show(dlg);
     }
 
     @Action
@@ -2159,7 +2162,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             displayErrorMessage(UIUtils.getResourceString("ImageDisplayDisabled.error"));
         } else {
             try {
-                TaxonImageDialog dlg = new TaxonImageDialog(getMainFrame(), _context.getImageSettings(), taxa, false, !_context.displayContinuous(), _context.displayScaled(), _context.getImageSubjects(), this);
+                TaxonImageDialog dlg = new TaxonImageDialog(getMainFrame(), _context.getImageSettings(), taxa, false, !_context.displayContinuous(), _context.displayScaled(),
+                        _context.getImageSubjects(), this);
                 show(dlg);
                 dlg.displayImagesForTaxon(taxa.get(0), 0);
             } catch (IllegalArgumentException ex) {
@@ -2173,10 +2177,10 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     public void displayContents(LinkedHashMap<String, String> contentsMap) {
         final ContentsDialog dlg = new ContentsDialog(getMainFrame(), contentsMap, _context);
         SwingUtilities.invokeLater(new Runnable() {
-            
+
             @Override
             public void run() {
-                show(dlg);                
+                show(dlg);
             }
         });
     }
@@ -2798,7 +2802,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     }
 
     private void openPreviouslyOpenedFile(String fileName) {
-        executeDirective(new NewDatasetDirective(), "\""+fileName+"\"");
+        executeDirective(new NewDatasetDirective(), "\"" + fileName + "\"");
     }
 
     private void saveCurrentlyOpenedDataset() {
