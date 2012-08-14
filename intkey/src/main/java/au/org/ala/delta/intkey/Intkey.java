@@ -1834,7 +1834,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                     messagePanel = new AllowMismatchMessagePanel(noMatchingTaxaRemainCaption, HELP_ID_NO_MATCHING_TAXA_REMAIN, _context);
                 } else {
                     // 1 available taxon
-                    messagePanel = new MessagePanel(noMatchingTaxaRemainCaption, HELP_ID_IDENTIFICATION_COMPLETE);
+                    messagePanel = new MessagePanel(identificationCompleteCaption, HELP_ID_IDENTIFICATION_COMPLETE);
                 }
 
                 _sclPaneAvailableCharacters.setViewportView(messagePanel);
