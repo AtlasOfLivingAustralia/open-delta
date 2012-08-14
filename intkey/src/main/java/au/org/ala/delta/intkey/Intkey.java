@@ -1219,6 +1219,11 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             // The Nimbus L&F is not available, no matter.
         }
 
+        JMenuItem mnuItSetMainWindowSize = new JMenuItem();
+        mnuItSetMainWindowSize.setAction(actionMap.get("mnuItSetMainWindowSize"));
+        mnuItSetMainWindowSize.setEnabled(true);
+        mnuWindow.add(mnuItSetMainWindowSize);
+
         return mnuWindow;
     }
 
@@ -1802,7 +1807,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             List<Item> eliminatedTaxa = _context.getEliminatedTaxa();
 
             _btnDiffSpecimenTaxa.setEnabled(availableTaxa.size() > 0 && eliminatedTaxa.size() > 0);
-            
+
             // Disable button for selected best or natural order.
             _btnNaturalOrder.setEnabled(true);
             _btnBestOrder.setEnabled(true);
@@ -3045,4 +3050,20 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         au.org.ala.delta.ui.util.UIUtils.nimbusLookAndFeel(getMainFrame());
     }
 
+    @Action
+    public void mnuItSetMainWindowSize() {
+        JFrame mainFrame = getMainFrame();
+        int currentWidth = mainFrame.getWidth();
+        int currentHeight = mainFrame.getHeight();
+        SetMainWindowSizeDialog dlg = new SetMainWindowSizeDialog(mainFrame, currentWidth, currentHeight);
+        show(dlg);
+        try {
+            Pair<Integer, Integer> newWidthHeight = dlg.getWidthAndHeight();
+            int newWidth = newWidthHeight.getFirst();
+            int newHeight = newWidthHeight.getSecond();
+            mainFrame.setSize(newWidth, newHeight);
+        } catch (NumberFormatException ex) {
+            displayErrorMessage(UIUtils.getResourceString("InvalidWidthOrHeight.error"));
+        }
+    }
 }
