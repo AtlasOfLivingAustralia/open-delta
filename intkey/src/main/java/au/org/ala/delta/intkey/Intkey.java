@@ -478,6 +478,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _pnlAvailableCharactersHeader.setLayout(new BorderLayout(0, 0));
 
         _lblNumAvailableCharacters = new JLabel();
+        _lblNumAvailableCharacters.setBorder(new EmptyBorder(0, 5, 0, 0));
         _lblNumAvailableCharacters.setFont(new Font("Tahoma", Font.PLAIN, 15));
         _lblNumAvailableCharacters.setText(MessageFormat.format(availableCharactersCaption, 0));
         _pnlAvailableCharactersHeader.add(_lblNumAvailableCharacters, BorderLayout.WEST);
@@ -576,7 +577,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _pnlUsedCharactersHeader.setLayout(new BorderLayout(0, 0));
 
         _lblNumUsedCharacters = new JLabel();
-        _lblNumUsedCharacters.setBorder(new EmptyBorder(7, 0, 7, 0));
+        _lblNumUsedCharacters.setBorder(new EmptyBorder(7, 5, 7, 0));
         _lblNumUsedCharacters.setFont(new Font("Tahoma", Font.PLAIN, 15));
         _lblNumUsedCharacters.setText(MessageFormat.format(usedCharactersCaption, 0));
         _pnlUsedCharactersHeader.add(_lblNumUsedCharacters, BorderLayout.WEST);
@@ -621,6 +622,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _pnlRemainingTaxaHeader.setLayout(new BorderLayout(0, 0));
 
         _lblNumRemainingTaxa = new JLabel();
+        _lblNumRemainingTaxa.setBorder(new EmptyBorder(0, 5, 0, 0));
         _lblNumRemainingTaxa.setFont(new Font("Tahoma", Font.PLAIN, 15));
         _lblNumRemainingTaxa.setText(MessageFormat.format(remainingTaxaCaption, 0));
         _pnlRemainingTaxaHeader.add(_lblNumRemainingTaxa, BorderLayout.WEST);
@@ -685,7 +687,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _pnlEliminatedTaxaHeader.setLayout(new BorderLayout(0, 0));
 
         _lblEliminatedTaxa = new JLabel();
-        _lblEliminatedTaxa.setBorder(new EmptyBorder(7, 0, 7, 0));
+        _lblEliminatedTaxa.setBorder(new EmptyBorder(7, 5, 7, 0));
         _lblEliminatedTaxa.setFont(new Font("Tahoma", Font.PLAIN, 15));
         _lblEliminatedTaxa.setText(MessageFormat.format(eliminatedTaxaCaption, 0));
         _pnlEliminatedTaxaHeader.add(_lblEliminatedTaxa, BorderLayout.WEST);
