@@ -65,6 +65,8 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
+import com.l2fprod.common.swing.JFontChooser;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -72,6 +74,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.plaf.FontUIResource;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -86,6 +90,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -1225,6 +1230,11 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         } catch (Exception e) {
             // The Nimbus L&F is not available, no matter.
         }
+        
+        JMenuItem mnuItSetFont = new JMenuItem();
+        mnuItSetFont.setAction(actionMap.get("chooseFont"));
+        mnuItSetFont.setEnabled(true);
+        mnuWindow.add(mnuItSetFont);        
 
         JMenuItem mnuItSetMainWindowSize = new JMenuItem();
         mnuItSetMainWindowSize.setAction(actionMap.get("mnuItSetMainWindowSize"));
@@ -3071,6 +3081,24 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             mainFrame.setSize(newWidth, newHeight);
         } catch (NumberFormatException ex) {
             displayErrorMessage(UIUtils.getResourceString("InvalidWidthOrHeight.error"));
+        }
+    }
+    
+    @Action
+    public void chooseFont() {
+        Font f = UIManager.getFont("Label.font");
+        Font newFont = JFontChooser.showDialog(getMainFrame(), "Please select a font", f);        
+        if (newFont != null) {
+            FontUIResource fontResource = new FontUIResource(newFont);
+            Enumeration<Object> keys = UIManager.getDefaults().keys();
+            while (keys.hasMoreElements()) {
+                Object key = keys.nextElement();
+                Object value = UIManager.get(key);              
+                if (value instanceof javax.swing.plaf.FontUIResource) {
+                    UIManager.put(key, fontResource);
+                }
+            }   
+            SwingUtilities.updateComponentTreeUI(getMainFrame());
         }
     }
 }

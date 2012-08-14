@@ -12,6 +12,11 @@
 			<url>http://download.java.net/maven/2/</url>
 			<layout>default</layout>
 		</repository>
+		<repository>
+			<id>shell-sourceforge-jp</id>
+			<name>maven repository on sourceforge.jp shell server</name>
+			<url>http://jfontchooser.sourceforge.jp/repository/say/swing/jfontchooser</url>
+		</repository>
 	</repositories>
 
 	<scm>
@@ -152,7 +157,8 @@
 		</extensions>
 		<pluginManagement>
 			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -236,6 +242,13 @@
 			<groupId>javax.help</groupId>
 			<artifactId>javahelp</artifactId>
 			<version>2.0.05</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.l2fprod.common</groupId>
+			<artifactId>l2fprod-common-fontchooser</artifactId>
+			<version>6.9.1</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
