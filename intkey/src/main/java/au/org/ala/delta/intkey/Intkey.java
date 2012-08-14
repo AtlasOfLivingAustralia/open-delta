@@ -434,6 +434,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _rootPanel.add(_rootSplitPane);
 
         _innerSplitPaneLeft = new JSplitPane();
+        _innerSplitPaneLeft.setMinimumSize(new Dimension(25, 25));
         _innerSplitPaneLeft.setAlignmentX(Component.CENTER_ALIGNMENT);
         _innerSplitPaneLeft.setDividerSize(3);
         _innerSplitPaneLeft.setResizeWeight(0.5);
@@ -583,6 +584,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _pnlUsedCharactersHeader.add(_lblNumUsedCharacters, BorderLayout.WEST);
 
         _innerSplitPaneRight = new JSplitPane();
+        _innerSplitPaneRight.setMinimumSize(new Dimension(25, 25));
         _innerSplitPaneRight.setDividerSize(3);
         _innerSplitPaneRight.setResizeWeight(0.5);
         _innerSplitPaneRight.setContinuousLayout(true);
