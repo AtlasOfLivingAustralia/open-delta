@@ -286,7 +286,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     private static String MRU_FILES_PREF_KEY = "MRU";
     private static String MRU_FILES_SEPARATOR = "\n";
     private static String MRU_ITEM_SEPARATOR = ";";
-    private static int MAX_SIZE_MRU = 4;
+    private static int MAX_SIZE_MRU = 10;
 
     private static String MODE_PREF_KEY = "MODE";
     private static String BASIC_MODE_PREF_VALUE = "BASIC";
@@ -902,9 +902,12 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         List<Pair<String, String>> recentFiles = getPreviouslyUsedFiles();
 
-        for (Pair<String, String> recentFile : recentFiles) {
+        for (int i=0; i < recentFiles.size(); i++) {
+            Pair<String, String> recentFile = recentFiles.get(i);
             final String filePath = recentFile.getFirst();
-            String title = recentFile.getSecond();
+            
+            int fileNumber = i + 1;
+            String title = fileNumber + ". " + recentFile.getSecond();
 
             JMenuItem mnuItRecentFile = new JMenuItem(title);
             mnuItRecentFile.setToolTipText(filePath);
