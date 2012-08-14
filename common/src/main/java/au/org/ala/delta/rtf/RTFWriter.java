@@ -20,7 +20,7 @@ import java.io.Writer;
 
 /**
  * For writing RTF content. Utility methods for document start and end, fonts,
- * coloring. Each time text is writeed it is put into a separate paragraph.
+ * coloring.
  * 
  * @author ChrisF
  * 
@@ -100,6 +100,7 @@ public class RTFWriter {
 
     /**
      * Add freeform text. This will be wrapped in a new paragraph
+     * 
      * @param str
      * @throws IOException
      */
@@ -133,6 +134,18 @@ public class RTFWriter {
         _writer.write(str);
         _writer.write("\\par ");
         _writer.write("\n");
+        _writer.flush();
+    }
+
+    /**
+     * Append text that has already been formatted with RTF control sequences.
+     * This method should not be used to start on end the document. Use the
+     * dedicated methods for this.
+     * 
+     * @param str
+     */
+    public void appendPreformattedRTF(String str) throws IOException {
+        _writer.write(str);
         _writer.flush();
     }
 

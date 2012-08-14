@@ -81,4 +81,20 @@ public class RTFBuilder extends RTFWriter {
         }
     }
 
+    /**
+     * Append text that has already been formatted with RTF control sequences.
+     * This method should not be used to start on end the document. Use the
+     * dedicated methods for this.
+     * 
+     * @param str
+     */
+    public void appendPreformattedRTF(String str) {
+        try {
+            super.appendPreformattedRTF(str);
+        } catch (IOException ex) {
+            // We are using a StringWriter which will never throw an IOException
+            // - do nothing.
+        }
+    }
+
 }
