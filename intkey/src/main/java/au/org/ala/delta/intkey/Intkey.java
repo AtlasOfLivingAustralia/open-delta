@@ -2185,9 +2185,10 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             displayErrorMessage(UIUtils.getResourceString("ImageDisplayDisabled.error"));
         } else {
             try {
-                CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), characters, _context.getImageSettings(), true, false, _context.displayScaled());
-                show(dlg);
+                CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), characters, _context.getImageSettings(), false, false, _context.displayScaled());
                 dlg.displayImagesForCharacter(characters.get(0));
+                show(dlg);
+                
             } catch (IllegalArgumentException ex) {
                 // Display error message if unable to display
                 displayErrorMessage(UIUtils.getResourceString("CouldNotDisplayImage.error", ex.getMessage()));
@@ -2203,8 +2204,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             try {
                 TaxonImageDialog dlg = new TaxonImageDialog(getMainFrame(), _context.getImageSettings(), taxa, false, !_context.displayContinuous(), _context.displayScaled(),
                         _context.getImageSubjects(), this);
-                show(dlg);
                 dlg.displayImagesForTaxon(taxa.get(0), 0);
+                show(dlg);
             } catch (IllegalArgumentException ex) {
                 // Display error message if unable to display
                 displayErrorMessage(UIUtils.getResourceString("CouldNotDisplayImage.error", ex.getMessage()));
