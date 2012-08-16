@@ -27,6 +27,7 @@ import org.jdesktop.application.ResourceMap;
 import au.org.ala.delta.intkey.directives.ParsingUtils;
 import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.image.ImageSettings;
+import au.org.ala.delta.util.Utils;
 
 public class RealInputDialog extends NumberInputDialog {
 
@@ -46,13 +47,23 @@ public class RealInputDialog extends NumberInputDialog {
     @Resource
     String validationErrorTitle;
 
-    public RealInputDialog(Frame owner, RealCharacter ch, ImageSettings imageSettings, boolean displayNumbering, boolean enableImagesButton, boolean imagesStartScaled) {
+    public RealInputDialog(Frame owner, RealCharacter ch, FloatRange initialValues, ImageSettings imageSettings, boolean displayNumbering, boolean enableImagesButton, boolean imagesStartScaled) {
         super(owner, ch, imageSettings, displayNumbering, enableImagesButton, imagesStartScaled);
 
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(RealInputDialog.class);
         resourceMap.injectFields(this);
 
         setTitle(title);
+        
+        // Fill the input text box with any previously set values for the
+        // character.
+        if (initialValues != null) {
+            _txtInput.setText(Utils.formatFloatRangeAsString(initialValues));
+            _txtInput.setSelectionStart(0);
+            _txtInput.requestFocusInWindow();
+            _txtInput.setSelectionStart(0);
+            _txtInput.setSelectionEnd(_txtInput.getText().length());
+        }
 
         _inputData = null;
     }

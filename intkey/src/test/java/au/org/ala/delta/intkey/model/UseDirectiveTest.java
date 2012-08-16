@@ -663,7 +663,7 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
         }
         
         @Override
-        public List<String> promptForTextValue(TextCharacter ch) {
+        public List<String> promptForTextValue(TextCharacter ch, List<String> currentValue) {
             _promptedForCharacterValue = true;
             return null;
         }
@@ -684,7 +684,7 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
         }
         
         @Override
-        public FloatRange promptForRealValue(RealCharacter ch) {
+        public FloatRange promptForRealValue(RealCharacter ch, FloatRange currentValue) {
             _promptedForCharacterValue = true;
             return null;
         }
@@ -695,7 +695,7 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
         }
         
         @Override
-        public Set<Integer> promptForMultiStateValue(MultiStateCharacter ch) {
+        public Set<Integer> promptForMultiStateValue(MultiStateCharacter ch, Set<Integer> currentValue) {
             _promptedForCharacterValue = true;
             return null;
         }
@@ -706,7 +706,7 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
         }
         
         @Override
-        public Set<Integer> promptForIntegerValue(IntegerCharacter ch) {
+        public Set<Integer> promptForIntegerValue(IntegerCharacter ch, Set<Integer> currentValue) {
             _promptedForCharacterValue = true;
             return null;
         }
@@ -930,7 +930,24 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
         assertTrue(context.getAvailableTaxa().contains(taxon7));
     }
 
-    // USE CC
-    // Non auto cc
+    @Test
+    public void testIntegerMinMax() throws Exception {
+        IntkeyContext context = loadDataset("/dataset/images_test_dataset/intkey.ink");
+        Specimen specimen = context.getSpecimen();
+        IntkeyDataset ds = context.getDataset();
+        
+        context.parseAndExecuteDirective("Use 3,-1-10");
+        
+        Character charThree = ds.getCharacter(3);
+        IntegerAttribute attrCharThree = (IntegerAttribute) specimen.getAttributeForCharacter(charThree);
+        
+        Set<Integer> presentValues = attrCharThree.getPresentValues();
+        assertEquals(5, presentValues.size());
+        assertTrue(presentValues.contains(-1));
+        assertTrue(presentValues.contains(0));
+        assertTrue(presentValues.contains(1));
+        assertTrue(presentValues.contains(2));
+        assertTrue(presentValues.contains(3));
+    }
 
 }

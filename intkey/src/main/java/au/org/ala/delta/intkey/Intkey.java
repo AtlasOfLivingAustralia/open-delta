@@ -60,6 +60,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.FloatRange;
+import org.apache.commons.lang.math.IntRange;
 import org.apache.commons.lang.mutable.MutableBoolean;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Resource;
@@ -911,10 +912,10 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         List<Pair<String, String>> recentFiles = getPreviouslyUsedFiles();
 
-        for (int i=0; i < recentFiles.size(); i++) {
+        for (int i = 0; i < recentFiles.size(); i++) {
             Pair<String, String> recentFile = recentFiles.get(i);
             final String filePath = recentFile.getFirst();
-            
+
             int fileNumber = i + 1;
             String title = fileNumber + ". " + recentFile.getSecond();
 
@@ -1230,11 +1231,11 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         } catch (Exception e) {
             // The Nimbus L&F is not available, no matter.
         }
-        
+
         JMenuItem mnuItSetFont = new JMenuItem();
         mnuItSetFont.setAction(actionMap.get("chooseFont"));
         mnuItSetFont.setEnabled(true);
-        mnuWindow.add(mnuItSetFont);        
+        mnuWindow.add(mnuItSetFont);
 
         JMenuItem mnuItSetMainWindowSize = new JMenuItem();
         mnuItSetMainWindowSize.setAction(actionMap.get("mnuItSetMainWindowSize"));
@@ -2188,7 +2189,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                 CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), characters, _context.getImageSettings(), false, false, _context.displayScaled());
                 dlg.displayImagesForCharacter(characters.get(0));
                 show(dlg);
-                
+
             } catch (IllegalArgumentException ex) {
                 // Display error message if unable to display
                 displayErrorMessage(UIUtils.getResourceString("CouldNotDisplayImage.error", ex.getMessage()));
@@ -2461,16 +2462,22 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     }
 
     @Override
-    public List<String> promptForTextValue(TextCharacter ch) {
+    public List<String> promptForTextValue(TextCharacter ch, List<String> currentValues) {
         if (_context.getImageDisplayMode() == ImageDisplayMode.AUTO && !ch.getImages().isEmpty()) {
             try {
                 CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), Arrays.asList(new Character[] { ch }), _context.getImageSettings(), true, true, _context.displayScaled());
+                dlg.setInitialTextValues(currentValues);
                 dlg.displayImagesForCharacter(ch);
                 show(dlg);
                 if (dlg.okButtonPressed()) {
                     return dlg.getInputTextValues();
-                } else {
+                } else if (dlg.cancelButtonPressed()) {
                     return null;
+                } else {
+                    TextInputDialog dlg2 = new TextInputDialog(getMainFrame(), ch, currentValues, _context.getImageSettings(), _context.displayNumbering(),
+                            _context.getImageDisplayMode() != ImageDisplayMode.OFF, _context.displayScaled());
+                    UIUtils.showDialog(dlg2);
+                    return dlg2.getInputData();
                 }
             } catch (IllegalArgumentException ex) {
                 // Display error message if unable to display
@@ -2478,24 +2485,33 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                 return null;
             }
         } else {
-            TextInputDialog dlg = new TextInputDialog(getMainFrame(), ch, _context.getImageSettings(), _context.displayNumbering(), _context.getImageDisplayMode() != ImageDisplayMode.OFF,
-                    _context.displayScaled());
+            TextInputDialog dlg = new TextInputDialog(getMainFrame(), ch, currentValues, _context.getImageSettings(), _context.displayNumbering(),
+                    _context.getImageDisplayMode() != ImageDisplayMode.OFF, _context.displayScaled());
             UIUtils.showDialog(dlg);
             return dlg.getInputData();
         }
     }
 
     @Override
-    public Set<Integer> promptForIntegerValue(IntegerCharacter ch) {
+    public Set<Integer> promptForIntegerValue(IntegerCharacter ch, Set<Integer> currentValues) {
+        Set<Integer> returnValues = new HashSet<Integer>();
+        Set<Integer> rawInputValues;
+
         if (_context.getImageDisplayMode() == ImageDisplayMode.AUTO && !ch.getImages().isEmpty()) {
             try {
                 CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), Arrays.asList(new Character[] { ch }), _context.getImageSettings(), true, true, _context.displayScaled());
+                dlg.setInitialIntegerValues(currentValues);
                 dlg.displayImagesForCharacter(ch);
                 show(dlg);
                 if (dlg.okButtonPressed()) {
-                    return dlg.getInputIntegerValues();
-                } else {
+                    rawInputValues = dlg.getInputIntegerValues();
+                } else if (dlg.cancelButtonPressed()) {
                     return null;
+                } else {
+                    IntegerInputDialog dlg2 = new IntegerInputDialog(getMainFrame(), ch, currentValues, _context.getImageSettings(), _context.displayNumbering(),
+                            _context.getImageDisplayMode() != ImageDisplayMode.OFF, _context.displayScaled());
+                    UIUtils.showDialog(dlg2);
+                    rawInputValues = dlg2.getInputData();                    
                 }
             } catch (IllegalArgumentException ex) {
                 // Display error message if unable to display
@@ -2503,24 +2519,50 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                 return null;
             }
         } else {
-            IntegerInputDialog dlg = new IntegerInputDialog(getMainFrame(), ch, _context.getImageSettings(), _context.displayNumbering(), _context.getImageDisplayMode() != ImageDisplayMode.OFF,
-                    _context.displayScaled());
+            IntegerInputDialog dlg = new IntegerInputDialog(getMainFrame(), ch, currentValues, _context.getImageSettings(), _context.displayNumbering(),
+                    _context.getImageDisplayMode() != ImageDisplayMode.OFF, _context.displayScaled());
             UIUtils.showDialog(dlg);
-            return dlg.getInputData();
+            rawInputValues = dlg.getInputData();
+        }
+
+        // The only acceptable values for an integer character are minimum - 1,
+        // any values in the range minimum-maximum, or maximum + 1. Modify the
+        // raw input values
+        // in accordance with this.
+        if (rawInputValues != null) {
+            for (int value : rawInputValues) {
+                if (value <= ch.getMinimumValue() - 1) {
+                    returnValues.add(ch.getMinimumValue() - 1);
+                } else if (value >= ch.getMaximumValue() + 1) {
+                    returnValues.add(ch.getMaximumValue() + 1);
+                } else {
+                    returnValues.add(value);
+                }
+            }
+
+            return returnValues;
+        } else {
+            return null;
         }
     }
 
     @Override
-    public FloatRange promptForRealValue(RealCharacter ch) {
+    public FloatRange promptForRealValue(RealCharacter ch, FloatRange currentValues) {
         if (_context.getImageDisplayMode() == ImageDisplayMode.AUTO && !ch.getImages().isEmpty()) {
             try {
                 CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), Arrays.asList(new Character[] { ch }), _context.getImageSettings(), true, true, _context.displayScaled());
+                dlg.setInitialRealValues(currentValues);
                 dlg.displayImagesForCharacter(ch);
                 show(dlg);
                 if (dlg.okButtonPressed()) {
                     return dlg.getInputRealValues();
-                } else {
+                } else if (dlg.cancelButtonPressed()) {
                     return null;
+                } else {
+                    RealInputDialog dlg2 = new RealInputDialog(getMainFrame(), ch, currentValues, _context.getImageSettings(), _context.displayNumbering(),
+                            _context.getImageDisplayMode() != ImageDisplayMode.OFF, _context.displayScaled());
+                    UIUtils.showDialog(dlg2);
+                    return dlg2.getInputData();
                 }
             } catch (IllegalArgumentException ex) {
                 // Display error message if unable to display
@@ -2528,24 +2570,30 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                 return null;
             }
         } else {
-            RealInputDialog dlg = new RealInputDialog(getMainFrame(), ch, _context.getImageSettings(), _context.displayNumbering(), _context.getImageDisplayMode() != ImageDisplayMode.OFF,
-                    _context.displayScaled());
+            RealInputDialog dlg = new RealInputDialog(getMainFrame(), ch, currentValues, _context.getImageSettings(), _context.displayNumbering(),
+                    _context.getImageDisplayMode() != ImageDisplayMode.OFF, _context.displayScaled());
             UIUtils.showDialog(dlg);
             return dlg.getInputData();
         }
     }
 
     @Override
-    public Set<Integer> promptForMultiStateValue(MultiStateCharacter ch) {
+    public Set<Integer> promptForMultiStateValue(MultiStateCharacter ch, Set<Integer> currentSelectedStates) {
         if (_context.getImageDisplayMode() == ImageDisplayMode.AUTO && !ch.getImages().isEmpty()) {
             try {
                 CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), Arrays.asList(new Character[] { ch }), _context.getImageSettings(), true, true, _context.displayScaled());
+                dlg.setInitialSelectedStates(currentSelectedStates);
                 dlg.displayImagesForCharacter(ch);
                 show(dlg);
                 if (dlg.okButtonPressed()) {
                     return dlg.getSelectedStates();
-                } else {
+                } else if (dlg.cancelButtonPressed()) {
                     return null;
+                } else {
+                    MultiStateInputDialog dlg2 = new MultiStateInputDialog(getMainFrame(), ch, currentSelectedStates, _context.getImageSettings(), _context.displayNumbering(),
+                            _context.getImageDisplayMode() != ImageDisplayMode.OFF, _context.displayScaled());
+                    UIUtils.showDialog(dlg2);
+                    return dlg2.getInputData();
                 }
             } catch (IllegalArgumentException ex) {
                 // Display error message if unable to display
@@ -2553,8 +2601,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                 return null;
             }
         } else {
-            MultiStateInputDialog dlg = new MultiStateInputDialog(getMainFrame(), ch, _context.getImageSettings(), _context.displayNumbering(), _context.getImageDisplayMode() != ImageDisplayMode.OFF,
-                    _context.displayScaled());
+            MultiStateInputDialog dlg = new MultiStateInputDialog(getMainFrame(), ch, currentSelectedStates, _context.getImageSettings(), _context.displayNumbering(),
+                    _context.getImageDisplayMode() != ImageDisplayMode.OFF, _context.displayScaled());
             UIUtils.showDialog(dlg);
             return dlg.getInputData();
         }
@@ -3084,21 +3132,21 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             displayErrorMessage(UIUtils.getResourceString("InvalidWidthOrHeight.error"));
         }
     }
-    
+
     @Action
     public void chooseFont() {
         Font f = UIManager.getFont("Label.font");
-        Font newFont = JFontChooser.showDialog(getMainFrame(), "Please select a font", f);        
+        Font newFont = JFontChooser.showDialog(getMainFrame(), "Please select a font", f);
         if (newFont != null) {
             FontUIResource fontResource = new FontUIResource(newFont);
             Enumeration<Object> keys = UIManager.getDefaults().keys();
             while (keys.hasMoreElements()) {
                 Object key = keys.nextElement();
-                Object value = UIManager.get(key);              
+                Object value = UIManager.get(key);
                 if (value instanceof javax.swing.plaf.FontUIResource) {
                     UIManager.put(key, fontResource);
                 }
-            }   
+            }
             SwingUtilities.updateComponentTreeUI(getMainFrame());
         }
     }

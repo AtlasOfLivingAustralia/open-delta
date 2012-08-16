@@ -25,6 +25,7 @@ import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
@@ -45,7 +46,7 @@ public class TextInputDialog extends CharacterValueInputDialog {
     @Resource
     String title;
 
-    public TextInputDialog(Frame owner, TextCharacter ch, ImageSettings imageSettings, boolean displayNumbering, boolean enableImagesButton, boolean imagesStartScaled) {
+    public TextInputDialog(Frame owner, TextCharacter ch, List<String> initialValues, ImageSettings imageSettings, boolean displayNumbering, boolean enableImagesButton, boolean imagesStartScaled) {
         super(owner, ch, imageSettings, displayNumbering, enableImagesButton, imagesStartScaled);
 
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(TextInputDialog.class);
@@ -69,6 +70,16 @@ public class TextInputDialog extends CharacterValueInputDialog {
         });
         
         _btnSearch.setEnabled(false);
+        
+        // Fill the input text box with any previously set values for the
+        // character.
+        if (initialValues != null) {
+            _txtInput.setText(StringUtils.join(initialValues, "/"));
+            _txtInput.setSelectionStart(0);
+            _txtInput.requestFocusInWindow();
+            _txtInput.setSelectionStart(0);
+            _txtInput.setSelectionEnd(_txtInput.getText().length());
+        }
 
         _inputData = new ArrayList<String>();
     }

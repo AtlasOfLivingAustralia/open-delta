@@ -16,6 +16,7 @@ package au.org.ala.delta.intkey.directives.invocation;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -48,6 +49,7 @@ import au.org.ala.delta.model.MultiStateAttribute;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.RealAttribute;
 import au.org.ala.delta.model.RealCharacter;
+import au.org.ala.delta.model.Specimen;
 import au.org.ala.delta.model.TextAttribute;
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.format.CharacterFormatter;
@@ -154,7 +156,7 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
                 // its controlling
                 // characters
                 if (checkCharacterUsable(ch, context, false)) {
-                    Attribute attr = promptForCharacterValue(ch, context.getDirectivePopulator());
+                    Attribute attr = promptForCharacterValue(ch, context.getDirectivePopulator(), context.getSpecimen());
                     if (attr != null) {
                         // store this value so that the prompt does not need
                         // to
@@ -222,7 +224,7 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
                         // more of its controlling
                         // characters
                         if (checkCharacterUsable(ch, context, false)) {
-                            attr = promptForCharacterValue(ch, context.getDirectivePopulator());
+                            attr = promptForCharacterValue(ch, context.getDirectivePopulator(), context.getSpecimen());
                         } else {
                             return false;
                         }
@@ -258,7 +260,7 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
         _stringRepresentationBuilder.append(StringUtils.join(_stringRepresentationParts, " "));
 
-        context.appendToLog("*" +_stringRepresentationBuilder.toString());
+        context.appendToLog("*" + _stringRepresentationBuilder.toString());
         context.specimenUpdateComplete();
         return true;
     }
@@ -309,7 +311,7 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
                         UIUtils.getResourceString("UseDirective.TaxonToSeparateEliminatedMsg", _charFormatter.formatCharacterDescription(ch), _taxonFormatter.formatItemDescription(taxonToSeparate)));
 
                 if (changeValue) {
-                    Attribute newAttr = promptForCharacterValue(ch, context.getDirectivePopulator());
+                    Attribute newAttr = promptForCharacterValue(ch, context.getDirectivePopulator(), context.getSpecimen());
                     _characterAttributes.put(ch, newAttr);
                     setValueForCharacter(ch, newAttr, context);
                 }
@@ -449,7 +451,7 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
             // can be set to for which the dependent character will be
             // inapplicable.
             if (!context.isProcessingDirectivesFile() && (cc.getNonAutoCc() || ch.getUseCc() || !cc.getNonAutoCc() && !cc.getUseCc() && applicableStates.size() > 1)) {
-                Attribute attr = promptForCharacterValue(cc, context.getDirectivePopulator());
+                Attribute attr = promptForCharacterValue(cc, context.getDirectivePopulator(), context.getSpecimen());
                 if (attr != null) {
                     context.setSpecimenAttributeForCharacter(cc, attr);
                 } else {
@@ -469,7 +471,7 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
             // output USEd controlling characters directly to the log
             // window
-            
+
             context.appendToLog(MessageFormat.format("    *USE {0},{1}", cc.getCharacterId(), StringUtils.join(applicableStates, "/")));
         }
 
@@ -511,32 +513,54 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
         return retMap;
     }
 
-    private Attribute promptForCharacterValue(au.org.ala.delta.model.Character ch, DirectivePopulator populator) {
+    private Attribute promptForCharacterValue(au.org.ala.delta.model.Character ch, DirectivePopulator populator, Specimen specimen) {
         SimpleAttributeData impl = new SimpleAttributeData(false, false);
 
+
+
         if (ch instanceof MultiStateCharacter) {
-            Set<Integer> stateValues = populator.promptForMultiStateValue((MultiStateCharacter) ch);
+            // Get the current value of the character as set in the specimen. If no
+            // value is set for the character, an attribute with
+            // unknown = true is returned.
+            MultiStateAttribute currentAttribute = (MultiStateAttribute) specimen.getAttributeForCharacter(ch);
+                
+            Set<Integer> stateValues = populator.promptForMultiStateValue((MultiStateCharacter) ch, currentAttribute.isUnknown() ? null : currentAttribute.getPresentStates());
             if (stateValues != null && stateValues.size() > 0) {
                 impl.setPresentStateOrIntegerValues(stateValues);
             } else {
                 return null;
             }
         } else if (ch instanceof IntegerCharacter) {
-            Set<Integer> intValue = populator.promptForIntegerValue((IntegerCharacter) ch);
+            // Get the current value of the character as set in the specimen. If no
+            // value is set for the character, an attribute with
+            // unknown = true is returned.
+            IntegerAttribute currentAttribute = (IntegerAttribute) specimen.getAttributeForCharacter(ch);
+            
+            Set<Integer> intValue = populator.promptForIntegerValue((IntegerCharacter) ch, currentAttribute.isUnknown() ? null : currentAttribute.getPresentValues());
             if (intValue != null && intValue.size() > 0) {
                 impl.setPresentStateOrIntegerValues(intValue);
             } else {
                 return null;
             }
         } else if (ch instanceof RealCharacter) {
-            FloatRange floatRange = populator.promptForRealValue((RealCharacter) ch);
+            // Get the current value of the character as set in the specimen. If no
+            // value is set for the character, an attribute with
+            // unknown = true is returned.
+            RealAttribute currentAttribute = (RealAttribute) specimen.getAttributeForCharacter(ch);
+            
+            FloatRange floatRange = populator.promptForRealValue((RealCharacter) ch, currentAttribute.isUnknown() ? null : currentAttribute.getPresentRange());
             if (floatRange != null) {
                 impl.setRealRange(floatRange);
             } else {
                 return null;
             }
         } else if (ch instanceof TextCharacter) {
-            List<String> stringList = populator.promptForTextValue((TextCharacter) ch);
+            // Get the current value of the character as set in the specimen. If no
+            // value is set for the character, an attribute with
+            // unknown = true is returned.
+            TextAttribute currentAttribute = (TextAttribute) specimen.getAttributeForCharacter(ch);
+            
+            List<String> stringList = populator.promptForTextValue((TextCharacter) ch, currentAttribute.isUnknown() ? null : Arrays.asList(currentAttribute.getValueAsString().split("/")));
             if (stringList != null && stringList.size() > 0) {
                 impl.setValueFromString(StringUtils.join(stringList, '/'));
             } else {

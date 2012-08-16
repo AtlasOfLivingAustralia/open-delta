@@ -90,6 +90,17 @@ public class ParsingUtils {
         return taxa;
     }
 
+    /**
+     * Parses a string specifying the value of a multistate or integer character
+     * value into states/values. NOTE: This method does not take into account
+     * the minimum and maximum values for an integer character. Further
+     * processing is requred on the values returned by this method to ensure
+     * that the values fall in the range minimum - 1 - maximum + 1
+     * 
+     * @param charValue
+     *            The string specifying values for a multistate or integer value
+     * @return A set of states/integer values.
+     */
     public static Set<Integer> parseMultistateOrIntegerCharacterValue(String charValue) {
         Set<Integer> selectedStates = new HashSet<Integer>();
 

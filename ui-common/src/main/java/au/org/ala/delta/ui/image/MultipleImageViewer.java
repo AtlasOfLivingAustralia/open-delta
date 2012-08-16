@@ -52,7 +52,17 @@ public class MultipleImageViewer extends JPanel {
     private boolean _hideTextOverlays;
 
     private OverlaySelectionObserver _observer;
+    
+    /**
+     * The image viewer that is currently visible
+     */
     private ImageViewer _visibleViewer;
+    
+    /**
+     * The image viewer that was previously visible
+     */
+    private ImageViewer _previouslyVisibleViewer;
+    
     private Image _visibleImage;
 
     public MultipleImageViewer(ImageSettings imageSettings) {
@@ -96,6 +106,10 @@ public class MultipleImageViewer extends JPanel {
     public void showImage(String imageId) {
         if (!_idToViewerMap.containsKey(imageId)) {
             throw new IllegalArgumentException("Image " + imageId + " not present in MultipleImageViewer");
+        }
+        
+        if (_visibleViewer != null) {
+            _previouslyVisibleViewer = _visibleViewer;
         }
 
         _visibleViewer = _idToViewerMap.get(imageId);
@@ -181,9 +195,20 @@ public class MultipleImageViewer extends JPanel {
     public ImageViewer getVisibleViewer() {
         return _visibleViewer;
     }
+    
+    public ImageViewer getPreviouslyVisibleViewer() {
+        return _previouslyVisibleViewer;
+    }
 
     public Image getVisibleImage() {
         return _visibleImage;
     }
+    
+    
+    public List<ImageViewer> getViewersList() {
+        return _imageViewers;
+    }
+    
+    
 
 }

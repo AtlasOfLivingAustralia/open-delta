@@ -25,6 +25,7 @@ import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
 import au.org.ala.delta.intkey.directives.ParsingUtils;
+import au.org.ala.delta.intkey.model.FormattingUtils;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.image.ImageSettings;
 
@@ -46,13 +47,23 @@ public class IntegerInputDialog extends NumberInputDialog {
     @Resource
     String validationErrorTitle;
 
-    public IntegerInputDialog(Frame owner, IntegerCharacter ch, ImageSettings imageSettings, boolean displayNumbering, boolean enableImagesButton, boolean imagesStartScaled) {
+    public IntegerInputDialog(Frame owner, IntegerCharacter ch, Set<Integer> initialValues, ImageSettings imageSettings, boolean displayNumbering, boolean enableImagesButton, boolean imagesStartScaled) {
         super(owner, ch, imageSettings, displayNumbering, enableImagesButton, imagesStartScaled);
 
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(IntegerInputDialog.class);
         resourceMap.injectFields(this);
 
         setTitle(title);
+
+        // Fill the input text box with any previously set values for the
+        // character.
+        if (initialValues != null) {
+            _txtInput.setText(FormattingUtils.formatIntegerValuesAsString(initialValues, ch.getMinimumValue(), ch.getMaximumValue()));
+            _txtInput.setSelectionStart(0);
+            _txtInput.requestFocusInWindow();
+            _txtInput.setSelectionStart(0);
+            _txtInput.setSelectionEnd(_txtInput.getText().length());
+        }
 
         _inputData = null;
     }

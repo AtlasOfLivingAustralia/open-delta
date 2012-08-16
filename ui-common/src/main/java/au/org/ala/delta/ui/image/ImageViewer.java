@@ -416,4 +416,19 @@ public class ImageViewer extends ImagePanel implements LayoutManager2, ActionLis
         }
     }
 
+    /**
+     * Put the supplied text into the image viewer's input field it it has one.
+     * Otherwise do nothing.
+     * 
+     * @param str
+     */
+    public void setInputText(String str) {
+        if (_inputField != null) {
+            _inputField.setText(str);
+            _inputField.requestFocusInWindow();
+            _inputField.setSelectionStart(0);
+            _inputField.setSelectionEnd(str.length());
+        }
+    }
+
 }

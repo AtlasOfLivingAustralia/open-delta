@@ -64,22 +64,22 @@ public class MockDirectivePopulator implements DirectivePopulator {
     }
 
     @Override
-    public List<String> promptForTextValue(TextCharacter ch) {
+    public List<String> promptForTextValue(TextCharacter ch, List<String> currentValue) {
         return null;
     }
 
     @Override
-    public Set<Integer> promptForIntegerValue(IntegerCharacter ch) {
+    public Set<Integer> promptForIntegerValue(IntegerCharacter ch, Set<Integer> currentValue) {
         return null;
     }
 
     @Override
-    public FloatRange promptForRealValue(RealCharacter ch) {
+    public FloatRange promptForRealValue(RealCharacter ch, FloatRange currentValue) {
         return null;
     }
 
     @Override
-    public Set<Integer> promptForMultiStateValue(MultiStateCharacter ch) {
+    public Set<Integer> promptForMultiStateValue(MultiStateCharacter ch, Set<Integer> currentValue) {
         return null;
     }
 

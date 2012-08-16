@@ -18,6 +18,7 @@ import au.org.ala.delta.rtf.RTFUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.FloatRange;
 
 import javax.swing.*;
 import java.awt.*;
@@ -493,7 +494,8 @@ public class Utils {
     /**
      * Removes DELTA style <> comments from the supplied string.
      * 
-     * @param text the string to remove comments from.
+     * @param text
+     *            the string to remove comments from.
      * @param level
      *            0 = don't remove, 1 = remove all, 2 = remove only if other
      *            text, 3 = same as 2, but outer brackets are removed if
@@ -667,7 +669,7 @@ public class Utils {
         versionInfo.append("user.region: ");
         versionInfo.append(System.getProperty("user.region"));
         versionInfo.append("user.dir: ");
-        versionInfo.append(System.getProperty("user.dir"));        
+        versionInfo.append(System.getProperty("user.dir"));
 
         return versionInfo.toString();
     }
@@ -927,15 +929,45 @@ public class Utils {
         return adjustedFontSize;
     }
 
+    /**
+     * Format a list of integers as a set of ranges, with spaces as the list
+     * item separator and "-" as the range symbol
+     * 
+     * @param ints
+     *            the list of integers, this is assumed to be already sorted.
+     * @return The formated list of ranges
+     */
     public static String formatIntegersAsListOfRanges(List<Integer> ints) {
         return formatIntegersAsListOfRanges(ints, " ", "-");
     }
 
+    /**
+     * Format a list of integers as a set of ranges, with spaces as the list
+     * item separator and the supplied string as the range symbol
+     * 
+     * @param ints
+     *            the list of integers, this is assumed to be already sorted.
+     * @param rangeSymbol
+     *            the symbol to use as the range symbol
+     * @return the formatted list of ranges
+     */
     public static String formatIntegersAsListOfRanges(List<Integer> ints, String rangeSymbol) {
         return formatIntegersAsListOfRanges(ints, " ", rangeSymbol);
     }
 
-    public static String formatIntegersAsListOfRanges(List<Integer> ints, String spaceSymbol, String rangeSymbol) {
+    /**
+     * Format a list of integers as a set of ranges, with supplied strings used
+     * for the list item separator and range symbol
+     * 
+     * @param ints
+     *            the list of integers, this is assumed to be already sorted.
+     * @param itemSeparator
+     *            the symbol to use as the list item separator.
+     * @param rangeSymbol
+     *            the symbol to use as the range symbol
+     * @return the formatted list of ranges
+     */
+    public static String formatIntegersAsListOfRanges(List<Integer> ints, String itemSeparator, String rangeSymbol) {
         StringBuilder builder = new StringBuilder();
 
         int startRange = 0;
@@ -953,7 +985,7 @@ public class Utils {
                     startRange = val;
                 } else {
                     if (previousValue < val - 1) {
-                        builder.append(spaceSymbol);
+                        builder.append(itemSeparator);
                         builder.append(startRange);
 
                         if (previousValue != startRange) {
@@ -966,7 +998,7 @@ public class Utils {
                     }
 
                     if (i == ints.size() - 1) {
-                        builder.append(spaceSymbol);
+                        builder.append(itemSeparator);
                         builder.append(startRange);
 
                         if (val != startRange) {
@@ -984,16 +1016,43 @@ public class Utils {
             String retStr = builder.toString();
 
             // Remove any leading or trailing space symbol
-            if (retStr.startsWith(spaceSymbol)) {
+            if (retStr.startsWith(itemSeparator)) {
                 retStr = retStr.substring(1);
             }
 
-            if (retStr.endsWith(spaceSymbol)) {
+            if (retStr.endsWith(itemSeparator)) {
                 retStr = retStr.substring(0, retStr.length() - 1);
             }
 
             return retStr;
         }
+    }
+
+    public static String formatFloatRangeAsString(FloatRange range) {
+        StringBuilder builder = new StringBuilder();
+        float minimumValue = range.getMinimumFloat();
+        float maximumValue = range.getMaximumFloat();
+        if (minimumValue == maximumValue) {
+            if (minimumValue == Math.round(minimumValue)) {
+                builder.append((int) minimumValue);
+            } else {
+                builder.append(minimumValue);
+            }
+        } else {
+            if (minimumValue == Math.round(minimumValue)) {
+                builder.append((int) minimumValue);
+            } else {
+                builder.append(minimumValue);
+            }
+            builder.append("-");
+            if (maximumValue == Math.round(maximumValue)) {
+                builder.append((int) maximumValue);
+            } else {
+                builder.append(maximumValue);
+            }
+        }
+
+        return builder.toString();
     }
 
     /**
@@ -1072,10 +1131,12 @@ public class Utils {
 
     private static boolean launchIntkeyViaScript(String startupDirectory, String inputFile) {
         String scriptFile = (Platform.isWindows() ? "Intkey.bat" : "Intkey.sh");
-        // The DELTA scripts set a System property "basedir" - this is more reliable than the current directory
-        // as if the script is on the path the current directory won't be the script directory.
+        // The DELTA scripts set a System property "basedir" - this is more
+        // reliable than the current directory
+        // as if the script is on the path the current directory won't be the
+        // script directory.
         if (StringUtils.isNotBlank(System.getProperty("basedir"))) {
-            String scriptDir = System.getProperty("basedir")+File.separator+"bin"+File.separator+scriptFile;
+            String scriptDir = System.getProperty("basedir") + File.separator + "bin" + File.separator + scriptFile;
             if (launchFile(scriptDir, inputFile)) {
                 return true;
             }
@@ -1099,7 +1160,7 @@ public class Utils {
         File f = new File(path);
         if (f.exists()) {
             try {
-                Runtime.getRuntime().exec(new String[]{path,args});
+                Runtime.getRuntime().exec(new String[] { path, args });
                 return true;
             } catch (Exception ex) {
             }

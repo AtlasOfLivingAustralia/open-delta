@@ -35,6 +35,7 @@ import au.org.ala.delta.model.attribute.AttributeChunkFormatter;
 import au.org.ala.delta.model.attribute.DefaultAttributeChunkFormatter;
 import au.org.ala.delta.translation.Words;
 import au.org.ala.delta.translation.Words.Word;
+import au.org.ala.delta.util.Utils;
 
 /**
  * Formats an attribute.
@@ -281,15 +282,7 @@ public class AttributeFormatter extends Formatter {
         FloatRange range = attribute.getPresentRange();
         if (range != null) {
             StringBuilder builder = new StringBuilder();
-            float minimumValue = range.getMinimumFloat();
-            float maximumValue = range.getMaximumFloat();
-            if (minimumValue == maximumValue) {
-                builder.append(minimumValue);
-            } else {
-                builder.append(minimumValue);
-                builder.append("-");
-                builder.append(maximumValue);
-            }
+            builder.append(Utils.formatFloatRangeAsString(range));
 
             builder.append(" ");
             builder.append(attribute.getCharacter().getUnits());

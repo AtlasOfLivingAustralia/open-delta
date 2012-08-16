@@ -147,40 +147,52 @@ public interface DirectivePopulator {
      * 
      * @param ch
      *            the text character
+     * @param currentValue
+     *            The current value(s) set for the text character. Supply null if
+     *            no value is currently set.
      * @return A list of the supplied values for the character, or null if the
      *         user cancelled the operation
      */
-    List<String> promptForTextValue(TextCharacter ch);
+    List<String> promptForTextValue(TextCharacter ch, List<String> currentValue);
 
     /**
      * Prompt the user to enter value(s) for an integer character
      * 
      * @param ch
      *            the integer character
+     * @param currentValue
+     *            The current value(s) set for the integer character. Supply null if
+     *            no value is currently set.            
      * @return A list of the supplied values for the character, or null if the
      *         user cancelled the operation
      */
-    Set<Integer> promptForIntegerValue(IntegerCharacter ch);
+    Set<Integer> promptForIntegerValue(IntegerCharacter ch, Set<Integer> currentValue);
 
     /**
      * Prompt the user to enter a value for a real character
      * 
      * @param ch
      *            the real character
+     * @param currentValue
+     *            The current value(s) set for the real character. Supply null if
+     *            no value is currently set.             
      * @return The supplied value for the character, or null if the user
      *         cancelled the operation
      */
-    FloatRange promptForRealValue(RealCharacter ch);
+    FloatRange promptForRealValue(RealCharacter ch, FloatRange currentValue);
 
     /**
      * Prompt the user to enter value(s) for a multistate character
      * 
      * @param ch
      *            the multistate character
+     * @param currentValue
+     *            The current state(s) set for the multistate character. Supply null if
+     *            no value is currently set.             
      * @return The supplied value for the character, or null if the user
      *         cancelled the operation
      */
-    Set<Integer> promptForMultiStateValue(MultiStateCharacter ch);
+    Set<Integer> promptForMultiStateValue(MultiStateCharacter ch, Set<Integer> currentSelectedStates);
 
     /**
      * Prompt the user to select a file

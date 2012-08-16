@@ -3,10 +3,12 @@ package au.org.ala.delta.intkey.directives.invocation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.FloatRange;
 
+import au.org.ala.delta.intkey.model.FormattingUtils;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
 import au.org.ala.delta.intkey.ui.UIUtils;
@@ -187,10 +189,9 @@ public class OutputDescribeDirectiveInvocation extends LongRunningIntkeyDirectiv
 
     private String getIntegerAttributeAsString(IntegerAttribute attr) {
         StringBuilder builder = new StringBuilder();
-        List<Integer> presentValues = new ArrayList<Integer>(attr.getPresentValues());
+        Set<Integer> presentValues = attr.getPresentValues();
         if (!presentValues.isEmpty()) {
-            Collections.sort(presentValues);
-            builder.append(Utils.formatIntegersAsListOfRanges(presentValues, "/", "-"));
+            builder.append(FormattingUtils.formatIntegerValuesAsString(presentValues, attr.getCharacter().getMinimumValue(), attr.getCharacter().getMaximumValue()));
             if (attr.isInapplicable()) {
                 builder.append("/-");
             }

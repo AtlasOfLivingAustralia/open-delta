@@ -18,26 +18,40 @@ import java.awt.BorderLayout;
 import java.awt.Dialog;
 import java.awt.Frame;
 import java.text.MessageFormat;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.ActionMap;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.FloatRange;
+import org.apache.commons.lang.math.IntRange;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
+import au.org.ala.delta.intkey.directives.ParsingUtils;
+import au.org.ala.delta.intkey.model.FormattingUtils;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.RealCharacter;
+import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.OverlayType;
 import au.org.ala.delta.rtf.RTFBuilder;
+import au.org.ala.delta.ui.image.ImageViewer;
 import au.org.ala.delta.ui.image.SelectableOverlay;
+import au.org.ala.delta.ui.image.overlay.HotSpotGroup;
+import au.org.ala.delta.ui.image.overlay.SelectableTextOverlay;
+import au.org.ala.delta.util.Pair;
+import au.org.ala.delta.util.Utils;
 
 /**
  * Used to Display images for a single character
@@ -59,7 +73,21 @@ public class CharacterImageDialog extends ImageDialog {
 
     private int _selectedCharacterIndex;
 
+    protected Set<Integer> _initialSelectedStates;
+    protected Set<Integer> _initialIntegerValues;
+    protected FloatRange _initialRealValues;
+    protected List<String> _initialTextValues;
+
+    /**
+     * True if the states or values for the characters can be edited.
+     */
     private boolean _valuesEditable;
+
+    /**
+     * True if the initial values (values for the character set in the specimen
+     * prior to the opening of the dialog) have been displayed in the dialog.
+     */
+    private boolean _initialValuesDisplayed = false;
 
     // Title used when the dialog is used to enter values for an integer
     // character
@@ -154,6 +182,18 @@ public class CharacterImageDialog extends ImageDialog {
     @Override
     protected void handleNewImageSelected() {
         super.handleNewImageSelected();
+        if (_initialValuesDisplayed) {
+            ImageViewer currentVisibleViewer = _multipleImageViewer.getVisibleViewer();
+            ImageViewer previouslyVisibleViewer = _multipleImageViewer.getPreviouslyVisibleViewer();
+
+            selectStatesInViewer(currentVisibleViewer, _selectedStates);
+
+            if (previouslyVisibleViewer != null) {
+                currentVisibleViewer.setInputText(previouslyVisibleViewer.getInputText());
+            }
+        } else {
+            populateWithInitialValues();
+        }
         updateTitle();
     }
 
@@ -195,6 +235,190 @@ public class CharacterImageDialog extends ImageDialog {
                     super.overlaySelected(overlay);
                 } else {
                     JOptionPane.showMessageDialog(this, imageForViewingOnlyMessage, "Information", JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        }
+    }
+
+    public Set<Integer> getSelectedStates() {
+        return _selectedStates;
+    }
+
+    /**
+     * Set the states that should initially be selected when a multistate
+     * character is shown in the image dialog. If set to null, no states will be
+     * selected.
+     * 
+     * @param selectedStates
+     */
+    public void setInitialSelectedStates(Set<Integer> selectedStates) {
+        _initialSelectedStates = selectedStates;
+
+    }
+
+    public Set<Integer> getInputIntegerValues() {
+        Set<Integer> retSet = null;
+
+        String inputText = _multipleImageViewer.getVisibleViewer().getInputText();
+        if (!StringUtils.isEmpty(inputText)) {
+            // Use value from input field
+            retSet = ParsingUtils.parseMultistateOrIntegerCharacterValue(inputText);
+        } else {
+            // Use values from selected value fields
+            retSet = new HashSet<Integer>();
+
+            for (Pair<String, String> selectedValue : _selectedValues) {
+                int minVal = Integer.parseInt(selectedValue.getFirst());
+
+                // Second value in the pair will be null if the value field
+                // represents a
+                // single real value rather than a range.
+                if (selectedValue.getSecond() != null) {
+                    int maxVal = Integer.parseInt(selectedValue.getSecond());
+
+                    IntRange intRange = new IntRange(minVal, maxVal);
+                    for (int i : intRange.toArray()) {
+                        retSet.add(i);
+                    }
+                } else {
+                    retSet.add(minVal);
+                }
+            }
+        }
+
+        return retSet;
+    }
+
+    /**
+     * Set the values that should initially be input in the input field when an
+     * integer character is shown in the image dialog. If set to null, the input
+     * field will be empty.
+     * 
+     * @param selectedStates
+     */
+    public void setInitialIntegerValues(Set<Integer> intValues) {
+        _initialIntegerValues = intValues;
+    }
+
+    public FloatRange getInputRealValues() {
+        FloatRange retRange = null;
+
+        String inputText = _multipleImageViewer.getVisibleViewer().getInputText();
+
+        if (!StringUtils.isEmpty(inputText)) {
+            // Use value supplied in input field
+            retRange = ParsingUtils.parseRealCharacterValue(inputText);
+        } else {
+            // Use values for selected value fields
+            if (!_selectedValues.isEmpty()) {
+                Set<Float> boundsSet = new HashSet<Float>();
+                for (Pair<String, String> selectedValue : _selectedValues) {
+                    float minVal = Float.parseFloat(selectedValue.getFirst());
+                    boundsSet.add(minVal);
+
+                    // Second value in the pair will be null if the value field
+                    // represents a
+                    // single real value rather than a range.
+                    if (selectedValue.getSecond() != null) {
+                        float maxVal = Float.parseFloat(selectedValue.getSecond());
+                        boundsSet.add(maxVal);
+                    }
+                }
+
+                float overallMin = Collections.min(boundsSet);
+                float overallMax = Collections.max(boundsSet);
+                retRange = new FloatRange(overallMin, overallMax);
+            }
+        }
+
+        return retRange;
+    }
+
+    /**
+     * Set the values that should initially be input in the input field when a
+     * real character is shown in the image dialog. If set to null, the input
+     * field will be empty.
+     * 
+     * @param realRange
+     */
+    public void setInitialRealValues(FloatRange realRange) {
+        _initialRealValues = realRange;
+    }
+
+    public List<String> getInputTextValues() {
+        String inputText = _multipleImageViewer.getVisibleViewer().getInputText();
+        if (!inputText.isEmpty()) {
+            return ParsingUtils.parseTextCharacterValue(inputText);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Set the values that should initially be input in the input field when a
+     * text character is shown in the image dialog. If set to null, the input
+     * field will be empty.
+     * 
+     * @param textValues
+     */
+    public void setInitialTextValues(List<String> textValues) {
+        _initialTextValues = textValues;
+    }
+
+    private void populateWithInitialValues() {
+        if (_characters.size() != 1) {
+            throw new IllegalStateException("Can only populate character viewer with initial values if a single character is being viewed.");
+        }
+
+        Character ch = _characters.get(0);
+
+        if (ch instanceof MultiStateCharacter) {
+            if (_initialSelectedStates != null) {
+                selectStatesInViewer(_multipleImageViewer.getVisibleViewer(), _initialSelectedStates);
+                _selectedStates.addAll(_initialSelectedStates);
+            }
+        } else if (ch instanceof IntegerCharacter) {
+            IntegerCharacter intChar = (IntegerCharacter) ch;
+            if (_initialIntegerValues != null) {
+                _multipleImageViewer.getVisibleViewer().setInputText(FormattingUtils.formatIntegerValuesAsString(_initialIntegerValues, intChar.getMinimumValue(), intChar.getMaximumValue()));
+            }
+        } else if (ch instanceof RealCharacter) {
+            if (_initialRealValues != null) {
+                _multipleImageViewer.getVisibleViewer().setInputText(Utils.formatFloatRangeAsString(_initialRealValues));
+            }
+        } else if (ch instanceof TextCharacter) {
+            if (_initialTextValues != null) {
+                _multipleImageViewer.getVisibleViewer().setInputText(StringUtils.join(_initialTextValues, "/"));
+            }
+        } else {
+            throw new IllegalArgumentException("Unrecognized character type");
+        }
+
+        _initialValuesDisplayed = true;
+    }
+
+    /**
+     * Select the supplied states in the supplied image viewer.
+     * 
+     * @param viewer
+     *            The viewer
+     * @param statesToSelect
+     *            The states to select
+     */
+    private void selectStatesInViewer(ImageViewer viewer, Set<Integer> statesToSelect) {
+        List<ImageOverlay> overlays = viewer.getOverlays();
+        for (ImageOverlay overlay : overlays) {
+            if (overlay.isType(OverlayType.OLSTATE)) {
+                int stateId = overlay.stateId;
+
+                SelectableTextOverlay selectableText = viewer.getSelectableTextForOverlay(overlay);
+                if (selectableText != null) {
+                    selectableText.setSelected(statesToSelect.contains(stateId));
+                }
+
+                HotSpotGroup hotSpotGroup = viewer.getHotSpotGroupForOverlay(overlay);
+                if (hotSpotGroup != null) {
+                    hotSpotGroup.setSelected(statesToSelect.contains(stateId));
                 }
             }
         }

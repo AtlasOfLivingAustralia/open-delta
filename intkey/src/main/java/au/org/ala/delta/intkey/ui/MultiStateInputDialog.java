@@ -17,8 +17,10 @@ package au.org.ala.delta.intkey.ui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.swing.DefaultListModel;
@@ -26,6 +28,7 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
@@ -56,7 +59,7 @@ public class MultiStateInputDialog extends CharacterValueInputDialog implements 
     @Resource
     String selectionConfirmationTitle;
 
-    public MultiStateInputDialog(Frame owner, MultiStateCharacter ch, ImageSettings imageSettings, boolean displayNumbering, boolean enableImagesButton, boolean imagesStartScaled) {
+    public MultiStateInputDialog(Frame owner, MultiStateCharacter ch, Set<Integer> initialSelectedStates, ImageSettings imageSettings, boolean displayNumbering, boolean enableImagesButton, boolean imagesStartScaled) {
         super(owner, ch, imageSettings, displayNumbering, enableImagesButton, imagesStartScaled);
 
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(MultiStateInputDialog.class);
@@ -77,6 +80,17 @@ public class MultiStateInputDialog extends CharacterValueInputDialog implements 
         }
 
         _list.setModel(_listModel);
+
+        // Select the list items that correspond to the initial selected states.
+        if (initialSelectedStates != null) {
+            List<Integer> listIndiciesToSelect = new ArrayList<Integer>();
+            for (int stateNumber: new ArrayList<Integer>(initialSelectedStates)) {
+                listIndiciesToSelect.add(stateNumber - 1);
+            }
+            
+            Integer[] wrappedPrimitivesList = listIndiciesToSelect.toArray(new Integer[initialSelectedStates.size()]);
+            _list.setSelectedIndices(ArrayUtils.toPrimitive(wrappedPrimitivesList));
+        }
 
         _inputData = new HashSet<Integer>();
 

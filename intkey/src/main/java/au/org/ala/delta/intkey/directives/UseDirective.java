@@ -172,10 +172,23 @@ public class UseDirective extends IntkeyDirective {
                                         _charFormatter.formatCharacterDescription(ch), msCh.getNumberOfStates());
                             }
                         } else if (ch instanceof IntegerCharacter) {
-
+                            IntegerCharacter intChar = (IntegerCharacter) ch;
                             try {
-                                Set<Integer> intValues = ParsingUtils.parseMultistateOrIntegerCharacterValue(charValue);
+                                Set<Integer> rawIntValues = ParsingUtils.parseMultistateOrIntegerCharacterValue(charValue);
 
+                                Set<Integer> intValues = new HashSet<Integer>();
+                                // The only acceptable values for an integer character are minimum - 1, any values in the range minimum-maximum, or maximum + 1. Modify the raw input values
+                                // in accordance with this.
+                                for (int value: rawIntValues) {
+                                    if (value <= intChar.getMinimumValue() - 1) {
+                                        intValues.add(intChar.getMinimumValue() - 1);
+                                    } else if (value >= intChar.getMaximumValue() + 1) {
+                                        intValues.add(intChar.getMaximumValue() + 1);
+                                    } else {
+                                        intValues.add(value);
+                                    }
+                                }
+                                
                                 SimpleAttributeData impl = new SimpleAttributeData(false, false);
                                 impl.setPresentStateOrIntegerValues(intValues);
                                 Attribute attr = AttributeFactory.newAttribute(ch, impl);

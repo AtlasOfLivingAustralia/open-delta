@@ -77,6 +77,7 @@ import au.org.ala.delta.ui.image.overlay.SelectableTextOverlay;
 import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
 import au.org.ala.delta.ui.util.UIUtils;
 import au.org.ala.delta.util.Pair;
+import au.org.ala.delta.util.Utils;
 
 public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserver {
 
@@ -106,6 +107,7 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
     protected Set<String> _selectedKeywords;
     protected Set<Pair<String, String>> _selectedValues;
     protected boolean _okButtonPressed;
+    protected boolean _cancelButtonPressed;
     protected JMenuItem _mnuItNextImage;
     protected JMenuItem _mnuItPreviousImage;
 
@@ -219,10 +221,10 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
         _mnuItReplaySound.setAction(actionMap.get("replaySound"));
         _mnuWindow.add(_mnuItReplaySound);
 
-//        _mnuItReplayVideo = new JMenuItem();
-//        _mnuItReplayVideo.setAction(actionMap.get("replayVideo"));
-//        _mnuItReplayVideo.setEnabled(false);
-//        _mnuWindow.add(_mnuItReplayVideo);
+        // _mnuItReplayVideo = new JMenuItem();
+        // _mnuItReplayVideo.setAction(actionMap.get("replayVideo"));
+        // _mnuItReplayVideo.setEnabled(false);
+        // _mnuWindow.add(_mnuItReplayVideo);
 
         _mnuWindow.addSeparator();
 
@@ -310,9 +312,11 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
         ImageOverlay imageOverlay = overlay.getImageOverlay();
         if (imageOverlay.isType(OverlayType.OLOK)) {
             _okButtonPressed = true;
+            _cancelButtonPressed = false;
             setVisible(false);
         } else if (imageOverlay.isType(OverlayType.OLCANCEL)) {
             _okButtonPressed = false;
+            _cancelButtonPressed = true;
             setVisible(false);
         } else if (imageOverlay.isType(OverlayType.OLIMAGENOTES)) {
             Image image = _multipleImageViewer.getVisibleViewer().getViewedImage();
@@ -460,7 +464,6 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
     }
 
     protected void handleNewImageSelected() {
-        reSelectStatesInNewViewer(_multipleImageViewer.getVisibleViewer());
         _mnuItNextImage.setEnabled(!(_multipleImageViewer.getVisibleImage() == _images.get(_images.size() - 1)));
         _mnuItPreviousImage.setEnabled(!(_multipleImageViewer.getVisibleImage() == _images.get(0)));
 
@@ -481,110 +484,18 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
         ((SingleFrameApplication) Application.getInstance()).show(dlg);
     }
 
-    private void reSelectStatesInNewViewer(ImageViewer viewer) {
-        List<ImageOverlay> overlays = viewer.getOverlays();
-        for (ImageOverlay overlay : overlays) {
-            if (overlay.isType(OverlayType.OLSTATE)) {
-                int stateId = overlay.stateId;
-
-                SelectableTextOverlay selectableText = viewer.getSelectableTextForOverlay(overlay);
-                if (selectableText != null) {
-                    selectableText.setSelected(_selectedStates.contains(stateId));
-                }
-
-                HotSpotGroup hotSpotGroup = viewer.getHotSpotGroupForOverlay(overlay);
-                if (hotSpotGroup != null) {
-                    hotSpotGroup.setSelected(_selectedStates.contains(stateId));
-                }
-            }
-        }
-    }
-
-    public Set<Integer> getSelectedStates() {
-        return _selectedStates;
-    }
-
-    public Set<String> getSelectedKeywords() {
-        return _selectedKeywords;
-    }
-
-    public Set<Integer> getInputIntegerValues() {
-        Set<Integer> retSet = null;
-
-        String inputText = _multipleImageViewer.getVisibleViewer().getInputText();
-        if (!StringUtils.isEmpty(inputText)) {
-            // Use value from input field
-            retSet = ParsingUtils.parseMultistateOrIntegerCharacterValue(inputText);
-        } else {
-            // Use values from selected value fields
-            retSet = new HashSet<Integer>();
-
-            for (Pair<String, String> selectedValue : _selectedValues) {
-                int minVal = Integer.parseInt(selectedValue.getFirst());
-
-                // Second value in the pair will be null if the value field
-                // represents a
-                // single real value rather than a range.
-                if (selectedValue.getSecond() != null) {
-                    int maxVal = Integer.parseInt(selectedValue.getSecond());
-
-                    IntRange intRange = new IntRange(minVal, maxVal);
-                    for (int i : intRange.toArray()) {
-                        retSet.add(i);
-                    }
-                } else {
-                    retSet.add(minVal);
-                }
-            }
-        }
-
-        return retSet;
-    }
-
-    public FloatRange getInputRealValues() {
-        FloatRange retRange = null;
-
-        String inputText = _multipleImageViewer.getVisibleViewer().getInputText();
-
-        if (!StringUtils.isEmpty(inputText)) {
-            // Use value supplied in input field
-            retRange = ParsingUtils.parseRealCharacterValue(inputText);
-        } else {
-            // Use values for selected value fields
-            if (!_selectedValues.isEmpty()) {
-                Set<Float> boundsSet = new HashSet<Float>();
-                for (Pair<String, String> selectedValue : _selectedValues) {
-                    float minVal = Float.parseFloat(selectedValue.getFirst());
-                    boundsSet.add(minVal);
-
-                    // Second value in the pair will be null if the value field
-                    // represents a
-                    // single real value rather than a range.
-                    if (selectedValue.getSecond() != null) {
-                        float maxVal = Float.parseFloat(selectedValue.getSecond());
-                        boundsSet.add(maxVal);
-                    }
-                }
-
-                float overallMin = Collections.min(boundsSet);
-                float overallMax = Collections.max(boundsSet);
-                retRange = new FloatRange(overallMin, overallMax);
-            }
-        }
-
-        return retRange;
-    }
-
-    public List<String> getInputTextValues() {
-        String inputText = _multipleImageViewer.getVisibleViewer().getInputText();
-        return ParsingUtils.parseTextCharacterValue(inputText);
-    }
-
     /**
      * @return was the dialog closed using the ok button?
      */
     public boolean okButtonPressed() {
         return _okButtonPressed;
+    }
+
+    /**
+     * @return was the cancel button pressed?
+     */
+    public boolean cancelButtonPressed() {
+        return _cancelButtonPressed;
     }
 
     /**
@@ -630,5 +541,9 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
                 JOptionPane.showMessageDialog(ImageDialog.this, "Error occurred loading image: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
+    }
+
+    public Set<String> getSelectedKeywords() {
+        return _selectedKeywords;
     }
 }
