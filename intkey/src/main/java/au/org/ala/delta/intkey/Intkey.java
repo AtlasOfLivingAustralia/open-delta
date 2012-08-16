@@ -529,7 +529,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         if (!_advancedMode) {
             _advancedMode = getPreviousApplicationMode();
         }
-        
+
         // Get location of last opened dataset from saved application state
         _lastOpenedDatasetDirectory = getSavedLastOpenedDatasetDirectory();
     }
@@ -970,7 +970,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         }
 
         loadDesktopInBackground();
-        
+
         if (_advancedMode) {
             _context.setImageDisplayMode(ImageDisplayMode.MANUAL);
             _context.setCharacterOrderNatural();
@@ -1795,6 +1795,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
             break;
         case NATURAL:
+            int lastSelectedIndex = _listAvailableCharacters.getSelectedIndex();
+
             List<Character> availableCharacters = new ArrayList<Character>(_context.getAvailableCharacters());
             _lblNumAvailableCharacters.setText(MessageFormat.format(availableCharactersCaption, availableCharacters.size()));
             if (availableCharacters.size() == 0) {
@@ -1808,6 +1810,11 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                 _availableCharactersListCellRenderer = new CharacterCellRenderer(_context.displayNumbering());
                 _listAvailableCharacters.setCellRenderer(_availableCharactersListCellRenderer);
                 _listAvailableCharacters.setModel(_availableCharacterListModel);
+
+                // Select the same index that was previously selected. This will
+                // have the effect of selecting the character after the
+                // previously used character.
+                _listAvailableCharacters.setSelectedIndex(lastSelectedIndex);
             }
             break;
         default:
@@ -1878,6 +1885,10 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         protected void done() {
             updateAvailableCharacters();
             removeBusyMessage();
+
+            // select the first character every time best (or separate)
+            // characters are selected.
+            _listAvailableCharacters.setSelectedIndex(0);
         }
     }
 
@@ -2547,7 +2558,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             dlg.setTitle(MessageFormat.format(selectTaxonKeywordsCaption, directiveName));
             dlg.showImage(0);
             show(dlg);
-            
 
             if (!dlg.okButtonPressed()) {
                 // user cancelled
@@ -2671,7 +2681,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                     IntegerInputDialog dlg2 = new IntegerInputDialog(getMainFrame(), ch, currentValues, _context.getImageSettings(), _context.displayNumbering(),
                             _context.getImageDisplayMode() != ImageDisplayMode.OFF, _context.displayScaled());
                     UIUtils.showDialog(dlg2);
-                    rawInputValues = dlg2.getInputData();                    
+                    rawInputValues = dlg2.getInputData();
                 }
             } catch (IllegalArgumentException ex) {
                 // Display error message if unable to display
