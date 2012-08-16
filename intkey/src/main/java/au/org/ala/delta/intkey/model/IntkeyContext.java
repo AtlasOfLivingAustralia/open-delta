@@ -240,6 +240,9 @@ public class IntkeyContext extends AbstractDeltaContext {
         _directiveParser = IntkeyDirectiveParser.createInstance();
         _logCache = new ArrayList<String>();
         _journalCache = new ArrayList<String>();
+        _characterOrder = IntkeyCharacterOrder.BEST;
+        _displayImagesMode = ImageDisplayMode.AUTO;
+        _displayEndIdentify = true;
 
         initializeIdentification();
     }
@@ -268,7 +271,6 @@ public class IntkeyContext extends AbstractDeltaContext {
         _varyWeight = 1;
         _diagLevel = 1;
 
-        _characterOrder = IntkeyCharacterOrder.BEST;
         _taxonToSeparate = -1;
         _bestOrSeparateCharacters = null;
 
@@ -288,14 +290,6 @@ public class IntkeyContext extends AbstractDeltaContext {
         _displayKeywords = true;
         _displayScaled = true;
         _displayScaled = true;
-
-        // TODO the setting of this should be dependent on whether the UI is in
-        // normal or advanced mode.
-        _displayImagesMode = ImageDisplayMode.AUTO;
-
-        // TODO the setting of this should be dependent on whether the UI is in
-        // normal or advanced mode.
-        _displayEndIdentify = true;
 
         _endIdentifyCommands = new ArrayList<String>();
         _imageSubjects = new ArrayList<String>();

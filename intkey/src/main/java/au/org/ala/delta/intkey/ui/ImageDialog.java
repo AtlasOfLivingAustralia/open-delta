@@ -31,7 +31,6 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -48,16 +47,12 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.FloatRange;
-import org.apache.commons.lang.math.IntRange;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SingleFrameApplication;
 
 import au.org.ala.delta.Logger;
-import au.org.ala.delta.intkey.directives.ParsingUtils;
 import au.org.ala.delta.model.format.Formatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
@@ -72,12 +67,9 @@ import au.org.ala.delta.ui.image.ImageViewer;
 import au.org.ala.delta.ui.image.MultipleImageViewer;
 import au.org.ala.delta.ui.image.OverlaySelectionObserver;
 import au.org.ala.delta.ui.image.SelectableOverlay;
-import au.org.ala.delta.ui.image.overlay.HotSpotGroup;
-import au.org.ala.delta.ui.image.overlay.SelectableTextOverlay;
 import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
 import au.org.ala.delta.ui.util.UIUtils;
 import au.org.ala.delta.util.Pair;
-import au.org.ala.delta.util.Utils;
 
 public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserver {
 

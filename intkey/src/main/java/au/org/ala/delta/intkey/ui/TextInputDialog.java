@@ -110,11 +110,12 @@ public class TextInputDialog extends CharacterValueInputDialog {
     @Override
     void handleBtnImagesClicked() {
         CharacterImageDialog dlg = new CharacterImageDialog(this, Arrays.asList(new au.org.ala.delta.model.Character[] { _ch }), _imageSettings, true, true, _imagesStartScaled);
-        dlg.setVisible(true);
+        dlg.displayImagesForCharacter(_ch);
         dlg.showImage(0);
+        dlg.setVisible(true);
 
         _inputData = dlg.getInputTextValues();
-        if (!_inputData.isEmpty()) {
+        if (_inputData != null && !_inputData.isEmpty()) {
             this.setVisible(false);
         }
     }

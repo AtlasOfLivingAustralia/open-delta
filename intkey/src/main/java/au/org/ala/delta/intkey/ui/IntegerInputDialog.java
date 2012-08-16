@@ -37,7 +37,7 @@ public class IntegerInputDialog extends NumberInputDialog {
     private static final long serialVersionUID = 1248724422772112737L;
 
     private Set<Integer> _inputData;
-
+    
     @Resource
     String title;
 
@@ -86,8 +86,9 @@ public class IntegerInputDialog extends NumberInputDialog {
     @Override
     void handleBtnImagesClicked() {
         CharacterImageDialog dlg = new CharacterImageDialog(this, Arrays.asList(new au.org.ala.delta.model.Character[] { _ch }), _imageSettings, true, true, _imagesStartScaled);
-        dlg.setVisible(true);
+        dlg.displayImagesForCharacter(_ch);
         dlg.showImage(0);
+        dlg.setVisible(true);
 
         try {
             Set<Integer> inputValuesFromImageDialog = dlg.getInputIntegerValues();

@@ -24,8 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.swing.SwingWorker;
-
 import org.apache.commons.lang.math.FloatRange;
 import org.apache.commons.lang.mutable.MutableBoolean;
 import org.junit.Test;

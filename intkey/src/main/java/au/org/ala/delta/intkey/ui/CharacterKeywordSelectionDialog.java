@@ -171,6 +171,7 @@ public class CharacterKeywordSelectionDialog extends KeywordSelectionDialog {
         if (characterKeywordImages != null && !characterKeywordImages.isEmpty()) {
             ImageDialog dlg = new ImageDialog(this, _context.getImageSettings(), true, _context.displayScaled());
             dlg.setImages(characterKeywordImages);
+            dlg.showImage(0);
             dlg.setVisible(true);
 
             if (dlg.okButtonPressed() && !dlg.getSelectedKeywords().isEmpty()) {

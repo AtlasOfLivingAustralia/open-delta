@@ -14,70 +14,18 @@
  ******************************************************************************/
 package au.org.ala.delta.intkey;
 
-import au.org.ala.delta.Logger;
-import au.org.ala.delta.directives.AbstractDirective;
-import au.org.ala.delta.intkey.directives.*;
-import au.org.ala.delta.intkey.model.DisplayImagesReportType;
-import au.org.ala.delta.intkey.model.ImageDisplayMode;
-import au.org.ala.delta.intkey.model.IntkeyCharacterOrder;
-import au.org.ala.delta.intkey.model.IntkeyContext;
-import au.org.ala.delta.intkey.model.IntkeyDataset;
-import au.org.ala.delta.intkey.model.SearchUtils;
-import au.org.ala.delta.intkey.model.StartupFileData;
-import au.org.ala.delta.intkey.model.StartupUtils;
-import au.org.ala.delta.intkey.ui.*;
-import au.org.ala.delta.model.Attribute;
-import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.IntegerCharacter;
-import au.org.ala.delta.model.Item;
-import au.org.ala.delta.model.MatchType;
-import au.org.ala.delta.model.MultiStateCharacter;
-import au.org.ala.delta.model.RealCharacter;
-import au.org.ala.delta.model.Specimen;
-import au.org.ala.delta.model.TextAttribute;
-import au.org.ala.delta.model.TextCharacter;
-import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
-import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
-import au.org.ala.delta.model.format.ItemFormatter;
-import au.org.ala.delta.model.image.Image;
-import au.org.ala.delta.rtf.RTFBuilder;
-import au.org.ala.delta.rtf.RTFUtils;
-import au.org.ala.delta.ui.AboutBox;
-import au.org.ala.delta.ui.DeltaSingleFrameApplication;
-import au.org.ala.delta.ui.help.HelpController;
-import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
-import au.org.ala.delta.ui.util.IconHelper;
-import au.org.ala.delta.util.Pair;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionBuilder;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.FloatRange;
-import org.apache.commons.lang.math.IntRange;
-import org.apache.commons.lang.mutable.MutableBoolean;
-import org.jdesktop.application.Action;
-import org.jdesktop.application.Resource;
-import org.jdesktop.application.ResourceMap;
-
-import com.l2fprod.common.swing.JFontChooser;
-
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.MouseInputAdapter;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.plaf.FontUIResource;
-
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Desktop;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Insets;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -103,6 +51,208 @@ import java.util.Set;
 import java.util.concurrent.CancellationException;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+
+import javax.imageio.ImageIO;
+import javax.swing.ActionMap;
+import javax.swing.DefaultListModel;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+import javax.swing.UIManager;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.MouseInputAdapter;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.plaf.FontUIResource;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.FloatRange;
+import org.apache.commons.lang.mutable.MutableBoolean;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Resource;
+import org.jdesktop.application.ResourceMap;
+
+import au.org.ala.delta.Logger;
+import au.org.ala.delta.directives.AbstractDirective;
+import au.org.ala.delta.intkey.directives.ChangeDirective;
+import au.org.ala.delta.intkey.directives.CharactersDirective;
+import au.org.ala.delta.intkey.directives.CommentDirective;
+import au.org.ala.delta.intkey.directives.ContentsDirective;
+import au.org.ala.delta.intkey.directives.DefineButtonDirective;
+import au.org.ala.delta.intkey.directives.DefineCharactersDirective;
+import au.org.ala.delta.intkey.directives.DefineEndIdentifyDirective;
+import au.org.ala.delta.intkey.directives.DefineInformationDirective;
+import au.org.ala.delta.intkey.directives.DefineNamesDirective;
+import au.org.ala.delta.intkey.directives.DefineSubjectsDirective;
+import au.org.ala.delta.intkey.directives.DefineTaxaDirective;
+import au.org.ala.delta.intkey.directives.DescribeDirective;
+import au.org.ala.delta.intkey.directives.DiagnoseDirective;
+import au.org.ala.delta.intkey.directives.DifferencesDirective;
+import au.org.ala.delta.intkey.directives.DirectivePopulator;
+import au.org.ala.delta.intkey.directives.DisplayCharacterOrderBestDirective;
+import au.org.ala.delta.intkey.directives.DisplayCharacterOrderNaturalDirective;
+import au.org.ala.delta.intkey.directives.DisplayCharacterOrderSeparateDirective;
+import au.org.ala.delta.intkey.directives.DisplayCommentsDirective;
+import au.org.ala.delta.intkey.directives.DisplayContinuousDirective;
+import au.org.ala.delta.intkey.directives.DisplayEndIdentifyDirective;
+import au.org.ala.delta.intkey.directives.DisplayImagesDirective;
+import au.org.ala.delta.intkey.directives.DisplayInapplicablesDirective;
+import au.org.ala.delta.intkey.directives.DisplayInputDirective;
+import au.org.ala.delta.intkey.directives.DisplayKeywordsDirective;
+import au.org.ala.delta.intkey.directives.DisplayLogDirective;
+import au.org.ala.delta.intkey.directives.DisplayNumberingDirective;
+import au.org.ala.delta.intkey.directives.DisplayScaledDirective;
+import au.org.ala.delta.intkey.directives.DisplayUnknownsDirective;
+import au.org.ala.delta.intkey.directives.ExcludeCharactersDirective;
+import au.org.ala.delta.intkey.directives.ExcludeTaxaDirective;
+import au.org.ala.delta.intkey.directives.FileCharactersDirective;
+import au.org.ala.delta.intkey.directives.FileCloseDirective;
+import au.org.ala.delta.intkey.directives.FileDisplayDirective;
+import au.org.ala.delta.intkey.directives.FileInputDirective;
+import au.org.ala.delta.intkey.directives.FileJournalDirective;
+import au.org.ala.delta.intkey.directives.FileLogDirective;
+import au.org.ala.delta.intkey.directives.FileOutputDirective;
+import au.org.ala.delta.intkey.directives.FindCharactersDirective;
+import au.org.ala.delta.intkey.directives.FindTaxaDirective;
+import au.org.ala.delta.intkey.directives.IllustrateCharactersDirective;
+import au.org.ala.delta.intkey.directives.IllustrateTaxaDirective;
+import au.org.ala.delta.intkey.directives.IncludeCharactersDirective;
+import au.org.ala.delta.intkey.directives.IncludeTaxaDirective;
+import au.org.ala.delta.intkey.directives.InformationDirective;
+import au.org.ala.delta.intkey.directives.IntkeyDirectiveParseException;
+import au.org.ala.delta.intkey.directives.NewDatasetDirective;
+import au.org.ala.delta.intkey.directives.OutputCharactersDirective;
+import au.org.ala.delta.intkey.directives.OutputCommentDirective;
+import au.org.ala.delta.intkey.directives.OutputDescribeDirective;
+import au.org.ala.delta.intkey.directives.OutputDiagnoseDirective;
+import au.org.ala.delta.intkey.directives.OutputDifferencesDirective;
+import au.org.ala.delta.intkey.directives.OutputSimilaritiesDirective;
+import au.org.ala.delta.intkey.directives.OutputSummaryDirective;
+import au.org.ala.delta.intkey.directives.OutputTaxaDirective;
+import au.org.ala.delta.intkey.directives.PreferencesDirective;
+import au.org.ala.delta.intkey.directives.RestartDirective;
+import au.org.ala.delta.intkey.directives.SetAutoToleranceDirective;
+import au.org.ala.delta.intkey.directives.SetDemonstrationDirective;
+import au.org.ala.delta.intkey.directives.SetDiagLevelDirective;
+import au.org.ala.delta.intkey.directives.SetDiagTypeSpecimensDirective;
+import au.org.ala.delta.intkey.directives.SetDiagTypeTaxaDirective;
+import au.org.ala.delta.intkey.directives.SetExactDirective;
+import au.org.ala.delta.intkey.directives.SetFixDirective;
+import au.org.ala.delta.intkey.directives.SetImagePathDirective;
+import au.org.ala.delta.intkey.directives.SetInfoPathDirective;
+import au.org.ala.delta.intkey.directives.SetMatchDirective;
+import au.org.ala.delta.intkey.directives.SetRBaseDirective;
+import au.org.ala.delta.intkey.directives.SetReliabilitiesDirective;
+import au.org.ala.delta.intkey.directives.SetStopBestDirective;
+import au.org.ala.delta.intkey.directives.SetToleranceDirective;
+import au.org.ala.delta.intkey.directives.SetVaryWtDirective;
+import au.org.ala.delta.intkey.directives.ShowDirective;
+import au.org.ala.delta.intkey.directives.SimilaritiesDirective;
+import au.org.ala.delta.intkey.directives.StatusAllDirective;
+import au.org.ala.delta.intkey.directives.StatusDisplayDirective;
+import au.org.ala.delta.intkey.directives.StatusExcludeCharactersDirective;
+import au.org.ala.delta.intkey.directives.StatusExcludeTaxaDirective;
+import au.org.ala.delta.intkey.directives.StatusFilesDirective;
+import au.org.ala.delta.intkey.directives.StatusIncludeCharactersDirective;
+import au.org.ala.delta.intkey.directives.StatusIncludeTaxaDirective;
+import au.org.ala.delta.intkey.directives.StatusSetDirective;
+import au.org.ala.delta.intkey.directives.SummaryDirective;
+import au.org.ala.delta.intkey.directives.TaxaDirective;
+import au.org.ala.delta.intkey.directives.UseDirective;
+import au.org.ala.delta.intkey.model.DisplayImagesReportType;
+import au.org.ala.delta.intkey.model.ImageDisplayMode;
+import au.org.ala.delta.intkey.model.IntkeyCharacterOrder;
+import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.model.IntkeyDataset;
+import au.org.ala.delta.intkey.model.SearchUtils;
+import au.org.ala.delta.intkey.model.StartupFileData;
+import au.org.ala.delta.intkey.model.StartupUtils;
+import au.org.ala.delta.intkey.ui.AllowMismatchMessagePanel;
+import au.org.ala.delta.intkey.ui.AttributeCellRenderer;
+import au.org.ala.delta.intkey.ui.BestCharacterCellRenderer;
+import au.org.ala.delta.intkey.ui.BusyGlassPane;
+import au.org.ala.delta.intkey.ui.CharacterCellRenderer;
+import au.org.ala.delta.intkey.ui.CharacterImageDialog;
+import au.org.ala.delta.intkey.ui.CharacterKeywordSelectionDialog;
+import au.org.ala.delta.intkey.ui.CharacterSelectionDialog;
+import au.org.ala.delta.intkey.ui.ContentsDialog;
+import au.org.ala.delta.intkey.ui.DefineButtonDialog;
+import au.org.ala.delta.intkey.ui.DirectiveAction;
+import au.org.ala.delta.intkey.ui.DisplayImagesDialog;
+import au.org.ala.delta.intkey.ui.FindInCharactersDialog;
+import au.org.ala.delta.intkey.ui.FindInTaxaDialog;
+import au.org.ala.delta.intkey.ui.ImageDialog;
+import au.org.ala.delta.intkey.ui.ImageUtils;
+import au.org.ala.delta.intkey.ui.IntKeyDialogController;
+import au.org.ala.delta.intkey.ui.IntegerInputDialog;
+import au.org.ala.delta.intkey.ui.MenuBuilder;
+import au.org.ala.delta.intkey.ui.MessagePanel;
+import au.org.ala.delta.intkey.ui.MultiStateInputDialog;
+import au.org.ala.delta.intkey.ui.OnOffPromptDialog;
+import au.org.ala.delta.intkey.ui.ReExecuteDialog;
+import au.org.ala.delta.intkey.ui.RealInputDialog;
+import au.org.ala.delta.intkey.ui.RtfReportDisplayDialog;
+import au.org.ala.delta.intkey.ui.SetMainWindowSizeDialog;
+import au.org.ala.delta.intkey.ui.SetMatchPromptDialog;
+import au.org.ala.delta.intkey.ui.TaxonCellRenderer;
+import au.org.ala.delta.intkey.ui.TaxonImageDialog;
+import au.org.ala.delta.intkey.ui.TaxonInformationDialog;
+import au.org.ala.delta.intkey.ui.TaxonKeywordSelectionDialog;
+import au.org.ala.delta.intkey.ui.TaxonSelectionDialog;
+import au.org.ala.delta.intkey.ui.TaxonWithDifferenceCountCellRenderer;
+import au.org.ala.delta.intkey.ui.TextInputDialog;
+import au.org.ala.delta.intkey.ui.ToolbarHelpDialog;
+import au.org.ala.delta.intkey.ui.UIUtils;
+import au.org.ala.delta.model.Attribute;
+import au.org.ala.delta.model.Character;
+import au.org.ala.delta.model.IntegerCharacter;
+import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MatchType;
+import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.RealCharacter;
+import au.org.ala.delta.model.Specimen;
+import au.org.ala.delta.model.TextAttribute;
+import au.org.ala.delta.model.TextCharacter;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
+import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
+import au.org.ala.delta.model.format.ItemFormatter;
+import au.org.ala.delta.model.image.Image;
+import au.org.ala.delta.rtf.RTFBuilder;
+import au.org.ala.delta.rtf.RTFUtils;
+import au.org.ala.delta.ui.AboutBox;
+import au.org.ala.delta.ui.DeltaSingleFrameApplication;
+import au.org.ala.delta.ui.help.HelpController;
+import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
+import au.org.ala.delta.ui.util.IconHelper;
+import au.org.ala.delta.util.Pair;
+
+import com.l2fprod.common.swing.JFontChooser;
 
 public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, DirectivePopulator {
 
@@ -379,7 +529,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         if (!_advancedMode) {
             _advancedMode = getPreviousApplicationMode();
         }
-
+        
         // Get location of last opened dataset from saved application state
         _lastOpenedDatasetDirectory = getSavedLastOpenedDatasetDirectory();
     }
@@ -820,6 +970,12 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         }
 
         loadDesktopInBackground();
+        
+        if (_advancedMode) {
+            _context.setImageDisplayMode(ImageDisplayMode.MANUAL);
+            _context.setCharacterOrderNatural();
+            _context.setDisplayEndIdentify(false);
+        }
     }
 
     @Override
@@ -1305,6 +1461,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             _btnSetMatch.setVisible(true);
             _txtFldCmdBar.setVisible(true);
             _context.setImageDisplayMode(ImageDisplayMode.MANUAL);
+            _context.setDisplayEndIdentify(false);
+            btnNaturalOrder();
         } else {
             JMenuBar menuBar = buildMenus(false);
             getMainFrame().setJMenuBar(menuBar);
@@ -1312,6 +1470,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             _btnSetMatch.setVisible(false);
             _txtFldCmdBar.setVisible(false);
             _context.setImageDisplayMode(ImageDisplayMode.AUTO);
+            _context.setDisplayEndIdentify(true);
+            btnBestOrder();
         }
 
         // Need to update available characters because character separating
@@ -2385,9 +2545,9 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             ImageDialog dlg = new ImageDialog(getMainFrame(), _context.getImageSettings(), true, _context.displayScaled());
             dlg.setImages(taxonKeywordImages);
             dlg.setTitle(MessageFormat.format(selectTaxonKeywordsCaption, directiveName));
-
-            show(dlg);
             dlg.showImage(0);
+            show(dlg);
+            
 
             if (!dlg.okButtonPressed()) {
                 // user cancelled
@@ -2408,7 +2568,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             }
 
             if (permitSelectionFromIncludedTaxaOnly) {
-                selectedTaxa.retainAll(_context.getIncludedCharacters());
+                selectedTaxa.retainAll(_context.getIncludedTaxa());
             }
 
             return selectedTaxa;
