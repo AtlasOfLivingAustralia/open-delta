@@ -73,6 +73,9 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
     private StringBuilder _stringRepresentationBuilder;
     private List<String> _stringRepresentationParts;
 
+    // True if any updates were made to the specimen.
+    private boolean _specimenUpdated = false;
+
     public UseDirectiveInvocation(boolean change, boolean suppressAlreadySetWarning, List<String> stringRepresentationParts) {
         _change = change;
         _suppressAlreadySetWarning = suppressAlreadySetWarning;
@@ -121,6 +124,9 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
                 // halt execution if values not sucessfully set for all
                 // controlling characters
                 if (!processControllingCharacters(ch, context)) {
+                    if (_specimenUpdated) {
+                        context.specimenUpdateComplete();
+                    }
                     return false;
                 }
 
@@ -133,9 +139,15 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
                     Attribute attr = _characterAttributes.get(ch);
                     setValueForCharacter(ch, attr, context);
                 } else {
+                    if (_specimenUpdated) {
+                        context.specimenUpdateComplete();
+                    }
                     return false;
                 }
             } else {
+                if (_specimenUpdated) {
+                    context.specimenUpdateComplete();
+                }
                 return false;
             }
         }
@@ -147,6 +159,9 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
                 // halt execution if values not sucessfully set for all
                 // controlling characters
                 if (!processControllingCharacters(ch, context)) {
+                    if (_specimenUpdated) {
+                        context.specimenUpdateComplete();
+                    }
                     return false;
                 }
 
@@ -156,7 +171,7 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
                 // its controlling
                 // characters
                 if (checkCharacterUsable(ch, context, false)) {
-                    Attribute attr = promptForCharacterValue(ch, context.getDirectivePopulator(), context.getSpecimen());
+                    Attribute attr = promptForCharacterValue(ch, null, null, context.getDirectivePopulator(), context.getSpecimen());
                     if (attr != null) {
                         // store this value so that the prompt does not need
                         // to
@@ -167,12 +182,21 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
                         // User hit cancel or did not enter a value when
                         // prompted.
                         // Abort execution when this happens
+                        if (_specimenUpdated) {
+                            context.specimenUpdateComplete();
+                        }
                         return false;
                     }
                 } else {
+                    if (_specimenUpdated) {
+                        context.specimenUpdateComplete();
+                    }
                     return false;
                 }
             } else {
+                if (_specimenUpdated) {
+                    context.specimenUpdateComplete();
+                }
                 return false;
             }
         } else {
@@ -191,6 +215,9 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
                     // execution when this happens.
                     // Directive should not be stored in
                     // Execution history
+                    if (_specimenUpdated) {
+                        context.specimenUpdateComplete();
+                    }
                     return false;
                 }
 
@@ -204,6 +231,9 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
                         // all
                         // controlling characters
                         if (!processControllingCharacters(ch, context)) {
+                            if (_specimenUpdated) {
+                                context.specimenUpdateComplete();
+                            }
                             return false;
                         }
 
@@ -224,8 +254,11 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
                         // more of its controlling
                         // characters
                         if (checkCharacterUsable(ch, context, false)) {
-                            attr = promptForCharacterValue(ch, context.getDirectivePopulator(), context.getSpecimen());
+                            attr = promptForCharacterValue(ch, null, null, context.getDirectivePopulator(), context.getSpecimen());
                         } else {
+                            if (_specimenUpdated) {
+                                context.specimenUpdateComplete();
+                            }
                             return false;
                         }
 
@@ -240,6 +273,9 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
                             charsNoValuesCopy.remove(ch);
                         }
                     } else {
+                        if (_specimenUpdated) {
+                            context.specimenUpdateComplete();
+                        }
                         return false;
                     }
                 }
@@ -261,7 +297,9 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
         _stringRepresentationBuilder.append(StringUtils.join(_stringRepresentationParts, " "));
 
         context.appendToLog("*" + _stringRepresentationBuilder.toString());
-        context.specimenUpdateComplete();
+        if (_specimenUpdated) {
+            context.specimenUpdateComplete();
+        }
         return true;
     }
 
@@ -311,13 +349,15 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
                         UIUtils.getResourceString("UseDirective.TaxonToSeparateEliminatedMsg", _charFormatter.formatCharacterDescription(ch), _taxonFormatter.formatItemDescription(taxonToSeparate)));
 
                 if (changeValue) {
-                    Attribute newAttr = promptForCharacterValue(ch, context.getDirectivePopulator(), context.getSpecimen());
+                    Attribute newAttr = promptForCharacterValue(ch, null, null, context.getDirectivePopulator(), context.getSpecimen());
                     _characterAttributes.put(ch, newAttr);
                     setValueForCharacter(ch, newAttr, context);
                 }
 
             }
         }
+
+        _specimenUpdated = true;
     }
 
     private boolean checkCharacterUsable(au.org.ala.delta.model.Character ch, IntkeyContext context, boolean warnAlreadySetOrMaybeInapplicable) {
@@ -423,6 +463,12 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
                 continue;
             }
 
+            // Need to check that the character is still applicable, as one of
+            // the controlling character may have made it inapplicable
+            if (!checkCharacterUsable(ch, context, false)) {
+                return false;
+            }
+
             Set<Integer> inapplicableStates = controllingCharInapplicableStates.get(cc);
 
             // states for the controlling character that will make dependent
@@ -449,11 +495,12 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
             // to the USE CONTROLLING CHARACTERS FIRST confor directive, or
             // if there are multiple states that the controlling character
             // can be set to for which the dependent character will be
-            // inapplicable.
+            // applicable.
             if (!context.isProcessingDirectivesFile() && (cc.getNonAutoCc() || ch.getUseCc() || !cc.getNonAutoCc() && !cc.getUseCc() && applicableStates.size() > 1)) {
-                Attribute attr = promptForCharacterValue(cc, context.getDirectivePopulator(), context.getSpecimen());
+                Attribute attr = promptForCharacterValue(cc, ch, applicableStates, context.getDirectivePopulator(), context.getSpecimen());
                 if (attr != null) {
                     context.setSpecimenAttributeForCharacter(cc, attr);
+                    _specimenUpdated = true;
                 } else {
                     // No values selected or cancel pressed. Return as
                     // values have not been set for all
@@ -513,29 +560,37 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
         return retMap;
     }
 
-    private Attribute promptForCharacterValue(au.org.ala.delta.model.Character ch, DirectivePopulator populator, Specimen specimen) {
+    private Attribute promptForCharacterValue(au.org.ala.delta.model.Character ch, au.org.ala.delta.model.Character dependentChar, Set<Integer> applicableStates, DirectivePopulator populator,
+            Specimen specimen) {
         SimpleAttributeData impl = new SimpleAttributeData(false, false);
 
-
-
         if (ch instanceof MultiStateCharacter) {
-            // Get the current value of the character as set in the specimen. If no
-            // value is set for the character, an attribute with
-            // unknown = true is returned.
-            MultiStateAttribute currentAttribute = (MultiStateAttribute) specimen.getAttributeForCharacter(ch);
-                
-            Set<Integer> stateValues = populator.promptForMultiStateValue((MultiStateCharacter) ch, currentAttribute.isUnknown() ? null : currentAttribute.getPresentStates());
+            Set<Integer> stateValues;
+            if (dependentChar != null) {
+                // We are setting a value for a controlling character. Ensure
+                // that the states that make the dependent character applicable
+                // are pre-selected.
+                stateValues = populator.promptForMultiStateValue((MultiStateCharacter) ch, applicableStates, dependentChar);
+            } else {
+                // Get the current value of the character as set in the
+                // specimen. If no
+                // value is set for the character, an attribute with
+                // unknown = true is returned.
+                MultiStateAttribute currentAttribute = (MultiStateAttribute) specimen.getAttributeForCharacter(ch);
+                stateValues = populator.promptForMultiStateValue((MultiStateCharacter) ch, currentAttribute.isUnknown() ? null : currentAttribute.getPresentStates(), null);
+            }
             if (stateValues != null && stateValues.size() > 0) {
                 impl.setPresentStateOrIntegerValues(stateValues);
             } else {
                 return null;
             }
         } else if (ch instanceof IntegerCharacter) {
-            // Get the current value of the character as set in the specimen. If no
+            // Get the current value of the character as set in the specimen. If
+            // no
             // value is set for the character, an attribute with
             // unknown = true is returned.
             IntegerAttribute currentAttribute = (IntegerAttribute) specimen.getAttributeForCharacter(ch);
-            
+
             Set<Integer> intValue = populator.promptForIntegerValue((IntegerCharacter) ch, currentAttribute.isUnknown() ? null : currentAttribute.getPresentValues());
             if (intValue != null && intValue.size() > 0) {
                 impl.setPresentStateOrIntegerValues(intValue);
@@ -543,11 +598,12 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
                 return null;
             }
         } else if (ch instanceof RealCharacter) {
-            // Get the current value of the character as set in the specimen. If no
+            // Get the current value of the character as set in the specimen. If
+            // no
             // value is set for the character, an attribute with
             // unknown = true is returned.
             RealAttribute currentAttribute = (RealAttribute) specimen.getAttributeForCharacter(ch);
-            
+
             FloatRange floatRange = populator.promptForRealValue((RealCharacter) ch, currentAttribute.isUnknown() ? null : currentAttribute.getPresentRange());
             if (floatRange != null) {
                 impl.setRealRange(floatRange);
@@ -555,11 +611,12 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
                 return null;
             }
         } else if (ch instanceof TextCharacter) {
-            // Get the current value of the character as set in the specimen. If no
+            // Get the current value of the character as set in the specimen. If
+            // no
             // value is set for the character, an attribute with
             // unknown = true is returned.
             TextAttribute currentAttribute = (TextAttribute) specimen.getAttributeForCharacter(ch);
-            
+
             List<String> stringList = populator.promptForTextValue((TextCharacter) ch, currentAttribute.isUnknown() ? null : Arrays.asList(currentAttribute.getValueAsString().split("/")));
             if (stringList != null && stringList.size() > 0) {
                 impl.setValueFromString(StringUtils.join(stringList, '/'));

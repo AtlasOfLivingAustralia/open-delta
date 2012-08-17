@@ -245,7 +245,7 @@ public class CharacterSelectionDialog extends ListSelectionDialog implements Sea
         Character ch = (Character) _list.getSelectedValue();
         List<Character> charInList = new ArrayList<Character>();
         charInList.add(ch);
-        CharacterImageDialog dlg = new CharacterImageDialog(this, charInList, _imageSettings, false, !_context.displayContinuous(), _context.displayScaled());
+        CharacterImageDialog dlg = new CharacterImageDialog(this, charInList, null, _imageSettings, false, !_context.displayContinuous(), _context.displayScaled());
         dlg.displayImagesForCharacter(ch);
         dlg.showImage(0);
         ((SingleFrameApplication) Application.getInstance()).show(dlg);

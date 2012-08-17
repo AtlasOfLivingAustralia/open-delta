@@ -2357,7 +2357,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             displayErrorMessage(UIUtils.getResourceString("ImageDisplayDisabled.error"));
         } else {
             try {
-                CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), characters, _context.getImageSettings(), false, false, _context.displayScaled());
+                CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), characters, null, _context.getImageSettings(), false, false, _context.displayScaled());
                 dlg.displayImagesForCharacter(characters.get(0));
                 show(dlg);
 
@@ -2635,7 +2635,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     public List<String> promptForTextValue(TextCharacter ch, List<String> currentValues) {
         if (_context.getImageDisplayMode() == ImageDisplayMode.AUTO && !ch.getImages().isEmpty()) {
             try {
-                CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), Arrays.asList(new Character[] { ch }), _context.getImageSettings(), true, true, _context.displayScaled());
+                CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), Arrays.asList(new Character[] { ch }), null, _context.getImageSettings(), true, true, _context.displayScaled());
                 dlg.setInitialTextValues(currentValues);
                 dlg.displayImagesForCharacter(ch);
                 show(dlg);
@@ -2669,7 +2669,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         if (_context.getImageDisplayMode() == ImageDisplayMode.AUTO && !ch.getImages().isEmpty()) {
             try {
-                CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), Arrays.asList(new Character[] { ch }), _context.getImageSettings(), true, true, _context.displayScaled());
+                CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), Arrays.asList(new Character[] { ch }), null, _context.getImageSettings(), true, true, _context.displayScaled());
                 dlg.setInitialIntegerValues(currentValues);
                 dlg.displayImagesForCharacter(ch);
                 show(dlg);
@@ -2720,7 +2720,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     public FloatRange promptForRealValue(RealCharacter ch, FloatRange currentValues) {
         if (_context.getImageDisplayMode() == ImageDisplayMode.AUTO && !ch.getImages().isEmpty()) {
             try {
-                CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), Arrays.asList(new Character[] { ch }), _context.getImageSettings(), true, true, _context.displayScaled());
+                CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), Arrays.asList(new Character[] { ch }), null, _context.getImageSettings(), true, true, _context.displayScaled());
                 dlg.setInitialRealValues(currentValues);
                 dlg.displayImagesForCharacter(ch);
                 show(dlg);
@@ -2729,6 +2729,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                 } else if (dlg.cancelButtonPressed()) {
                     return null;
                 } else {
+                    // If the image dialog was closed but OK or Cancel were not
+                    // pressed, show the text version of the selection dialog.
                     RealInputDialog dlg2 = new RealInputDialog(getMainFrame(), ch, currentValues, _context.getImageSettings(), _context.displayNumbering(),
                             _context.getImageDisplayMode() != ImageDisplayMode.OFF, _context.displayScaled());
                     UIUtils.showDialog(dlg2);
@@ -2748,10 +2750,11 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     }
 
     @Override
-    public Set<Integer> promptForMultiStateValue(MultiStateCharacter ch, Set<Integer> currentSelectedStates) {
+    public Set<Integer> promptForMultiStateValue(MultiStateCharacter ch, Set<Integer> currentSelectedStates, Character dependentCharacter) {
         if (_context.getImageDisplayMode() == ImageDisplayMode.AUTO && !ch.getImages().isEmpty()) {
             try {
-                CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), Arrays.asList(new Character[] { ch }), _context.getImageSettings(), true, true, _context.displayScaled());
+                CharacterImageDialog dlg = new CharacterImageDialog(getMainFrame(), Arrays.asList(new Character[] { ch }), dependentCharacter, _context.getImageSettings(), true, true,
+                        _context.displayScaled());
                 dlg.setInitialSelectedStates(currentSelectedStates);
                 dlg.displayImagesForCharacter(ch);
                 show(dlg);
@@ -2760,7 +2763,9 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                 } else if (dlg.cancelButtonPressed()) {
                     return null;
                 } else {
-                    MultiStateInputDialog dlg2 = new MultiStateInputDialog(getMainFrame(), ch, currentSelectedStates, _context.getImageSettings(), _context.displayNumbering(),
+                    // If the image dialog was closed but OK or Cancel were not
+                    // pressed, show the text version of the selection dialog.
+                    MultiStateInputDialog dlg2 = new MultiStateInputDialog(getMainFrame(), ch, currentSelectedStates, dependentCharacter, _context.getImageSettings(), _context.displayNumbering(),
                             _context.getImageDisplayMode() != ImageDisplayMode.OFF, _context.displayScaled());
                     UIUtils.showDialog(dlg2);
                     return dlg2.getInputData();
@@ -2771,7 +2776,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                 return null;
             }
         } else {
-            MultiStateInputDialog dlg = new MultiStateInputDialog(getMainFrame(), ch, currentSelectedStates, _context.getImageSettings(), _context.displayNumbering(),
+            MultiStateInputDialog dlg = new MultiStateInputDialog(getMainFrame(), ch, currentSelectedStates, dependentCharacter, _context.getImageSettings(), _context.displayNumbering(),
                     _context.getImageDisplayMode() != ImageDisplayMode.OFF, _context.displayScaled());
             UIUtils.showDialog(dlg);
             return dlg.getInputData();

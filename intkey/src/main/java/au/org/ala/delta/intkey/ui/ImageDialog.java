@@ -143,6 +143,7 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
      *            initial value of scaling mode (can be changed using the menu).
      *            If true, images will be scaled, if false, they will not be
      *            scaled.
+     * @wbp.parser.constructor
      */
     public ImageDialog(Dialog owner, ImageSettings imageSettings, boolean modal, boolean imagesStartScaled) {
         super(owner, modal, true);
@@ -165,7 +166,6 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
         setMinimumSize(new Dimension(500, 500));
 
         buildMenu();
-        getContentPane().setLayout(new GridLayout(0, 1, 0, 0));
     }
 
     private void buildMenu() {
@@ -247,6 +247,7 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
         _mnuItAboutImage = new JMenuItem();
         _mnuItAboutImage.setAction(actionMap.get("aboutImage"));
         _mnuWindow.add(_mnuItAboutImage);
+        getContentPane().setLayout(new BorderLayout(0, 0));
     }
 
     public void setImages(List<Image> images) {
@@ -259,7 +260,7 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
 
         _multipleImageViewer = new MultipleImageViewer(_imageSettings);
         _multipleImageViewer.setObserver(this);
-        getContentPane().add(_multipleImageViewer);
+        getContentPane().add(_multipleImageViewer, BorderLayout.CENTER);
 
         populateSubjectMenu(_images);
 
@@ -389,7 +390,7 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
         Window applicationWindow = ((SingleFrameApplication) Application.getInstance()).getMainFrame();
 
         final JDialog dlg = new JDialog(this);
-        dlg.setLayout(new BorderLayout());
+        dlg.getContentPane().setLayout(new BorderLayout());
         dlg.setUndecorated(true);
 
         Image image = _multipleImageViewer.getVisibleImage();
@@ -401,7 +402,7 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
         imageViewer.addOverlaySelectionObserver(this);
         imageViewer.setScalingMode(ScalingMode.NO_SCALING);
 
-        dlg.add(imageViewer, BorderLayout.CENTER);
+        dlg.getContentPane().add(imageViewer, BorderLayout.CENTER);
 
         Rectangle r = applicationWindow.getGraphicsConfiguration().getBounds();
         dlg.setLocation(r.x, r.y);

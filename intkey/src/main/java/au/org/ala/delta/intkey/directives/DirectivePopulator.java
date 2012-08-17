@@ -24,6 +24,7 @@ import org.apache.commons.lang.mutable.MutableBoolean;
 
 import au.org.ala.delta.intkey.model.DisplayImagesReportType;
 import au.org.ala.delta.intkey.model.ImageDisplayMode;
+import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
@@ -148,8 +149,8 @@ public interface DirectivePopulator {
      * @param ch
      *            the text character
      * @param currentValue
-     *            The current value(s) set for the text character. Supply null if
-     *            no value is currently set.
+     *            The current value(s) set for the text character. Supply null
+     *            if no value is currently set.
      * @return A list of the supplied values for the character, or null if the
      *         user cancelled the operation
      */
@@ -161,8 +162,8 @@ public interface DirectivePopulator {
      * @param ch
      *            the integer character
      * @param currentValue
-     *            The current value(s) set for the integer character. Supply null if
-     *            no value is currently set.            
+     *            The current value(s) set for the integer character. Supply
+     *            null if no value is currently set.
      * @return A list of the supplied values for the character, or null if the
      *         user cancelled the operation
      */
@@ -174,8 +175,8 @@ public interface DirectivePopulator {
      * @param ch
      *            the real character
      * @param currentValue
-     *            The current value(s) set for the real character. Supply null if
-     *            no value is currently set.             
+     *            The current value(s) set for the real character. Supply null
+     *            if no value is currently set.
      * @return The supplied value for the character, or null if the user
      *         cancelled the operation
      */
@@ -186,13 +187,23 @@ public interface DirectivePopulator {
      * 
      * @param ch
      *            the multistate character
-     * @param currentValue
-     *            The current state(s) set for the multistate character. Supply null if
-     *            no value is currently set.             
+     * @param currentSelectedStates
+     *            The current state(s) set for the multistate character. Supply
+     *            null if no value is currently set. In the case that the
+     *            character is a controlling character that must be set before
+     *            its dependent character can be set, the current selected
+     *            states should be all the states which make the dependent
+     *            character applicable.
+     * @param dependentCharacter
+     *            if ch is a controlling character whose value must be set
+     *            before its dependent character, this is a reference to the
+     *            dependent character. The user should be shown a message
+     *            informing them that the controlling character's value must be
+     *            set before the controlling character must be set.
      * @return The supplied value for the character, or null if the user
      *         cancelled the operation
      */
-    Set<Integer> promptForMultiStateValue(MultiStateCharacter ch, Set<Integer> currentSelectedStates);
+    Set<Integer> promptForMultiStateValue(MultiStateCharacter ch, Set<Integer> currentSelectedStates, Character dependentCharacter);
 
     /**
      * Prompt the user to select a file

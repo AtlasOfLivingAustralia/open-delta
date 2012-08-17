@@ -85,7 +85,7 @@ public class IntegerInputDialog extends NumberInputDialog {
 
     @Override
     void handleBtnImagesClicked() {
-        CharacterImageDialog dlg = new CharacterImageDialog(this, Arrays.asList(new au.org.ala.delta.model.Character[] { _ch }), _imageSettings, true, true, _imagesStartScaled);
+        CharacterImageDialog dlg = new CharacterImageDialog(this, Arrays.asList(new au.org.ala.delta.model.Character[] { _ch }), null, _imageSettings, true, true, _imagesStartScaled);
         dlg.displayImagesForCharacter(_ch);
         dlg.showImage(0);
         dlg.setVisible(true);

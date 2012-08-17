@@ -79,7 +79,7 @@ public class MockDirectivePopulator implements DirectivePopulator {
     }
 
     @Override
-    public Set<Integer> promptForMultiStateValue(MultiStateCharacter ch, Set<Integer> currentValue) {
+    public Set<Integer> promptForMultiStateValue(MultiStateCharacter ch, Set<Integer> currentValue, Character dependentCharacter) {
         return null;
     }
 

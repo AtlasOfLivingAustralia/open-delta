@@ -17,6 +17,7 @@ package au.org.ala.delta.intkey.ui;
 import java.awt.BorderLayout;
 import java.awt.Dialog;
 import java.awt.Frame;
+import java.awt.SystemColor;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashSet;
@@ -24,8 +25,13 @@ import java.util.List;
 import java.util.Set;
 
 import javax.swing.ActionMap;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.UIManager;
+import javax.swing.border.EmptyBorder;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.FloatRange;
@@ -42,6 +48,9 @@ import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.TextCharacter;
+import au.org.ala.delta.model.format.CharacterFormatter;
+import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
+import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.OverlayType;
@@ -77,6 +86,10 @@ public class CharacterImageDialog extends ImageDialog {
     protected Set<Integer> _initialIntegerValues;
     protected FloatRange _initialRealValues;
     protected List<String> _initialTextValues;
+
+    private JPanel _pnlControllingCharacterMessage;
+    private JLabel _lblWarningIcon;
+    private JTextArea _txtControllingCharacterMessage;
 
     /**
      * True if the states or values for the characters can be edited.
@@ -114,20 +127,59 @@ public class CharacterImageDialog extends ImageDialog {
     @Resource
     String imageForViewingOnlyMessage;
 
-    public CharacterImageDialog(Frame owner, List<Character> characters, ImageSettings imageSettings, boolean modal, boolean valuesEditable, boolean initScalingMode) {
+    /**
+     * ctor
+     * 
+     * @param owner
+     *            Frame owner of the dialog
+     * @param characters
+     *            the character being viewed in this dialog
+     * @param dependentCharacter
+     *            if this dialog is being used to set the value of a (single)
+     *            controlling character before its dependent character is set,
+     *            this argument should be a reference to the dependent
+     *            character. In all other cases it should be null.
+     * @param imageSettings
+     *            Image settings
+     * @param modal
+     *            true if the dialog should be modal
+     * @param valuesEditable
+     *            true if the overlays should be editable
+     * @param initScalingMode
+     *            true if images should start scaled.
+     */
+    public CharacterImageDialog(Frame owner, List<Character> characters, Character dependentCharacter, ImageSettings imageSettings, boolean modal, boolean valuesEditable, boolean initScalingMode) {
         super(owner, imageSettings, modal, initScalingMode);
-        init(characters, valuesEditable);
+        init(characters, dependentCharacter, valuesEditable);
     }
 
     /**
-     * @wbp.parser.constructor
+     * ctor
+     * 
+     * @param owner
+     *            Dialog owner of the dialog
+     * @param characters
+     *            the character being viewed in this dialog
+     * @param dependentCharacter
+     *            if this dialog is being used to set the value of a (single)
+     *            controlling character before its dependent character is set,
+     *            this argument should be a reference to the dependent
+     *            character. In all other cases it should be null.
+     * @param imageSettings
+     *            Image settings
+     * @param modal
+     *            true if the dialog should be modal
+     * @param valuesEditable
+     *            true if the overlays should be editable
+     * @param initScalingMode
+     *            true if images should start scaled.
      */
-    public CharacterImageDialog(Dialog owner, List<Character> characters, ImageSettings imageSettings, boolean modal, boolean valuesEditable, boolean initScalingMode) {
+    public CharacterImageDialog(Dialog owner, List<Character> characters, Character dependentCharacter, ImageSettings imageSettings, boolean modal, boolean valuesEditable, boolean initScalingMode) {
         super(owner, imageSettings, modal, initScalingMode);
-        init(characters, valuesEditable);
+        init(characters, dependentCharacter, valuesEditable);
     }
 
-    private void init(List<Character> characters, boolean valuesEditable) {
+    private void init(List<Character> characters, Character dependentCharacter, boolean valuesEditable) {
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(CharacterImageDialog.class);
         resourceMap.injectFields(this);
 
@@ -136,6 +188,39 @@ public class CharacterImageDialog extends ImageDialog {
         getContentPane().setLayout(new BorderLayout(0, 0));
 
         buildMenuItems();
+
+        if (dependentCharacter != null) {
+            if (characters.size() != 1) {
+                throw new IllegalArgumentException("Dependent character should only be supplied if there is a single character being viewed in the dialog");
+            }
+
+            Character ch = characters.get(0);
+
+            _pnlControllingCharacterMessage = new JPanel();
+            _pnlControllingCharacterMessage.setFocusable(false);
+            _pnlControllingCharacterMessage.setBorder(new EmptyBorder(5, 0, 0, 0));
+            getContentPane().add(_pnlControllingCharacterMessage, BorderLayout.NORTH);
+            _pnlControllingCharacterMessage.setLayout(new BorderLayout(0, 0));
+
+            _lblWarningIcon = new JLabel("");
+            _lblWarningIcon.setFocusable(false);
+            _lblWarningIcon.setIcon(UIManager.getIcon("OptionPane.warningIcon"));
+            _pnlControllingCharacterMessage.add(_lblWarningIcon, BorderLayout.WEST);
+
+            _txtControllingCharacterMessage = new JTextArea();
+            CharacterFormatter formatter = new CharacterFormatter(true, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, true, false);
+            String setControllingCharacterMessage = UIUtils.getResourceString("MultiStateInputDialog.setControllingCharacterMessage", formatter.formatCharacterDescription(dependentCharacter),
+                    formatter.formatCharacterDescription(ch));
+            _txtControllingCharacterMessage.setText(setControllingCharacterMessage);
+            _txtControllingCharacterMessage.setFocusable(false);
+            _txtControllingCharacterMessage.setBorder(new EmptyBorder(0, 5, 0, 0));
+            _txtControllingCharacterMessage.setEditable(false);
+            _pnlControllingCharacterMessage.add(_txtControllingCharacterMessage);
+            _txtControllingCharacterMessage.setWrapStyleWord(true);
+            _txtControllingCharacterMessage.setFont(UIManager.getFont("Button.font"));
+            _txtControllingCharacterMessage.setLineWrap(true);
+            _txtControllingCharacterMessage.setBackground(SystemColor.control);
+        }
     }
 
     private void buildMenuItems() {

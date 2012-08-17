@@ -693,7 +693,7 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
         }
         
         @Override
-        public Set<Integer> promptForMultiStateValue(MultiStateCharacter ch, Set<Integer> currentValue) {
+        public Set<Integer> promptForMultiStateValue(MultiStateCharacter ch, Set<Integer> currentValue, Character dependentCharacter) {
             _promptedForCharacterValue = true;
             return null;
         }
