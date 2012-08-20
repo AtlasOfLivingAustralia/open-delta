@@ -21,7 +21,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 public class DisplayCharacterOrderBestDirective extends IntkeyDirective {
 
     public DisplayCharacterOrderBestDirective() {
-        super(true, "display", "characterorder", "best");
+        super(false, "display", "characterorder", "best");
     }
 
     @Override

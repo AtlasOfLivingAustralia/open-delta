@@ -19,7 +19,6 @@ import java.util.List;
 
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.OutputCommentDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.ShowDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class OutputCommentDirective extends NewIntkeyDirective {

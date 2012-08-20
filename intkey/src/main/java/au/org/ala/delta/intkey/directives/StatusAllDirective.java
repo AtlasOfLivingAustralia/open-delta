@@ -20,7 +20,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class StatusAllDirective extends IntkeyDirective {
     public StatusAllDirective() {
-        super(true, "status", "all");
+        super(false, "status", "all");
     }
 
     @Override

@@ -24,7 +24,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 public class FindTaxaDirective extends NewIntkeyDirective {
 
     public FindTaxaDirective() {
-        super(false, "find", "taxa");
+        super(true, "find", "taxa");
     }
 
     @Override

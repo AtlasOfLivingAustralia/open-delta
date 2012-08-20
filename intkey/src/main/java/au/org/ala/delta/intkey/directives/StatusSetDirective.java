@@ -21,7 +21,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
 public class StatusSetDirective extends IntkeyDirective {
 
     public StatusSetDirective() {
-        super(true, "status", "set");
+        super(false, "status", "set");
     }
 
     @Override
