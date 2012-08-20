@@ -16,6 +16,7 @@ package au.org.ala.delta.intkey.ui;
 
 import java.awt.Frame;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.swing.JOptionPane;
@@ -37,7 +38,7 @@ public class IntegerInputDialog extends NumberInputDialog {
     private static final long serialVersionUID = 1248724422772112737L;
 
     private Set<Integer> _inputData;
-    
+
     @Resource
     String title;
 
@@ -79,6 +80,8 @@ public class IntegerInputDialog extends NumberInputDialog {
                 JOptionPane.showMessageDialog(this, validationErrorMessage, validationErrorTitle, JOptionPane.ERROR_MESSAGE);
             }
         } else {
+            // No value supplied, return empty set.
+            _inputData = new HashSet<Integer>();
             this.setVisible(false);
         }
     }
@@ -101,6 +104,12 @@ public class IntegerInputDialog extends NumberInputDialog {
         }
     }
 
+    /**
+     * Returns the integers specified with the dialog, or null if the dialog was
+     * closed with the cancel button.
+     * 
+     * @return
+     */
     public Set<Integer> getInputData() {
         return _inputData;
     }

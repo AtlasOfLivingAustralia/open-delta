@@ -211,6 +211,10 @@ public class MultiStateInputDialog extends CharacterValueInputDialog implements 
 
     }
 
+    /**
+     * @return Returns the states selected in the dialog, or null if the dialog
+     *         was closed using the cancel button.
+     */
     public Set<Integer> getInputData() {
         return _inputData;
     }

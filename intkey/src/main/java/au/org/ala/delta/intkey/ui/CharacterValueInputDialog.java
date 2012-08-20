@@ -68,6 +68,16 @@ public abstract class CharacterValueInputDialog extends JDialog {
     protected String _fullCharacterTextCaption;
     protected String _notesCaption;
 
+    /**
+     * True if the dialog's OK button has been pressed
+     */
+    protected boolean _okPressed;
+
+    /**
+     * True if the dialog's cancel button has been pressed
+     */
+    protected boolean _cancelPressed;
+
     public CharacterValueInputDialog(Frame owner, Character ch, ImageSettings imageSettings, boolean displayNumbering, boolean enableImagesButton, boolean imagesStartScaled) {
         super(owner, true);
         ActionMap actionMap = Application.getInstance().getContext().getActionMap(CharacterValueInputDialog.class, this);
@@ -161,6 +171,7 @@ public abstract class CharacterValueInputDialog extends JDialog {
 
     @Action
     public void characterValueInputDialog_OK() {
+        _okPressed = true;
         handleBtnOKClicked();
     }
 
@@ -187,6 +198,7 @@ public abstract class CharacterValueInputDialog extends JDialog {
 
     @Action
     public void characterValueInputDialog_Cancel() {
+        _cancelPressed = true;
         handleBtnCancelClicked();
     }
 
@@ -202,5 +214,13 @@ public abstract class CharacterValueInputDialog extends JDialog {
     @Action
     public void characterValueInputDialog_Help(ActionEvent e) {
         UIUtils.displayHelpTopic(USE_DIRECTIVE_HELP_TOPIC_ID, this, e);
+    }
+    
+    public boolean okPressed() {
+        return _okPressed;
+    }
+    
+    public boolean cancelPressed() {
+        return _cancelPressed;
     }
 }

@@ -19,6 +19,7 @@ import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.SystemColor;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -416,6 +417,12 @@ public class CharacterImageDialog extends ImageDialog {
             }
         }
 
+        // if the range is still null, return a float range with negative
+        // infinity. This represents "no values selected".
+        if (retRange == null) {
+            retRange = new FloatRange(Float.NEGATIVE_INFINITY);
+        }
+
         return retRange;
     }
 
@@ -435,7 +442,8 @@ public class CharacterImageDialog extends ImageDialog {
         if (!inputText.isEmpty()) {
             return ParsingUtils.parseTextCharacterValue(inputText);
         } else {
-            return null;
+            // empty list represents no values input
+            return new ArrayList<String>();
         }
     }
 

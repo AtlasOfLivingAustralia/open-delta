@@ -68,9 +68,9 @@ public class TextInputDialog extends CharacterValueInputDialog {
                 TextInputDialog.this.handleBtnOKClicked();
             }
         });
-        
+
         _btnSearch.setEnabled(false);
-        
+
         // Fill the input text box with any previously set values for the
         // character.
         if (initialValues != null) {
@@ -97,6 +97,10 @@ public class TextInputDialog extends CharacterValueInputDialog {
         setVisible(false);
     }
 
+    /**
+     * @return A list of input text values, or null if the dialog was closed
+     *         using the cancel button.
+     */
     public List<String> getInputData() {
         return _inputData;
     }
@@ -119,7 +123,7 @@ public class TextInputDialog extends CharacterValueInputDialog {
             this.setVisible(false);
         }
     }
-    
+
     @Override
     void handleBtnSearchClicked() {
         // Text input dialog cannot be searched - do nothing

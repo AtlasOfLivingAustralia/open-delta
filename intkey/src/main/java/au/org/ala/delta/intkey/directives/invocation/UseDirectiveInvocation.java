@@ -121,9 +121,13 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
         // Process characters with values specified first
         for (au.org.ala.delta.model.Character ch : charsWithValuesSpecified) {
             if (checkCharacterUsable(ch, context, !_suppressAlreadySetWarning && !_change)) {
-                // halt execution if values not sucessfully set for all
-                // controlling characters
-                if (!processControllingCharacters(ch, context)) {
+                // Not interested in what controlling characters were
+                // set/manually set here. Only need this when prompting for
+                // character values (as the user can hit cancel, or hit OK with
+                // no values input)
+                if (!processControllingCharacters(ch, context, new ArrayList<Character>(), new ArrayList<Character>())) {
+                    // halt execution if values not sucessfully set for all
+                    // controlling characters
                     if (_specimenUpdated) {
                         context.specimenUpdateComplete();
                     }
@@ -156,9 +160,11 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
             au.org.ala.delta.model.Character ch = charsNoValuesSpecified.get(0);
             if (checkCharacterUsable(ch, context, !_suppressAlreadySetWarning && !_change)) {
 
-                // halt execution if values not sucessfully set for all
-                // controlling characters
-                if (!processControllingCharacters(ch, context)) {
+                List<Character> setControllingCharacters = new ArrayList<Character>();
+                List<Character> manuallySetControllingCharacters = new ArrayList<Character>();
+                if (!processControllingCharacters(ch, context, setControllingCharacters, manuallySetControllingCharacters)) {
+                    // halt execution if values not sucessfully set for all
+                    // controlling characters
                     if (_specimenUpdated) {
                         context.specimenUpdateComplete();
                     }
@@ -171,7 +177,7 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
                 // its controlling
                 // characters
                 if (checkCharacterUsable(ch, context, false)) {
-                    Attribute attr = promptForCharacterValue(ch, null, null, context.getDirectivePopulator(), context.getSpecimen());
+                    Attribute attr = promptForCharacterValue(ch, null, null, context.getDirectivePopulator(), context.getSpecimen(), context);
                     if (attr != null) {
                         // store this value so that the prompt does not need
                         // to
@@ -182,12 +188,14 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
                         // User hit cancel or did not enter a value when
                         // prompted.
                         // Abort execution when this happens
+                        cleanupSpecimenAfterCancel(setControllingCharacters, manuallySetControllingCharacters, context.getSpecimen());
                         if (_specimenUpdated) {
                             context.specimenUpdateComplete();
                         }
                         return false;
                     }
                 } else {
+                    cleanupSpecimenAfterCancel(setControllingCharacters, manuallySetControllingCharacters, context.getSpecimen());
                     if (_specimenUpdated) {
                         context.specimenUpdateComplete();
                     }
@@ -227,10 +235,12 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
                     if (checkCharacterUsable(ch, context, !_suppressAlreadySetWarning && !_change)) {
 
-                        // halt execution if values not sucessfully set for
-                        // all
-                        // controlling characters
-                        if (!processControllingCharacters(ch, context)) {
+                        List<Character> setControllingCharacters = new ArrayList<Character>();
+                        List<Character> manuallySetControllingCharacters = new ArrayList<Character>();
+                        if (!processControllingCharacters(ch, context, setControllingCharacters, manuallySetControllingCharacters)) {
+                            // halt execution if values not sucessfully set for
+                            // all
+                            // controlling characters
                             if (_specimenUpdated) {
                                 context.specimenUpdateComplete();
                             }
@@ -254,8 +264,9 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
                         // more of its controlling
                         // characters
                         if (checkCharacterUsable(ch, context, false)) {
-                            attr = promptForCharacterValue(ch, null, null, context.getDirectivePopulator(), context.getSpecimen());
+                            attr = promptForCharacterValue(ch, null, null, context.getDirectivePopulator(), context.getSpecimen(), context);
                         } else {
+                            cleanupSpecimenAfterCancel(setControllingCharacters, manuallySetControllingCharacters, context.getSpecimen());
                             if (_specimenUpdated) {
                                 context.specimenUpdateComplete();
                             }
@@ -271,6 +282,11 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
                             setValueForCharacter(ch, attr, context);
 
                             charsNoValuesCopy.remove(ch);
+                        } else {
+                            cleanupSpecimenAfterCancel(setControllingCharacters, manuallySetControllingCharacters, context.getSpecimen());
+                            if (_specimenUpdated) {
+                                context.specimenUpdateComplete();
+                            }
                         }
                     } else {
                         if (_specimenUpdated) {
@@ -349,9 +365,11 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
                         UIUtils.getResourceString("UseDirective.TaxonToSeparateEliminatedMsg", _charFormatter.formatCharacterDescription(ch), _taxonFormatter.formatItemDescription(taxonToSeparate)));
 
                 if (changeValue) {
-                    Attribute newAttr = promptForCharacterValue(ch, null, null, context.getDirectivePopulator(), context.getSpecimen());
-                    _characterAttributes.put(ch, newAttr);
-                    setValueForCharacter(ch, newAttr, context);
+                    Attribute newAttr = promptForCharacterValue(ch, null, null, context.getDirectivePopulator(), context.getSpecimen(), context);
+                    if (newAttr != null) {
+                        _characterAttributes.put(ch, newAttr);
+                        setValueForCharacter(ch, newAttr, context);
+                    }
                 }
 
             }
@@ -440,10 +458,14 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
      * 
      * @param ch
      * @param context
+     * @param controllingCharAttributes
+     *            - should be an empty list. Will be populated with the
+     *            attribute values set in the specimen for the controlling
+     *            characters.
      * @return true if values were set successfully for all controlling
      *         characters
      */
-    private boolean processControllingCharacters(au.org.ala.delta.model.Character ch, IntkeyContext context) {
+    private boolean processControllingCharacters(au.org.ala.delta.model.Character ch, IntkeyContext context, List<Character> setControllingCharacters, List<Character> manuallySetControllingCharacters) {
 
         // Map of controlling characters to states of these controlling
         // characters that will cause this character to be inapplicable
@@ -463,8 +485,9 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
                 continue;
             }
 
-            // Need to check that the character is still applicable, as one of
-            // the controlling character may have made it inapplicable
+            // Need to check that the character is still applicable, as the
+            // value set by the user for one of
+            // the controlling characters may have made it inapplicable
             if (!checkCharacterUsable(ch, context, false)) {
                 return false;
             }
@@ -497,10 +520,12 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
             // can be set to for which the dependent character will be
             // applicable.
             if (!context.isProcessingDirectivesFile() && (cc.getNonAutoCc() || ch.getUseCc() || !cc.getNonAutoCc() && !cc.getUseCc() && applicableStates.size() > 1)) {
-                Attribute attr = promptForCharacterValue(cc, ch, applicableStates, context.getDirectivePopulator(), context.getSpecimen());
+                Attribute attr = promptForCharacterValue(cc, ch, applicableStates, context.getDirectivePopulator(), context.getSpecimen(), context);
                 if (attr != null) {
                     context.setSpecimenAttributeForCharacter(cc, attr);
                     _specimenUpdated = true;
+                    setControllingCharacters.add(cc);
+                    manuallySetControllingCharacters.add(cc);
                 } else {
                     // No values selected or cancel pressed. Return as
                     // values have not been set for all
@@ -514,6 +539,8 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
                 Attribute attr = AttributeFactory.newAttribute(cc, impl);
                 attr.setSpecimenAttribute(true);
                 context.setSpecimenAttributeForCharacter(cc, attr);
+                _specimenUpdated = true;
+                setControllingCharacters.add(cc);
             }
 
             // output USEd controlling characters directly to the log
@@ -561,7 +588,7 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
     }
 
     private Attribute promptForCharacterValue(au.org.ala.delta.model.Character ch, au.org.ala.delta.model.Character dependentChar, Set<Integer> applicableStates, DirectivePopulator populator,
-            Specimen specimen) {
+            Specimen specimen, IntkeyContext context) {
         SimpleAttributeData impl = new SimpleAttributeData(false, false);
 
         if (ch instanceof MultiStateCharacter) {
@@ -579,7 +606,15 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
                 MultiStateAttribute currentAttribute = (MultiStateAttribute) specimen.getAttributeForCharacter(ch);
                 stateValues = populator.promptForMultiStateValue((MultiStateCharacter) ch, currentAttribute.isUnknown() ? null : currentAttribute.getPresentStates(), null);
             }
-            if (stateValues != null && stateValues.size() > 0) {
+            if (stateValues != null && stateValues.isEmpty() && dependentChar == null) {
+                // User hit OK but did not select any states. Delete any value
+                // set
+                // for the character.
+                if (specimen.hasValueFor(ch)) {
+                    deleteCharacter(ch, context);
+                }
+                return null;
+            } else if (stateValues != null && stateValues.size() > 0) {
                 impl.setPresentStateOrIntegerValues(stateValues);
             } else {
                 return null;
@@ -592,7 +627,16 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
             IntegerAttribute currentAttribute = (IntegerAttribute) specimen.getAttributeForCharacter(ch);
 
             Set<Integer> intValue = populator.promptForIntegerValue((IntegerCharacter) ch, currentAttribute.isUnknown() ? null : currentAttribute.getPresentValues());
-            if (intValue != null && intValue.size() > 0) {
+
+            if (intValue != null && intValue.isEmpty()) {
+                // User hit OK but did not input any values. Delete any value
+                // set
+                // for the character
+                if (specimen.hasValueFor(ch)) {
+                    deleteCharacter(ch, context);
+                }
+                return null;
+            } else if (intValue != null && intValue.size() > 0) {
                 impl.setPresentStateOrIntegerValues(intValue);
             } else {
                 return null;
@@ -605,7 +649,20 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
             RealAttribute currentAttribute = (RealAttribute) specimen.getAttributeForCharacter(ch);
 
             FloatRange floatRange = populator.promptForRealValue((RealCharacter) ch, currentAttribute.isUnknown() ? null : currentAttribute.getPresentRange());
+
             if (floatRange != null) {
+                // Float range with minimum and maximum value as negative
+                // infinity indicates that the user hit OK without inputting
+                // values.
+                if (floatRange.getMaximumFloat() == Float.NEGATIVE_INFINITY && floatRange.getMinimumFloat() == Float.NEGATIVE_INFINITY) {
+                    // User hit OK but did not input any values. Delete any
+                    // value set
+                    // for the character
+                    if (specimen.hasValueFor(ch)) {
+                        deleteCharacter(ch, context);
+                    }
+                    return null;
+                }
                 impl.setRealRange(floatRange);
             } else {
                 return null;
@@ -618,7 +675,16 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
             TextAttribute currentAttribute = (TextAttribute) specimen.getAttributeForCharacter(ch);
 
             List<String> stringList = populator.promptForTextValue((TextCharacter) ch, currentAttribute.isUnknown() ? null : Arrays.asList(currentAttribute.getValueAsString().split("/")));
-            if (stringList != null && stringList.size() > 0) {
+
+            if (stringList != null && stringList.isEmpty()) {
+                // User hit OK but did not input any values. Delete any
+                // value set
+                // for the character
+                if (specimen.hasValueFor(ch)) {
+                    deleteCharacter(ch, context);
+                }
+                return null;
+            } else if (stringList != null && stringList.size() > 0) {
                 impl.setValueFromString(StringUtils.join(stringList, '/'));
             } else {
                 return null;
@@ -631,6 +697,54 @@ public class UseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
         attr.setSpecimenAttribute(true);
 
         return attr;
+    }
+
+    private void deleteCharacter(Character ch, IntkeyContext context) {
+        List<Character> charInList = new ArrayList<Character>();
+        charInList.add(ch);
+        DeleteDirectiveInvocation deleteInvoc = new DeleteDirectiveInvocation();
+        deleteInvoc.setCharacters(charInList);
+        deleteInvoc.setStringRepresentation("DELETE " + ch.getCharacterId());
+
+        context.executeDirective(deleteInvoc);
+    }
+
+    /**
+     * Cleans up the specimen after the prompt for a character value is
+     * cancelled, or returns successfully but with no values specified. The
+     * values for any automatically-set controlling characters are removed from
+     * the specimen, unless they are higher in the dependency hierarchy than a
+     * manually set controlling character.
+     * 
+     * @param setControllingCharacters
+     *            A list of all controlling characters that were set, in the
+     *            order that they were set.
+     * @param manuallySetControllingCharacters
+     *            A list of all manually set controlling characters, in the
+     *            order that they were set
+     * @param specimen
+     *            the specimen.
+     */
+    private void cleanupSpecimenAfterCancel(List<Character> setControllingCharacters, List<Character> manuallySetControllingCharacters, Specimen specimen) {
+        List<Character> charsToRemoveFromSpecimen = new ArrayList<Character>();
+
+        if (manuallySetControllingCharacters.isEmpty()) {
+            charsToRemoveFromSpecimen.addAll(setControllingCharacters);
+        } else {
+            Character lastManuallySetCharacter = manuallySetControllingCharacters.get(manuallySetControllingCharacters.size() - 1);
+            charsToRemoveFromSpecimen.addAll(setControllingCharacters.subList(setControllingCharacters.indexOf(lastManuallySetCharacter) + 1, setControllingCharacters.size()));
+        }
+
+        for (Character ch : charsToRemoveFromSpecimen) {
+            specimen.removeValueForCharacter(ch);
+        }
+
+        // If all values set for controlling characters have been removed, the
+        // net change to the specimen is zero. Hence it does not need to be
+        // considered updated.
+        if (charsToRemoveFromSpecimen.equals(setControllingCharacters)) {
+            _specimenUpdated = false;
+        }
     }
 
     @Override

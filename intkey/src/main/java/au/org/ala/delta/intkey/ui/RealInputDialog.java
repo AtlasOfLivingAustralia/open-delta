@@ -54,7 +54,7 @@ public class RealInputDialog extends NumberInputDialog {
         resourceMap.injectFields(this);
 
         setTitle(title);
-        
+
         // Fill the input text box with any previously set values for the
         // character.
         if (initialValues != null) {
@@ -79,6 +79,9 @@ public class RealInputDialog extends NumberInputDialog {
                 JOptionPane.showMessageDialog(this, validationErrorMessage, validationErrorTitle, JOptionPane.ERROR_MESSAGE);
             }
         } else {
+            // return a float range with negative infinity. This represents
+            // "no values selected".
+            _inputData = new FloatRange(Float.NEGATIVE_INFINITY);
             setVisible(false);
         }
     }
@@ -107,6 +110,14 @@ public class RealInputDialog extends NumberInputDialog {
         }
     }
 
+    /**
+     * Returns a range representing the input values, or null of the dialog was
+     * closed using the cancel button. If the dialog was closed using the OK
+     * button, but no values were input, a range with both minimum and maximum
+     * values as negative infinity is returned.
+     * 
+     * @return
+     */
     public FloatRange getInputData() {
         return _inputData;
     }
