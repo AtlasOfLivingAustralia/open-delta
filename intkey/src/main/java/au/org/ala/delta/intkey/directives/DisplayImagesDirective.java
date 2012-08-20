@@ -36,7 +36,7 @@ public class DisplayImagesDirective extends IntkeyDirective {
         StringBuilder stringRepresentationBuilder = new StringBuilder();
         stringRepresentationBuilder.append(getControlWordsAsString());
         stringRepresentationBuilder.append(" ");
-        
+
         DisplayImagesDirectiveInvocation invoc = new DisplayImagesDirectiveInvocation();
 
         if (StringUtils.isEmpty(data) || data.toUpperCase().startsWith(IntkeyDirectiveArgument.DEFAULT_DIALOG_WILDCARD)) {
@@ -50,41 +50,45 @@ public class DisplayImagesDirective extends IntkeyDirective {
                 invoc.setReportType(settings.getSecond());
                 stringRepresentationBuilder.append(settings.getFirst().toString());
                 stringRepresentationBuilder.append(" ");
-                stringRepresentationBuilder.append(settings.getSecond().toString());
+
+                // The user will not necessarily want a report from the prompt.
+                if (settings.getSecond() != null) {
+                    stringRepresentationBuilder.append(settings.getSecond().toString());
+                }
             }
         } else {
             List<String> tokens = ParsingUtils.tokenizeDirectiveCall(data);
 
-            for (int i=0; i < tokens.size(); i++) {
+            for (int i = 0; i < tokens.size(); i++) {
                 if (i != 0) {
                     stringRepresentationBuilder.append(" ");
                 }
-                processToken(tokens.get(i), invoc, stringRepresentationBuilder);                
+                processToken(tokens.get(i), invoc, stringRepresentationBuilder);
             }
         }
-        
+
         invoc.setStringRepresentation(stringRepresentationBuilder.toString());
-        
+
         return invoc;
     }
 
     private void processToken(String token, DisplayImagesDirectiveInvocation invoc, StringBuilder stringRepresentationBuilder) {
-        if (token.equalsIgnoreCase(ImageDisplayMode.AUTO.name())) {
+        if (StringUtils.startsWithIgnoreCase(ImageDisplayMode.AUTO.name(), token)) {
             invoc.setDisplayMode(ImageDisplayMode.AUTO);
             stringRepresentationBuilder.append(ImageDisplayMode.AUTO.name());
-        } else if (token.equalsIgnoreCase(ImageDisplayMode.MANUAL.name())) {
+        } else if (StringUtils.startsWithIgnoreCase(ImageDisplayMode.MANUAL.name(), token)) {
             invoc.setDisplayMode(ImageDisplayMode.MANUAL);
             stringRepresentationBuilder.append(ImageDisplayMode.MANUAL.name());
-        } else if (token.equalsIgnoreCase(ImageDisplayMode.OFF.name())) {
+        } else if (StringUtils.startsWithIgnoreCase(ImageDisplayMode.OFF.name(), token)) {
             invoc.setDisplayMode(ImageDisplayMode.OFF);
             stringRepresentationBuilder.append(ImageDisplayMode.OFF.name());
-        } else if (token.equalsIgnoreCase(DisplayImagesReportType.MISSING_IMAGE_LIST.name())) {
+        } else if (StringUtils.startsWithIgnoreCase(DisplayImagesReportType.MISSING_IMAGE_LIST.name(), token)) {
             invoc.setReportType(DisplayImagesReportType.MISSING_IMAGE_LIST);
             stringRepresentationBuilder.append(DisplayImagesReportType.MISSING_IMAGE_LIST.name());
-        } else if (token.equalsIgnoreCase(DisplayImagesReportType.CHARACTER_IMAGE_LIST.name())) {
+        } else if (StringUtils.startsWithIgnoreCase(DisplayImagesReportType.CHARACTER_IMAGE_LIST.name(), token)) {
             invoc.setReportType(DisplayImagesReportType.CHARACTER_IMAGE_LIST);
-            stringRepresentationBuilder.append(DisplayImagesReportType.MISSING_IMAGE_LIST.name());
-        } else if (token.equalsIgnoreCase(DisplayImagesReportType.TAXON_IMAGE_LIST.name())) {
+            stringRepresentationBuilder.append(DisplayImagesReportType.CHARACTER_IMAGE_LIST.name());
+        } else if (StringUtils.startsWithIgnoreCase(DisplayImagesReportType.TAXON_IMAGE_LIST.name(), token)) {
             invoc.setReportType(DisplayImagesReportType.TAXON_IMAGE_LIST);
             stringRepresentationBuilder.append(DisplayImagesReportType.TAXON_IMAGE_LIST.name());
         }
