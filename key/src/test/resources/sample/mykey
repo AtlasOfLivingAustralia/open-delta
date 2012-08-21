@@ -20,7 +20,7 @@
 *COMMENT Non-default value for PRINT WIDTH.
 *COMMENT STOP AFTER COLUMN 1
 
-*KEY TYPESETTING FILE C:\xxx\foo.txt
+*COMMENT KEY TYPESETTING FILE C:\xxx\foo.txt
 
 *INPUT FILE markrtf
 
