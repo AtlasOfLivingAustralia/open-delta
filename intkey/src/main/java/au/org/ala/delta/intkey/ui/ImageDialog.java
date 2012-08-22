@@ -258,6 +258,7 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
         }
 
         _multipleImageViewer = new MultipleImageViewer(_imageSettings);
+        _multipleImageViewer.setScaleImages(_scaleImages);
         _multipleImageViewer.setObserver(this);
         getContentPane().add(_multipleImageViewer, BorderLayout.CENTER);
 

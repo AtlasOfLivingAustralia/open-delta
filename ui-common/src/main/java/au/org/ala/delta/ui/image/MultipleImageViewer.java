@@ -92,6 +92,7 @@ public class MultipleImageViewer extends JPanel {
 
     public void addImage(String imageId, Image image, BufferedImage bufferedImage, URL imageFileLocation, String imageType) {
         ImageViewer viewer = new ImageViewer(image, _imageSettings, bufferedImage, imageFileLocation, imageType);
+        viewer.setScalingMode(_scalingMode);
         if (_observer != null) {
             viewer.addOverlaySelectionObserver(_observer);
         }
