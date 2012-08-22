@@ -19,7 +19,6 @@ import java.awt.Cursor;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
-import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -162,8 +161,6 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
         _imageDescriptionFormatter = new Formatter(CommentStrippingMode.RETAIN, AngleBracketHandlingMode.RETAIN, true, false);
 
         _scaleImages = imagesStartScaled;
-
-        setMinimumSize(new Dimension(500, 500));
 
         buildMenu();
     }
