@@ -161,6 +161,8 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
         _imageDescriptionFormatter = new Formatter(CommentStrippingMode.RETAIN, AngleBracketHandlingMode.RETAIN, true, false);
 
         _scaleImages = imagesStartScaled;
+        
+        setMinimumSize(new Dimension(100, 100));
 
         buildMenu();
     }
