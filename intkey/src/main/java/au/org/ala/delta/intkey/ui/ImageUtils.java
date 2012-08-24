@@ -63,7 +63,7 @@ public class ImageUtils {
         w.setLayout(new BorderLayout());
 
         final MultipleImageViewer viewer = new MultipleImageViewer(imageSettings);
-        
+
         applicationWindow.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
         new ImageLoadWorker(images, imageSettings, applicationWindow, viewer, w).execute();
@@ -132,7 +132,7 @@ public class ImageUtils {
                 };
 
                 _viewer.setObserver(observer);
-                
+
                 List<List<Object>> allImageDataList = get();
 
                 for (List<Object> imageDataList : allImageDataList) {
@@ -141,6 +141,7 @@ public class ImageUtils {
                 }
 
                 _viewer.setBackground(Color.BLACK);
+                _viewer.showImage(_images.get(0).getFileName());
 
                 GridBagLayout panelLayout = new GridBagLayout();
 

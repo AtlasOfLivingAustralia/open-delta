@@ -120,6 +120,7 @@ public class TextInputDialog extends CharacterValueInputDialog {
 
         _inputData = dlg.getInputTextValues();
         if (_inputData != null && !_inputData.isEmpty()) {
+            _okPressed = true;
             this.setVisible(false);
         }
     }

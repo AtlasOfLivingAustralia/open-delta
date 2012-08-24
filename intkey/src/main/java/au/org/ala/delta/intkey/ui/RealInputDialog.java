@@ -103,6 +103,7 @@ public class RealInputDialog extends NumberInputDialog {
             FloatRange rangeFromImageDialog = dlg.getInputRealValues();
             if (rangeFromImageDialog != null) {
                 _inputData = rangeFromImageDialog;
+                _okPressed = true;
                 this.setVisible(false);
             }
         } catch (Exception ex) {

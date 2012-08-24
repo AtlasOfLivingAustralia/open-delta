@@ -206,6 +206,7 @@ public class MultiStateInputDialog extends CharacterValueInputDialog implements 
         Set<Integer> selectedStates = dlg.getSelectedStates();
         if (selectedStates != null && dlg.okButtonPressed()) {
             _inputData.addAll(selectedStates);
+            _okPressed = true;
             this.setVisible(false);
         }
 

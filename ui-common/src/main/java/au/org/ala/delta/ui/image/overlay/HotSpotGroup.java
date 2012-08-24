@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import au.org.ala.delta.model.image.ImageOverlay;
+import au.org.ala.delta.model.image.OverlayType;
 import au.org.ala.delta.ui.image.OverlaySelectionObserver;
 import au.org.ala.delta.ui.image.SelectableOverlay;
 
@@ -26,77 +27,115 @@ import au.org.ala.delta.ui.image.SelectableOverlay;
  */
 public class HotSpotGroup implements HotSpotObserver, SelectableOverlay {
 
-	private Set<HotSpot> _hotspots;
-	private SelectableTextOverlay _overlay;
-	private SelectableOverlaySupport _support;
-	
-	public HotSpotGroup(SelectableTextOverlay overlay) {
-		_hotspots = new HashSet<HotSpot>();
-		_support = new SelectableOverlaySupport();
-		_overlay = overlay;
-	}
-	
-	public void setDisplayHotSpots(boolean displayHotSpots) {
-		
-		for (HotSpot hotSpot : _hotspots) {
-			hotSpot.setAlwaysDrawHotSpot(displayHotSpots);
-		}
-	}
-	
-	public void add(HotSpot hotSpot) {
-		_hotspots.add(hotSpot);
-		hotSpot.addHotSpotObserver(this);
-	}
-	
-	public void setMouseInHotSpotRegion(boolean inHotSpotRegion) {
-		for (HotSpot hotSpot : _hotspots) {
-			hotSpot.setMouseInHotSpotRegion(inHotSpotRegion);
-		}
-	}
+    private Set<HotSpot> _hotspots;
+    private SelectableTextOverlay _overlay;
+    private SelectableOverlaySupport _support;
 
-	@Override
-	public void hotSpotEntered(ImageOverlay overlay) {
-		setMouseInHotSpotRegion(true);
-		_overlay.handleMouseEntered();
-	}
+    public HotSpotGroup(SelectableTextOverlay overlay) {
+        _hotspots = new HashSet<HotSpot>();
+        _support = new SelectableOverlaySupport();
+        _overlay = overlay;
+    }
 
-	@Override
-	public void hotSpotExited(ImageOverlay overlay) {
-		setMouseInHotSpotRegion(false);
-		_overlay.handleMouseExited();
-	}
+    public void setDisplayHotSpots(boolean displayHotSpots) {
 
-	@Override
-	public void hotSpotSelected(ImageOverlay overlay) {
-		_support.fireOverlaySelected(_overlay);
-	}
-	
-	@Override
-	public void addOverlaySelectionObserver(OverlaySelectionObserver observer) {
-		_support.addOverlaySelectionObserver(observer);
-	}
+        for (HotSpot hotSpot : _hotspots) {
+            hotSpot.setAlwaysDrawHotSpot(displayHotSpots);
+        }
+    }
 
-	@Override
-	public void removeOverlaySelectionObserver(OverlaySelectionObserver observer) {
-		_support.removeOverlaySelectionObserver(observer);
-	}
+    public void add(HotSpot hotSpot) {
+        _hotspots.add(hotSpot);
+        hotSpot.addHotSpotObserver(this);
+    }
 
-	@Override
-	public boolean isSelected() {
-		return _overlay.isSelected();
-	}
+    public void setMouseInHotSpotRegion(boolean inHotSpotRegion) {
+        for (HotSpot hotSpot : _hotspots) {
+            hotSpot.setMouseInHotSpotRegion(inHotSpotRegion);
+        }
+    }
 
-	@Override
-	public void setSelected(boolean selected) {
-		_overlay.setSelected(selected);
-	}
+    @Override
+    public void hotSpotEntered(ImageOverlay overlay) {
+        setMouseInHotSpotRegion(true);
+        _overlay.handleMouseEntered();
+    }
 
-	@Override
-	public ImageOverlay getImageOverlay() {
-		return _overlay.getImageOverlay();
-	}
-	
-	public Set<HotSpot> getHotSpots() {
-	    return _hotspots;
-	}
+    @Override
+    public void hotSpotExited(ImageOverlay overlay) {
+        setMouseInHotSpotRegion(false);
+        _overlay.handleMouseExited();
+    }
+
+    @Override
+    public void hotSpotSelected(ImageOverlay overlay) {
+        _support.fireOverlaySelected(_overlay);
+    }
+
+    @Override
+    public void hotSpotDoubleClicked(ImageOverlay overlay) {
+        setSelected(false);
+        _support.fireOverlaySelected(_overlay);
+
+        // If this was a double click, create a fake Ok button overlay (as there
+        // may not be a real Ok button
+        // displayed), then inform observers that it was selected.
+        SelectableOverlay fakeOkButtonOverlay = new SelectableOverlay() {
+
+            @Override
+            public boolean isSelected() {
+                // TODO Auto-generated method stub
+                return false;
+            }
+
+            @Override
+            public void setSelected(boolean selected) {
+            }
+
+            @Override
+            public ImageOverlay getImageOverlay() {
+                return new ImageOverlay(OverlayType.OLOK);
+            }
+
+            @Override
+            public void addOverlaySelectionObserver(OverlaySelectionObserver observer) {
+            }
+
+            @Override
+            public void removeOverlaySelectionObserver(OverlaySelectionObserver observer) {
+            }
+        };
+
+        _support.fireOverlaySelected(fakeOkButtonOverlay);
+    }
+
+    @Override
+    public void addOverlaySelectionObserver(OverlaySelectionObserver observer) {
+        _support.addOverlaySelectionObserver(observer);
+    }
+
+    @Override
+    public void removeOverlaySelectionObserver(OverlaySelectionObserver observer) {
+        _support.removeOverlaySelectionObserver(observer);
+    }
+
+    @Override
+    public boolean isSelected() {
+        return _overlay.isSelected();
+    }
+
+    @Override
+    public void setSelected(boolean selected) {
+        _overlay.setSelected(selected);
+    }
+
+    @Override
+    public ImageOverlay getImageOverlay() {
+        return _overlay.getImageOverlay();
+    }
+
+    public Set<HotSpot> getHotSpots() {
+        return _hotspots;
+    }
+
 }

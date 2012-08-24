@@ -82,6 +82,7 @@ public class IntegerInputDialog extends NumberInputDialog {
         } else {
             // No value supplied, return empty set.
             _inputData = new HashSet<Integer>();
+            _okPressed = true;
             this.setVisible(false);
         }
     }
