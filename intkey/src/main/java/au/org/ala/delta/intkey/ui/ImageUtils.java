@@ -42,7 +42,6 @@ import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.OverlayType;
-import au.org.ala.delta.ui.image.ImageViewer;
 import au.org.ala.delta.ui.image.MultipleImageViewer;
 import au.org.ala.delta.ui.image.OverlaySelectionObserver;
 import au.org.ala.delta.ui.image.SelectableOverlay;

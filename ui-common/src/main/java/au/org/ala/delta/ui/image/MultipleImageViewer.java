@@ -87,6 +87,8 @@ public class MultipleImageViewer extends JPanel {
     public void addImage(String imageId, Image image, BufferedImage bufferedImage, URL imageFileLocation, String imageType) {
         ImageViewer viewer = new ImageViewer(image, _imageSettings, bufferedImage, imageFileLocation, imageType);
         viewer.setScalingMode(_scalingMode);
+        viewer.setDisplayHotSpots(false);
+        
         if (_observer != null) {
             viewer.addOverlaySelectionObserver(_observer);
         }
@@ -160,19 +162,6 @@ public class MultipleImageViewer extends JPanel {
     public void fitToImage() {
         Window parentWindow = SwingUtilities.getWindowAncestor(this);
         parentWindow.pack();
-    }
-
-    public void toggleHideHotSpots() {
-        setHideHotSpots(!_hideHotSpots);
-    }
-
-    public void setHideHotSpots(boolean hideHotSpots) {
-        if (_hideHotSpots != hideHotSpots) {
-            _hideHotSpots = hideHotSpots;
-            for (ImageViewer viewer : _imageViewers) {
-                viewer.setDisplayHotSpots(!hideHotSpots);
-            }
-        }
     }
 
     public void toggleHideText() {
