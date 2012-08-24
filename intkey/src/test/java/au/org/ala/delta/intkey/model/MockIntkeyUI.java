@@ -152,4 +152,10 @@ public class MockIntkeyUI implements IntkeyUI {
         return new ArrayList<Character>();
     }
 
+    @Override
+    public boolean isAdvancedMode() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
 }

@@ -78,8 +78,9 @@ public abstract class CharacterValueInputDialog extends JDialog {
      */
     protected boolean _cancelPressed;
 
-    public CharacterValueInputDialog(Frame owner, Character ch, ImageSettings imageSettings, boolean displayNumbering, boolean enableImagesButton, boolean imagesStartScaled) {
+    public CharacterValueInputDialog(Frame owner, Character ch, ImageSettings imageSettings, boolean displayNumbering, boolean enableImagesButton, boolean imagesStartScaled, boolean advancedMode) {
         super(owner, true);
+        
         ActionMap actionMap = Application.getInstance().getContext().getActionMap(CharacterValueInputDialog.class, this);
 
         // Have to pull these resource strings out manually as BSAF does not
@@ -100,42 +101,51 @@ public abstract class CharacterValueInputDialog extends JDialog {
         _buttonPanel = new JPanel();
         _buttonPanel.setBorder(new EmptyBorder(0, 20, 10, 20));
         getContentPane().add(_buttonPanel, BorderLayout.SOUTH);
-        _buttonPanel.setLayout(new GridLayout(0, 4, 5, 2));
+        _buttonPanel.setLayout(new GridLayout(0, 4, 5, 5));
 
         JButton _btnOk = new JButton();
         _btnOk.setAction(actionMap.get("characterValueInputDialog_OK"));
-        _buttonPanel.add(_btnOk);
 
         _btnImages = new JButton();
         _btnImages.setAction(actionMap.get("characterValueInputDialog_Images"));
         if (ch.getImageCount() == 0 || !enableImagesButton) {
             _btnImages.setEnabled(false);
         }
-        _buttonPanel.add(_btnImages);
 
         _btnFullText = new JButton();
         _btnFullText.setAction(actionMap.get("characterValueInputDialog_FullText"));
         _btnFullText.setEnabled(true);
-        _buttonPanel.add(_btnFullText);
 
         _btnSearch = new JButton();
         _btnSearch.setAction(actionMap.get("characterValueInputDialog_Search"));
         _btnSearch.setEnabled(true);
-        _buttonPanel.add(_btnSearch);
 
         _btnCancel = new JButton();
         _btnCancel.setAction(actionMap.get("characterValueInputDialog_Cancel"));
-        _buttonPanel.add(_btnCancel);
 
         _btnNotes = new JButton();
         _btnNotes.setAction(actionMap.get("characterValueInputDialog_Notes"));
         _btnNotes.setEnabled(true);
-        _buttonPanel.add(_btnNotes);
 
         _btnHelp = new JButton();
         _btnHelp.setAction(actionMap.get("characterValueInputDialog_Help"));
-        _buttonPanel.add(_btnHelp);
-
+        
+        //Some of the buttons should not be displayed if not in advanced mode
+        if (advancedMode) {
+            _buttonPanel.add(_btnOk);
+            _buttonPanel.add(_btnImages);
+            _buttonPanel.add(_btnFullText);
+            _buttonPanel.add(_btnSearch);
+            _buttonPanel.add(_btnCancel);
+            _buttonPanel.add(_btnNotes);
+            _buttonPanel.add(_btnHelp);
+        } else {
+            _buttonPanel.add(_btnOk);
+            _buttonPanel.add(_btnCancel);
+            _buttonPanel.add(_btnNotes);
+            _buttonPanel.add(_btnImages);
+        }
+        
         _pnlMain = new JPanel();
         _pnlMain.setBorder(new EmptyBorder(10, 10, 10, 10));
         getContentPane().add(_pnlMain, BorderLayout.CENTER);
@@ -215,11 +225,11 @@ public abstract class CharacterValueInputDialog extends JDialog {
     public void characterValueInputDialog_Help(ActionEvent e) {
         UIUtils.displayHelpTopic(USE_DIRECTIVE_HELP_TOPIC_ID, this, e);
     }
-    
+
     public boolean okPressed() {
         return _okPressed;
     }
-    
+
     public boolean cancelPressed() {
         return _cancelPressed;
     }

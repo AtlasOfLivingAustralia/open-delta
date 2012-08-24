@@ -35,7 +35,7 @@ public interface IntkeyUI {
     void handleIdentificationRestarted();
 
     void displayRTFReport(String rtfSource, String title);
-    
+
     void displayRTFReportFromFile(File rtfFile, String title);
 
     void displayErrorMessage(String message);
@@ -43,8 +43,8 @@ public interface IntkeyUI {
     void displayInformationMessage(String message);
 
     void displayBusyMessage(String message);
-    
-    void displayBusyMessageAllowCancelWorker(String message, SwingWorker<?,?> worker);
+
+    void displayBusyMessageAllowCancelWorker(String message, SwingWorker<?, ?> worker);
 
     void removeBusyMessage();
 
@@ -104,10 +104,17 @@ public interface IntkeyUI {
     void quitApplication();
 
     List<Item> getSelectedTaxa();
-    
+
     List<au.org.ala.delta.model.Character> getSelectedCharacters();
-    
+
     void setDemonstrationMode(boolean demonstrationMode);
-    
+
     void displayHelpTopic(String topicID);
+
+    /**
+     * Returns true if the UI is in "advanced" mode
+     * 
+     * @return
+     */
+    boolean isAdvancedMode();
 }

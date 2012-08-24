@@ -41,8 +41,8 @@ public abstract class NumberInputDialog extends CharacterValueInputDialog {
     protected JTextField _txtInput;
     private JLabel _lblUnits;
 
-    public NumberInputDialog(Frame owner, NumericCharacter<?> ch, ImageSettings imageSettings, boolean displayNumbering, boolean enableImagesButton, boolean imagesStartScaled) {
-        super(owner, ch, imageSettings, displayNumbering, enableImagesButton, imagesStartScaled);
+    public NumberInputDialog(Frame owner, NumericCharacter<?> ch, ImageSettings imageSettings, boolean displayNumbering, boolean enableImagesButton, boolean imagesStartScaled, boolean advancedMode) {
+        super(owner, ch, imageSettings, displayNumbering, enableImagesButton, imagesStartScaled, advancedMode);
 
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(NumberInputDialog.class);
         resourceMap.injectFields(this);

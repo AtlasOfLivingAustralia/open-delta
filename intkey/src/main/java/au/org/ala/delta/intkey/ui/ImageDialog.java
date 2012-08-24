@@ -149,7 +149,6 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
      *            initial value of scaling mode (can be changed using the menu).
      *            If true, images will be scaled, if false, they will not be
      *            scaled.
-     * @wbp.parser.constructor
      */
     public ImageDialog(Dialog owner, ImageSettings imageSettings, boolean modal, boolean imagesStartScaled) {
         super(owner, modal, true);

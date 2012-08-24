@@ -142,45 +142,55 @@ public class TaxonSelectionDialog extends ListSelectionDialog implements Searcha
         _fullTextTaxonFormatter = new ItemFormatter(true, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REPLACE, true, false, false);
 
         _panelButtons.setBorder(new EmptyBorder(0, 20, 10, 20));
-        _panelButtons.setLayout(new GridLayout(0, 5, 5, 2));
+        _panelButtons.setLayout(new GridLayout(0, 5, 5, 5));
 
         _btnOk = new JButton();
         _btnOk.setAction(actionMap.get("taxonSelectionDialog_OK"));
-        _panelButtons.add(_btnOk);
 
         _btnSelectAll = new JButton();
         _btnSelectAll.setAction(actionMap.get("taxonSelectionDialog_SelectAll"));
-        _panelButtons.add(_btnSelectAll);
 
         _btnKeywords = new JButton();
         _btnKeywords.setAction(actionMap.get("taxonSelectionDialog_Keywords"));
-        _panelButtons.add(_btnKeywords);
 
         _btnImages = new JButton();
         _btnImages.setAction(actionMap.get("taxonSelectionDialog_Images"));
         _btnImages.setEnabled(false);
-        _panelButtons.add(_btnImages);
 
         _btnSearch = new JButton();
         _btnSearch.setAction(actionMap.get("taxonSelectionDialog_Search"));
-        _panelButtons.add(_btnSearch);
 
         _btnCancel = new JButton();
         _btnCancel.setAction(actionMap.get("taxonSelectionDialog_Cancel"));
-        _panelButtons.add(_btnCancel);
 
         _btnDeselectAll = new JButton();
         _btnDeselectAll.setAction(actionMap.get("taxonSelectionDialog_DeselectAll"));
-        _panelButtons.add(_btnDeselectAll);
 
         _btnFullText = new JButton();
         _btnFullText.setAction(actionMap.get("taxonSelectionDialog_FullText"));
         _btnFullText.setEnabled(false);
-        _panelButtons.add(_btnFullText);
 
         _btnHelp = new JButton();
         _btnHelp.setAction(actionMap.get("taxonSelectionDialog_Help"));
-        _panelButtons.add(_btnHelp);
+
+        // Some of the buttons should not be displayed if not in advanced mode
+        if (_context.getUI().isAdvancedMode()) {
+            _panelButtons.add(_btnOk);
+            _panelButtons.add(_btnSelectAll);
+            _panelButtons.add(_btnKeywords);
+            _panelButtons.add(_btnImages);
+            _panelButtons.add(_btnSearch);
+            _panelButtons.add(_btnCancel);
+            _panelButtons.add(_btnDeselectAll);
+            _panelButtons.add(_btnFullText);
+            _panelButtons.add(_btnHelp);
+        } else {
+            _panelButtons.setLayout(new GridLayout(0, 4, 5, 0));
+            _panelButtons.add(_btnOk);
+            _panelButtons.add(_btnCancel);
+            _panelButtons.add(_btnSelectAll);
+            _panelButtons.add(_btnDeselectAll);
+        }
 
         _selectedTaxa = null;
 
@@ -218,7 +228,7 @@ public class TaxonSelectionDialog extends ListSelectionDialog implements Searcha
                 }
             }
         });
-        
+
         _list.addMouseListener(new MouseAdapter() {
 
             @Override
@@ -231,7 +241,7 @@ public class TaxonSelectionDialog extends ListSelectionDialog implements Searcha
             }
 
         });
-        
+
         _selectedKeywords = new ArrayList<String>();
     }
 
@@ -281,7 +291,8 @@ public class TaxonSelectionDialog extends ListSelectionDialog implements Searcha
         List<Item> taxonInList = new ArrayList<Item>();
         taxonInList.add(taxon);
         try {
-            TaxonImageDialog dlg = new TaxonImageDialog(this, _context.getImageSettings(), taxonInList, false, !_context.displayContinuous(), _context.displayScaled(), _context.getImageSubjects(), _context.getUI());
+            TaxonImageDialog dlg = new TaxonImageDialog(this, _context.getImageSettings(), taxonInList, false, !_context.displayContinuous(), _context.displayScaled(), _context.getImageSubjects(),
+                    _context.getUI());
             dlg.displayImagesForTaxon(taxon, 0);
             ((SingleFrameApplication) Application.getInstance()).show(dlg);
         } catch (IllegalArgumentException ex) {
@@ -327,7 +338,7 @@ public class TaxonSelectionDialog extends ListSelectionDialog implements Searcha
     public List<Item> getSelectedTaxa() {
         return _selectedTaxa;
     }
-    
+
     public List<String> getSelectedKeywords() {
         return _selectedKeywords;
     }

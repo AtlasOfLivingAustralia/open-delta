@@ -132,7 +132,7 @@ public class CharacterSelectionDialog extends ListSelectionDialog implements Sea
         setTitle(MessageFormat.format(title, _directiveName));
 
         _panelButtons.setBorder(new EmptyBorder(0, 20, 10, 20));
-        _panelButtons.setLayout(new GridLayout(0, 5, 5, 2));
+        _panelButtons.setLayout(new GridLayout(0, 5, 5, 5));
 
         _btnOk = new JButton();
         _btnOk.setAction(actionMap.get("characterSelectionDialog_OK"));
@@ -176,6 +176,26 @@ public class CharacterSelectionDialog extends ListSelectionDialog implements Sea
         _btnHelp.setAction(actionMap.get("characterSelectionDialog_Help"));
         _panelButtons.add(_btnHelp);
 
+        // Some of the buttons should not be displayed if not in advanced mode
+        if (_context.getUI().isAdvancedMode()) {
+            _panelButtons.add(_btnOk);
+            _panelButtons.add(_btnSelectAll);
+            _panelButtons.add(_btnKeywords);
+            _panelButtons.add(_btnImages);
+            _panelButtons.add(_btnSearch);
+            _panelButtons.add(_btnCancel);
+            _panelButtons.add(_btnDeselectAll);
+            _panelButtons.add(_btnFullText);
+            _panelButtons.add(_btnNotes);
+            _panelButtons.add(_btnHelp);
+        } else {
+            _panelButtons.setLayout(new GridLayout(0, 4, 5, 0));
+            _panelButtons.add(_btnOk);
+            _panelButtons.add(_btnCancel);
+            _panelButtons.add(_btnSelectAll);
+            _panelButtons.add(_btnDeselectAll);
+        }
+
         _selectedCharacters = null;
 
         if (characters != null) {
@@ -203,7 +223,7 @@ public class CharacterSelectionDialog extends ListSelectionDialog implements Sea
                 }
             }
         });
-        
+
         _list.addMouseListener(new MouseAdapter() {
 
             @Override

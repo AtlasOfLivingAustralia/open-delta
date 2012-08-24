@@ -96,36 +96,48 @@ public abstract class KeywordSelectionDialog extends ListSelectionDialog impleme
 
         _panelInnerButtons = new JPanel();
         _panelButtons.add(_panelInnerButtons, BorderLayout.CENTER);
-        _panelInnerButtons.setLayout(new GridLayout(0, 5, 0, 5));
+        _panelInnerButtons.setLayout(new GridLayout(0, 5, 5, 5));
 
         _btnOk = new JButton();
-        _panelInnerButtons.add(_btnOk);
         _btnOk.setAction(actionMap.get("keywordSelectionDialog_OK"));
 
         _btnDeselectAll = new JButton("Deselect All");
-        _panelInnerButtons.add(_btnDeselectAll);
+
         _btnDeselectAll.setAction(actionMap.get("keywordSelectionDialog_DeselectAll"));
 
         _btnList = new JButton();
-        _panelInnerButtons.add(_btnList);
         _btnList.setAction(actionMap.get("keywordSelectionDialog_List"));
         _btnList.setEnabled(false);
 
         _btnImages = new JButton();
-        _panelInnerButtons.add(_btnImages);
         _btnImages.setAction(actionMap.get("keywordSelectionDialog_Images"));
 
         _btnSearch = new JButton();
-        _panelInnerButtons.add(_btnSearch);
         _btnSearch.setAction(actionMap.get("keywordSelectionDialog_Search"));
 
         _btnCancel = new JButton();
-        _panelInnerButtons.add(_btnCancel);
         _btnCancel.setAction(actionMap.get("keywordSelectionDialog_Cancel"));
 
         _btnHelp = new JButton();
-        _panelInnerButtons.add(_btnHelp);
         _btnHelp.setAction(actionMap.get("keywordSelectionDialog_Help"));
+        
+        // Some of the buttons should not be displayed if not in advanced mode
+        if (_context.getUI().isAdvancedMode()) {
+            _panelInnerButtons.add(_btnOk);
+            _panelInnerButtons.add(_btnDeselectAll);
+            _panelInnerButtons.add(_btnList);
+            _panelInnerButtons.add(_btnImages);
+            _panelInnerButtons.add(_btnSearch);
+            _panelInnerButtons.add(_btnCancel);
+            _panelInnerButtons.add(_btnHelp);
+        } else {
+            _panelInnerButtons.setLayout(new GridLayout(0, 4, 5, 5));
+            _panelInnerButtons.add(_btnOk);
+            _panelInnerButtons.add(_btnCancel);
+            _panelInnerButtons.add(_btnDeselectAll);
+            _panelInnerButtons.add(_btnList);
+
+        }
 
         _panelRadioButtons = new JPanel();
         FlowLayout flowLayout = (FlowLayout) _panelRadioButtons.getLayout();

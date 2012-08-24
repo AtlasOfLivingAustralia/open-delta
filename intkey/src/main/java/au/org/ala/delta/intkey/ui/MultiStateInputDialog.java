@@ -104,8 +104,8 @@ public class MultiStateInputDialog extends CharacterValueInputDialog implements 
      *            true if images should start scaled.
      */
     public MultiStateInputDialog(Frame owner, MultiStateCharacter ch, Set<Integer> initialSelectedStates, au.org.ala.delta.model.Character dependentCharacter, ImageSettings imageSettings,
-            boolean displayNumbering, boolean enableImagesButton, boolean imagesStartScaled) {
-        super(owner, ch, imageSettings, displayNumbering, enableImagesButton, imagesStartScaled);
+            boolean displayNumbering, boolean enableImagesButton, boolean imagesStartScaled, boolean advancedMode) {
+        super(owner, ch, imageSettings, displayNumbering, enableImagesButton, imagesStartScaled, advancedMode);
 
         ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(MultiStateInputDialog.class);
         resourceMap.injectFields(this);

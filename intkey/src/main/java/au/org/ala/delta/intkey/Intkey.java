@@ -2496,6 +2496,11 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     public void displayHelpTopic(String topicID) {
         _helpController.displayHelpTopic(getMainFrame(), topicID);
     }
+    
+    @Override
+    public boolean isAdvancedMode() {
+        return _advancedMode;
+    }
 
     // ================================== DirectivePopulator methods
     // ===================================================================
@@ -2670,7 +2675,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         if (inputValues == null) {
             TextInputDialog dlg = new TextInputDialog(getMainFrame(), ch, currentValues, _context.getImageSettings(), _context.displayNumbering(),
-                    _context.getImageDisplayMode() != ImageDisplayMode.OFF, _context.displayScaled());
+                    _context.getImageDisplayMode() != ImageDisplayMode.OFF, _context.displayScaled(), _advancedMode);
             UIUtils.showDialog(dlg);
             if (dlg.okPressed()) {
                 inputValues = dlg.getInputData();
@@ -2705,7 +2710,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         if (rawInputValues == null) {
             IntegerInputDialog dlg = new IntegerInputDialog(getMainFrame(), ch, currentValues, _context.getImageSettings(), _context.displayNumbering(),
-                    _context.getImageDisplayMode() != ImageDisplayMode.OFF, _context.displayScaled());
+                    _context.getImageDisplayMode() != ImageDisplayMode.OFF, _context.displayScaled(), _advancedMode);
             UIUtils.showDialog(dlg);
             if (dlg.okPressed()) {
                 rawInputValues = dlg.getInputData();
@@ -2757,7 +2762,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         if (selectedValue == null) {
             RealInputDialog dlg = new RealInputDialog(getMainFrame(), ch, currentValues, _context.getImageSettings(), _context.displayNumbering(),
-                    _context.getImageDisplayMode() != ImageDisplayMode.OFF, _context.displayScaled());
+                    _context.getImageDisplayMode() != ImageDisplayMode.OFF, _context.displayScaled(), _advancedMode);
             UIUtils.showDialog(dlg);
             if (dlg.okPressed()) {
                 selectedValue = dlg.getInputData();
@@ -2792,7 +2797,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         if (selectedStates == null) {
             MultiStateInputDialog dlg = new MultiStateInputDialog(getMainFrame(), ch, currentSelectedStates, dependentCharacter, _context.getImageSettings(), _context.displayNumbering(),
-                    _context.getImageDisplayMode() != ImageDisplayMode.OFF, _context.displayScaled());
+                    _context.getImageDisplayMode() != ImageDisplayMode.OFF, _context.displayScaled(), _advancedMode);
             UIUtils.showDialog(dlg);
             if (dlg.okPressed()) {
                 return dlg.getInputData();
