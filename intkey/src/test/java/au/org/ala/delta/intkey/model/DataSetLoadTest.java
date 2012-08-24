@@ -86,6 +86,7 @@ public class DataSetLoadTest extends IntkeyDatasetTestCase {
         keywordsWithoutSystemDefinedOnes.remove(IntkeyContext.CHARACTER_KEYWORD_AVAILABLE);
         keywordsWithoutSystemDefinedOnes.remove(IntkeyContext.CHARACTER_KEYWORD_USED);
         keywordsWithoutSystemDefinedOnes.remove(IntkeyContext.CHARACTER_KEYWORD_NONE);
+        keywordsWithoutSystemDefinedOnes.remove(IntkeyContext.CHARACTER_KEYWORD_SELECTED);
 
         assertEquals(87, context.getDataset().getNumberOfCharacters());
         assertEquals(14, context.getDataset().getNumberOfTaxa());

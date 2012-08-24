@@ -840,7 +840,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
         
         //Include "selected" keyword if there are any selected characters
-        if (!_appUI.getSelectedCharacters().isEmpty()) {
+        if (_appUI != null && !_appUI.getSelectedCharacters().isEmpty()) {
             retList.add(CHARACTER_KEYWORD_SELECTED);
         }
 
@@ -1004,7 +1004,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
 
         // Include "selected" keyword if there are selected taxa
-        if (!_appUI.getSelectedTaxa().isEmpty()) {
+        if (_appUI != null && !_appUI.getSelectedTaxa().isEmpty()) {
             retList.add(TAXON_KEYWORD_SELECTED);
         }
 

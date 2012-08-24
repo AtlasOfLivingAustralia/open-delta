@@ -16,6 +16,7 @@ package au.org.ala.delta.intkey.model;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -121,7 +122,7 @@ public class MockIntkeyUI implements IntkeyUI {
 
     @Override
     public List<Item> getSelectedTaxa() {
-        return null;
+        return new ArrayList<Item>();
     }
 
     @Override
@@ -148,7 +149,7 @@ public class MockIntkeyUI implements IntkeyUI {
     @Override
     public List<Character> getSelectedCharacters() {
         // TODO Auto-generated method stub
-        return null;
+        return new ArrayList<Character>();
     }
 
 }
