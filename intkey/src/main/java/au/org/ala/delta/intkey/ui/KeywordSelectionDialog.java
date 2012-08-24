@@ -21,6 +21,8 @@ import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.ActionMap;
 import javax.swing.ButtonGroup;
@@ -161,6 +163,19 @@ public abstract class KeywordSelectionDialog extends ListSelectionDialog impleme
                     _btnList.setEnabled(false);
                 }
             }
+        });
+        
+        _list.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() > 1) {
+                    // Treat double click on a list item as the ok button being
+                    // pressed.
+                    keywordSelectionDialog_OK();
+                }
+            }
+
         });
 
         _context = context;

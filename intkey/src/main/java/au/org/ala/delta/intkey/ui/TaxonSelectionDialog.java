@@ -18,6 +18,8 @@ import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -215,6 +217,19 @@ public class TaxonSelectionDialog extends ListSelectionDialog implements Searcha
                     _btnFullText.setEnabled(false);
                 }
             }
+        });
+        
+        _list.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() > 1) {
+                    // Treat double click on a list item as the ok button being
+                    // pressed.
+                    taxonSelectionDialog_OK();
+                }
+            }
+
         });
         
         _selectedKeywords = new ArrayList<String>();

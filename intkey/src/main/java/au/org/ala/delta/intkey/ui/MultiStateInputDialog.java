@@ -42,6 +42,9 @@ import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
 import java.awt.SystemColor;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
 import javax.swing.border.EmptyBorder;
 
 public class MultiStateInputDialog extends CharacterValueInputDialog implements SearchableListDialog {
@@ -147,6 +150,20 @@ public class MultiStateInputDialog extends CharacterValueInputDialog implements 
         }
 
         _list.setModel(_listModel);
+
+        _list.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() > 1) {
+                    // Treat double click on a list item as the ok button being
+                    // pressed.
+                    _okPressed = true;
+                    handleBtnOKClicked();
+                }
+            }
+
+        });
 
         // Select the list items that correspond to the initial selected states.
         if (initialSelectedStates != null) {
