@@ -49,6 +49,7 @@ public class DifferencesDirectiveTest extends IntkeyDatasetTestCase {
 
     /**
      * Test the results of a differences report using the default parameters
+     * 
      * @throws Exception
      */
     @Test
@@ -65,8 +66,8 @@ public class DifferencesDirectiveTest extends IntkeyDatasetTestCase {
         taxa.add(taxonApricot);
         taxa.add(taxonPlum);
 
-        List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, ds.getCharactersAsList(), taxa, null, DEFAULT_MATCH_UNKNOWNS, DEFAULT_MATCH_INAPPLICABLES,
-                DEFAULT_MATCH_TYPE, false);
+        List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, ds.getCharactersAsList(), taxa, null, DEFAULT_MATCH_UNKNOWNS,
+                DEFAULT_MATCH_INAPPLICABLES, DEFAULT_MATCH_TYPE, false);
 
         assertEquals(6, differingChars.size());
         assertTrue(differingChars.contains(ds.getCharacter(1)));
@@ -78,7 +79,9 @@ public class DifferencesDirectiveTest extends IntkeyDatasetTestCase {
     }
 
     /**
-     * Test the results of a differences report, omitting text characters from the results.
+     * Test the results of a differences report, omitting text characters from
+     * the results.
+     * 
      * @throws Exception
      */
     @Test
@@ -95,8 +98,8 @@ public class DifferencesDirectiveTest extends IntkeyDatasetTestCase {
         taxa.add(taxonApricot);
         taxa.add(taxonPlum);
 
-        List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, ds.getCharactersAsList(), taxa, null, DEFAULT_MATCH_UNKNOWNS, DEFAULT_MATCH_INAPPLICABLES,
-                DEFAULT_MATCH_TYPE, true);
+        List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, ds.getCharactersAsList(), taxa, null, DEFAULT_MATCH_UNKNOWNS,
+                DEFAULT_MATCH_INAPPLICABLES, DEFAULT_MATCH_TYPE, true);
 
         assertEquals(5, differingChars.size());
         assertTrue(differingChars.contains(ds.getCharacter(1)));
@@ -107,7 +110,9 @@ public class DifferencesDirectiveTest extends IntkeyDatasetTestCase {
     }
 
     /**
-     * Test the results of a differences report, including the current specimen in the comparsion
+     * Test the results of a differences report, including the current specimen
+     * in the comparsion
+     * 
      * @throws Exception
      */
     @Test
@@ -124,14 +129,17 @@ public class DifferencesDirectiveTest extends IntkeyDatasetTestCase {
 
         // note that the differences directive automatically sets match
         // inapplicables and unknown to false if the match type is exact.
-        List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, ds.getCharactersAsList(), remainingTaxa, specimen, false, false, MatchType.EXACT, false);
+        List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, ds.getCharactersAsList(), remainingTaxa, specimen, false, false, MatchType.EXACT,
+                false);
 
         assertEquals(1, differingChars.size());
         assertTrue(differingChars.contains(chUpperGlumeNerveNumber));
     }
 
     /**
-     * Second test of the results of a differences report using the default parameters
+     * Second test of the results of a differences report using the default
+     * parameters
+     * 
      * @throws Exception
      */
     @Test
@@ -139,7 +147,8 @@ public class DifferencesDirectiveTest extends IntkeyDatasetTestCase {
         IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
         IntkeyDataset ds = context.getDataset();
 
-        List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, ds.getCharactersAsList(), ds.getItemsAsList(), null, DEFAULT_MATCH_UNKNOWNS, DEFAULT_MATCH_INAPPLICABLES, MatchType.OVERLAP, false);
+        List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, ds.getCharactersAsList(), ds.getItemsAsList(), null, DEFAULT_MATCH_UNKNOWNS,
+                DEFAULT_MATCH_INAPPLICABLES, MatchType.OVERLAP, false);
 
         assertEquals(71, differingChars.size());
         assertFalse(differingChars.contains(ds.getCharacter(6)));
@@ -157,9 +166,10 @@ public class DifferencesDirectiveTest extends IntkeyDatasetTestCase {
         assertFalse(differingChars.contains(ds.getCharacter(43)));
         assertFalse(differingChars.contains(ds.getCharacter(83)));
     }
-    
+
     /**
      * Test using the EXACT match type
+     * 
      * @throws Exception
      */
     @Test
@@ -169,7 +179,8 @@ public class DifferencesDirectiveTest extends IntkeyDatasetTestCase {
 
         // note that the differences directive automatically sets match
         // inapplicables and unknown to false if the match type is exact.
-        List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, ds.getCharactersAsList(), ds.getItemsAsList(), null, false, false, MatchType.EXACT, false);
+        List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, ds.getCharactersAsList(), ds.getItemsAsList(), null, false, false, MatchType.EXACT,
+                false);
 
         assertEquals(85, differingChars.size());
         assertFalse(differingChars.contains(ds.getCharacter(33)));
@@ -178,6 +189,7 @@ public class DifferencesDirectiveTest extends IntkeyDatasetTestCase {
 
     /**
      * Test using the SUBSET matchtype
+     * 
      * @throws Exception
      */
     @Test
@@ -185,10 +197,8 @@ public class DifferencesDirectiveTest extends IntkeyDatasetTestCase {
         IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
         IntkeyDataset ds = context.getDataset();
 
-        
-        
-        List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, ds.getCharactersAsList(), ds.getItemsAsList(), null, false,
-                false, MatchType.SUBSET, false);
+        List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, ds.getCharactersAsList(), ds.getItemsAsList(), null, false, false, MatchType.SUBSET,
+                false);
 
         assertEquals(82, differingChars.size());
         assertFalse(differingChars.contains(ds.getCharacter(10)));
@@ -197,9 +207,10 @@ public class DifferencesDirectiveTest extends IntkeyDatasetTestCase {
         assertFalse(differingChars.contains(ds.getCharacter(36)));
         assertFalse(differingChars.contains(ds.getCharacter(55)));
     }
-    
+
     /**
      * Test using the SUBSET match type to compare real characters
+     * 
      * @throws Exception
      */
     @Test
@@ -210,18 +221,18 @@ public class DifferencesDirectiveTest extends IntkeyDatasetTestCase {
         List<Item> taxa = new ArrayList<Item>();
         taxa.add(ds.getItem(8));
         taxa.add(ds.getItem(9));
-        
+
         List<au.org.ala.delta.model.Character> characters = new ArrayList<Character>();
         characters.add(ds.getCharacter(26));
-        
-        List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, characters, taxa, null, false,
-                false, MatchType.SUBSET, false);
+
+        List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, characters, taxa, null, false, false, MatchType.SUBSET, false);
 
         assertTrue(differingChars.isEmpty());
     }
 
     /**
      * Test unknowns do not match any value
+     * 
      * @throws Exception
      */
     @Test
@@ -244,6 +255,7 @@ public class DifferencesDirectiveTest extends IntkeyDatasetTestCase {
 
     /**
      * Test inapplicables do not match any value
+     * 
      * @throws Exception
      */
     @Test
@@ -251,8 +263,8 @@ public class DifferencesDirectiveTest extends IntkeyDatasetTestCase {
         IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
         IntkeyDataset ds = context.getDataset();
 
-        List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, ds.getCharactersAsList(), ds.getItemsAsList(), null, DEFAULT_MATCH_UNKNOWNS,
-                false, MatchType.OVERLAP, false);
+        List<au.org.ala.delta.model.Character> differingChars = DiffUtils.determineDifferingCharactersForTaxa(ds, ds.getCharactersAsList(), ds.getItemsAsList(), null, DEFAULT_MATCH_UNKNOWNS, false,
+                MatchType.OVERLAP, false);
 
         assertEquals(81, differingChars.size());
         assertFalse(differingChars.contains(ds.getCharacter(6)));
@@ -262,11 +274,41 @@ public class DifferencesDirectiveTest extends IntkeyDatasetTestCase {
         assertFalse(differingChars.contains(ds.getCharacter(36)));
         assertFalse(differingChars.contains(ds.getCharacter(55)));
     }
-    
-    //TODO test include/exclude characters
-    //TODO test include/exclude taxa
-    
-    //TODO test character inapplicable for all taxa
-    //TODO test character unknown for all taxa
+
+    /**
+     * Test exact match for text. This previously failed.
+     */
+    @Test
+    public void testExactTextMatch() throws Exception {
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
+        IntkeyDataset ds = context.getDataset();
+        List<Item> taxa = new ArrayList<Item>();
+        taxa.add(ds.getItem(1));
+        taxa.add(ds.getItem(2));
+
+        assertTrue(DiffUtils.compareForTaxa(ds, ds.getCharacter(87), taxa, null, false, false, MatchType.EXACT));
+    }
+
+    /**
+     * An unknown and inapplicable character should match each other
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testUnknownMatchesInapplicable() throws Exception {
+        IntkeyContext context = loadDataset("/dataset/sample/intkey.ink");
+        IntkeyDataset ds = context.getDataset();
+        List<Item> taxa = new ArrayList<Item>();
+        taxa.add(ds.getItem(1));
+        taxa.add(ds.getItem(2));
+
+        assertTrue(DiffUtils.compareForTaxa(ds, ds.getCharacter(29), taxa, null, false, false, MatchType.EXACT));
+    }
+
+    // TODO test include/exclude characters
+    // TODO test include/exclude taxa
+
+    // TODO test character inapplicable for all taxa
+    // TODO test character unknown for all taxa
 
 }

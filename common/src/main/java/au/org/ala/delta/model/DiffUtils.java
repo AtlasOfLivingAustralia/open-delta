@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.FloatRange;
 
 /**
@@ -146,6 +147,11 @@ public class DiffUtils {
             }
         }
 
+        // If all attributes are either unknown or inapplicable, this is
+        // considered a match.
+        if (countUnknown + countNotApplicable == taxa.size()) {
+            return true;
+        }
         if (countUnknown > 0 && !matchUnknowns) {
             return countUnknown == taxa.size();
         } else if (countNotApplicable > 0 && !matchInapplicables) {
@@ -385,8 +391,8 @@ public class DiffUtils {
     }
 
     /**
-     * Compare two multistate values. Both
-     * values must correspond to the same character
+     * Compare two multistate values. Both values must correspond to the same
+     * character
      * 
      * @param attr1
      *            first multistate value
@@ -418,8 +424,8 @@ public class DiffUtils {
     }
 
     /**
-     * Compare two integer values. Both values
-     * must correspond to the same character
+     * Compare two integer values. Both values must correspond to the same
+     * character
      * 
      * @param attr1
      *            first integer value
@@ -452,6 +458,14 @@ public class DiffUtils {
 
     private static boolean doCompareMultiStateOrInteger(Set<Integer> attr1Values, Set<Integer> attr2Values, boolean attr1Unknown, boolean attr2Unknown, boolean attr1Inapplicable,
             boolean attr2Inapplicable, boolean matchUnknowns, boolean matchInapplicables, MatchType matchType) {
+
+        // If both attributes are unknown or inapplicable this is considered a
+        // match. Otherwise, the return value depends on setting for
+        // matchInapplicable or matchUnknown.
+        if ((attr1Unknown || attr1Inapplicable) && (attr2Unknown || attr2Inapplicable)) {
+            return true;
+        }
+
         if ((attr1Unknown && attr1Inapplicable) || (attr2Unknown && attr2Inapplicable)) {
             return matchInapplicables;
         }
@@ -486,8 +500,8 @@ public class DiffUtils {
     }
 
     /**
-     * Compare two real values. Both values must
-     * correspond to the same character
+     * Compare two real values. Both values must correspond to the same
+     * character
      * 
      * @param attr1
      *            first real value
@@ -520,6 +534,14 @@ public class DiffUtils {
 
     private static boolean doCompareRange(FloatRange attr1Range, FloatRange attr2Range, boolean attr1Unknown, boolean attr2Unknown, boolean attr1Inapplicable, boolean attr2Inapplicable,
             boolean matchUnknowns, boolean matchInapplicables, MatchType matchType) {
+
+        // If both attributes are unknown or inapplicable this is considered a
+        // match. Otherwise, the return value depends on setting for
+        // matchInapplicable or matchUnknown.
+        if ((attr1Unknown || attr1Inapplicable) && (attr2Unknown || attr2Inapplicable)) {
+            return true;
+        }
+
         if ((attr1Unknown && attr1Inapplicable) || (attr2Unknown && attr2Inapplicable)) {
             return matchInapplicables;
         }
@@ -549,8 +571,8 @@ public class DiffUtils {
     }
 
     /**
-     * Compare two text values. Both values must
-     * correspond to the same character The following rules apply:
+     * Compare two text values. Both values must correspond to the same
+     * character The following rules apply:
      * 
      * 1. MATCH INAPPLICABLE and MATCH UNKNOWN are ignored. Inapplicables and
      * unknowns are treated as a mismatch. 2. The text to be found may consist
@@ -608,7 +630,14 @@ public class DiffUtils {
     private static boolean doCompareText(List<String> attr1Values, String attr2Value, boolean attr1Unknown, boolean attr2Unknown, boolean attr1Inapplicable, boolean attr2Inapplicable,
             boolean matchUnknowns, boolean matchInapplicables, MatchType matchType) {
 
-        // Unknown and inapplicable always equate to no match for text
+        // If both attributes are unknown or inapplicable this is considered a
+        // match.
+        if ((attr1Unknown || attr1Inapplicable) && (attr2Unknown || attr2Inapplicable)) {
+            return true;
+        }
+
+        // One attribute unknown and inapplicable always equates to no match for
+        // text
         // attributes
         if ((attr1Unknown && attr1Inapplicable) || (attr2Unknown && attr2Inapplicable)) {
             return false;
@@ -620,15 +649,13 @@ public class DiffUtils {
 
         boolean match = false;
 
-        // Remove surrounding angle brackets from attribute text.
-        attr2Value = attr2Value.substring(1, attr2Value.length() - 1).toLowerCase();
-
         switch (matchType) {
         case EXACT:
+            match = StringUtils.join(attr1Values, "/").toLowerCase().equals(attr2Value.toLowerCase());
         case SUBSET:
             match = true;
             for (String txtVal : attr1Values) {
-                if (!attr2Value.contains(txtVal.toLowerCase())) {
+                if (!attr2Value.toLowerCase().contains(txtVal.toLowerCase())) {
                     match = false;
                     break;
                 }
@@ -636,7 +663,7 @@ public class DiffUtils {
             break;
         case OVERLAP:
             for (String txtVal : attr1Values) {
-                if (attr2Value.contains(txtVal.toLowerCase())) {
+                if (attr2Value.toLowerCase().contains(txtVal.toLowerCase())) {
                     match = true;
                     break;
                 }

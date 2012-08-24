@@ -27,15 +27,20 @@ import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.DiffUtils;
+import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MatchType;
+import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.RealCharacter;
 import au.org.ala.delta.model.Specimen;
+import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.rtf.RTFBuilder;
+import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.rtf.RTFWriter;
 import au.org.ala.delta.util.Pair;
 
@@ -145,7 +150,14 @@ public class DifferencesDirectiveInvocation extends LongRunningIntkeyDirectiveIn
 
                 List<Attribute> attrs = context.getDataset().getAllAttributesForCharacter(ch.getCharacterId());
 
+                // Display difference in bold if differing values do not overlap
+                boolean differencesOverlap = DiffUtils.compareForTaxa(context.getDataset(), ch, _taxa, specimen, true, true, MatchType.OVERLAP);
+
                 String charDescription = _characterFormatter.formatCharacterDescription(ch);
+                if (!differencesOverlap) {
+                    charDescription = RTFUtils.formatTextBold(charDescription);
+                }
+
                 rtfWriter.writeText(charDescription);
 
                 rtfWriter.increaseIndent();
@@ -156,7 +168,12 @@ public class DifferencesDirectiveInvocation extends LongRunningIntkeyDirectiveIn
 
                     rtfWriter.increaseIndent();
 
-                    rtfWriter.writeText(_attributeFormatter.formatAttribute(attr));
+                    String formattedAttributeDescription = _attributeFormatter.formatAttribute(attr);
+                    if (!differencesOverlap) {
+                        formattedAttributeDescription = RTFUtils.formatTextBold(formattedAttributeDescription);
+                    }
+
+                    rtfWriter.writeText(formattedAttributeDescription);
 
                     rtfWriter.decreaseIndent();
                 }
@@ -169,7 +186,12 @@ public class DifferencesDirectiveInvocation extends LongRunningIntkeyDirectiveIn
 
                     rtfWriter.increaseIndent();
 
-                    rtfWriter.writeText(_attributeFormatter.formatAttribute(taxonAttr));
+                    String formattedAttributeDescription = _attributeFormatter.formatAttribute(taxonAttr);
+                    if (!differencesOverlap) {
+                        formattedAttributeDescription = RTFUtils.formatTextBold(formattedAttributeDescription);
+                    }
+
+                    rtfWriter.writeText(formattedAttributeDescription);
 
                     rtfWriter.decreaseIndent();
 
