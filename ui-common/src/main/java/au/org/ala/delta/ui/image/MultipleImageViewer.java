@@ -15,8 +15,6 @@
 package au.org.ala.delta.ui.image;
 
 import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Cursor;
 import java.awt.Window;
 import java.awt.image.BufferedImage;
 import java.net.URL;
@@ -25,11 +23,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
 
 import org.jdesktop.application.Action;
 
@@ -41,7 +37,6 @@ import au.org.ala.delta.ui.image.ImagePanel.ScalingMode;
 public class MultipleImageViewer extends JPanel {
 
     private static final long serialVersionUID = 6901754518169951771L;
-    private CardLayout _layout;
     private ScalingMode _scalingMode;
     private List<ImageViewer> _imageViewers;
     private Map<String, ImageViewer> _idToViewerMap;
@@ -52,24 +47,23 @@ public class MultipleImageViewer extends JPanel {
     private boolean _hideTextOverlays;
 
     private OverlaySelectionObserver _observer;
-    
+
     /**
      * The image viewer that is currently visible
      */
     private ImageViewer _visibleViewer;
-    
+
     /**
      * The image viewer that was previously visible
      */
     private ImageViewer _previouslyVisibleViewer;
-    
+
     private Image _visibleImage;
 
     public MultipleImageViewer(ImageSettings imageSettings) {
         _imageSettings = imageSettings;
-        _layout = new CardLayout();
         _contentPanel = new JPanel();
-        _contentPanel.setLayout(_layout);
+        _contentPanel.setLayout(new BorderLayout());
         this.setLayout(new BorderLayout());
         this.add(_contentPanel, BorderLayout.CENTER);
         _imageViewers = new ArrayList<ImageViewer>();
@@ -101,14 +95,13 @@ public class MultipleImageViewer extends JPanel {
         _idToImageMap.put(imageId, image);
 
         _imageViewers.add(viewer);
-        _contentPanel.add(viewer, image.getFileName());
     }
 
     public void showImage(String imageId) {
         if (!_idToViewerMap.containsKey(imageId)) {
             throw new IllegalArgumentException("Image " + imageId + " not present in MultipleImageViewer");
         }
-        
+
         if (_visibleViewer != null) {
             _previouslyVisibleViewer = _visibleViewer;
         }
@@ -116,7 +109,9 @@ public class MultipleImageViewer extends JPanel {
         _visibleViewer = _idToViewerMap.get(imageId);
         _visibleImage = _idToImageMap.get(imageId);
 
-        _layout.show(_contentPanel, imageId);
+        _contentPanel.removeAll();
+        _contentPanel.add(_visibleViewer, BorderLayout.CENTER);
+        revalidate();
     }
 
     public boolean hasImage(String imageId) {
@@ -196,7 +191,7 @@ public class MultipleImageViewer extends JPanel {
     public ImageViewer getVisibleViewer() {
         return _visibleViewer;
     }
-    
+
     public ImageViewer getPreviouslyVisibleViewer() {
         return _previouslyVisibleViewer;
     }
@@ -204,12 +199,9 @@ public class MultipleImageViewer extends JPanel {
     public Image getVisibleImage() {
         return _visibleImage;
     }
-    
-    
+
     public List<ImageViewer> getViewersList() {
         return _imageViewers;
     }
-    
-    
 
 }

@@ -285,8 +285,9 @@ public class MultipleImagesDialog extends IntkeyDialog {
         taxonInList.add(taxon);
 
         try {
-            TaxonImageDialog dlg = new TaxonImageDialog(UIUtils.getMainFrame(), _imageSettings, taxonInList, false, !_displayContinuous, !_displayScaled, _imageSubjects, _mainUI);
+            TaxonImageDialog dlg = new TaxonImageDialog(UIUtils.getMainFrame(), _imageSettings, taxonInList, false, !_displayContinuous, _displayScaled, _imageSubjects, _mainUI);
             dlg.displayImagesForTaxon(taxon, taxon.getImages().indexOf(img));
+            dlg.setAutoSizeAndCenterFirstImageDisplayed(false);
             ((SingleFrameApplication) Application.getInstance()).show(dlg);
         } catch (IllegalArgumentException ex) {
             // Display error message if unable to display

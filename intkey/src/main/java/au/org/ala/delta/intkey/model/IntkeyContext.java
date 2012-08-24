@@ -216,6 +216,12 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     private List<String> _logCache;
     private List<String> _journalCache;
+    
+    /**
+     * The directory used to cache images and files downloaded from remote locations on the 
+     * imagepath and infopath
+     */
+    private File _fileCacheDirectory;
 
     /**
      * Constructor
@@ -1558,6 +1564,8 @@ public class IntkeyContext extends AbstractDeltaContext {
         imageSettings.setResourcePaths(_imagePathLocations);
 
         imageSettings.setDatasetName(_dataset.getHeading());
+        
+        imageSettings.setCacheDirectory(_fileCacheDirectory);
 
         return imageSettings;
     }
@@ -1568,6 +1576,8 @@ public class IntkeyContext extends AbstractDeltaContext {
         infoSettings.setDataSetPath(getDatasetDirectory().getAbsolutePath());
 
         infoSettings.setResourcePaths(_infoPathLocations);
+        
+        infoSettings.setCacheDirectory(_fileCacheDirectory);
 
         return infoSettings;
     }
@@ -1988,6 +1998,10 @@ public class IntkeyContext extends AbstractDeltaContext {
     public synchronized List<String> getLogEntries() {
         return new ArrayList<String>(_logCache);
     }
+    
+    public synchronized File getFileCacheDirectory() {
+        return _fileCacheDirectory;
+    }
 
     private void updateUI() {
         // Don't update the UI in the middle of processing an input file. Wait
@@ -2041,6 +2055,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         if (inkFileLocation != null && initializationFileLocation != null && dataFileLocation != null) {
             File tempDir = new File(FileUtils.getTempDirectory(), UUID.randomUUID().toString());
             tempDir.mkdir();
+            tempDir.deleteOnExit();
 
             String[] dataFileLocationTokens = dataFileLocation.toString().split("/");
             String dataFileName = dataFileLocationTokens[dataFileLocationTokens.length - 1];
@@ -2094,6 +2109,13 @@ public class IntkeyContext extends AbstractDeltaContext {
         } else {
             processInitializationFile(startupFile);
         }
+        
+        // create a directory to save cached versions of any images or files downloaded for this dataset from
+        // remote locations on the image path or info path. Use a random UUID as the name of the directory
+        _fileCacheDirectory = new File(FileUtils.getTempDirectory(), UUID.randomUUID().toString());
+        _fileCacheDirectory.mkdir();
+        _fileCacheDirectory.deleteOnExit();
+        
     }
 
 }

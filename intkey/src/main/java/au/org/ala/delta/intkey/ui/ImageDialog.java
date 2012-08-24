@@ -111,6 +111,13 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
     protected boolean _scaleImages;
 
     /**
+     * If false, the dialog will not be resized or centered when displaying the first image
+     * in the dialog. This is used when displaying multiple image dialogs at
+     * once, which need to be tiled.
+     */
+    protected boolean _autoSizeAndCenterFirstImageDisplayed;
+
+    /**
      * ctor
      * 
      * @param owner
@@ -161,8 +168,9 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
         _imageDescriptionFormatter = new Formatter(CommentStrippingMode.RETAIN, AngleBracketHandlingMode.RETAIN, true, false);
 
         _scaleImages = imagesStartScaled;
-        
-        setMinimumSize(new Dimension(100, 100));
+        _autoSizeAndCenterFirstImageDisplayed = true;
+
+        setMinimumSize(new Dimension(200, 200));
 
         buildMenu();
     }
@@ -457,6 +465,9 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
     }
 
     protected void handleNewImageSelected() {
+        // is this the first image displayed?
+        boolean firstImage = _multipleImageViewer.getPreviouslyVisibleViewer() == null;
+
         _mnuItNextImage.setEnabled(!(_multipleImageViewer.getVisibleImage() == _images.get(_images.size() - 1)));
         _mnuItPreviousImage.setEnabled(!(_multipleImageViewer.getVisibleImage() == _images.get(0)));
 
@@ -464,7 +475,10 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
         JMenuItem mnuIt = (JMenuItem) _mnuSubject.getMenuComponent(viewedIndex);
         mnuIt.setSelected(true);
 
-        fitToImage();
+        if (!firstImage || _autoSizeAndCenterFirstImageDisplayed) {
+            fitToImage();
+            UIUtils.centerDialog(this, this.getParent());
+        }
         replaySound();
     }
 
@@ -538,5 +552,14 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
 
     public Set<String> getSelectedKeywords() {
         return _selectedKeywords;
+    }
+
+    /**
+     * If set to false, the dialog will not be centered resized to fit the first image displayed
+     * in the dialog. This is used when displaying multiple image dialogs at
+     * once, which need to be tiled.
+     */
+    public void setAutoSizeAndCenterFirstImageDisplayed(boolean autoSizeAndCenterFirstImageDisplayed) {
+        _autoSizeAndCenterFirstImageDisplayed = autoSizeAndCenterFirstImageDisplayed;
     }
 }

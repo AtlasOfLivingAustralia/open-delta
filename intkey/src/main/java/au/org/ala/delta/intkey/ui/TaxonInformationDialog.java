@@ -14,6 +14,39 @@
  ******************************************************************************/
 package au.org.ala.delta.intkey.ui;
 
+import java.awt.BorderLayout;
+import java.awt.Desktop;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.ActionMap;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.MouseInputAdapter;
+
+import org.apache.commons.lang.StringUtils;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.Resource;
+import org.jdesktop.application.ResourceMap;
+import org.jdesktop.application.SingleFrameApplication;
+
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.ResourceSettings;
@@ -24,23 +57,6 @@ import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.util.Pair;
-import org.apache.commons.lang.StringUtils;
-import org.jdesktop.application.Action;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.Resource;
-import org.jdesktop.application.ResourceMap;
-import org.jdesktop.application.SingleFrameApplication;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.event.MouseInputAdapter;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 public class TaxonInformationDialog extends IntkeyDialog {
 
@@ -227,7 +243,7 @@ public class TaxonInformationDialog extends IntkeyDialog {
                 if (e.getClickCount() >= 2) {
                     if (_imageDisplayEnabled) {
                         int selectedListIndex = _listIllustrations.getSelectedIndex();
-                        displaySelectedTaxonImage(selectedListIndex);
+                        displaySelectedTaxonImage(selectedListIndex, true);
                     } else {
                         _context.getUI().displayErrorMessage(UIUtils.getResourceString("ImageDisplayDisabled.error"));
                     }
@@ -391,22 +407,21 @@ public class TaxonInformationDialog extends IntkeyDialog {
 
         int[] selectedImageIndicies = _listIllustrations.getSelectedIndices();
 
+        int totalNumberOfDialogsToDisplay = selectedCommandIndicies.length + selectedImageIndicies.length;
+
         if (!_imageDisplayEnabled && selectedImageIndicies.length > 0) {
             _context.getUI().displayErrorMessage(UIUtils.getResourceString("ImageDisplayDisabled.error"));
         } else {
             for (int idx : selectedImageIndicies) {
-                displaySelectedTaxonImage(idx);
+                displaySelectedTaxonImage(idx, totalNumberOfDialogsToDisplay == 1);
             }
         }
 
-        // Tile the all spawned dialogs once they have finished displaying
-        // themselves.
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                IntKeyDialogController.tileWindows();
-            }
-        });
+        // Tile the all spawned dialogs once they have finished displaying if
+        // there is more than one
+        if (totalNumberOfDialogsToDisplay > 1) {
+            IntKeyDialogController.tileWindows();
+        }
     }
 
     @Action
@@ -442,14 +457,16 @@ public class TaxonInformationDialog extends IntkeyDialog {
         return _taxa.get(_selectedIndex);
     }
 
-    private void displaySelectedTaxonImage(int imageIndex) {
+    private void displaySelectedTaxonImage(int imageIndex, boolean fitDialogToFirstImageDisplayed) {
         try {
             Item selectedTaxon = getSelectedTaxon();
-            TaxonImageDialog dlg = new TaxonImageDialog(UIUtils.getMainFrame(), _imageSettings, _taxaWithImages, false, !_context.displayContinuous(), _context.displayScaled(), _context.getImageSubjects(), _context.getUI());
+            TaxonImageDialog dlg = new TaxonImageDialog(UIUtils.getMainFrame(), _imageSettings, _taxaWithImages, false, !_context.displayContinuous(), _context.displayScaled(),
+                    _context.getImageSubjects(), _context.getUI());
+            dlg.setAutoSizeAndCenterFirstImageDisplayed(fitDialogToFirstImageDisplayed);
             dlg.displayImagesForTaxon(selectedTaxon, imageIndex);
             ((SingleFrameApplication) Application.getInstance()).show(dlg);
         } catch (IllegalArgumentException ex) {
-            // Display error message if unable to display 
+            // Display error message if unable to display
             _context.getUI().displayErrorMessage(UIUtils.getResourceString("CouldNotDisplayImage.error", ex.getMessage()));
         }
     }
@@ -467,7 +484,7 @@ public class TaxonInformationDialog extends IntkeyDialog {
             String subjectText = img.getSubjectText();
 
             if (StringUtils.isEmpty(text) || subjectText.toLowerCase().contains(text.toLowerCase())) {
-                displaySelectedTaxonImage(i);
+                displaySelectedTaxonImage(i, false);
             }
         }
 
