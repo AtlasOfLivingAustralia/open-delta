@@ -145,4 +145,10 @@ public class MockIntkeyUI implements IntkeyUI {
         
     }
 
+    @Override
+    public List<Character> getSelectedCharacters() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

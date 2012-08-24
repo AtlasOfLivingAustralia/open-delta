@@ -2464,6 +2464,21 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         return retList;
     }
+    
+    @Override
+    public List<Character> getSelectedCharacters() {
+        List<Character> retList = new ArrayList<Character>();
+
+        for (Object oCh : _listAvailableCharacters.getSelectedValues()) {
+            retList.add((Character) oCh);
+        }
+
+        for (Object oAttr : _listUsedCharacters.getSelectedValues()) {
+            retList.add(((Attribute) oAttr).getCharacter());
+        }
+
+        return retList;
+    }
 
     @Override
     public void setDemonstrationMode(boolean demonstrationMode) {

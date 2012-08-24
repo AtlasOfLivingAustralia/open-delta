@@ -80,6 +80,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     public static final String CHARACTER_KEYWORD_USED = "used";
     public static final String CHARACTER_KEYWORD_AVAILABLE = "available";
     public static final String CHARACTER_KEYWORD_NONE = "none";
+    public static final String CHARACTER_KEYWORD_SELECTED = "selected";
 
     public static final String TAXON_KEYWORD_ALL = "all";
     public static final String TAXON_KEYWORD_ELIMINATED = "eliminated";
@@ -216,10 +217,10 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     private List<String> _logCache;
     private List<String> _journalCache;
-    
+
     /**
-     * The directory used to cache images and files downloaded from remote locations on the 
-     * imagepath and infopath
+     * The directory used to cache images and files downloaded from remote
+     * locations on the imagepath and infopath
      */
     private File _fileCacheDirectory;
 
@@ -721,7 +722,8 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
 
         keyword = keyword.toLowerCase();
-        if (keyword.equals(CHARACTER_KEYWORD_ALL) || keyword.equals(CHARACTER_KEYWORD_USED) || keyword.equals(CHARACTER_KEYWORD_AVAILABLE) || keyword.equals(CHARACTER_KEYWORD_NONE)) {
+        if (keyword.equals(CHARACTER_KEYWORD_ALL) || keyword.equals(CHARACTER_KEYWORD_USED) || keyword.equals(CHARACTER_KEYWORD_AVAILABLE) || keyword.equals(CHARACTER_KEYWORD_NONE)
+                || keyword.equals(CHARACTER_KEYWORD_SELECTED)) {
             throw new IllegalArgumentException(UIUtils.getResourceString("RedefineSystemKeyword.error", keyword));
         }
 
@@ -757,6 +759,8 @@ public class IntkeyContext extends AbstractDeltaContext {
             List<au.org.ala.delta.model.Character> availableCharacters = new ArrayList<au.org.ala.delta.model.Character>(_dataset.getCharactersAsList());
             availableCharacters.removeAll(_specimen.getUsedCharacters());
             return availableCharacters;
+        } else if (keyword.equals(CHARACTER_KEYWORD_SELECTED)) {
+            return _appUI.getSelectedCharacters();
         } else if (keyword.equals(CHARACTER_KEYWORD_NONE)) {
             return Collections.EMPTY_LIST;
         } else {
@@ -830,8 +834,14 @@ public class IntkeyContext extends AbstractDeltaContext {
         List<String> retList = new ArrayList<String>();
         retList.add(CHARACTER_KEYWORD_ALL);
 
+        //Include "Used" keyword if there are any used characters
         if (_specimen.getUsedCharacters().size() > 0) {
             retList.add(CHARACTER_KEYWORD_USED);
+        }
+        
+        //Include "selected" keyword if there are any selected characters
+        if (!_appUI.getSelectedCharacters().isEmpty()) {
+            retList.add(CHARACTER_KEYWORD_SELECTED);
         }
 
         retList.add(CHARACTER_KEYWORD_AVAILABLE);
@@ -991,6 +1001,11 @@ public class IntkeyContext extends AbstractDeltaContext {
         // Include "remaining" keyword if there are remaining taxa
         if (remainingTaxaCount > 0) {
             retList.add(TAXON_KEYWORD_REMAINING);
+        }
+
+        // Include "selected" keyword if there are selected taxa
+        if (!_appUI.getSelectedTaxa().isEmpty()) {
+            retList.add(TAXON_KEYWORD_SELECTED);
         }
 
         retList.add(TAXON_KEYWORD_NONE);
@@ -1564,7 +1579,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         imageSettings.setResourcePaths(_imagePathLocations);
 
         imageSettings.setDatasetName(_dataset.getHeading());
-        
+
         imageSettings.setCacheDirectory(_fileCacheDirectory);
 
         return imageSettings;
@@ -1576,7 +1591,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         infoSettings.setDataSetPath(getDatasetDirectory().getAbsolutePath());
 
         infoSettings.setResourcePaths(_infoPathLocations);
-        
+
         infoSettings.setCacheDirectory(_fileCacheDirectory);
 
         return infoSettings;
@@ -1998,7 +2013,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     public synchronized List<String> getLogEntries() {
         return new ArrayList<String>(_logCache);
     }
-    
+
     public synchronized File getFileCacheDirectory() {
         return _fileCacheDirectory;
     }
@@ -2109,13 +2124,15 @@ public class IntkeyContext extends AbstractDeltaContext {
         } else {
             processInitializationFile(startupFile);
         }
-        
-        // create a directory to save cached versions of any images or files downloaded for this dataset from
-        // remote locations on the image path or info path. Use a random UUID as the name of the directory
+
+        // create a directory to save cached versions of any images or files
+        // downloaded for this dataset from
+        // remote locations on the image path or info path. Use a random UUID as
+        // the name of the directory
         _fileCacheDirectory = new File(FileUtils.getTempDirectory(), UUID.randomUUID().toString());
         _fileCacheDirectory.mkdir();
         _fileCacheDirectory.deleteOnExit();
-        
+
     }
 
 }

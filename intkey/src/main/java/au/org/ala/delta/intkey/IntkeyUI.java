@@ -105,6 +105,8 @@ public interface IntkeyUI {
 
     List<Item> getSelectedTaxa();
     
+    List<au.org.ala.delta.model.Character> getSelectedCharacters();
+    
     void setDemonstrationMode(boolean demonstrationMode);
     
     void displayHelpTopic(String topicID);
