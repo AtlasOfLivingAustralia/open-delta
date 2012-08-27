@@ -47,14 +47,14 @@ public abstract class IntkeyDatasetTestCase extends TestCase {
     public IntkeyContext loadDataset(String resourcePathToDataset) throws Exception {
         URL initFileUrl = getClass().getResource(resourcePathToDataset);
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        context.newDataSetFile(initFileUrl);
 
         return context;
     }
 
     public void loadNewDatasetInExistingContext(String resourcePathToDataset, IntkeyContext context) throws Exception {
         URL initFileUrl = getClass().getResource(resourcePathToDataset);
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        context.newDataSetFile(initFileUrl);
     }
     
     public static Pair<List<Integer>, List<Integer>> getCharacterAndTaxonNumbersForBest(IntkeyContext context) {

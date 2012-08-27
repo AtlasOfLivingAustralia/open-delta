@@ -98,11 +98,21 @@ public class IntkeyContext extends AbstractDeltaContext {
     private IntkeyDataset _dataset;
 
     /**
+     * A URL pointing to the dataset startup file. If the dataset is located on
+     * disk, this will be a file URL
+     */
+    private URL _datasetStartupURL;
+
+    /**
      * A .ink file used to load a new dataset. May be a jnlp style file
      * specifying where data is to be downloaded from. Or may be a directives
      * file that is run to load the dataset in intkey, initialize values etc. In
      * the latter case, this value will be the same as _initializationFile (see
      * below).
+     * 
+     * If _datasetStartupURL points to remote content (i.e. it is not a file
+     * URL), this will be a temporary file used to save the remote content
+     * referenced by the URL.
      */
     private File _datasetStartupFile;
 
@@ -456,22 +466,23 @@ public class IntkeyContext extends AbstractDeltaContext {
      * This method will block while the calling thread while the file is read,
      * the dataset is loaded, and other directives in the file are executed.
      * 
-     * @param datasetFile
+     * @param datasetFileURL
      *            The dataset initialization file
      * @return SwingWorker used to load the dataset in a separate thread - unit
      *         tests need this so that they can block until the dataset is
      *         loaded.
      */
-    public synchronized void newDataSetFile(final File datasetFile) {
-        Logger.log("Reading in directives from file: %s", datasetFile.getAbsolutePath());
+    public synchronized void newDataSetFile(final URL datasetFileURL) {
+        Logger.log("Reading in directives from url: %s", datasetFileURL.toString());
 
         cleanupOldDataset();
 
         initializeIdentification();
 
-        if (datasetFile == null || !datasetFile.exists()) {
-            throw new IllegalArgumentException("Could not open dataset file " + datasetFile.getAbsolutePath());
-        }
+        // if (datasetFileURL == null || !datasetFileURL.exists()) {
+        // throw new IllegalArgumentException("Could not open dataset file " +
+        // datasetFileURL.getAbsolutePath());
+        // }
 
         // Loading of a new dataset can take a long time and hence can lock up
         // the UI. If this method is called from the Swing Event Dispatch
@@ -482,7 +493,7 @@ public class IntkeyContext extends AbstractDeltaContext {
 
                 @Override
                 protected Void doInBackground() throws Exception {
-                    processStartupFile(datasetFile);
+                    processStartupFile(datasetFileURL);
                     return null;
                 }
 
@@ -492,11 +503,10 @@ public class IntkeyContext extends AbstractDeltaContext {
                         get();
                         appendToLog(_dataset.getHeading());
                         appendToLog(_dataset.getSubHeading());
-                        _datasetStartupFile = datasetFile;
                         _appUI.handleNewDataset(_dataset);
                     } catch (Exception ex) {
                         ex.printStackTrace();
-                        _appUI.displayErrorMessage("Error reading dataset file " + datasetFile.getAbsolutePath());
+                        _appUI.displayErrorMessage("Error reading dataset file " + datasetFileURL.toString());
                     } finally {
                         _appUI.removeBusyMessage();
                     }
@@ -507,13 +517,12 @@ public class IntkeyContext extends AbstractDeltaContext {
             _appUI.displayBusyMessage("Loading dataset...");
         } else {
             try {
-                processStartupFile(datasetFile);
+                processStartupFile(datasetFileURL);
                 appendToLog(_dataset.getHeading());
                 appendToLog(_dataset.getSubHeading());
-                _datasetStartupFile = datasetFile;
                 _appUI.handleNewDataset(_dataset);
             } catch (Exception ex) {
-                throw new RuntimeException("Error reading dataset file " + datasetFile.getAbsolutePath(), ex);
+                throw new RuntimeException("Error reading dataset file " + datasetFileURL.toString(), ex);
             }
         }
     }
@@ -834,12 +843,12 @@ public class IntkeyContext extends AbstractDeltaContext {
         List<String> retList = new ArrayList<String>();
         retList.add(CHARACTER_KEYWORD_ALL);
 
-        //Include "Used" keyword if there are any used characters
+        // Include "Used" keyword if there are any used characters
         if (_specimen.getUsedCharacters().size() > 0) {
             retList.add(CHARACTER_KEYWORD_USED);
         }
-        
-        //Include "selected" keyword if there are any selected characters
+
+        // Include "selected" keyword if there are any selected characters
         if (_appUI != null && !_appUI.getSelectedCharacters().isEmpty()) {
             retList.add(CHARACTER_KEYWORD_SELECTED);
         }
@@ -2027,12 +2036,14 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
-    private synchronized void processStartupFile(File startupFile) throws Exception {
+    private synchronized void processStartupFile(URL startupFileUrl) throws Exception {
         URL inkFileLocation = null;
         URL dataFileLocation = null;
         String initializationFileLocation = null;
         String imagePath = null;
         String infoPath = null;
+
+        File startupFile = Utils.saveURLToTempFile(startupFileUrl, "Intkey", 30000);
 
         BufferedReader reader = new BufferedReader(new FileReader(startupFile));
 
@@ -2051,7 +2062,7 @@ public class IntkeyContext extends AbstractDeltaContext {
                     // this is the format that is
                     // used before attempting to read as a URL.
                     if (value.equals(startupFile.getAbsolutePath())) {
-                        inkFileLocation = startupFile.toURI().toURL();
+                        inkFileLocation = startupFileUrl.toURI().toURL();
                     } else {
                         inkFileLocation = new URL(value);
                     }
@@ -2094,7 +2105,7 @@ public class IntkeyContext extends AbstractDeltaContext {
 
             if (!savedDatasetOpened) {
                 // Data set is hosted remotely. Download it.
-                FileUtils.copyURLToFile(dataFileLocation, localDataFile, 10000, 10000);
+                FileUtils.copyURLToFile(dataFileLocation, localDataFile, 30000, 30000);
             }
 
             Utils.extractZipFile(localDataFile, tempDir);
@@ -2124,6 +2135,9 @@ public class IntkeyContext extends AbstractDeltaContext {
         } else {
             processInitializationFile(startupFile);
         }
+
+        _datasetStartupFile = startupFile;
+        _datasetStartupURL = startupFileUrl;
 
         // create a directory to save cached versions of any images or files
         // downloaded for this dataset from

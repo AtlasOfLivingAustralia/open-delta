@@ -78,7 +78,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.MouseInputAdapter;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.FontUIResource;
 
 import org.apache.commons.cli.CommandLine;
@@ -132,7 +131,6 @@ import au.org.ala.delta.intkey.directives.DisplayUnknownsDirective;
 import au.org.ala.delta.intkey.directives.ExcludeCharactersDirective;
 import au.org.ala.delta.intkey.directives.ExcludeTaxaDirective;
 import au.org.ala.delta.intkey.directives.FileCharactersDirective;
-import au.org.ala.delta.intkey.directives.FileCloseDirective;
 import au.org.ala.delta.intkey.directives.FileDisplayDirective;
 import au.org.ala.delta.intkey.directives.FileInputDirective;
 import au.org.ala.delta.intkey.directives.FileJournalDirective;
@@ -215,6 +213,7 @@ import au.org.ala.delta.intkey.ui.MenuBuilder;
 import au.org.ala.delta.intkey.ui.MessagePanel;
 import au.org.ala.delta.intkey.ui.MultiStateInputDialog;
 import au.org.ala.delta.intkey.ui.OnOffPromptDialog;
+import au.org.ala.delta.intkey.ui.OpenDataSetDialog;
 import au.org.ala.delta.intkey.ui.ReExecuteDialog;
 import au.org.ala.delta.intkey.ui.RealInputDialog;
 import au.org.ala.delta.intkey.ui.RtfReportDisplayDialog;
@@ -439,17 +438,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     private static String INTKEY_ICON_PATH = "/au/org/ala/delta/intkey/resources/icons";
 
-    private static String MRU_FILES_PREF_KEY = "MRU";
-    private static String MRU_FILES_SEPARATOR = "\n";
-    private static String MRU_ITEM_SEPARATOR = ";";
-    private static int MAX_SIZE_MRU = 10;
-
-    private static String MODE_PREF_KEY = "MODE";
-    private static String BASIC_MODE_PREF_VALUE = "BASIC";
-    private static String ADVANCED_MODE_PREF_VALUE = "ADVANCED";
-
-    private static String LAST_OPENED_DATASET_LOCATION_PREF_KEY = "LAST_OPENED_DATASET_LOCATION";
-
     private static String rtfFileExtension = "rtf";
 
     private String _datasetInitFileToOpen = null;
@@ -527,11 +515,11 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         // Check saved application state for the mode (advanced or basic) that
         // was last used in the application.
         if (!_advancedMode) {
-            _advancedMode = getPreviousApplicationMode();
+            _advancedMode = UIUtils.getPreviousApplicationMode();
         }
 
         // Get location of last opened dataset from saved application state
-        _lastOpenedDatasetDirectory = getSavedLastOpenedDatasetDirectory();
+        _lastOpenedDatasetDirectory = UIUtils.getSavedLastOpenedDatasetDirectory();
     }
 
     /**
@@ -980,8 +968,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Override
     protected void shutdown() {
-        savePreviousApplicationMode(_advancedMode);
-        saveLastOpenedDatasetDirectory(_lastOpenedDatasetDirectory);
+        UIUtils.savePreviousApplicationMode(_advancedMode);
+        UIUtils.saveLastOpenedDatasetDirectory(_lastOpenedDatasetDirectory);
         _context.cleanupForShutdown();
         super.shutdown();
     }
@@ -1027,7 +1015,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             mnuFileBuilder.addDirectiveMenuItem("mnuItFileDisplay", new FileDisplayDirective());
             mnuFileBuilder.addDirectiveMenuItem("mnuItFileLog", new FileLogDirective());
             mnuFileBuilder.addDirectiveMenuItem("mnuItFileJournal", new FileJournalDirective());
-            mnuFileBuilder.addDirectiveMenuItem("mnuItFileClose", new FileCloseDirective());
+            //mnuFileBuilder.addDirectiveMenuItem("mnuItFileClose", new FileCloseDirective()); ** File Close is now a NO-OP
             mnuFileBuilder.addDirectiveMenuItem("mnuItFileCharacters", new FileCharactersDirective());
             mnuFileBuilder.addDirectiveMenuItem("mnuItFileTaxa", new FileCharactersDirective());
             mnuFileBuilder.endSubMenu();
@@ -1066,7 +1054,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         JMenu mnuFileRecents = new JMenu();
         mnuFileRecents.setName("mnuFileRecents");
 
-        List<Pair<String, String>> recentFiles = getPreviouslyUsedFiles();
+        List<Pair<String, String>> recentFiles = UIUtils.getPreviouslyUsedFiles();
 
         for (int i = 0; i < recentFiles.size(); i++) {
             Pair<String, String> recentFile = recentFiles.get(i);
@@ -2811,48 +2799,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Override
     public File promptForFile(List<String> fileExtensions, String description, boolean createFileIfNonExistant) throws IOException {
-        String[] extensionsArray = new String[fileExtensions.size()];
-        fileExtensions.toArray(extensionsArray);
-
-        JFileChooser chooser = new JFileChooser(_lastOpenedDatasetDirectory);
-        FileNameExtensionFilter filter = new FileNameExtensionFilter(description, extensionsArray);
-        chooser.setFileFilter(filter);
-
-        int returnVal;
-
-        if (createFileIfNonExistant) {
-            returnVal = chooser.showSaveDialog(UIUtils.getMainFrame());
-        } else {
-            returnVal = chooser.showOpenDialog(UIUtils.getMainFrame());
-        }
-
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-
-            if (createFileIfNonExistant) {
-                File file = chooser.getSelectedFile();
-
-                if (!file.exists()) {
-                    // if only one file extension was supplied and the filename
-                    // does
-                    // not end with this extension, add it before
-                    // creating the file
-                    if (fileExtensions.size() == 1) {
-                        String extension = fileExtensions.get(0);
-                        String filePath = chooser.getSelectedFile().getAbsolutePath();
-                        if (!filePath.endsWith(extension)) {
-                            file = new File(filePath + "." + extension);
-                        }
-                    }
-
-                    file.createNewFile();
-                }
-                return file;
-            } else {
-                return chooser.getSelectedFile();
-            }
-        } else {
-            return null;
-        }
+        return UIUtils.promptForFile(fileExtensions, description, createFileIfNonExistant, _lastOpenedDatasetDirectory, getMainFrame());
     }
 
     @Override
@@ -2920,6 +2867,13 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         } else {
             return null;
         }
+    }
+    
+    @Override
+    public String promptForDataset() {
+        OpenDataSetDialog dlg = new OpenDataSetDialog(getMainFrame(), null, _lastOpenedDatasetDirectory);
+        show(dlg);
+        return dlg.getSelectedDatasetPath();
     }
 
     // ======== Methods for "find in characters" and "find in taxa" functions
@@ -3117,7 +3071,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                         // Remove the current startup file from the MRU as a new
                         // file will go in its
                         // place.
-                        removeFileFromMRU(_context.getDatasetStartupFile().getAbsolutePath());
+                        UIUtils.removeFileFromMRU(_context.getDatasetStartupFile().getAbsolutePath());
                     } catch (IOException ex) {
                         displayErrorMessage("Error saving downloaded dataset");
                         // not much we can do here, just abort saving/adding to
@@ -3137,154 +3091,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         if (_context.getDataset() != null) {
             String datasetTitle = _context.getDataset().getHeading().trim();
 
-            addFileToMRU(fileToOpenDataset.getAbsolutePath(), datasetTitle);
-        }
-    }
-
-    public static List<Pair<String, String>> getPreviouslyUsedFiles() {
-        List<Pair<String, String>> retList = new ArrayList<Pair<String, String>>();
-
-        Preferences prefs = Preferences.userNodeForPackage(Intkey.class);
-        if (prefs != null) {
-            String mru = prefs.get(MRU_FILES_PREF_KEY, "");
-            if (!StringUtils.isEmpty(mru)) {
-                String[] mruFiles = mru.split(MRU_FILES_SEPARATOR);
-                for (String mruFile : mruFiles) {
-                    String[] mruFileItems = mruFile.split(MRU_ITEM_SEPARATOR);
-                    retList.add(new Pair<String, String>(mruFileItems[0], mruFileItems[1]));
-                }
-            }
-        }
-
-        return retList;
-    }
-
-    /**
-     * Removes the specified file from the most recently used file list
-     * 
-     * @param filename
-     *            The filename to remove
-     */
-    public static void removeFileFromMRU(String filename) {
-
-        List<Pair<String, String>> existingFiles = getPreviouslyUsedFiles();
-
-        StringBuilder b = new StringBuilder();
-        for (int i = 0; i < existingFiles.size(); ++i) {
-
-            Pair<String, String> fileNameTitlePair = existingFiles.get(i);
-            String existingFileName = fileNameTitlePair.getFirst();
-
-            if (!existingFileName.equalsIgnoreCase(filename)) {
-
-                if (b.length() > 0) {
-                    b.append(MRU_FILES_SEPARATOR);
-                }
-                b.append(fileNameTitlePair.getFirst() + MRU_ITEM_SEPARATOR + fileNameTitlePair.getSecond());
-            }
-        }
-
-        Preferences prefs = Preferences.userNodeForPackage(Intkey.class);
-        prefs.put(MRU_FILES_PREF_KEY, b.toString());
-        try {
-            prefs.sync();
-        } catch (BackingStoreException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
-
-    /**
-     * Adds the supplied filename to the top of the most recently used files.
-     * 
-     * @param filename
-     */
-    public static void addFileToMRU(String filename, String title) {
-
-        Queue<String> q = new LinkedList<String>();
-
-        String newFilePathAndTitle;
-        if (StringUtils.isEmpty(title)) {
-            newFilePathAndTitle = filename + MRU_ITEM_SEPARATOR + filename;
-        } else {
-            newFilePathAndTitle = filename + MRU_ITEM_SEPARATOR + title;
-        }
-        q.add(newFilePathAndTitle);
-
-        List<Pair<String, String>> existingFiles = getPreviouslyUsedFiles();
-        if (existingFiles != null) {
-            for (Pair<String, String> existingFile : existingFiles) {
-                String existingFilePathAndTitle = existingFile.getFirst() + MRU_ITEM_SEPARATOR + existingFile.getSecond();
-                if (!q.contains(existingFilePathAndTitle)) {
-                    q.add(existingFilePathAndTitle);
-                }
-            }
-        }
-
-        StringBuilder b = new StringBuilder();
-        for (int i = 0; i < MAX_SIZE_MRU && q.size() > 0; ++i) {
-            if (i > 0) {
-                b.append(MRU_FILES_SEPARATOR);
-            }
-            b.append(q.poll());
-        }
-
-        Preferences prefs = Preferences.userNodeForPackage(Intkey.class);
-        prefs.put(MRU_FILES_PREF_KEY, b.toString());
-        try {
-            prefs.sync();
-        } catch (BackingStoreException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * @return true if the last time the application was closed, advanced mode
-     *         was in use
-     */
-    private static boolean getPreviousApplicationMode() {
-        Preferences prefs = Preferences.userNodeForPackage(Intkey.class);
-        if (prefs != null) {
-            String previouslyUsedMode = prefs.get(MODE_PREF_KEY, "");
-            if (!StringUtils.isEmpty(previouslyUsedMode)) {
-                return previouslyUsedMode.equals(ADVANCED_MODE_PREF_VALUE);
-            }
-        }
-        return false;
-    }
-
-    private static void savePreviousApplicationMode(boolean advancedMode) {
-        Preferences prefs = Preferences.userNodeForPackage(Intkey.class);
-        prefs.put(MODE_PREF_KEY, advancedMode ? ADVANCED_MODE_PREF_VALUE : BASIC_MODE_PREF_VALUE);
-        try {
-            prefs.sync();
-        } catch (BackingStoreException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * @return true if the last time the application was closed, advanced mode
-     *         was in use
-     */
-    private static File getSavedLastOpenedDatasetDirectory() {
-        Preferences prefs = Preferences.userNodeForPackage(Intkey.class);
-        if (prefs != null) {
-            String lastOpenedDirectoryPath = prefs.get(LAST_OPENED_DATASET_LOCATION_PREF_KEY, "");
-            if (!StringUtils.isEmpty(lastOpenedDirectoryPath)) {
-                return new File(lastOpenedDirectoryPath);
-            }
-        }
-        return null;
-    }
-
-    private static void saveLastOpenedDatasetDirectory(File lastOpenedDatasetDirectory) {
-        Preferences prefs = Preferences.userNodeForPackage(Intkey.class);
-        prefs.put(LAST_OPENED_DATASET_LOCATION_PREF_KEY, lastOpenedDatasetDirectory.getAbsolutePath());
-        try {
-            prefs.sync();
-        } catch (BackingStoreException e) {
-            throw new RuntimeException(e);
+            UIUtils.addFileToMRU(fileToOpenDataset.getAbsolutePath(), datasetTitle, UIUtils.getPreviouslyUsedFiles());
         }
     }
 

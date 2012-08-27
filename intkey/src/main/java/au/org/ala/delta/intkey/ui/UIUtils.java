@@ -14,16 +14,26 @@
  ******************************************************************************/
 package au.org.ala.delta.intkey.ui;
 
+import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 import java.util.UUID;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -34,6 +44,7 @@ import au.org.ala.delta.intkey.Intkey;
 import au.org.ala.delta.ui.help.HelpController;
 import au.org.ala.delta.ui.image.AudioPlayer;
 import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
+import au.org.ala.delta.util.Pair;
 import au.org.ala.delta.util.Utils;
 
 public class UIUtils {
@@ -91,7 +102,7 @@ public class UIUtils {
         String fileName = fileURL.getFile();
 
         if (fileName.toLowerCase().endsWith(".rtf")) {
-            File file = convertURLToFile(fileURL, 60000);
+            File file = Utils.saveURLToTempFile(fileURL, "Intkey", 30000);
             String rtfSource = FileUtils.readFileToString(file, "cp1252"); // RTF
                                                                            // must
                                                                            // always
@@ -109,7 +120,7 @@ public class UIUtils {
             }
             desktop.browse(fileURL.toURI());
         } else if (fileName.toLowerCase().endsWith(".ink")) {
-            File file = convertURLToFile(fileURL, 60000);
+            File file = Utils.saveURLToTempFile(fileURL, "Intkey", 30000);
             Utils.launchIntkeyInSeparateProcess(System.getProperty("user.dir"), file.getAbsolutePath());
         } else if (fileName.toLowerCase().endsWith(".wav")) {
             AudioPlayer.playClip(fileURL);
@@ -125,30 +136,9 @@ public class UIUtils {
                 if (desktop == null || !desktop.isSupported(Desktop.Action.OPEN)) {
                     throw new IllegalArgumentException("Desktop is null or open not supported");
                 }
-                File file = convertURLToFile(fileURL, 60000);
+                File file = Utils.saveURLToTempFile(fileURL, "Intkey", 30000);
                 desktop.open(file);
             }
-        }
-    }
-
-    /**
-     * Converts a URL into a file reference. If the URL is a file:/// url, then
-     * simply return the underlying file. Otherwise, first copy the URL content
-     * to a local temp file, then return the temp file.
-     * 
-     * @param url
-     * @param timeout
-     * @return
-     * @throws Exception
-     */
-    public static File convertURLToFile(URL url, int timeout) throws Exception {
-        if (url.getProtocol().equalsIgnoreCase("file")) {
-            return new File(url.toURI());
-        } else {
-            File tempFile = File.createTempFile(UUID.randomUUID().toString(), null);
-            tempFile.deleteOnExit();
-            FileUtils.copyURLToFile(url, tempFile, timeout, timeout);
-            return tempFile;
         }
     }
 
@@ -178,4 +168,228 @@ public class UIUtils {
     public static String getHelpIDForDirective(String directiveName) {
         return "directive_" + directiveName.split(" ")[0].toLowerCase();
     }
+
+    /**
+     * Prompts for a file using the file chooser dialog
+     * 
+     * @param fileExtensions
+     *            Accepted file extensions
+     * @param description
+     *            Description of the acceptable files
+     * @param createFileIfNonExistant
+     *            if true, the file will be created if it does not exist. Also,
+     *            the system's "save" will be used instead of the "open" dialog.
+     * @param startBrowseDirectory
+     *            The directory that the file chooser should start in
+     * @param parent
+     *            parent component for the file chooser
+     * @return the selected file, or null if no file was selected.
+     * @throws IOException
+     */
+    public static File promptForFile(List<String> fileExtensions, String description, boolean createFileIfNonExistant, File startBrowseDirectory, Component parent) throws IOException {
+        String[] extensionsArray = new String[fileExtensions.size()];
+        fileExtensions.toArray(extensionsArray);
+
+        JFileChooser chooser = new JFileChooser(startBrowseDirectory);
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(description, extensionsArray);
+        chooser.setFileFilter(filter);
+
+        int returnVal;
+
+        if (createFileIfNonExistant) {
+            returnVal = chooser.showSaveDialog(parent);
+        } else {
+            returnVal = chooser.showOpenDialog(parent);
+        }
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+
+            if (createFileIfNonExistant) {
+                File file = chooser.getSelectedFile();
+
+                if (!file.exists()) {
+                    // if only one file extension was supplied and the filename
+                    // does
+                    // not end with this extension, add it before
+                    // creating the file
+                    if (fileExtensions.size() == 1) {
+                        String extension = fileExtensions.get(0);
+                        String filePath = chooser.getSelectedFile().getAbsolutePath();
+                        if (!filePath.endsWith(extension)) {
+                            file = new File(filePath + "." + extension);
+                        }
+                    }
+
+                    file.createNewFile();
+                }
+                return file;
+            } else {
+                return chooser.getSelectedFile();
+            }
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Constants for handling of Intkey Most Recently Used datasets list.
+     */
+    public static String MRU_FILES_PREF_KEY = "MRU";
+    public static String MRU_FILES_SEPARATOR = "\n";
+    public static String MRU_ITEM_SEPARATOR = ";";
+    public static int MAX_SIZE_MRU = 10;
+
+    public static String MODE_PREF_KEY = "MODE";
+    public static String BASIC_MODE_PREF_VALUE = "BASIC";
+    public static String ADVANCED_MODE_PREF_VALUE = "ADVANCED";
+
+    public static String LAST_OPENED_DATASET_LOCATION_PREF_KEY = "LAST_OPENED_DATASET_LOCATION";
+
+    public static List<Pair<String, String>> getPreviouslyUsedFiles() {
+        List<Pair<String, String>> retList = new ArrayList<Pair<String, String>>();
+
+        Preferences prefs = Preferences.userNodeForPackage(Intkey.class);
+        if (prefs != null) {
+            String mru = prefs.get(MRU_FILES_PREF_KEY, "");
+            if (!StringUtils.isEmpty(mru)) {
+                String[] mruFiles = mru.split(MRU_FILES_SEPARATOR);
+                for (String mruFile : mruFiles) {
+                    String[] mruFileItems = mruFile.split(MRU_ITEM_SEPARATOR);
+                    retList.add(new Pair<String, String>(mruFileItems[0], mruFileItems[1]));
+                }
+            }
+        }
+
+        return retList;
+    }
+
+    /**
+     * Removes the specified file from the most recently used file list
+     * 
+     * @param filename
+     *            The filename to remove
+     */
+    public static void removeFileFromMRU(String filename) {
+
+        List<Pair<String, String>> existingFiles = getPreviouslyUsedFiles();
+
+        StringBuilder b = new StringBuilder();
+        for (int i = 0; i < existingFiles.size(); ++i) {
+
+            Pair<String, String> fileNameTitlePair = existingFiles.get(i);
+            String existingFileName = fileNameTitlePair.getFirst();
+
+            if (!existingFileName.equalsIgnoreCase(filename)) {
+
+                if (b.length() > 0) {
+                    b.append(MRU_FILES_SEPARATOR);
+                }
+                b.append(fileNameTitlePair.getFirst() + MRU_ITEM_SEPARATOR + fileNameTitlePair.getSecond());
+            }
+        }
+
+        Preferences prefs = Preferences.userNodeForPackage(Intkey.class);
+        prefs.put(MRU_FILES_PREF_KEY, b.toString());
+        try {
+            prefs.sync();
+        } catch (BackingStoreException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    /**
+     * Adds the supplied filename to the top of the most recently used files.
+     * 
+     * @param filename
+     */
+    public static void addFileToMRU(String filename, String title, List<Pair<String, String>> existingFiles) {
+
+        Queue<String> q = new LinkedList<String>();
+
+        String newFilePathAndTitle;
+        if (StringUtils.isEmpty(title)) {
+            newFilePathAndTitle = filename + MRU_ITEM_SEPARATOR + filename;
+        } else {
+            newFilePathAndTitle = filename + MRU_ITEM_SEPARATOR + title;
+        }
+        q.add(newFilePathAndTitle);
+
+        if (existingFiles != null) {
+            for (Pair<String, String> existingFile : existingFiles) {
+                String existingFilePathAndTitle = existingFile.getFirst() + MRU_ITEM_SEPARATOR + existingFile.getSecond();
+                if (!q.contains(existingFilePathAndTitle)) {
+                    q.add(existingFilePathAndTitle);
+                }
+            }
+        }
+
+        StringBuilder b = new StringBuilder();
+        for (int i = 0; i < MAX_SIZE_MRU && q.size() > 0; ++i) {
+            if (i > 0) {
+                b.append(MRU_FILES_SEPARATOR);
+            }
+            b.append(q.poll());
+        }
+
+        Preferences prefs = Preferences.userNodeForPackage(Intkey.class);
+        prefs.put(MRU_FILES_PREF_KEY, b.toString());
+        try {
+            prefs.sync();
+        } catch (BackingStoreException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * @return true if the last time the application was closed, advanced mode
+     *         was in use
+     */
+    public static boolean getPreviousApplicationMode() {
+        Preferences prefs = Preferences.userNodeForPackage(Intkey.class);
+        if (prefs != null) {
+            String previouslyUsedMode = prefs.get(MODE_PREF_KEY, "");
+            if (!StringUtils.isEmpty(previouslyUsedMode)) {
+                return previouslyUsedMode.equals(ADVANCED_MODE_PREF_VALUE);
+            }
+        }
+        return false;
+    }
+
+    public static void savePreviousApplicationMode(boolean advancedMode) {
+        Preferences prefs = Preferences.userNodeForPackage(Intkey.class);
+        prefs.put(MODE_PREF_KEY, advancedMode ? ADVANCED_MODE_PREF_VALUE : BASIC_MODE_PREF_VALUE);
+        try {
+            prefs.sync();
+        } catch (BackingStoreException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * @return true if the last time the application was closed, advanced mode
+     *         was in use
+     */
+    public static File getSavedLastOpenedDatasetDirectory() {
+        Preferences prefs = Preferences.userNodeForPackage(Intkey.class);
+        if (prefs != null) {
+            String lastOpenedDirectoryPath = prefs.get(LAST_OPENED_DATASET_LOCATION_PREF_KEY, "");
+            if (!StringUtils.isEmpty(lastOpenedDirectoryPath)) {
+                return new File(lastOpenedDirectoryPath);
+            }
+        }
+        return null;
+    }
+
+    public static void saveLastOpenedDatasetDirectory(File lastOpenedDatasetDirectory) {
+        Preferences prefs = Preferences.userNodeForPackage(Intkey.class);
+        prefs.put(LAST_OPENED_DATASET_LOCATION_PREF_KEY, lastOpenedDatasetDirectory.getAbsolutePath());
+        try {
+            prefs.sync();
+        } catch (BackingStoreException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    
 }

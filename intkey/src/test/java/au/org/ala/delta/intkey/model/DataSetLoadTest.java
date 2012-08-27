@@ -621,7 +621,7 @@ public class DataSetLoadTest extends IntkeyDatasetTestCase {
     public void testReadTwoDatasets() throws Exception {
         URL initFileUrl = getClass().getResource("/dataset/sample/intkey.ink");
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), new MockDirectivePopulator());
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        context.newDataSetFile(initFileUrl);
 
         // The dataset is loaded on a separate thread so we need to wait until
         // it is loaded.
@@ -639,7 +639,7 @@ public class DataSetLoadTest extends IntkeyDatasetTestCase {
         assertEquals(39, context.getCharacterKeywords().size());
 
         initFileUrl = getClass().getResource("/dataset/controlling_characters_simple/intkey.ink");
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        context.newDataSetFile(initFileUrl);
 
         // The dataset is loaded on a separate thread so we need to wait until
         // it is loaded.

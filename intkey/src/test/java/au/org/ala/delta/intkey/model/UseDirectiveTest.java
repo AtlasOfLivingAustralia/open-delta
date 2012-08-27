@@ -638,7 +638,7 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
         ReportCharacterValuePromptDirectivePopulator populator = new ReportCharacterValuePromptDirectivePopulator();
         
         IntkeyContext context = new IntkeyContext(new MockIntkeyUI(), populator);
-        context.newDataSetFile(new File(initFileUrl.toURI()));
+        context.newDataSetFile(initFileUrl);
 
         
         new UseDirective().parseAndProcess(context, "2,1");
@@ -731,6 +731,12 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
         
         @Override
         public List<Object> promptForButtonDefinition() {
+            return null;
+        }
+
+        @Override
+        public String promptForDataset() {
+            // TODO Auto-generated method stub
             return null;
         }
     }

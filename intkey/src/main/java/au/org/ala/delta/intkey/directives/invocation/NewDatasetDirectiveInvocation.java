@@ -15,20 +15,21 @@
 package au.org.ala.delta.intkey.directives.invocation;
 
 import java.io.File;
+import java.net.URL;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class NewDatasetDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
-    private File _file;
+    private URL _url;
 
-    public void setFile(File file) {
-        this._file = file;
+    public void setURL(URL url) {
+        this._url = url;
     }
 
     @Override
     public boolean execute(IntkeyContext context) {
-        context.newDataSetFile(_file);
+        context.newDataSetFile(_url);
         return true;
     }
 

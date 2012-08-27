@@ -29,6 +29,8 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.text.DateFormat;
@@ -1186,5 +1188,86 @@ public class Utils {
         Class<?> intkey = intkeyLoader.loadClass("au.org.ala.delta.intkey.Intkey");
         Method main = intkey.getMethod("main", String[].class);
         main.invoke(null, (Object) new String[] { inputFile });
+    }
+
+    /**
+     * Parse a string containing a URL or a file path and return a URL object.
+     * 
+     * @param input
+     *            - the URL or file path
+     * @return a URL object. If a file path was supplied, this will be a file
+     *         protocol URL pointing to the file.
+     * @throws IOException
+     */
+    public static URL parseURLOrFilePath(String input) throws IOException {
+        try {
+            URL url = new URL(input);
+            return url;
+        } catch (MalformedURLException ex) {
+            // do nothing - assume this is a regular system file path
+        }
+
+        File file = new File(input);
+        if (!(file.exists() && file.isFile())) {
+            throw new IllegalArgumentException("Invalid input or file does not exist");
+        }
+        return file.toURI().toURL();
+    }
+
+    /**
+     * Saves the content of the supplied URL to a temporary file. If the url is
+     * a file url, the underlying file is simply returned without creating a
+     * temporary file.
+     * 
+     * @param url
+     *            the url
+     * @param tempFilePrefix
+     *            the prefix to use for the temporary file
+     * @param timeout
+     *            timeout to use when saving the URL's content to the temporary
+     *            file
+     * @return If the supplied url is a file url, the underlying file is
+     *         returned. Otherwise, a temporary file containing the content is
+     *         returned
+     * @throws IOException
+     */
+    public static File saveURLToTempFile(URL url, String tempFilePrefix, int timeout) throws IOException {
+        // If the URL is a file protocol url, just return the underlying
+        // file.
+        if (isFileURL(url)) {
+            try {
+                return new File(url.toURI());
+            } catch (URISyntaxException ex) {
+                throw new IllegalArgumentException("Invalid URL", ex);
+            }
+        }
+
+        // Save the file to a temporary file
+        File tempFile = File.createTempFile(tempFilePrefix, null);
+        FileUtils.copyURLToFile(url, tempFile, timeout, timeout);
+        return tempFile;
+    }
+
+    /**
+     * Returns true if the supplied URL is using one of the formats supported by
+     * open-delta - the supported formats are http, ftp and file.
+     * 
+     * @param url
+     *            the url
+     * @return true if the url is one of the supported formats
+     */
+    public static boolean checkURLValidProtocol(URL url) {
+        return (url.getProtocol().equalsIgnoreCase("http") || (url.getProtocol().equalsIgnoreCase("ftp") || (url.getProtocol().equalsIgnoreCase("file"))));
+    }
+
+    /**
+     * Returns true if the URL is a file URL
+     * 
+     * @param url
+     *            the file URL
+     * @return true if the supplied url is a file url
+     */
+    public static boolean isFileURL(URL url) {
+        return url.getProtocol().equalsIgnoreCase("file");
     }
 }

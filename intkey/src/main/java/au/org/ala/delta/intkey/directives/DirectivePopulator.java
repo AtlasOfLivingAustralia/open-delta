@@ -247,5 +247,7 @@ public interface DirectivePopulator {
     List<Object> promptForButtonDefinition();
 
     Pair<ImageDisplayMode, DisplayImagesReportType> promptForImageDisplaySettings();
+    
+    String promptForDataset();
 
 }

@@ -14,13 +14,20 @@
  ******************************************************************************/
 package au.org.ala.delta.intkey.directives;
 
-import java.util.ArrayList;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Queue;
 
-import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
+import org.apache.commons.lang.StringUtils;
+
+import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.NewDatasetDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.util.Utils;
 
 /**
  * The NEWDATASET directive - tells intkey to open the specified dataset -
@@ -30,27 +37,50 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
  * @author ChrisF
  * 
  */
-public class NewDatasetDirective extends NewIntkeyDirective {
+public class NewDatasetDirective extends IntkeyDirective {
 
     public NewDatasetDirective() {
         super(false, "newdataset");
     }
 
     @Override
-    protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
-        List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new FileArgument("file", "Data Initialization Files (*.ini, *.ink)", null, Arrays.asList(new String[] { "ini", "ink" }), false));
-        return arguments;
-    }
+    protected IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
+        NewDatasetDirectiveInvocation invoc = new NewDatasetDirectiveInvocation();
 
-    @Override
-    protected List<IntkeyDirectiveFlag> buildFlagsList() {
-        return null;
-    }
+        URL url;
 
-    @Override
-    protected BasicIntkeyDirectiveInvocation buildCommandObject() {
-        return new NewDatasetDirectiveInvocation();
+        List<String> tokens = ParsingUtils.tokenizeDirectiveCall(data);
+        String filePath = tokens.isEmpty() ? null : tokens.get(0);
+
+        StringBuilder stringRepresentationBuilder = new StringBuilder();
+        stringRepresentationBuilder.append(getControlWordsAsString());
+        stringRepresentationBuilder.append(" ");
+
+        // If not URL is provided, prompt for a file
+        if (StringUtils.isEmpty(filePath)) {
+            filePath = context.getDirectivePopulator().promptForDataset();
+
+            if (filePath == null) {
+                // User cancelled, end the operation
+                return null;
+            }
+        }
+
+        try {
+            url = Utils.parseURLOrFilePath(filePath);
+            if (!Utils.checkURLValidProtocol(url)) {
+                throw new IntkeyDirectiveParseException("InvalidDatasetURL.error");
+            }
+
+            stringRepresentationBuilder.append(filePath);
+        } catch (MalformedURLException ex) {
+            throw new IntkeyDirectiveParseException("InvalidDatasetURL.error");
+        }
+
+        invoc.setURL(url);
+        invoc.setStringRepresentation(stringRepresentationBuilder.toString());
+
+        return invoc;
     }
 
 }

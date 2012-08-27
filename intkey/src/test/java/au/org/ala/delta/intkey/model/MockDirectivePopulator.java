@@ -108,4 +108,10 @@ public class MockDirectivePopulator implements DirectivePopulator {
         return null;
     }
 
+    @Override
+    public String promptForDataset() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }
