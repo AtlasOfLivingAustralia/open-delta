@@ -1,29 +1,43 @@
 package au.org.ala.delta.intkey.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import javax.swing.ActionMap;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.ListCellRenderer;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
-import java.awt.Dimension;
+
+import au.org.ala.delta.util.Pair;
 
 public class OpenDataSetDialog extends IntkeyDialog {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1594437898859286262L;
+
     private JTextField _txtFldFileName;
     private JPanel _pnlList;
     private JLabel _lblSelectByTitle;
@@ -41,10 +55,20 @@ public class OpenDataSetDialog extends IntkeyDialog {
 
     @Resource
     String fileChooserDescription;
-    
-    private String _selectedDatasetPath;
 
-    public OpenDataSetDialog(Frame owner, LinkedHashMap<String, String> datasetIndexMap, File startBrowseDirectory) {
+    private String _selectedDatasetPath;
+    private JScrollPane _sclPnList;
+    private JList _listDatasetIndex;
+    private JPanel _pnlBottom;
+    private JLabel _lblSelectByFileName;
+    private JPanel _pnlButtons;
+    private JButton _btnOK;
+    private JButton _btnCancel;
+    private JButton _btnHelp;
+    private JPanel _pnlFile;
+    private JButton _btnBrowse;
+
+    public OpenDataSetDialog(Frame owner, List<Pair<String, String>> datasetIndexData, File startBrowseDirectory) {
         super(owner, true);
         setPreferredSize(new Dimension(450, 300));
 
@@ -54,6 +78,8 @@ public class OpenDataSetDialog extends IntkeyDialog {
 
         setTitle(title);
 
+        _selectedDatasetPath = null;
+
         _pnlList = new JPanel();
         _pnlList.setBorder(new EmptyBorder(5, 5, 5, 5));
         getContentPane().add(_pnlList, BorderLayout.CENTER);
@@ -62,48 +88,86 @@ public class OpenDataSetDialog extends IntkeyDialog {
         _lblSelectByTitle = new JLabel(selectByTitleCaption);
         _pnlList.add(_lblSelectByTitle, BorderLayout.NORTH);
 
-        JScrollPane _sclPnList = new JScrollPane();
+        _sclPnList = new JScrollPane();
         _pnlList.add(_sclPnList, BorderLayout.CENTER);
 
-        JList _listDatasetIndex = new JList();
+        _listDatasetIndex = new JList();
         _sclPnList.setViewportView(_listDatasetIndex);
 
-        JPanel _pnlBottom = new JPanel();
+        _pnlBottom = new JPanel();
         _pnlBottom.setBorder(new EmptyBorder(5, 5, 5, 5));
         getContentPane().add(_pnlBottom, BorderLayout.SOUTH);
         _pnlBottom.setLayout(new BorderLayout(0, 0));
 
-        JLabel _lblSelectByFileName = new JLabel(selectByFileCaption);
+        _lblSelectByFileName = new JLabel(selectByFileCaption);
         _pnlBottom.add(_lblSelectByFileName, BorderLayout.NORTH);
 
-        JPanel _pnlButtons = new JPanel();
+        _pnlButtons = new JPanel();
         _pnlButtons.setBorder(new EmptyBorder(10, 0, 0, 0));
         _pnlBottom.add(_pnlButtons, BorderLayout.SOUTH);
 
-        JButton _btnOK = new JButton();
+        _btnOK = new JButton();
         _btnOK.setAction(actionMap.get("OpenDataSetDialog_OK"));
         _pnlButtons.add(_btnOK);
 
-        JButton _btnCancel = new JButton();
+        _btnCancel = new JButton();
         _btnCancel.setAction(actionMap.get("OpenDataSetDialog_Cancel"));
         _pnlButtons.add(_btnCancel);
 
-        JButton _btnHelp = new JButton("Help");
+        _btnHelp = new JButton("Help");
         _btnHelp.setAction(actionMap.get("OpenDataSetDialog_Help"));
         _pnlButtons.add(_btnHelp);
 
-        JPanel _pnlFile = new JPanel();
+        _pnlFile = new JPanel();
         _pnlBottom.add(_pnlFile, BorderLayout.CENTER);
         _pnlFile.setLayout(new BorderLayout(0, 0));
 
         _txtFldFileName = new JTextField();
         _pnlFile.add(_txtFldFileName, BorderLayout.CENTER);
         _txtFldFileName.setColumns(10);
+        _txtFldFileName.addKeyListener(new KeyListener() {
 
-        JButton _btnBrowse = new JButton();
+            @Override
+            public void keyTyped(KeyEvent e) {
+                // Clear any selected item in the list of the text field is
+                // modified.
+                _listDatasetIndex.clearSelection();
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                // do nothing
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                // do nothing
+
+            }
+        });
+
+        _btnBrowse = new JButton();
         _btnBrowse.setAction(actionMap.get("OpenDataSetDialog_Browse"));
         _pnlFile.add(_btnBrowse, BorderLayout.EAST);
 
+        DefaultListModel model = new DefaultListModel();
+
+        for (Pair<String, String> datasetInfo : datasetIndexData) {
+            model.addElement(datasetInfo);
+        }
+
+        _listDatasetIndex.setModel(model);
+        _listDatasetIndex.setCellRenderer(new DatasetIndexCellRenderer());
+
+        _listDatasetIndex.addListSelectionListener(new ListSelectionListener() {
+
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                // Clear any filename in the text field if an item is selected
+                // from the text box.
+                _txtFldFileName.setText(null);
+            }
+        });
     }
 
     @Action
@@ -112,6 +176,10 @@ public class OpenDataSetDialog extends IntkeyDialog {
         try {
             File selectedFile = UIUtils.promptForFile(fileExtensions, fileChooserDescription, false, _startBrowseDirectory, this);
             if (selectedFile != null) {
+                // Clear any selection in the list if a file is chosen using the
+                // Browse button
+                _listDatasetIndex.clearSelection();
+
                 _txtFldFileName.setText(selectedFile.getAbsolutePath());
             }
         } catch (IOException ex) {
@@ -123,7 +191,13 @@ public class OpenDataSetDialog extends IntkeyDialog {
 
     @Action
     public void OpenDataSetDialog_OK() {
-        _selectedDatasetPath = _txtFldFileName.getText();
+        if (_listDatasetIndex.getSelectedIndex() != -1) {
+            _selectedDatasetPath = ((Pair<String, String>) _listDatasetIndex.getSelectedValue()).getSecond();
+        } else if (!StringUtils.isEmpty(_txtFldFileName.getText())) {
+            _selectedDatasetPath = _txtFldFileName.getText();
+        } else {
+            _selectedDatasetPath = null;
+        }
         this.setVisible(false);
     }
 
@@ -140,5 +214,36 @@ public class OpenDataSetDialog extends IntkeyDialog {
 
     public String getSelectedDatasetPath() {
         return _selectedDatasetPath;
+    }
+
+    private class DatasetIndexCellRenderer extends JLabel implements ListCellRenderer {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 3061984673980004867L;
+
+        @Override
+        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            Pair<String, String> namePathPair = (Pair<String, String>) value;
+
+            // Display the name for the dataset from the dataset index.
+            setText(namePathPair.getFirst());
+            setToolTipText(namePathPair.getSecond());
+
+            if (isSelected) {
+                setBackground(list.getSelectionBackground());
+                setForeground(list.getSelectionForeground());
+            } else {
+                setBackground(list.getBackground());
+                setForeground(list.getForeground());
+            }
+            setEnabled(list.isEnabled());
+            setFont(list.getFont());
+            setOpaque(true);
+            return this;
+
+        }
+
     }
 }

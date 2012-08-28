@@ -17,6 +17,11 @@
 			<name>maven repository on sourceforge.jp shell server</name>
 			<url>http://jfontchooser.sourceforge.jp/repository/say/swing/jfontchooser</url>
 		</repository>
+		<repository>
+			<id>ala-repository</id>
+			<name>ala-repository</name>
+			<url>http://maven.ala.org.au/repository</url>
+		</repository>
 	</repositories>
 
 	<scm>
@@ -251,6 +256,11 @@
 			<version>6.9.1</version>
 			<type>jar</type>
 			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.json-lib</groupId>
+			<artifactId>json-lib</artifactId>
+			<version>2.2.3</version>
 		</dependency>
 	</dependencies>
 	<distributionManagement>

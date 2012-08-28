@@ -43,14 +43,10 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
 
 import javax.imageio.ImageIO;
 import javax.swing.ActionMap;
@@ -203,6 +199,7 @@ import au.org.ala.delta.intkey.ui.ContentsDialog;
 import au.org.ala.delta.intkey.ui.DefineButtonDialog;
 import au.org.ala.delta.intkey.ui.DirectiveAction;
 import au.org.ala.delta.intkey.ui.DisplayImagesDialog;
+import au.org.ala.delta.intkey.ui.EditDatasetIndexDialog;
 import au.org.ala.delta.intkey.ui.FindInCharactersDialog;
 import au.org.ala.delta.intkey.ui.FindInTaxaDialog;
 import au.org.ala.delta.intkey.ui.ImageDialog;
@@ -1000,8 +997,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         MenuBuilder mnuFileBuilder = new MenuBuilder("mnuFile", _context);
 
         mnuFileBuilder.addDirectiveMenuItem("mnuItNewDataSet", new NewDatasetDirective());
-
         mnuFileBuilder.addPreconfiguredJMenu(buildRecentFilesMenu());
+        mnuFileBuilder.addActionMenuItem(actionMap.get("mnuItEditDataSetIndex"));
 
         if (_advancedMode) {
             mnuFileBuilder.addDirectiveMenuItem("mnuItPreferences", new PreferencesDirective());
@@ -1429,6 +1426,17 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     }
 
     // ============== File menu actions ==============================
+    
+    @Action
+    public void mnuItEditDataSetIndex() {
+        EditDatasetIndexDialog dlg = new EditDatasetIndexDialog(getMainFrame(), UIUtils.readDatasetIndex());
+        show(dlg);
+        List<Pair<String, String>> modifiedDatasetIndex = dlg.getModifiedDatasetIndex();
+        if (modifiedDatasetIndex != null) {
+            UIUtils.writeDatasetIndex(modifiedDatasetIndex);
+        }
+    }
+    
     @Action
     public void mnuItNormalMode() {
         toggleAdvancedMode();
@@ -1522,7 +1530,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         AboutBox aboutBox = new AboutBox(getMainFrame(), IconHelper.createRed32ImageIcon());
         show(aboutBox);
     }
-
+    
     // ============================== Global option buttons
     // ================================
 
@@ -2871,7 +2879,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     
     @Override
     public String promptForDataset() {
-        OpenDataSetDialog dlg = new OpenDataSetDialog(getMainFrame(), null, _lastOpenedDatasetDirectory);
+        OpenDataSetDialog dlg = new OpenDataSetDialog(getMainFrame(), UIUtils.readDatasetIndex(), _lastOpenedDatasetDirectory);
         show(dlg);
         return dlg.getSelectedDatasetPath();
     }
