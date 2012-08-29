@@ -111,9 +111,9 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
     protected boolean _scaleImages;
 
     /**
-     * If false, the dialog will not be resized or centered when displaying the first image
-     * in the dialog. This is used when displaying multiple image dialogs at
-     * once, which need to be tiled.
+     * If false, the dialog will not be resized or centered when displaying the
+     * first image in the dialog. This is used when displaying multiple image
+     * dialogs at once, which need to be tiled.
      */
     protected boolean _autoSizeAndCenterFirstImageDisplayed;
 
@@ -407,7 +407,7 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
 
         ImageViewer imageViewer = new ImageViewer(image, _imageSettings, bufferedImage, imageLocation, imageType);
         imageViewer.addOverlaySelectionObserver(this);
-        imageViewer.setScalingMode(ScalingMode.NO_SCALING);
+        imageViewer.setScalingMode(ScalingMode.FIXED_ASPECT_RATIO);
 
         dlg.getContentPane().add(imageViewer, BorderLayout.CENTER);
 
@@ -475,7 +475,17 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
         mnuIt.setSelected(true);
 
         if (!firstImage || _autoSizeAndCenterFirstImageDisplayed) {
-            fitToImage();
+            
+            //Ensure that the image window is never bigger than the main app window.
+            Dimension viewerPreferredSize = _multipleImageViewer.getPreferredSize();
+            Dimension appMainWindowSize = au.org.ala.delta.intkey.ui.UIUtils.getMainFrame().getSize();
+
+            if (viewerPreferredSize.getWidth() <= appMainWindowSize.getWidth() && viewerPreferredSize.getHeight() <= appMainWindowSize.getHeight()) {
+                fitToImage();
+            } else {
+                setSize(new Dimension(Math.min(viewerPreferredSize.width, appMainWindowSize.width), Math.min(viewerPreferredSize.height, appMainWindowSize.height)));
+            }
+
             UIUtils.centerDialog(this, this.getParent());
         }
         replaySound();
@@ -554,9 +564,9 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
     }
 
     /**
-     * If set to false, the dialog will not be centered resized to fit the first image displayed
-     * in the dialog. This is used when displaying multiple image dialogs at
-     * once, which need to be tiled.
+     * If set to false, the dialog will not be centered resized to fit the first
+     * image displayed in the dialog. This is used when displaying multiple
+     * image dialogs at once, which need to be tiled.
      */
     public void setAutoSizeAndCenterFirstImageDisplayed(boolean autoSizeAndCenterFirstImageDisplayed) {
         _autoSizeAndCenterFirstImageDisplayed = autoSizeAndCenterFirstImageDisplayed;

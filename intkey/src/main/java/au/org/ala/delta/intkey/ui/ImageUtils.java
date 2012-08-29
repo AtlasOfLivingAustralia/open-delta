@@ -62,6 +62,7 @@ public class ImageUtils {
         w.setLayout(new BorderLayout());
 
         final MultipleImageViewer viewer = new MultipleImageViewer(imageSettings);
+        viewer.setScaleImages(true);
 
         applicationWindow.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
@@ -186,7 +187,9 @@ public class ImageUtils {
                 _imageDisplayDialog.setLocation(r.x, r.y);
 
                 _imageDisplayDialog.setSize(new Dimension(r.width, r.height));
+                _viewer.setPreferredSize(new Dimension(r.width, r.height));
                 _imageDisplayDialog.setVisible(true);
+                _imageDisplayDialog.requestFocus();
             } catch (Exception ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(_applicationWindow, "Error occurred loading image: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);

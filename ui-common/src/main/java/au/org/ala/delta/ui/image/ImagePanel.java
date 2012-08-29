@@ -121,7 +121,7 @@ public class ImagePanel extends JPanel implements Scrollable {
             _scalingStrategy = new NoScalingStrategy(_image);
             break;
         case FIXED_ASPECT_RATIO:
-            _scalingStrategy = new FixedAspectRatioScalingStrategy(_image);
+            _scalingStrategy = new FixedAspectRatioNoStretchScalingStrategy(_image);
             break;
         case FILL_AVAILABLE_SPACE:
             _scalingStrategy = new FullSizeScalingStrategy();
@@ -212,7 +212,6 @@ public class ImagePanel extends JPanel implements Scrollable {
         }
 
         public Dimension getScaledImageSize() {
-
             int width = 0;
             int height = 0;
 
@@ -307,6 +306,60 @@ public class ImagePanel extends JPanel implements Scrollable {
         public Image getScaledImage(Image unscaledImage) {
             return _unscaledImage;
         }
+    }
+
+    /**
+     * The FixedAspectRatioNoStretchScalingStrategy maintains the aspect ratio
+     * for the image, but does not apply any scaling if the image fits within
+     * the available space. This avoids the image being scaled to larger than
+     * its original size.
+     * 
+     * @author ChrisF
+     * 
+     */
+    class FixedAspectRatioNoStretchScalingStrategy implements ScalingStrategy {
+
+        private Dimension _unscaledImageSize;
+        private FixedAspectRatioScalingStrategy _fixedAspectRatioStrategy;
+        private NoScalingStrategy _noScalingStrategy;
+
+        public FixedAspectRatioNoStretchScalingStrategy(BufferedImage unscaledImage) {
+            _unscaledImageSize = new Dimension(_image.getWidth(), _image.getHeight());
+            _fixedAspectRatioStrategy = new FixedAspectRatioScalingStrategy(unscaledImage);
+            _noScalingStrategy = new NoScalingStrategy(unscaledImage);
+        }
+
+        @Override
+        public Dimension getScaledImageSize() {
+            if (unscaledImageFitsInBounds()) {
+                return _noScalingStrategy.getScaledImageSize();
+            } else {
+                return _fixedAspectRatioStrategy.getScaledImageSize();
+            }
+        }
+
+        @Override
+        public Point getScaledImageOrigin() {
+            if (unscaledImageFitsInBounds()) {
+                return _noScalingStrategy.getScaledImageOrigin();
+            } else {
+                return _fixedAspectRatioStrategy.getScaledImageOrigin();
+            }
+        }
+
+        @Override
+        public Image getScaledImage(Image unscaledImage) {
+            if (unscaledImageFitsInBounds()) {
+                return _noScalingStrategy.getScaledImage(unscaledImage);
+            } else {
+                return _fixedAspectRatioStrategy.getScaledImage(unscaledImage);
+            }
+        }
+
+        private boolean unscaledImageFitsInBounds() {
+            return _unscaledImageSize.getWidth() <= getWidth() && _unscaledImageSize.getHeight() <= getHeight();
+        }
+
     }
 
     /*
