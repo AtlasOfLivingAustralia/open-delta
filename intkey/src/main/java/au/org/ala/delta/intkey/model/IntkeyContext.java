@@ -1208,6 +1208,10 @@ public class IntkeyContext extends AbstractDeltaContext {
     public synchronized File getDatasetStartupFile() {
         return _datasetStartupFile;
     }
+    
+    public synchronized URL getDatasetStartupURL() {
+        return _datasetStartupURL;
+    }
 
     public synchronized File getDatasetDirectory() {
         if (_initializationFile != null) {

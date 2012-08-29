@@ -1012,7 +1012,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             mnuFileBuilder.addDirectiveMenuItem("mnuItFileDisplay", new FileDisplayDirective());
             mnuFileBuilder.addDirectiveMenuItem("mnuItFileLog", new FileLogDirective());
             mnuFileBuilder.addDirectiveMenuItem("mnuItFileJournal", new FileJournalDirective());
-            //mnuFileBuilder.addDirectiveMenuItem("mnuItFileClose", new FileCloseDirective()); ** File Close is now a NO-OP
+            // mnuFileBuilder.addDirectiveMenuItem("mnuItFileClose", new
+            // FileCloseDirective()); ** File Close is now a NO-OP
             mnuFileBuilder.addDirectiveMenuItem("mnuItFileCharacters", new FileCharactersDirective());
             mnuFileBuilder.addDirectiveMenuItem("mnuItFileTaxa", new FileCharactersDirective());
             mnuFileBuilder.endSubMenu();
@@ -1048,6 +1049,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     }
 
     private JMenu buildRecentFilesMenu() {
+        Map<String, String> datasetIndexMap = UIUtils.getDatasetIndexAsMap();
+
         JMenu mnuFileRecents = new JMenu();
         mnuFileRecents.setName("mnuFileRecents");
 
@@ -1058,7 +1061,17 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             final String filePath = recentFile.getFirst();
 
             int fileNumber = i + 1;
-            String title = fileNumber + ". " + recentFile.getSecond();
+
+            String title;
+
+            // If the dataset at the path as listed in the most recently used
+            // datasets is listed in the index,
+            // use the description listed in the dataset index.
+            if (datasetIndexMap.containsKey(filePath)) {
+                title = fileNumber + ". " + datasetIndexMap.get(filePath);
+            } else {
+                title = fileNumber + ". " + recentFile.getSecond();
+            }
 
             JMenuItem mnuItRecentFile = new JMenuItem(title);
             mnuItRecentFile.setToolTipText(filePath);
@@ -1426,7 +1439,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     }
 
     // ============== File menu actions ==============================
-    
+
     @Action
     public void mnuItEditDataSetIndex() {
         EditDatasetIndexDialog dlg = new EditDatasetIndexDialog(getMainFrame(), UIUtils.readDatasetIndex());
@@ -1435,8 +1448,17 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         if (modifiedDatasetIndex != null) {
             UIUtils.writeDatasetIndex(modifiedDatasetIndex);
         }
+
+        // Rebuild menus as need to refresh the recent datasets menu so that the
+        // descriptions of the datasets match the
+        // descriptions of the corresponding datasets in the dataset index, if
+        // applicable.
+        JMenuBar menuBar = buildMenus(_advancedMode);
+        getMainFrame().setJMenuBar(menuBar);
+        ResourceMap resourceMap = getContext().getResourceMap(Intkey.class);
+        resourceMap.injectComponents(getMainFrame());
     }
-    
+
     @Action
     public void mnuItNormalMode() {
         toggleAdvancedMode();
@@ -1530,7 +1552,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         AboutBox aboutBox = new AboutBox(getMainFrame(), IconHelper.createRed32ImageIcon());
         show(aboutBox);
     }
-    
+
     // ============================== Global option buttons
     // ================================
 
@@ -1976,7 +1998,9 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     @Override
     public void handleDatasetClosed() {
-        saveCurrentlyOpenedDataset();
+        if (_context.getDataset() != null) {
+            saveCurrentlyOpenedDataset();
+        }
         JMenuBar menuBar = buildMenus(_advancedMode); // need to refresh the
                                                       // recent datasets menu
         getMainFrame().setJMenuBar(menuBar);
@@ -2460,7 +2484,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         return retList;
     }
-    
+
     @Override
     public List<Character> getSelectedCharacters() {
         List<Character> retList = new ArrayList<Character>();
@@ -2492,7 +2516,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     public void displayHelpTopic(String topicID) {
         _helpController.displayHelpTopic(getMainFrame(), topicID);
     }
-    
+
     @Override
     public boolean isAdvancedMode() {
         return _advancedMode;
@@ -2876,7 +2900,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             return null;
         }
     }
-    
+
     @Override
     public String promptForDataset() {
         OpenDataSetDialog dlg = new OpenDataSetDialog(getMainFrame(), UIUtils.readDatasetIndex(), _lastOpenedDatasetDirectory);
@@ -3056,13 +3080,23 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         executeDirective(new NewDatasetDirective(), "\"" + fileName + "\"");
     }
 
+    /**
+     * This method saves information about the currently opened dataset:
+     * 1. If the dataset was downloaded from a remote location, the user will be given the option to save it to disk
+     * 2. The dataset is added to the list of most recently used datasets
+     * 3. If the dataset is not currently saved in the dataset index, the user will be given the option to do this.
+     */
     private void saveCurrentlyOpenedDataset() {
+        String datasetTitle = _context.getDataset().getHeading().trim();
+
         // if the dataset was downloaded, ask the user if they wish to save it
         StartupFileData startupFileData = _context.getStartupFileData();
 
-        File fileToOpenDataset = null;
+        boolean remoteDatasetSavedLocally = false;
+
+        String datasetPath = null;
         if (startupFileData != null && startupFileData.isRemoteDataset()) {
-            int chosenOption = JOptionPane.showConfirmDialog(getMainFrame(), "Save downloaded dataset?", "Save", JOptionPane.YES_NO_OPTION);
+            int chosenOption = JOptionPane.showConfirmDialog(getMainFrame(), "Save downloaded dataset '" + datasetTitle + "' ?", "Save", JOptionPane.YES_NO_OPTION);
             if (chosenOption == JOptionPane.YES_OPTION) {
                 JFileChooser fileChooser = new JFileChooser();
                 fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -3074,7 +3108,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
                     try {
                         File newInkFile = StartupUtils.saveRemoteDataset(_context, saveDir);
-                        fileToOpenDataset = newInkFile;
+                        datasetPath = newInkFile.getAbsolutePath();
+                        remoteDatasetSavedLocally = true;
 
                         // Remove the current startup file from the MRU as a new
                         // file will go in its
@@ -3087,19 +3122,50 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                         return;
                     }
                 } else {
-                    fileToOpenDataset = _context.getDatasetStartupFile();
+                    // Link to the remote copy of the webstart file
+                    datasetPath = startupFileData.getInkFileLocation().toString();
                 }
             } else {
-                fileToOpenDataset = _context.getDatasetStartupFile();
+                // Link to the remote copy of the webstart file
+                datasetPath = startupFileData.getInkFileLocation().toString();
             }
         } else {
-            fileToOpenDataset = _context.getDatasetStartupFile();
+            datasetPath = _context.getDatasetStartupFile().getAbsolutePath();
         }
 
+        // Add to list of most recently used datasets.
         if (_context.getDataset() != null) {
-            String datasetTitle = _context.getDataset().getHeading().trim();
+            UIUtils.addFileToMRU(datasetPath, datasetTitle, UIUtils.getPreviouslyUsedFiles());
+        }
 
-            UIUtils.addFileToMRU(fileToOpenDataset.getAbsolutePath(), datasetTitle, UIUtils.getPreviouslyUsedFiles());
+        // If the dataset is not present in the dataset index, give the user the
+        // option to add it
+        String promptMessage = null;
+        if (startupFileData != null && startupFileData.isRemoteDataset()) {
+            if (remoteDatasetSavedLocally) {
+                promptMessage = "Add saved copy of dataset '" + datasetTitle + "' to index?";
+            } else {
+                promptMessage = "Add URL for remote dataset '" + datasetTitle + "' to index?";
+            }
+        } else {
+            promptMessage = "Add dataset '" + datasetTitle + "' to index?";
+        }
+
+        // check if the datasetPath is already present in the index
+        if (!UIUtils.getDatasetIndexAsMap().containsKey(datasetPath)) {
+            int chosenOption = JOptionPane.showConfirmDialog(getMainFrame(), promptMessage, "Add to dataset index", JOptionPane.YES_NO_OPTION);
+            if (chosenOption == JOptionPane.YES_OPTION) {
+                addToDatasetIndex(datasetTitle, datasetPath);
+            }
+        }
+    }
+
+    private void addToDatasetIndex(String datasetTitle, String datasetPath) {
+        EditDatasetIndexDialog dlg = new EditDatasetIndexDialog(getMainFrame(), UIUtils.readDatasetIndex(), datasetTitle, datasetPath);
+        show(dlg);
+        List<Pair<String, String>> modifiedDatasetIndex = dlg.getModifiedDatasetIndex();
+        if (modifiedDatasetIndex != null) {
+            UIUtils.writeDatasetIndex(modifiedDatasetIndex);
         }
     }
 

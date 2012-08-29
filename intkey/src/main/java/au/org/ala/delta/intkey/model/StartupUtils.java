@@ -45,7 +45,7 @@ public class StartupUtils {
         File copyZipFile = new File(saveDir, datasetZip.getName());
         
         //Write a new .ink file 
-        File newInkFile = new File(saveDir, startupFile.getName());
+        File newInkFile = new File(saveDir, startupFileData.getInkFileLocation().getFile());
         
         FileWriter fw = new FileWriter(newInkFile);
         BufferedWriter bufFW = new BufferedWriter(fw);

@@ -364,6 +364,13 @@ public class UIUtils {
         return false;
     }
 
+    /**
+     * Save the mode in which the application was last used before shutdown -
+     * advanced or basic - to the preferences
+     * 
+     * @param advancedMode
+     *            true if application was last used in advanced mode
+     */
     public static void savePreviousApplicationMode(boolean advancedMode) {
         Preferences prefs = Preferences.userNodeForPackage(Intkey.class);
         prefs.put(MODE_PREF_KEY, advancedMode ? ADVANCED_MODE_PREF_VALUE : BASIC_MODE_PREF_VALUE);
@@ -375,8 +382,8 @@ public class UIUtils {
     }
 
     /**
-     * @return true if the last time the application was closed, advanced mode
-     *         was in use
+     * @return the parent directory for the dataset that was most recently
+     *         opened using intkey
      */
     public static File getSavedLastOpenedDatasetDirectory() {
         Preferences prefs = Preferences.userNodeForPackage(Intkey.class);
@@ -389,6 +396,12 @@ public class UIUtils {
         return null;
     }
 
+    /**
+     * Save the parent directory for the most recently opened dataset to
+     * preferences
+     * 
+     * @param lastOpenedDatasetDirectory
+     */
     public static void saveLastOpenedDatasetDirectory(File lastOpenedDatasetDirectory) {
         Preferences prefs = Preferences.userNodeForPackage(Intkey.class);
         prefs.put(LAST_OPENED_DATASET_LOCATION_PREF_KEY, lastOpenedDatasetDirectory.getAbsolutePath());
@@ -399,60 +412,71 @@ public class UIUtils {
         }
     }
 
+    /**
+     * Gets the dataset index from preferences
+     * 
+     * @return The dataset index - a list of dataset description, dataset path
+     *         value pairs
+     */
     public static List<Pair<String, String>> readDatasetIndex() {
         Preferences prefs = Preferences.userNodeForPackage(Intkey.class);
-        
+
         List<Pair<String, String>> indexList = new ArrayList<Pair<String, String>>();
-        
-//        if (prefs != null) {
-//            String datasetIndexJSON = prefs.get(DATASET_INDEX_PREF_KEY, "");
-//            if (!StringUtils.isEmpty(datasetIndexJSON)) {
-//                List<List<String>> deserializedJSON = (List<List<String>>) JSONSerializer.toJava(JSONArray.fromObject(datasetIndexJSON));
-//                for (List<String> datasetInfoList : deserializedJSON) {
-//                    indexList.add(new Pair<String, String>(datasetInfoList.get(0), datasetInfoList.get(1)));
-//                }
-//            }
-//        }
-        
-        indexList.add(new Pair<String, String>("DELTA Sample Data", "C:\\Users\\ChrisF\\eclipse-workspace\\delta-REACTOR\\intkey\\src\\test\\resources\\dataset\\sample\\intkey.ink"));
-        indexList.add(new Pair<String, String>("Images test dataset", "C:\\Users\\ChrisF\\eclipse-workspace\\delta-REACTOR\\intkey\\src\\test\\resources\\dataset\\images_test_dataset\\intkey.ink"));
-        
+
+        if (prefs != null) {
+            String datasetIndexJSON = prefs.get(DATASET_INDEX_PREF_KEY, "");
+            if (!StringUtils.isEmpty(datasetIndexJSON)) {
+                List<List<String>> deserializedJSON = (List<List<String>>) JSONSerializer.toJava(JSONArray.fromObject(datasetIndexJSON));
+                for (List<String> datasetInfoList : deserializedJSON) {
+                    indexList.add(new Pair<String, String>(datasetInfoList.get(0), datasetInfoList.get(1)));
+                }
+            }
+        }
+
         return indexList;
     }
 
+    /**
+     * Save the dataset index to preferences.
+     * 
+     * @param datasetIndexList
+     *            The dataset index - a list of dataset description, dataset
+     *            path value pairs
+     */
     public static void writeDatasetIndex(List<Pair<String, String>> datasetIndexList) {
-        System.out.println("WRITING DATASET INDEX");
-        for (Pair<String, String> descriptionFilePathPair: datasetIndexList) {
-            System.out.println(descriptionFilePathPair.getFirst() + " : " + descriptionFilePathPair.getSecond());
+        Preferences prefs = Preferences.userNodeForPackage(Intkey.class);
+
+        List<List<String>> listToSerialize = new ArrayList<List<String>>();
+
+        for (Pair<String, String> datasetInfoPair : datasetIndexList) {
+            listToSerialize.add(Arrays.asList(datasetInfoPair.getFirst(), datasetInfoPair.getSecond()));
         }
-//        Preferences prefs = Preferences.userNodeForPackage(Intkey.class);
-//        
-//        List<List<String>> listToSerialize = new ArrayList<List<String>>();
-//
-//        for (Pair<String, String> datasetInfoPair : datasetIndexList) {
-//            listToSerialize.add(Arrays.asList(datasetInfoPair.getFirst(), datasetInfoPair.getSecond()));
-//        }
-//
-//        String jsonList = JSONSerializer.toJSON(listToSerialize).toString();
-//        prefs.put(DATASET_INDEX_PREF_KEY, jsonList);
-//        try {
-//            prefs.sync();
-//        } catch (BackingStoreException e) {
-//            throw new RuntimeException(e);
-//        }
+
+        String jsonList = JSONSerializer.toJSON(listToSerialize).toString();
+        prefs.put(DATASET_INDEX_PREF_KEY, jsonList);
+        try {
+            prefs.sync();
+        } catch (BackingStoreException e) {
+            throw new RuntimeException(e);
+        }
     }
-    
+
     /**
      * Returns the dataset index as a map
-     * @return a map of dataset path to dataset description key value pairs 
+     * 
+     * @return a map of dataset path to dataset description key value pairs.
+     *         NOTE this is different from readDatasetIndex and
+     *         writeDatasetIndex - in both those methods, the dataset
+     *         description appears first in the value pairs for each index in
+     *         the index.
      */
     public static Map<String, String> getDatasetIndexAsMap() {
         Map<String, String> map = new HashMap<String, String>();
-        
-        for (Pair<String, String> descriptionFilePathPair: readDatasetIndex()) {
+
+        for (Pair<String, String> descriptionFilePathPair : readDatasetIndex()) {
             map.put(descriptionFilePathPair.getSecond(), descriptionFilePathPair.getFirst());
         }
-        
+
         return map;
     }
 

@@ -18,6 +18,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -64,12 +65,33 @@ public class EditDatasetIndexDialog extends IntkeyDialog {
 
     @Resource
     String deleteItemPromptTitle;
-    
+
     @Resource
     String addItemPromptTitle;
 
     @Resource
     String editItemPromptTitle;
+
+    public EditDatasetIndexDialog(Frame owner, List<Pair<String, String>> datasetIndexData, final String newDatasetDescription, final String newDatasetPath) {
+        this(owner, datasetIndexData);
+        SwingUtilities.invokeLater(new Runnable() {
+            
+            @Override
+            public void run() {
+                promptToAddSpecifiedDataset(newDatasetDescription, newDatasetPath);
+            }
+        });
+    }
+
+    private void promptToAddSpecifiedDataset(String newDatasetDescription, String newDatasetPath) {
+        AddOrEditDataIndexItemDialog addDialog = new AddOrEditDataIndexItemDialog(this, addItemPromptTitle, newDatasetDescription, newDatasetPath);
+        ((SingleFrameApplication) Application.getInstance()).show(addDialog);
+        Pair<String, String> descriptionPathPair = addDialog.getDescriptionPathPair();
+        if (descriptionPathPair != null) {
+            _tableModel.addRow(new Object[] { descriptionPathPair.getFirst(), descriptionPathPair.getSecond() });
+            _tableDatasetIndex.setRowSelectionInterval(_tableDatasetIndex.getRowCount() - 1, _tableDatasetIndex.getRowCount() - 1);
+        }
+    }
 
     public EditDatasetIndexDialog(Frame owner, List<Pair<String, String>> datasetIndexData) {
         super(owner, true);
@@ -122,32 +144,21 @@ public class EditDatasetIndexDialog extends IntkeyDialog {
         JButton btnMoveDown = new JButton();
         btnMoveDown.setAction(actionMap.get("EditDatasetIndexDialog_MoveDown"));
         GroupLayout gl__pnlModificationButtons = new GroupLayout(_pnlModificationButtons);
-        gl__pnlModificationButtons.setHorizontalGroup(
-            gl__pnlModificationButtons.createParallelGroup(Alignment.TRAILING)
-                .addGroup(gl__pnlModificationButtons.createSequentialGroup()
-                    .addContainerGap()
-                    .addGroup(gl__pnlModificationButtons.createParallelGroup(Alignment.LEADING, false)
-                        .addComponent(btnDelete, GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
-                        .addComponent(btnMoveUp, GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
-                        .addComponent(btnMoveDown, GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
-                        .addComponent(btnEdit, GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
-                        .addComponent(btnAdd, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addContainerGap())
-        );
-        gl__pnlModificationButtons.setVerticalGroup(
-            gl__pnlModificationButtons.createParallelGroup(Alignment.LEADING)
-                .addGroup(gl__pnlModificationButtons.createSequentialGroup()
-                    .addComponent(btnEdit, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
-                    .addGap(4)
-                    .addComponent(btnAdd, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
-                    .addGap(4)
-                    .addComponent(btnDelete, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(ComponentPlacement.RELATED)
-                    .addComponent(btnMoveUp, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(ComponentPlacement.RELATED)
-                    .addComponent(btnMoveDown, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(31, Short.MAX_VALUE))
-        );
+        gl__pnlModificationButtons.setHorizontalGroup(gl__pnlModificationButtons.createParallelGroup(Alignment.TRAILING)
+                .addGroup(
+                        gl__pnlModificationButtons
+                                .createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(
+                                        gl__pnlModificationButtons.createParallelGroup(Alignment.LEADING, false).addComponent(btnDelete, GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
+                                                .addComponent(btnMoveUp, GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE).addComponent(btnMoveDown, GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
+                                                .addComponent(btnEdit, GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
+                                                .addComponent(btnAdd, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).addContainerGap()));
+        gl__pnlModificationButtons.setVerticalGroup(gl__pnlModificationButtons.createParallelGroup(Alignment.LEADING).addGroup(
+                gl__pnlModificationButtons.createSequentialGroup().addComponent(btnEdit, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE).addGap(4)
+                        .addComponent(btnAdd, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE).addGap(4).addComponent(btnDelete, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(ComponentPlacement.RELATED).addComponent(btnMoveUp, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE).addPreferredGap(ComponentPlacement.RELATED)
+                        .addComponent(btnMoveDown, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE).addContainerGap(31, Short.MAX_VALUE)));
         _pnlModificationButtons.setLayout(gl__pnlModificationButtons);
 
         JPanel panel = new JPanel();
@@ -164,13 +175,13 @@ public class EditDatasetIndexDialog extends IntkeyDialog {
 
     @Action
     public void EditDatasetIndexDialog_OK() {
-        _modifiedDatasetIndex = new ArrayList<Pair<String,String>>();
-        for (int i=0; i < _tableDatasetIndex.getRowCount(); i++) {
+        _modifiedDatasetIndex = new ArrayList<Pair<String, String>>();
+        for (int i = 0; i < _tableDatasetIndex.getRowCount(); i++) {
             String description = (String) _tableDatasetIndex.getValueAt(i, 0);
             String path = (String) _tableDatasetIndex.getValueAt(i, 1);
             _modifiedDatasetIndex.add(new Pair<String, String>(description, path));
         }
-        
+
         this.setVisible(false);
     }
 
@@ -244,7 +255,7 @@ public class EditDatasetIndexDialog extends IntkeyDialog {
             }
         }
     }
-    
+
     public List<Pair<String, String>> getModifiedDatasetIndex() {
         return _modifiedDatasetIndex;
     }
