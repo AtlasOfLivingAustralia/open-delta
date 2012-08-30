@@ -21,7 +21,7 @@ import au.org.ala.delta.intkey.directives.invocation.DefineSubjectsDirectiveInvo
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class DefineSubjectsDirective extends NewIntkeyDirective {
+public class DefineSubjectsDirective extends StandardIntkeyDirective {
     public DefineSubjectsDirective() {
         super(false, "define", "subjects");
     }

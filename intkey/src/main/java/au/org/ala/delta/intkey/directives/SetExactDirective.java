@@ -21,7 +21,7 @@ import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocat
 import au.org.ala.delta.intkey.directives.invocation.SetExactDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class SetExactDirective extends NewIntkeyDirective {
+public class SetExactDirective extends StandardIntkeyDirective {
 
     public SetExactDirective() {
         super(true, "set", "exact");

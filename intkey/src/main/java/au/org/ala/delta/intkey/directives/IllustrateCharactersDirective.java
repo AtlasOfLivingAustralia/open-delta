@@ -22,7 +22,7 @@ import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocat
 import au.org.ala.delta.intkey.model.ImageDisplayMode;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class IllustrateCharactersDirective extends NewIntkeyDirective {
+public class IllustrateCharactersDirective extends StandardIntkeyDirective {
 
     public IllustrateCharactersDirective() {
         super(true, "illustrate", "characters");

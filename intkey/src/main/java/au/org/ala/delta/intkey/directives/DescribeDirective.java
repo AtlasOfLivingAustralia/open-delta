@@ -21,7 +21,7 @@ import au.org.ala.delta.intkey.directives.invocation.DescribeDirectiveInvocation
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class DescribeDirective extends NewIntkeyDirective {
+public class DescribeDirective extends StandardIntkeyDirective {
     
     public DescribeDirective() {
         super(true, "describe");

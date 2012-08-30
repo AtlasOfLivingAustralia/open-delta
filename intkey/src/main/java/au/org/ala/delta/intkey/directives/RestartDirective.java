@@ -28,7 +28,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
  * @author ChrisF
  * 
  */
-public class RestartDirective extends NewIntkeyDirective {
+public class RestartDirective extends StandardIntkeyDirective {
 
     public RestartDirective() {
         super(true, "restart");

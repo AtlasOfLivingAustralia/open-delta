@@ -21,7 +21,7 @@ import au.org.ala.delta.intkey.directives.invocation.DeleteDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class DeleteDirective extends NewIntkeyDirective {
+public class DeleteDirective extends StandardIntkeyDirective {
     public DeleteDirective() {
         super(true, "delete");
     }

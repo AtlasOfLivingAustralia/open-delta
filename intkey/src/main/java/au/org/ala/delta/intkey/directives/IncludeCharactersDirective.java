@@ -21,7 +21,7 @@ import au.org.ala.delta.intkey.directives.invocation.IncludeCharactersDirectiveI
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class IncludeCharactersDirective extends NewIntkeyDirective {
+public class IncludeCharactersDirective extends StandardIntkeyDirective {
 
     public IncludeCharactersDirective() {
         super(true, "include", "characters");

@@ -22,7 +22,7 @@ import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocat
 import au.org.ala.delta.intkey.directives.invocation.PreferencesDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class PreferencesDirective extends NewIntkeyDirective {
+public class PreferencesDirective extends StandardIntkeyDirective {
     public PreferencesDirective() {
         super(false, "preferences");
     }

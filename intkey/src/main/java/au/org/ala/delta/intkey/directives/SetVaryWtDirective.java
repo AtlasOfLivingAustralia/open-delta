@@ -21,7 +21,7 @@ import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocat
 import au.org.ala.delta.intkey.directives.invocation.SetVaryWtDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class SetVaryWtDirective extends NewIntkeyDirective {
+public class SetVaryWtDirective extends StandardIntkeyDirective {
     public SetVaryWtDirective() {
         super(false, "set", "varywt");
     }

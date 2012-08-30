@@ -25,14 +25,22 @@ import au.org.ala.delta.directives.args.DirectiveArguments;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-/** TODO NEED A NAME FOR THIS CLASS **/
-public abstract class NewIntkeyDirective extends IntkeyDirective {
+/**
+ * Base class for the majority of Intkey directives whose arguments follow a
+ * standard pattern and can be handled by subclasses of IntkeyDirectiveArgument.
+ * Directives that do not follow this pattern need to subclass IntkeyDirective
+ * directly.
+ * 
+ * @author ChrisF
+ * 
+ */
+public abstract class StandardIntkeyDirective extends IntkeyDirective {
 
     protected DirectiveArguments _args;
 
     protected List<IntkeyDirectiveFlag> _intkeyFlagsList;
 
-    public NewIntkeyDirective(boolean errorIfNoDatasetLoaded, String... controlWords) {
+    public StandardIntkeyDirective(boolean errorIfNoDatasetLoaded, String... controlWords) {
         super(errorIfNoDatasetLoaded, controlWords);
         _intkeyFlagsList = buildFlagsList();
     }

@@ -21,7 +21,7 @@ import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocat
 import au.org.ala.delta.intkey.directives.invocation.StopBestDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class SetStopBestDirective extends NewIntkeyDirective {
+public class SetStopBestDirective extends StandardIntkeyDirective {
 
     public SetStopBestDirective() {
         super(false, "set", "stopbest");

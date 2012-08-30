@@ -21,7 +21,7 @@ import au.org.ala.delta.intkey.directives.invocation.DefineTaxaDirectiveInvocati
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class DefineTaxaDirective extends NewIntkeyDirective {
+public class DefineTaxaDirective extends StandardIntkeyDirective {
 
     public DefineTaxaDirective() {
         super(true, "define", "taxa");

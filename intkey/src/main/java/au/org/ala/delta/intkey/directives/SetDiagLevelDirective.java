@@ -21,7 +21,7 @@ import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocat
 import au.org.ala.delta.intkey.directives.invocation.SetDiagLevelInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class SetDiagLevelDirective extends NewIntkeyDirective {
+public class SetDiagLevelDirective extends StandardIntkeyDirective {
 
     public SetDiagLevelDirective() {
         super(false, "set", "diaglevel");

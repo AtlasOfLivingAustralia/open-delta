@@ -22,7 +22,7 @@ import au.org.ala.delta.intkey.directives.invocation.FileLogDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class FileLogDirective extends NewIntkeyDirective {
+public class FileLogDirective extends StandardIntkeyDirective {
     public FileLogDirective() {
         super(false, "file", "log");
     }

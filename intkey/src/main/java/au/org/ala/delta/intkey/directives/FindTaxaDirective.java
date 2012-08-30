@@ -21,7 +21,7 @@ import au.org.ala.delta.intkey.directives.invocation.FindTaxaDirectiveInvocation
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class FindTaxaDirective extends NewIntkeyDirective {
+public class FindTaxaDirective extends StandardIntkeyDirective {
 
     public FindTaxaDirective() {
         super(true, "find", "taxa");

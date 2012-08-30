@@ -20,7 +20,7 @@ import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocat
 import au.org.ala.delta.intkey.directives.invocation.SetDiagTypeSpecimensDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class SetDiagTypeSpecimensDirective extends NewIntkeyDirective {
+public class SetDiagTypeSpecimensDirective extends StandardIntkeyDirective {
 
     public SetDiagTypeSpecimensDirective() {
         super(false, "set", "diagtype", "specimens");

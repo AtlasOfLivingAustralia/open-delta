@@ -21,7 +21,7 @@ import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocat
 import au.org.ala.delta.intkey.directives.invocation.ShowDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class ShowDirective extends NewIntkeyDirective {
+public class ShowDirective extends StandardIntkeyDirective {
 
     public ShowDirective() {
         super(false, "show");

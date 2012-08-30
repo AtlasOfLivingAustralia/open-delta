@@ -21,7 +21,7 @@ import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocat
 import au.org.ala.delta.intkey.directives.invocation.OnOffDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public abstract class OnOffDirective extends NewIntkeyDirective {
+public abstract class OnOffDirective extends StandardIntkeyDirective {
     
     public OnOffDirective(boolean errorIfNoDatasetLoaded, String... controlWords) {
         super(errorIfNoDatasetLoaded, controlWords);

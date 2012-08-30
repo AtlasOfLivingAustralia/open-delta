@@ -21,7 +21,7 @@ import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocat
 import au.org.ala.delta.intkey.directives.invocation.SetToleranceDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class SetToleranceDirective extends NewIntkeyDirective {
+public class SetToleranceDirective extends StandardIntkeyDirective {
 
     public SetToleranceDirective() {
         super(false, "set", "tolerance");

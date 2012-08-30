@@ -21,7 +21,7 @@ import au.org.ala.delta.intkey.directives.invocation.InformationDirectiveInvocat
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class InformationDirective extends NewIntkeyDirective {
+public class InformationDirective extends StandardIntkeyDirective {
 
     public InformationDirective() {
         super(true, "information");

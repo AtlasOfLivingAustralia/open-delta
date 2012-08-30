@@ -22,7 +22,7 @@ import au.org.ala.delta.intkey.directives.invocation.ContentsDirectiveInvocation
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class ContentsDirective extends NewIntkeyDirective {
+public class ContentsDirective extends StandardIntkeyDirective {
 
     public ContentsDirective() {
         super(true, "contents");

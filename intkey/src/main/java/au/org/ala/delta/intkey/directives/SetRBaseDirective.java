@@ -30,7 +30,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
  * @author ChrisF
  * 
  */
-public class SetRBaseDirective extends NewIntkeyDirective {
+public class SetRBaseDirective extends StandardIntkeyDirective {
 
     public SetRBaseDirective() {
         super(false, "set", "rbase");

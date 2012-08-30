@@ -21,7 +21,7 @@ import au.org.ala.delta.intkey.directives.invocation.CommentDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class CommentDirective extends NewIntkeyDirective {
+public class CommentDirective extends StandardIntkeyDirective {
 
     public CommentDirective() {
         super(false, "comment");

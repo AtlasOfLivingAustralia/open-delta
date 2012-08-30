@@ -29,7 +29,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
  * @author ChrisF
  * 
  */
-public class FileCharactersDirective extends NewIntkeyDirective {
+public class FileCharactersDirective extends StandardIntkeyDirective {
 
     public FileCharactersDirective() {
         super(false, "file", "characters");

@@ -21,7 +21,7 @@ import au.org.ala.delta.intkey.directives.invocation.ExcludeTaxaDirectiveInvocat
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class ExcludeTaxaDirective extends NewIntkeyDirective {
+public class ExcludeTaxaDirective extends StandardIntkeyDirective {
     public ExcludeTaxaDirective() {
         super(true, "exclude", "taxa");
     }

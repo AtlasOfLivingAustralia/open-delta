@@ -21,7 +21,7 @@ import au.org.ala.delta.intkey.directives.invocation.DiagnoseDirectiveInvocation
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class DiagnoseDirective extends NewIntkeyDirective {
+public class DiagnoseDirective extends StandardIntkeyDirective {
 
     public DiagnoseDirective() {
         super(true, "diagnose");

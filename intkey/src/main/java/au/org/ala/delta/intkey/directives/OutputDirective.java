@@ -10,7 +10,7 @@ import au.org.ala.delta.intkey.model.IntkeyContext;
  * @author ChrisF
  * 
  */
-public abstract class OutputDirective extends NewIntkeyDirective {
+public abstract class OutputDirective extends StandardIntkeyDirective {
 
     public OutputDirective(boolean errorIfNoDatasetLoaded, String... controlWords) {
         super(errorIfNoDatasetLoaded, controlWords);

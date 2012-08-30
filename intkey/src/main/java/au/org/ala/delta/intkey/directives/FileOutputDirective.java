@@ -22,7 +22,7 @@ import au.org.ala.delta.intkey.directives.invocation.FileOutputDirectiveInvocati
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class FileOutputDirective extends NewIntkeyDirective {
+public class FileOutputDirective extends StandardIntkeyDirective {
 
     public FileOutputDirective() {
         super(false, "file", "output");

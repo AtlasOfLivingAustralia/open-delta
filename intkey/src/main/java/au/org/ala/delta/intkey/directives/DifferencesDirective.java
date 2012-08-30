@@ -22,7 +22,7 @@ import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocat
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class DifferencesDirective extends NewIntkeyDirective {
+public class DifferencesDirective extends StandardIntkeyDirective {
 
     public DifferencesDirective() {
         super(true, "differences");

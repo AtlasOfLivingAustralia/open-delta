@@ -21,7 +21,7 @@ import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocat
 import au.org.ala.delta.intkey.directives.invocation.SetInfoPathDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class SetInfoPathDirective extends NewIntkeyDirective {
+public class SetInfoPathDirective extends StandardIntkeyDirective {
 
     public SetInfoPathDirective() {
         super(false, "set", "infopath");

@@ -22,7 +22,7 @@ import au.org.ala.delta.intkey.directives.invocation.FileJournalDirectiveInvocat
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class FileJournalDirective extends NewIntkeyDirective {
+public class FileJournalDirective extends StandardIntkeyDirective {
     public FileJournalDirective() {
         super(false, "file", "journal");
     }

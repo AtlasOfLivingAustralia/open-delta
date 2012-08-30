@@ -21,7 +21,7 @@ import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.SimilaritiesDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class SimilaritiesDirective extends NewIntkeyDirective {
+public class SimilaritiesDirective extends StandardIntkeyDirective {
 
     public SimilaritiesDirective() {
         super(true, "similarities");

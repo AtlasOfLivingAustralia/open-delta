@@ -21,7 +21,7 @@ import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocat
 import au.org.ala.delta.intkey.directives.invocation.SetImagePathDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class SetImagePathDirective extends NewIntkeyDirective {
+public class SetImagePathDirective extends StandardIntkeyDirective {
 
     public SetImagePathDirective() {
         super(false, "set", "imagepath");

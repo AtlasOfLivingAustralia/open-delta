@@ -21,7 +21,7 @@ import au.org.ala.delta.intkey.directives.invocation.FindCharactersDirectiveInvo
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class FindCharactersDirective extends NewIntkeyDirective {
+public class FindCharactersDirective extends StandardIntkeyDirective {
 
     public FindCharactersDirective() {
         super(true, "find", "characters");

@@ -21,7 +21,7 @@ import au.org.ala.delta.intkey.directives.invocation.DefineEndIdentifyDirectiveI
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class DefineEndIdentifyDirective extends NewIntkeyDirective {
+public class DefineEndIdentifyDirective extends StandardIntkeyDirective {
 
     public DefineEndIdentifyDirective() {
         super(false, "define", "endidentify");

@@ -21,7 +21,7 @@ import au.org.ala.delta.intkey.directives.invocation.ExcludeCharactersDirectiveI
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class ExcludeCharactersDirective extends NewIntkeyDirective {
+public class ExcludeCharactersDirective extends StandardIntkeyDirective {
 
     public ExcludeCharactersDirective() {
         super(true, "exclude", "characters");

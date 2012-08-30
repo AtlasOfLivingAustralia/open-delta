@@ -20,7 +20,7 @@ import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocat
 import au.org.ala.delta.intkey.directives.invocation.SetDiagTypeTaxaDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class SetDiagTypeTaxaDirective extends NewIntkeyDirective {
+public class SetDiagTypeTaxaDirective extends StandardIntkeyDirective {
 
     public SetDiagTypeTaxaDirective() {
         super(false, "set", "diagtype", "taxa");
