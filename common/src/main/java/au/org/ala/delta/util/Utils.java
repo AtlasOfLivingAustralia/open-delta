@@ -897,37 +897,86 @@ public class Utils {
         }
     }
 
-    public static int adjustFontSizeForDPI(int fontSize) {
-        /**
-         * Need to adjust the font size as Java 2D assumes 72 dpi. From the Java
-         * 2D FAQ:
-         * 
-         * Q: Why does (eg) a 10 pt font in Java applications appear to have a
-         * different size from the same font at 10pt in a native application?
-         * 
-         * A: Conversion from the size in points into device pixels depends on
-         * device resolution as reported by the platform APIs. Java 2D defaults
-         * to assuming 72 dpi. Platform defaults vary. Mac OS also uses 72 dpi.
-         * Linux desktops based on GTK (Gnome) or Qt (KDE) typically default to
-         * 96 dpi and let the end-user customise what they want to use. Windows
-         * defaults to 96 dpi (VGA resolution) and also offers 120 dpi (large
-         * fonts size) and lets users further specify a custom resolution. So a
-         * couple of things can now be seen
-         * 
-         * The DPI reported by platform APIs likely has no correspondence to the
-         * true DPI of the display device Its unlikely that Java 2D's default
-         * matches the platform default. So a typical results is that for
-         * Window's default 96 DPI that a 10 pt font in a Java application is
-         * 72/96 of the size of the native counterpart.
-         * 
-         * Note that Swing's Windows and GTK L&Fs do scale fonts based on the
-         * system DPI to match the desktop. If you want to do the same in your
-         * application you can call java.awt.Toolkit.getScreenResolution() and
-         * use this to apply a simple scale to the size you specify for fonts.
-         */
+    /**
+     * Adjust the supplied font size. Apply scaling based on the 72 dpi assumed
+     * by java and the current screen resolution
+     * 
+     * Need to adjust the font size as Java 2D assumes 72 dpi. From the Java 2D
+     * FAQ:
+     * 
+     * Q: Why does (eg) a 10 pt font in Java applications appear to have a
+     * different size from the same font at 10pt in a native application?
+     * 
+     * A: Conversion from the size in points into device pixels depends on
+     * device resolution as reported by the platform APIs. Java 2D defaults to
+     * assuming 72 dpi. Platform defaults vary. Mac OS also uses 72 dpi. Linux
+     * desktops based on GTK (Gnome) or Qt (KDE) typically default to 96 dpi and
+     * let the end-user customise what they want to use. Windows defaults to 96
+     * dpi (VGA resolution) and also offers 120 dpi (large fonts size) and lets
+     * users further specify a custom resolution. So a couple of things can now
+     * be seen
+     * 
+     * The DPI reported by platform APIs likely has no correspondence to the
+     * true DPI of the display device Its unlikely that Java 2D's default
+     * matches the platform default. So a typical results is that for Window's
+     * default 96 DPI that a 10 pt font in a Java application is 72/96 of the
+     * size of the native counterpart.
+     * 
+     * Note that Swing's Windows and GTK L&Fs do scale fonts based on the system
+     * DPI to match the desktop. If you want to do the same in your application
+     * you can call java.awt.Toolkit.getScreenResolution() and use this to apply
+     * a simple scale to the size you specify for fonts.
+     * 
+     * 
+     * @param fontSize
+     *            the font size
+     * @return the font size, adjusted from the default 72 dpi assumed by java
+     *         2d to the screen resolution. See comment above.
+     */
+    public static int adjustFontSize(int fontSize) {
         int screenRes = Toolkit.getDefaultToolkit().getScreenResolution();
-        int adjustedFontSize = (int) Math.round(Math.abs(fontSize) * screenRes / 72.0);
+        return adjustFontSize(fontSize, screenRes);
+    }
 
+    /**
+     * Adjust the supplied font size. Apply scaling based on the 72 dpi assumed
+     * by java and the current screen resolution
+     * 
+     * Need to adjust the font size as Java 2D assumes 72 dpi. From the Java 2D
+     * FAQ:
+     * 
+     * Q: Why does (eg) a 10 pt font in Java applications appear to have a
+     * different size from the same font at 10pt in a native application?
+     * 
+     * A: Conversion from the size in points into device pixels depends on
+     * device resolution as reported by the platform APIs. Java 2D defaults to
+     * assuming 72 dpi. Platform defaults vary. Mac OS also uses 72 dpi. Linux
+     * desktops based on GTK (Gnome) or Qt (KDE) typically default to 96 dpi and
+     * let the end-user customise what they want to use. Windows defaults to 96
+     * dpi (VGA resolution) and also offers 120 dpi (large fonts size) and lets
+     * users further specify a custom resolution. So a couple of things can now
+     * be seen
+     * 
+     * The DPI reported by platform APIs likely has no correspondence to the
+     * true DPI of the display device Its unlikely that Java 2D's default
+     * matches the platform default. So a typical results is that for Window's
+     * default 96 DPI that a 10 pt font in a Java application is 72/96 of the
+     * size of the native counterpart.
+     * 
+     * Note that Swing's Windows and GTK L&Fs do scale fonts based on the system
+     * DPI to match the desktop. If you want to do the same in your application
+     * you can call java.awt.Toolkit.getScreenResolution() and use this to apply
+     * a simple scale to the size you specify for fonts.
+     * 
+     * 
+     * @param fontSize
+     *            the font size
+     * @param targetDPI the resolution at which the font will be displayed           
+     * @return the font size, adjusted from the default 72 dpi assumed by java
+     *         2d to the target DPI. See comment above.
+     */
+    public static int adjustFontSize(int fontSize, int targetDPI) {
+        int adjustedFontSize = (int) Math.round(Math.abs(fontSize) * targetDPI / 72.0);
         return adjustedFontSize;
     }
 

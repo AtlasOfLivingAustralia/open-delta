@@ -22,7 +22,7 @@ import au.org.ala.delta.ui.image.ImageViewer;
  * The RelativeOverlayLocation determines the location of the overlay
  * component based on the location of another component.
  */
-public class RelativeOverlayLocation extends FixedCentreOverlayLocation {
+public class RelativeOverlayLocation extends TextOverlayLocation {
 
 	protected OverlayLocation _relativeTo;
 	

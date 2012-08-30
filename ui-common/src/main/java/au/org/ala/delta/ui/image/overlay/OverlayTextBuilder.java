@@ -43,7 +43,7 @@ public class OverlayTextBuilder {
 	public OverlayTextBuilder(ResourceMap resources, ImageSettings imageSettings) {
 		_resources = resources;
 		_imageSettings = imageSettings;
-		_itemFormatter = new ItemFormatter(false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.RETAIN, false, false, false);
+		_itemFormatter = new ItemFormatter(false, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE, true, false, false);
 		_characterFormatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, false, false);
 		_stateFormatter = new CharacterFormatter(true, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.RETAIN, false, false);
 	}

@@ -31,6 +31,6 @@ public class TextFieldOverlay extends JTextField implements OverlayLocationProvi
 	
 	@Override
 	public OverlayLocation location(ImageViewer viewer) {
-		return new FixedCentreOverlayLocation(viewer, this, _overlay.getLocation(0));
+		return new TextOverlayLocation(viewer, this, _overlay.getLocation(0));
 	}
 }

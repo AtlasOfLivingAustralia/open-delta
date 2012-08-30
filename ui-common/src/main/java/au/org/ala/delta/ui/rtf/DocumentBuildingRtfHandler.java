@@ -408,7 +408,7 @@ public class DocumentBuildingRtfHandler extends RTFHandlerAdapter {
 		public void handleAttribute(AttributeValue attr, MutableAttributeSet newAttributes) {
 			int fontSize = attr.getParam() / 2;
 			if (_scale) {
-				fontSize = Utils.adjustFontSizeForDPI(fontSize);
+				fontSize = Utils.adjustFontSize(fontSize);
 			}
 			newAttributes.addAttribute(StyleConstants.FontSize, fontSize);
 		}

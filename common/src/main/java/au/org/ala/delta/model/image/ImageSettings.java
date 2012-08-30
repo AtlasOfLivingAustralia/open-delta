@@ -28,8 +28,14 @@ import au.org.ala.delta.util.Utils;
  */
 public class ImageSettings extends ResourceSettings {
 
-	public static final int DEFAULT_FONT_SIZE = 10;
-	
+    public static final int DEFAULT_FONT_SIZE = 10;
+
+    /**
+     * Fonts specified using delta's OVERLAY FONTS directive assume a DPI of
+     * 120.
+     */
+    public static final int DELTA_DEFAULT_DPI_RESOLUTION = 120;
+
     private String _datasetName;
 
     public enum ButtonAlignment {
@@ -316,13 +322,13 @@ public class ImageSettings extends ResourceSettings {
 
     private Font fontInfoToFont(FontInfo info) {
         int fontSize = info.size;
-    	if (fontSize == 0) {
+        if (fontSize == 0) {
             fontSize = DEFAULT_FONT_SIZE;
         }
         int style = info.italic ? Font.ITALIC : 0;
         style = style | (info.weight >= 5 ? Font.BOLD : 0);
 
-        fontSize = Utils.adjustFontSizeForDPI(fontSize);
+        fontSize = Utils.adjustFontSize(fontSize, DELTA_DEFAULT_DPI_RESOLUTION);
 
         return new Font(info.name, style, fontSize);
     }
@@ -348,18 +354,27 @@ public class ImageSettings extends ResourceSettings {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ImageSettings)) return false;
+        if (this == o)
+            return true;
+        if (!(o instanceof ImageSettings))
+            return false;
 
         ImageSettings that = (ImageSettings) o;
 
-        if (_centreInBox != that._centreInBox) return false;
-        if (_hotspotsPopup != that._hotspotsPopup) return false;
-        if (_includeComments != that._includeComments) return false;
-        if (_omitDescription != that._omitDescription) return false;
-        if (_useCustomPopupColour != that._useCustomPopupColour) return false;
-        if (_useIntegralHeight != that._useIntegralHeight) return false;
-        if (getButtonAlignment() != that.getButtonAlignment()) return false;
+        if (_centreInBox != that._centreInBox)
+            return false;
+        if (_hotspotsPopup != that._hotspotsPopup)
+            return false;
+        if (_includeComments != that._includeComments)
+            return false;
+        if (_omitDescription != that._omitDescription)
+            return false;
+        if (_useCustomPopupColour != that._useCustomPopupColour)
+            return false;
+        if (_useIntegralHeight != that._useIntegralHeight)
+            return false;
+        if (getButtonAlignment() != that.getButtonAlignment())
+            return false;
         if (_customPopupColour != null ? !_customPopupColour.equals(that._customPopupColour) : that._customPopupColour != null)
             return false;
         if (_defaultButtonFont != null ? !_defaultButtonFont.equals(that._defaultButtonFont) : that._defaultButtonFont != null)
@@ -368,8 +383,10 @@ public class ImageSettings extends ResourceSettings {
             return false;
         if (_defaultFontInfo != null ? !_defaultFontInfo.equals(that._defaultFontInfo) : that._defaultFontInfo != null)
             return false;
-        if (!_resourceLocations.equals(that._resourceLocations)) return false;
-        if (!_remoteResourceLocations.equals(that._remoteResourceLocations)) return false;
+        if (!_resourceLocations.equals(that._resourceLocations))
+            return false;
+        if (!_remoteResourceLocations.equals(that._remoteResourceLocations))
+            return false;
 
         return true;
     }

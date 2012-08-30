@@ -164,7 +164,7 @@ public class OverlayTextBuilderTest extends TestCase {
 		// Include comments
 		_overlay.getLocation(0).flags += ImageOverlay.OL_INCLUDE_COMMENTS;
 		text = _builder.getText(_overlay, item);
-		assertEquals("Item description <Comment> Additional text", text);
+		assertEquals("Item description Comment Additional text", text);
 		
 		// Omit feature
 		_overlay.getLocation(0).flags += ImageOverlay.OL_OMIT_DESCRIPTION;

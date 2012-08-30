@@ -30,7 +30,7 @@ import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.impl.DefaultImageData;
 import au.org.ala.delta.ui.image.ImageViewer;
 
-public class FixedCentreOverlayLocationTest extends TestCase {
+public class TextOverlayLocationTest extends TestCase {
 
     class ImageViewerStub extends ImageViewer {
 
@@ -107,7 +107,7 @@ public class FixedCentreOverlayLocationTest extends TestCase {
         ImageViewerStub stub = new ImageViewerStub(1000, 1000, 1000, 1000, new Point(0, 0), _imageSettings);
 
         au.org.ala.delta.model.image.OverlayLocation location = newLocation(100, 50, 100, 60);
-        FixedCentreOverlayLocation imageLocation = new FixedCentreOverlayLocation(stub, null, location);
+        TextOverlayLocation imageLocation = new TextOverlayLocation(stub, null, location);
 
         assertEquals(100, imageLocation.getX());
         assertEquals(50, imageLocation.getY());
@@ -121,7 +121,7 @@ public class FixedCentreOverlayLocationTest extends TestCase {
         ImageViewerStub stub = new ImageViewerStub(2000, 1000, 2000, 1000, new Point(0, 0), _imageSettings);
 
         au.org.ala.delta.model.image.OverlayLocation location = newLocation(100, 50, 80, 60);
-        FixedCentreOverlayLocation imageLocation = new FixedCentreOverlayLocation(stub, null, location);
+        TextOverlayLocation imageLocation = new TextOverlayLocation(stub, null, location);
 
         Rectangle bounds = new Rectangle(200, 100, 80, 60);
         imageLocation.updateLocationFromBounds(bounds);
