@@ -38,7 +38,7 @@ public abstract class NewIntkeyDirective extends IntkeyDirective {
     }
 
     @Override
-    public final IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
+    public IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
         StringBuilder stringRepresentationBuilder = new StringBuilder();
         stringRepresentationBuilder.append(StringUtils.join(getControlWords(), " ").toUpperCase());
 

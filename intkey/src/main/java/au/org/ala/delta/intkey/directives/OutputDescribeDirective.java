@@ -7,7 +7,7 @@ import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.OutputDescribeDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class OutputDescribeDirective extends NewIntkeyDirective {
+public class OutputDescribeDirective extends OutputDirective {
 
     public OutputDescribeDirective() {
         super(true, "output", "describe");

@@ -172,7 +172,7 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
             // If it is any other kind of exception, re-throw the exception
             // wrapped in a RuntimeException - this will stop the directive
             // parsing.
-            throw new RuntimeException(ex);
+            throw new RuntimeException(ex.getMessage(), ex);
         }
     }
 

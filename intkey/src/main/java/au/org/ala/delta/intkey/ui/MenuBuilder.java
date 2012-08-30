@@ -39,7 +39,6 @@ public class MenuBuilder {
         _menuStack.push(_menu);
     }
 
-    // TODO remove "enabled" argument once all directives are implemented.
     public void startSubMenu(String subMenuName, boolean enabled) {
         JMenu subMenu = new JMenu();
         subMenu.setName(subMenuName);
@@ -69,16 +68,18 @@ public class MenuBuilder {
         getCurrentMenu().addSeparator();
     }
 
-    public void addActionMenuItem(Action action) {
+    public void addActionMenuItem(Action action, boolean enabled) {
         JMenuItem mnuItem = new JMenuItem();
         mnuItem.setAction(action);
+        mnuItem.setEnabled(enabled);
         getCurrentMenu().add(mnuItem);
     }
 
-    public void addDirectiveMenuItem(String mnuItemName, AbstractDirective<IntkeyContext> directive) {
+    public void addDirectiveMenuItem(String mnuItemName, AbstractDirective<IntkeyContext> directive, boolean enabled) {
         JMenuItem directiveMenuItem = new JMenuItem();
         directiveMenuItem.setName(mnuItemName);
         directiveMenuItem.setAction(new DirectiveAction(directive, _context));
+        directiveMenuItem.setEnabled(enabled);
         getCurrentMenu().add(directiveMenuItem);
     }
 

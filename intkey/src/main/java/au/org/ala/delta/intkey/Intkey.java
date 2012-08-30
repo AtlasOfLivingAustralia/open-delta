@@ -435,8 +435,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     private static String INTKEY_ICON_PATH = "/au/org/ala/delta/intkey/resources/icons";
 
-    private static String rtfFileExtension = "rtf";
-
     private String _datasetInitFileToOpen = null;
     private String _startupPreferencesFile = null;
     private boolean _suppressStartupImages = false;
@@ -631,25 +629,30 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         flowLayout.setHgap(2);
         _pnlAvailableCharactersHeader.add(_pnlAvailableCharactersButtons, BorderLayout.EAST);
 
+        // All toolbar buttons should be disabled until a dataset is loaded.
         _btnRestart = new JButton();
         _btnRestart.setAction(actionMap.get("btnRestart"));
         _btnRestart.setPreferredSize(new Dimension(30, 30));
+        _btnRestart.setEnabled(false);
         _pnlAvailableCharactersButtons.add(_btnRestart);
 
         _btnBestOrder = new JButton();
         _btnBestOrder.setAction(actionMap.get("btnBestOrder"));
         _btnBestOrder.setPreferredSize(new Dimension(30, 30));
+        _btnBestOrder.setEnabled(false);
         _pnlAvailableCharactersButtons.add(_btnBestOrder);
 
         _btnSeparate = new JButton();
         _btnSeparate.setAction(actionMap.get("btnSeparate"));
         _btnSeparate.setVisible(_advancedMode);
         _btnSeparate.setPreferredSize(new Dimension(30, 30));
+        _btnSeparate.setEnabled(false);
         _pnlAvailableCharactersButtons.add(_btnSeparate);
 
         _btnNaturalOrder = new JButton();
         _btnNaturalOrder.setAction(actionMap.get("btnNaturalOrder"));
         _btnNaturalOrder.setPreferredSize(new Dimension(30, 30));
+        _btnNaturalOrder.setEnabled(false);
         _pnlAvailableCharactersButtons.add(_btnNaturalOrder);
 
         _btnDiffSpecimenTaxa = new JButton();
@@ -661,23 +664,29 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _btnSetTolerance = new JButton();
         _btnSetTolerance.setAction(actionMap.get("btnSetTolerance"));
         _btnSetTolerance.setPreferredSize(new Dimension(30, 30));
+        _btnSetTolerance.setEnabled(false);
         _pnlAvailableCharactersButtons.add(_btnSetTolerance);
 
         _btnSetMatch = new JButton();
         _btnSetMatch.setAction(actionMap.get("btnSetMatch"));
         _btnSetMatch.setVisible(_advancedMode);
         _btnSetMatch.setPreferredSize(new Dimension(30, 30));
+        _btnSetMatch.setEnabled(false);
         _pnlAvailableCharactersButtons.add(_btnSetMatch);
 
         _btnSubsetCharacters = new JButton();
         _btnSubsetCharacters.setAction(actionMap.get("btnSubsetCharacters"));
         _btnSubsetCharacters.setPreferredSize(new Dimension(30, 30));
+        _btnSubsetCharacters.setEnabled(false);
         _pnlAvailableCharactersButtons.add(_btnSubsetCharacters);
 
         _btnFindCharacter = new JButton();
         _btnFindCharacter.setAction(actionMap.get("btnFindCharacter"));
         _btnFindCharacter.setPreferredSize(new Dimension(30, 30));
+        _btnFindCharacter.setEnabled(false);
         _pnlAvailableCharactersButtons.add(_btnFindCharacter);
+
+        _pnlAvailableCharactersButtons.setEnabled(false);
 
         _pnlUsedCharacters = new JPanel();
         _innerSplitPaneLeft.setRightComponent(_pnlUsedCharacters);
@@ -740,13 +749,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _pnlRemainingTaxa.add(_sclPnRemainingTaxa, BorderLayout.CENTER);
 
         _listRemainingTaxa = new JList();
-        _listRemainingTaxa.addListSelectionListener(new ListSelectionListener() {
-
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                taxonSelectionChanged();
-            }
-        });
 
         _listRemainingTaxa.addMouseListener(new MouseInputAdapter() {
 
@@ -776,9 +778,11 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         fl_pnlRemainingTaxaButtons.setHgap(2);
         _pnlRemainingTaxaHeader.add(_pnlRemainingTaxaButtons, BorderLayout.EAST);
 
+        // All toolbar buttons should be disabled until a dataset is loaded.
         _btnTaxonInfo = new JButton();
         _btnTaxonInfo.setAction(actionMap.get("btnTaxonInfo"));
         _btnTaxonInfo.setPreferredSize(new Dimension(30, 30));
+        _btnTaxonInfo.setEnabled(false);
         _pnlRemainingTaxaButtons.add(_btnTaxonInfo);
 
         _btnDiffTaxa = new JButton();
@@ -790,11 +794,13 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _btnSubsetTaxa = new JButton();
         _btnSubsetTaxa.setAction(actionMap.get("btnSubsetTaxa"));
         _btnSubsetTaxa.setPreferredSize(new Dimension(30, 30));
+        _btnSubsetTaxa.setEnabled(false);
         _pnlRemainingTaxaButtons.add(_btnSubsetTaxa);
 
         _btnFindTaxon = new JButton();
         _btnFindTaxon.setAction(actionMap.get("btnFindTaxon"));
         _btnFindTaxon.setPreferredSize(new Dimension(30, 30));
+        _btnFindTaxon.setEnabled(false);
         _pnlRemainingTaxaButtons.add(_btnFindTaxon);
 
         _pnlEliminatedTaxa = new JPanel();
@@ -805,13 +811,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _pnlEliminatedTaxa.add(_sclPnEliminatedTaxa, BorderLayout.CENTER);
 
         _listEliminatedTaxa = new JList();
-        _listEliminatedTaxa.addListSelectionListener(new ListSelectionListener() {
-
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                taxonSelectionChanged();
-            }
-        });
 
         _listEliminatedTaxa.addMouseListener(new MouseInputAdapter() {
 
@@ -961,6 +960,9 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             _context.setCharacterOrderNatural();
             _context.setDisplayEndIdentify(false);
         }
+        
+        //Show the dataset index on startup
+        executeDirective(new NewDatasetDirective(), null);
     }
 
     @Override
@@ -996,54 +998,61 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     private JMenu buildFileMenu(boolean advancedMode, ActionMap actionMap) {
         MenuBuilder mnuFileBuilder = new MenuBuilder("mnuFile", _context);
 
-        mnuFileBuilder.addDirectiveMenuItem("mnuItNewDataSet", new NewDatasetDirective());
+        // Some menus/menu items should be disabled if no dataset is loaded.
+        boolean isDatasetLoaded = _context.getDataset() != null;
+
+        mnuFileBuilder.addDirectiveMenuItem("mnuItNewDataSet", new NewDatasetDirective(), true);
         mnuFileBuilder.addPreconfiguredJMenu(buildRecentFilesMenu());
-        mnuFileBuilder.addActionMenuItem(actionMap.get("mnuItEditDataSetIndex"));
 
         if (_advancedMode) {
-            mnuFileBuilder.addDirectiveMenuItem("mnuItPreferences", new PreferencesDirective());
-            mnuFileBuilder.addDirectiveMenuItem("mnuItContents", new ContentsDirective());
+            mnuFileBuilder.addDirectiveMenuItem("mnuItPreferences", new PreferencesDirective(), true);
+            mnuFileBuilder.addDirectiveMenuItem("mnuItContents", new ContentsDirective(), isDatasetLoaded);
 
             mnuFileBuilder.addSeparator();
 
             mnuFileBuilder.startSubMenu("mnuFileCmds", true);
-            mnuFileBuilder.addDirectiveMenuItem("mnuItFileInput", new FileInputDirective());
-            mnuFileBuilder.addDirectiveMenuItem("mnuItFileOutput", new FileOutputDirective());
-            mnuFileBuilder.addDirectiveMenuItem("mnuItFileDisplay", new FileDisplayDirective());
-            mnuFileBuilder.addDirectiveMenuItem("mnuItFileLog", new FileLogDirective());
-            mnuFileBuilder.addDirectiveMenuItem("mnuItFileJournal", new FileJournalDirective());
+            mnuFileBuilder.addDirectiveMenuItem("mnuItFileInput", new FileInputDirective(), true);
+            mnuFileBuilder.addDirectiveMenuItem("mnuItFileOutput", new FileOutputDirective(), true);
+            mnuFileBuilder.addDirectiveMenuItem("mnuItFileDisplay", new FileDisplayDirective(), true);
+            mnuFileBuilder.addDirectiveMenuItem("mnuItFileLog", new FileLogDirective(), true);
+            mnuFileBuilder.addDirectiveMenuItem("mnuItFileJournal", new FileJournalDirective(), true);
             // mnuFileBuilder.addDirectiveMenuItem("mnuItFileClose", new
             // FileCloseDirective()); ** File Close is now a NO-OP
-            mnuFileBuilder.addDirectiveMenuItem("mnuItFileCharacters", new FileCharactersDirective());
-            mnuFileBuilder.addDirectiveMenuItem("mnuItFileTaxa", new FileCharactersDirective());
+            mnuFileBuilder.addDirectiveMenuItem("mnuItFileCharacters", new FileCharactersDirective(), true);
+            mnuFileBuilder.addDirectiveMenuItem("mnuItFileTaxa", new FileCharactersDirective(), true);
             mnuFileBuilder.endSubMenu();
 
             mnuFileBuilder.startSubMenu("mnuOutputCmds", true);
-            mnuFileBuilder.addDirectiveMenuItem("mnuItOutputCharacters", new OutputCharactersDirective());
-            mnuFileBuilder.addDirectiveMenuItem("mnuItOutputTaxa", new OutputTaxaDirective());
-            mnuFileBuilder.addDirectiveMenuItem("mnuItOutputDescribe", new OutputDescribeDirective());
-            mnuFileBuilder.addDirectiveMenuItem("mnuItOutputSummary", new OutputSummaryDirective());
-            mnuFileBuilder.addDirectiveMenuItem("mnuItOutputDiagnose", new OutputDiagnoseDirective());
-            mnuFileBuilder.addDirectiveMenuItem("mnuItOutputDifferences", new OutputDifferencesDirective());
-            mnuFileBuilder.addDirectiveMenuItem("mnuItOutputSimilarities", new OutputSimilaritiesDirective());
-            mnuFileBuilder.addDirectiveMenuItem("mnuItOutputComment", new OutputCommentDirective());
+            mnuFileBuilder.addDirectiveMenuItem("mnuItOutputCharacters", new OutputCharactersDirective(), isDatasetLoaded);
+            mnuFileBuilder.addDirectiveMenuItem("mnuItOutputTaxa", new OutputTaxaDirective(), isDatasetLoaded);
+            mnuFileBuilder.addDirectiveMenuItem("mnuItOutputDescribe", new OutputDescribeDirective(), isDatasetLoaded);
+            mnuFileBuilder.addDirectiveMenuItem("mnuItOutputSummary", new OutputSummaryDirective(), isDatasetLoaded);
+            mnuFileBuilder.addDirectiveMenuItem("mnuItOutputDiagnose", new OutputDiagnoseDirective(), isDatasetLoaded);
+            mnuFileBuilder.addDirectiveMenuItem("mnuItOutputDifferences", new OutputDifferencesDirective(), isDatasetLoaded);
+            mnuFileBuilder.addDirectiveMenuItem("mnuItOutputSimilarities", new OutputSimilaritiesDirective(), isDatasetLoaded);
+            mnuFileBuilder.addDirectiveMenuItem("mnuItOutputComment", new OutputCommentDirective(), isDatasetLoaded);
             mnuFileBuilder.endSubMenu();
             mnuFileBuilder.addSeparator();
 
-            mnuFileBuilder.addDirectiveMenuItem("mnuItComment", new CommentDirective());
-            mnuFileBuilder.addDirectiveMenuItem("mnuItShow", new ShowDirective());
+            mnuFileBuilder.addDirectiveMenuItem("mnuItComment", new CommentDirective(), true);
+            mnuFileBuilder.addDirectiveMenuItem("mnuItShow", new ShowDirective(), true);
 
             mnuFileBuilder.addSeparator();
 
-            mnuFileBuilder.addActionMenuItem(actionMap.get("mnuItNormalMode"));
+            mnuFileBuilder.addActionMenuItem(actionMap.get("mnuItNormalMode"), true);
         } else {
             mnuFileBuilder.addSeparator();
-            mnuFileBuilder.addActionMenuItem(actionMap.get("mnuItAdvancedMode"));
+            mnuFileBuilder.addActionMenuItem(actionMap.get("mnuItAdvancedMode"), true);
+        }
+
+        if (_advancedMode) {
+            mnuFileBuilder.addSeparator();
+            mnuFileBuilder.addActionMenuItem(actionMap.get("mnuItEditDataSetIndex"), true);
         }
 
         mnuFileBuilder.addSeparator();
 
-        mnuFileBuilder.addActionMenuItem(actionMap.get("mnuItExitApplication"));
+        mnuFileBuilder.addActionMenuItem(actionMap.get("mnuItExitApplication"), true);
 
         return mnuFileBuilder.getMenu();
     }
@@ -1091,51 +1100,64 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     }
 
     private JMenu buildQueriesMenu(ActionMap actionMap) {
+        // Some menus/menu items should be disabled if no dataset is loaded.
+        boolean isDatasetLoaded = _context.getDataset() != null;
+
         JMenu mnuQueries = new JMenu();
         mnuQueries.setName("mnuQueries");
 
         JMenuItem mnuItRestart = new JMenuItem(new DirectiveAction(new RestartDirective(), _context));
         mnuItRestart.setName("mnuItRestart");
+        mnuItRestart.setEnabled(isDatasetLoaded);
         mnuQueries.add(mnuItRestart);
 
         mnuQueries.addSeparator();
 
         JMenuItem mnuItDescribe = new JMenuItem(new DirectiveAction(new DescribeDirective(), _context));
         mnuItDescribe.setName("mnuItDescribe");
+        mnuItDescribe.setEnabled(isDatasetLoaded);
         mnuQueries.add(mnuItDescribe);
 
         JMenuItem mnuItDiagnose = new JMenuItem(new DirectiveAction(new DiagnoseDirective(), _context));
         mnuItDiagnose.setName("mnuItDiagnose");
-        mnuItDiagnose.setEnabled(false);
+        mnuItDiagnose.setEnabled(isDatasetLoaded);
         mnuQueries.add(mnuItDiagnose);
 
         mnuQueries.addSeparator();
 
         JMenuItem mnuItDifferences = new JMenuItem(new DirectiveAction(new DifferencesDirective(), _context));
         mnuItDifferences.setName("mnuItDifferences");
+        mnuItDifferences.setEnabled(isDatasetLoaded);
         mnuQueries.add(mnuItDifferences);
         JMenuItem mnuItSimilarities = new JMenuItem(new DirectiveAction(new SimilaritiesDirective(), _context));
         mnuItSimilarities.setName("mnuItSimilarities");
+        mnuItSimilarities.setEnabled(isDatasetLoaded);
         mnuQueries.add(mnuItSimilarities);
 
         mnuQueries.addSeparator();
 
         JMenuItem mnuItSummary = new JMenuItem(new DirectiveAction(new SummaryDirective(), _context));
         mnuItSummary.setName("mnuItSummary");
+        mnuItSummary.setEnabled(isDatasetLoaded);
         mnuQueries.add(mnuItSummary);
 
         return mnuQueries;
     }
 
     private JMenu buildBrowsingMenu(ActionMap actionMap) {
+        // Some menus/menu items should be disabled if no dataset is loaded.
+        boolean isDatasetLoaded = _context.getDataset() != null;
+
         JMenu mnuBrowsing = new JMenu();
         mnuBrowsing.setName("mnuBrowsing");
 
         JMenuItem mnuItCharacters = new JMenuItem(new DirectiveAction(new CharactersDirective(), _context));
         mnuItCharacters.setName("mnuItCharacters");
+        mnuItCharacters.setEnabled(isDatasetLoaded);
         mnuBrowsing.add(mnuItCharacters);
         JMenuItem mnuItTaxa = new JMenuItem(new DirectiveAction(new TaxaDirective(), _context));
         mnuItTaxa.setName("mnuItTaxa");
+        mnuItTaxa.setEnabled(isDatasetLoaded);
         mnuBrowsing.add(mnuItTaxa);
 
         mnuBrowsing.addSeparator();
@@ -1144,9 +1166,12 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         mnuFind.setName("mnuFind");
         JMenuItem mnuItFindCharacters = new JMenuItem(new DirectiveAction(new FindCharactersDirective(), _context));
         mnuItFindCharacters.setName("mnuItFindCharacters");
+        mnuItFindCharacters.setEnabled(isDatasetLoaded);
         mnuFind.add(mnuItFindCharacters);
         JMenuItem mnuItFindTaxa = new JMenuItem(new DirectiveAction(new FindTaxaDirective(), _context));
         mnuItFindTaxa.setName("mnuItFindTaxa");
+        mnuItFindTaxa.setEnabled(isDatasetLoaded);
+        mnuFind.setEnabled(isDatasetLoaded);
         mnuFind.add(mnuItFindTaxa);
 
         mnuBrowsing.add(mnuFind);
@@ -1157,9 +1182,12 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         mnuIllustrate.setName("mnuIllustrate");
         JMenuItem mnuItIllustrateCharacters = new JMenuItem(new DirectiveAction(new IllustrateCharactersDirective(), _context));
         mnuItIllustrateCharacters.setName("mnuItIllustrateCharacters");
+        mnuItIllustrateCharacters.setEnabled(isDatasetLoaded);
         mnuIllustrate.add(mnuItIllustrateCharacters);
         JMenuItem mnuItIllustrateTaxa = new JMenuItem(new DirectiveAction(new IllustrateTaxaDirective(), _context));
         mnuItIllustrateTaxa.setName("mnuItIllustrateTaxa");
+        mnuItIllustrateTaxa.setEnabled(isDatasetLoaded);
+        mnuIllustrate.setEnabled(isDatasetLoaded);
         mnuIllustrate.add(mnuItIllustrateTaxa);
 
         mnuBrowsing.add(mnuIllustrate);
@@ -1168,12 +1196,16 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         JMenuItem mnuItInformation = new JMenuItem(new DirectiveAction(new InformationDirective(), _context));
         mnuItInformation.setName("mnuItInformation");
+        mnuItInformation.setEnabled(isDatasetLoaded);
         mnuBrowsing.add(mnuItInformation);
 
         return mnuBrowsing;
     }
 
     private JMenu buildSettingsMenu(ActionMap actionMap) {
+        // Some menus/menu items should be disabled if no dataset is loaded.
+        boolean isDatasetLoaded = _context.getDataset() != null;
+
         JMenu mnuSettings = new JMenu();
         mnuSettings.setName("mnuSettings");
 
@@ -1190,44 +1222,44 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         mnuSetBuilder.addOnOffDirectiveMenuItem("mnuItDemonstrationOff", new SetDemonstrationDirective(), false);
         mnuSetBuilder.endSubMenu();
 
-        mnuSetBuilder.addDirectiveMenuItem("mnuItDiagLevel", new SetDiagLevelDirective());
+        mnuSetBuilder.addDirectiveMenuItem("mnuItDiagLevel", new SetDiagLevelDirective(), true);
 
         mnuSetBuilder.startSubMenu("mnuDiagType", true);
-        mnuSetBuilder.addDirectiveMenuItem("mnuItDiagTypeSpecimens", new SetDiagTypeSpecimensDirective());
-        mnuSetBuilder.addDirectiveMenuItem("mnuItDiagTypeTaxa", new SetDiagTypeTaxaDirective());
+        mnuSetBuilder.addDirectiveMenuItem("mnuItDiagTypeSpecimens", new SetDiagTypeSpecimensDirective(), true);
+        mnuSetBuilder.addDirectiveMenuItem("mnuItDiagTypeTaxa", new SetDiagTypeTaxaDirective(), true);
         mnuSetBuilder.endSubMenu();
 
-        mnuSetBuilder.addDirectiveMenuItem("mnuItExact", new SetExactDirective());
+        mnuSetBuilder.addDirectiveMenuItem("mnuItExact", new SetExactDirective(), true);
 
         mnuSetBuilder.startSubMenu("mnuFix", true);
         mnuSetBuilder.addOnOffDirectiveMenuItem("mnuItFixOn", new SetFixDirective(), true);
         mnuSetBuilder.addOnOffDirectiveMenuItem("mnuItFixOff", new SetFixDirective(), false);
         mnuSetBuilder.endSubMenu();
 
-        mnuSetBuilder.addDirectiveMenuItem("mnuItImagePath", new SetImagePathDirective());
+        mnuSetBuilder.addDirectiveMenuItem("mnuItImagePath", new SetImagePathDirective(), true);
 
-        mnuSetBuilder.addDirectiveMenuItem("mnuItInfoPath", new SetInfoPathDirective());
+        mnuSetBuilder.addDirectiveMenuItem("mnuItInfoPath", new SetInfoPathDirective(), true);
 
-        mnuSetBuilder.addDirectiveMenuItem("mnuItMatch", new SetMatchDirective());
+        mnuSetBuilder.addDirectiveMenuItem("mnuItMatch", new SetMatchDirective(), true);
 
-        mnuSetBuilder.addDirectiveMenuItem("mnuItRbase", new SetRBaseDirective());
+        mnuSetBuilder.addDirectiveMenuItem("mnuItRbase", new SetRBaseDirective(), true);
 
-        mnuSetBuilder.addDirectiveMenuItem("mnuItReliabilities", new SetReliabilitiesDirective());
+        mnuSetBuilder.addDirectiveMenuItem("mnuItReliabilities", new SetReliabilitiesDirective(), true);
 
-        mnuSetBuilder.addDirectiveMenuItem("mnuItStopBest", new SetStopBestDirective());
+        mnuSetBuilder.addDirectiveMenuItem("mnuItStopBest", new SetStopBestDirective(), true);
 
-        mnuSetBuilder.addDirectiveMenuItem("mnuItTolerance", new SetToleranceDirective());
+        mnuSetBuilder.addDirectiveMenuItem("mnuItTolerance", new SetToleranceDirective(), true);
 
-        mnuSetBuilder.addDirectiveMenuItem("mnuItVaryWt", new SetVaryWtDirective());
+        mnuSetBuilder.addDirectiveMenuItem("mnuItVaryWt", new SetVaryWtDirective(), true);
 
         mnuSettings.add(mnuSetBuilder.getMenu());
 
         // "Display" submenu
         MenuBuilder mnuDisplayBuilder = new MenuBuilder("mnuDisplay", _context);
         mnuDisplayBuilder.startSubMenu("mnuCharacterOrder", true);
-        mnuDisplayBuilder.addDirectiveMenuItem("mnuItCharacterOrderBest", new DisplayCharacterOrderBestDirective());
-        mnuDisplayBuilder.addDirectiveMenuItem("mnuItCharacterOrderNatural", new DisplayCharacterOrderNaturalDirective());
-        mnuDisplayBuilder.addDirectiveMenuItem("mnuItCharacterOrderSeparate", new DisplayCharacterOrderSeparateDirective());
+        mnuDisplayBuilder.addDirectiveMenuItem("mnuItCharacterOrderBest", new DisplayCharacterOrderBestDirective(), true);
+        mnuDisplayBuilder.addDirectiveMenuItem("mnuItCharacterOrderNatural", new DisplayCharacterOrderNaturalDirective(), true);
+        mnuDisplayBuilder.addDirectiveMenuItem("mnuItCharacterOrderSeparate", new DisplayCharacterOrderSeparateDirective(), true);
         mnuDisplayBuilder.endSubMenu();
 
         mnuDisplayBuilder.startSubMenu("mnuComments", true);
@@ -1245,7 +1277,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         mnuDisplayBuilder.addOnOffDirectiveMenuItem("mnuItEndIdentifyOff", new DisplayEndIdentifyDirective(), false);
         mnuDisplayBuilder.endSubMenu();
 
-        mnuDisplayBuilder.addDirectiveMenuItem("mnuItImages", new DisplayImagesDirective());
+        mnuDisplayBuilder.addDirectiveMenuItem("mnuItImages", new DisplayImagesDirective(), true);
 
         mnuDisplayBuilder.startSubMenu("mnuInapplicables", true);
         mnuDisplayBuilder.addOnOffDirectiveMenuItem("mnuItInapplicablesOn", new DisplayInapplicablesDirective(), true);
@@ -1286,45 +1318,51 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         // "Define" submenu
         MenuBuilder mnuDefineBuilder = new MenuBuilder("mnuDefine", _context);
-        mnuDefineBuilder.addDirectiveMenuItem("mnuItDefineCharacters", new DefineCharactersDirective());
-        mnuDefineBuilder.addDirectiveMenuItem("mnuItDefineTaxa", new DefineTaxaDirective());
-        mnuDefineBuilder.addDirectiveMenuItem("mnuItDefineNames", new DefineNamesDirective());
-        mnuDefineBuilder.addDirectiveMenuItem("mnuItDefineButton", new DefineButtonDirective());
-        mnuDefineBuilder.addDirectiveMenuItem("mnuItDefineEndIdentify", new DefineEndIdentifyDirective());
-        mnuDefineBuilder.addDirectiveMenuItem("mnuItDefineInformation", new DefineInformationDirective());
-        mnuDefineBuilder.addDirectiveMenuItem("mnuItDefineSubjects", new DefineSubjectsDirective());
+        mnuDefineBuilder.addDirectiveMenuItem("mnuItDefineCharacters", new DefineCharactersDirective(), isDatasetLoaded);
+        mnuDefineBuilder.addDirectiveMenuItem("mnuItDefineTaxa", new DefineTaxaDirective(), isDatasetLoaded);
+        mnuDefineBuilder.addDirectiveMenuItem("mnuItDefineNames", new DefineNamesDirective(), isDatasetLoaded);
+        mnuDefineBuilder.addDirectiveMenuItem("mnuItDefineButton", new DefineButtonDirective(), isDatasetLoaded);
+        mnuDefineBuilder.addDirectiveMenuItem("mnuItDefineEndIdentify", new DefineEndIdentifyDirective(), isDatasetLoaded);
+        mnuDefineBuilder.addDirectiveMenuItem("mnuItDefineInformation", new DefineInformationDirective(), isDatasetLoaded);
+        mnuDefineBuilder.addDirectiveMenuItem("mnuItDefineSubjects", new DefineSubjectsDirective(), isDatasetLoaded);
 
+        JMenu mnuDefine = mnuDefineBuilder.getMenu();
+        mnuDefine.setEnabled(isDatasetLoaded);
         mnuSettings.add(mnuDefineBuilder.getMenu());
 
         // "Include" submenu
         MenuBuilder mnuIncludeBuilder = new MenuBuilder("mnuInclude", _context);
-        mnuIncludeBuilder.addDirectiveMenuItem("mnuItIncludeCharacters", new IncludeCharactersDirective());
-        mnuIncludeBuilder.addDirectiveMenuItem("mnuItIncludeTaxa", new IncludeTaxaDirective());
-        mnuSettings.add(mnuIncludeBuilder.getMenu());
+        mnuIncludeBuilder.addDirectiveMenuItem("mnuItIncludeCharacters", new IncludeCharactersDirective(), isDatasetLoaded);
+        mnuIncludeBuilder.addDirectiveMenuItem("mnuItIncludeTaxa", new IncludeTaxaDirective(), isDatasetLoaded);
+        JMenu mnuInclude = mnuIncludeBuilder.getMenu();
+        mnuInclude.setEnabled(isDatasetLoaded);
+        mnuSettings.add(mnuInclude);
 
         // "Exclude" submenu
         MenuBuilder mnuExcludeBuilder = new MenuBuilder("mnuExclude", _context);
-        mnuExcludeBuilder.addDirectiveMenuItem("mnuItExcludeCharacters", new ExcludeCharactersDirective());
-        mnuExcludeBuilder.addDirectiveMenuItem("mnuItExcludeTaxa", new ExcludeTaxaDirective());
-        mnuSettings.add(mnuExcludeBuilder.getMenu());
+        mnuExcludeBuilder.addDirectiveMenuItem("mnuItExcludeCharacters", new ExcludeCharactersDirective(), isDatasetLoaded);
+        mnuExcludeBuilder.addDirectiveMenuItem("mnuItExcludeTaxa", new ExcludeTaxaDirective(), isDatasetLoaded);
+        JMenu mnuExclude = mnuExcludeBuilder.getMenu();
+        mnuExclude.setEnabled(isDatasetLoaded);
+        mnuSettings.add(mnuExclude);
 
         // "Status" submenu
         MenuBuilder mnuStatusBuilder = new MenuBuilder("mnuStatus", _context);
-        mnuStatusBuilder.addDirectiveMenuItem("mnuItStatusDisplay", new StatusDisplayDirective());
+        mnuStatusBuilder.addDirectiveMenuItem("mnuItStatusDisplay", new StatusDisplayDirective(), isDatasetLoaded);
 
         mnuStatusBuilder.startSubMenu("mnuStatusInclude", true);
-        mnuStatusBuilder.addDirectiveMenuItem("mnuItStatusIncludeCharacters", new StatusIncludeCharactersDirective());
-        mnuStatusBuilder.addDirectiveMenuItem("mnuItStatusIncludeTaxa", new StatusIncludeTaxaDirective());
+        mnuStatusBuilder.addDirectiveMenuItem("mnuItStatusIncludeCharacters", new StatusIncludeCharactersDirective(), isDatasetLoaded);
+        mnuStatusBuilder.addDirectiveMenuItem("mnuItStatusIncludeTaxa", new StatusIncludeTaxaDirective(), isDatasetLoaded);
         mnuStatusBuilder.endSubMenu();
 
         mnuStatusBuilder.startSubMenu("mnuStatusExclude", true);
-        mnuStatusBuilder.addDirectiveMenuItem("mnuItStatusExcludeCharacters", new StatusExcludeCharactersDirective());
-        mnuStatusBuilder.addDirectiveMenuItem("mnuItStatusExcludeTaxa", new StatusExcludeTaxaDirective());
+        mnuStatusBuilder.addDirectiveMenuItem("mnuItStatusExcludeCharacters", new StatusExcludeCharactersDirective(), isDatasetLoaded);
+        mnuStatusBuilder.addDirectiveMenuItem("mnuItStatusExcludeTaxa", new StatusExcludeTaxaDirective(), isDatasetLoaded);
         mnuStatusBuilder.endSubMenu();
 
-        mnuStatusBuilder.addDirectiveMenuItem("mnuItStatusFiles", new StatusFilesDirective());
-        mnuStatusBuilder.addDirectiveMenuItem("mnuItStatusSet", new StatusSetDirective());
-        mnuStatusBuilder.addDirectiveMenuItem("mnuItStatusAll", new StatusAllDirective());
+        mnuStatusBuilder.addDirectiveMenuItem("mnuItStatusFiles", new StatusFilesDirective(), isDatasetLoaded);
+        mnuStatusBuilder.addDirectiveMenuItem("mnuItStatusSet", new StatusSetDirective(), isDatasetLoaded);
+        mnuStatusBuilder.addDirectiveMenuItem("mnuItStatusAll", new StatusAllDirective(), isDatasetLoaded);
         mnuSettings.add(mnuStatusBuilder.getMenu());
 
         return mnuSettings;
@@ -1495,7 +1533,9 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         // Need to update available characters because character separating
         // powers
         // are only shown in best ordering when in advanced mode.
-        updateAvailableCharacters();
+        if (_context.getDataset() != null) {
+            updateAvailableCharacters();
+        }
 
         // Update button toolbar - some buttons are only shown in normal or
         // advanced mode
@@ -1665,16 +1705,23 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         for (int i : _listEliminatedTaxa.getSelectedIndices()) {
             selectedTaxa.add((Item) _eliminatedTaxaListModel.getElementAt(i));
         }
+        
+        // Ensure that at least two taxa are selected
+        if (selectedTaxa.size() >= 2) {
+            StringBuilder directiveTextBuilder = new StringBuilder();
+            directiveTextBuilder.append("/E /I /U /X (");
+            for (Item taxon : selectedTaxa) {
+                directiveTextBuilder.append(" ");
+                directiveTextBuilder.append(taxon.getItemNumber());
+            }
+            directiveTextBuilder.append(") all");
 
-        StringBuilder directiveTextBuilder = new StringBuilder();
-        directiveTextBuilder.append("/E /I /U /X (");
-        for (Item taxon : selectedTaxa) {
-            directiveTextBuilder.append(" ");
-            directiveTextBuilder.append(taxon.getItemNumber());
+            executeDirective(new DifferencesDirective(), directiveTextBuilder.toString());
+        } else {
+            displayInformationMessage("Select two or more taxa for comparison");
         }
-        directiveTextBuilder.append(") all");
 
-        executeDirective(new DifferencesDirective(), directiveTextBuilder.toString());
+
     }
 
     @Action
@@ -1720,13 +1767,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             displayErrorMessage(msg);
             Logger.error(msg);
         }
-    }
-
-    private void taxonSelectionChanged() {
-        int[] remainingTaxaSelectedIndicies = _listRemainingTaxa.getSelectedIndices();
-        int[] eliminatedTaxaSelectedIndicies = _listEliminatedTaxa.getSelectedIndices();
-
-        _btnDiffTaxa.setEnabled((remainingTaxaSelectedIndicies.length + eliminatedTaxaSelectedIndicies.length) >= 2);
     }
 
     private void initializeIdentification() {
@@ -1869,10 +1909,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _sclPaneAvailableCharacters.revalidate();
     }
 
-    private void handleNoAvailableTaxa() {
-
-    }
-
     /**
      * Used to calculate the best characters in a separate thread, then update
      * the UI accordingly when the operation is finished
@@ -1983,6 +2019,22 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         getMainFrame().setTitle(MessageFormat.format(windowTitleWithDatasetTitle, dataset.getHeading()));
 
+        // enable toolbar buttons
+        IntkeyCharacterOrder characterOrder = _context.getCharacterOrder();
+        _btnRestart.setEnabled(true);
+        _btnBestOrder.setEnabled(characterOrder != IntkeyCharacterOrder.BEST);
+        _btnSeparate.setEnabled(true);
+        _btnNaturalOrder.setEnabled(characterOrder != IntkeyCharacterOrder.NATURAL);
+        _btnSetTolerance.setEnabled(true);
+        _btnSetMatch.setEnabled(true);
+        _btnSubsetCharacters.setEnabled(true);
+        _btnFindCharacter.setEnabled(true);
+
+        _btnTaxonInfo.setEnabled(true);
+        _btnDiffTaxa.setEnabled(true);
+        _btnSubsetTaxa.setEnabled(true);
+        _btnFindTaxon.setEnabled(true);
+
         // display startup images
         if (!_suppressStartupImages) {
             List<Image> startupImages = dataset.getStartupImages();
@@ -1990,6 +2042,15 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                 ImageUtils.displayStartupScreen(startupImages, _context.getImageSettings(), getMainFrame());
             }
         }
+
+        // Need to refresh the menus as some menus/menu items are disabled when
+        // the dataset is not loaded. Also the
+        // list of recent datasets may need to be refreshed after the closing of
+        // the previous dataset (if applicable)
+        JMenuBar menuBar = buildMenus(_advancedMode);
+        getMainFrame().setJMenuBar(menuBar);
+        ResourceMap resourceMap = getContext().getResourceMap(Intkey.class);
+        resourceMap.injectComponents(getMainFrame());
 
         initializeIdentification();
 
@@ -2001,11 +2062,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         if (_context.getDataset() != null) {
             saveCurrentlyOpenedDataset();
         }
-        JMenuBar menuBar = buildMenus(_advancedMode); // need to refresh the
-                                                      // recent datasets menu
-        getMainFrame().setJMenuBar(menuBar);
-        ResourceMap resourceMap = getContext().getResourceMap(Intkey.class);
-        resourceMap.injectComponents(getMainFrame());
     }
 
     @Override
@@ -3081,10 +3137,11 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     }
 
     /**
-     * This method saves information about the currently opened dataset:
-     * 1. If the dataset was downloaded from a remote location, the user will be given the option to save it to disk
-     * 2. The dataset is added to the list of most recently used datasets
-     * 3. If the dataset is not currently saved in the dataset index, the user will be given the option to do this.
+     * This method saves information about the currently opened dataset: 1. If
+     * the dataset was downloaded from a remote location, the user will be given
+     * the option to save it to disk 2. The dataset is added to the list of most
+     * recently used datasets 3. If the dataset is not currently saved in the
+     * dataset index, the user will be given the option to do this.
      */
     private void saveCurrentlyOpenedDataset() {
         String datasetTitle = _context.getDataset().getHeading().trim();

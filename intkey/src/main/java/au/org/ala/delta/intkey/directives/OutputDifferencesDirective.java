@@ -21,7 +21,7 @@ import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.OutputDifferencesDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class OutputDifferencesDirective extends NewIntkeyDirective {
+public class OutputDifferencesDirective extends OutputDirective {
 
     public OutputDifferencesDirective() {
         super(true, "output", "differences");

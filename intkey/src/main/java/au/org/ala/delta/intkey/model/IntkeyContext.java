@@ -1208,7 +1208,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     public synchronized File getDatasetStartupFile() {
         return _datasetStartupFile;
     }
-    
+
     public synchronized URL getDatasetStartupURL() {
         return _datasetStartupURL;
     }
@@ -1355,9 +1355,11 @@ public class IntkeyContext extends AbstractDeltaContext {
     // so that the eliminated taxa can be recalculated given the new match
     // settings.
     private void updateSpecimenMatchSettings() {
-        Specimen newSpecimen = new Specimen(_dataset, false, _matchInapplicables, _matchUnknowns, _matchType, _specimen);
-        _specimen = newSpecimen;
-        updateUI();
+        if (_dataset != null) {
+            Specimen newSpecimen = new Specimen(_dataset, false, _matchInapplicables, _matchUnknowns, _matchType, _specimen);
+            _specimen = newSpecimen;
+            updateUI();
+        }
     }
 
     public synchronized DiagType getDiagType() {

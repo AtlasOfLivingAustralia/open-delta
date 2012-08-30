@@ -21,7 +21,7 @@ import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocat
 import au.org.ala.delta.intkey.directives.invocation.OutputSummaryDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class OutputSummaryDirective extends NewIntkeyDirective {
+public class OutputSummaryDirective extends OutputDirective {
 
     public OutputSummaryDirective() {
         super(false, "output", "summary");
