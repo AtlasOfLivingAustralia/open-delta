@@ -15,6 +15,7 @@
 package au.org.ala.delta.intkey.directives.invocation;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 public class SetDiagLevelInvocation extends BasicIntkeyDirectiveInvocation {
 
@@ -29,7 +30,7 @@ public class SetDiagLevelInvocation extends BasicIntkeyDirectiveInvocation {
         if (_diagLevel > 0) {
             context.setDiagLevel(_diagLevel);
         } else {
-            context.getUI().displayErrorMessage("DiagLevelMustBeGtZero.error");
+            context.getUI().displayErrorMessage(UIUtils.getResourceString("DiagLevelMustBeGtZero.error"));
         }
         return true;
     }

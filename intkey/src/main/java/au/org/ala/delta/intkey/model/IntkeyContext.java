@@ -421,7 +421,7 @@ public class IntkeyContext extends AbstractDeltaContext {
             parser.parse(directivesFile, IntkeyContext.this);
         } catch (Throwable th) {
             Logger.log(th.getMessage());
-            _appUI.displayErrorMessage(String.format("Error reading file '%s' - %s", directivesFile.getAbsolutePath(), th.getMessage()));
+            _appUI.displayErrorMessage(UIUtils.getResourceString("ErrorProcessingDirectivesFile.error", directivesFile.getAbsolutePath(), th.getMessage()));
         }
 
         _processingDirectivesFile = oldProcessingInputFile;
@@ -479,11 +479,6 @@ public class IntkeyContext extends AbstractDeltaContext {
 
         initializeIdentification();
 
-        // if (datasetFileURL == null || !datasetFileURL.exists()) {
-        // throw new IllegalArgumentException("Could not open dataset file " +
-        // datasetFileURL.getAbsolutePath());
-        // }
-
         // Loading of a new dataset can take a long time and hence can lock up
         // the UI. If this method is called from the Swing Event Dispatch
         // Thread, load the
@@ -505,8 +500,8 @@ public class IntkeyContext extends AbstractDeltaContext {
                         appendToLog(_dataset.getSubHeading());
                         _appUI.handleNewDataset(_dataset);
                     } catch (Exception ex) {
-                        ex.printStackTrace();
-                        _appUI.displayErrorMessage("Error reading dataset file " + datasetFileURL.toString());
+                        Logger.error("Error reading dataset file", ex);
+                        _appUI.displayErrorMessage(UIUtils.getResourceString("ErrorReadingReadsetFile.error", datasetFileURL.toString(), ex.getMessage()));
                     } finally {
                         _appUI.removeBusyMessage();
                     }
@@ -514,7 +509,7 @@ public class IntkeyContext extends AbstractDeltaContext {
             };
 
             startupWorker.execute();
-            _appUI.displayBusyMessage("Loading dataset...");
+            _appUI.displayBusyMessage(UIUtils.getResourceString("LoadingDataset.caption"));
         } else {
             try {
                 processStartupFile(datasetFileURL);
@@ -522,7 +517,8 @@ public class IntkeyContext extends AbstractDeltaContext {
                 appendToLog(_dataset.getSubHeading());
                 _appUI.handleNewDataset(_dataset);
             } catch (Exception ex) {
-                throw new RuntimeException("Error reading dataset file " + datasetFileURL.toString(), ex);
+                Logger.error("Error reading dataset file", ex);
+                _appUI.displayErrorMessage(UIUtils.getResourceString("ErrorReadingReadsetFile.error", datasetFileURL.toString(), ex.getMessage()));
             }
         }
     }
@@ -542,7 +538,7 @@ public class IntkeyContext extends AbstractDeltaContext {
             if (th instanceof IntkeyDirectiveParseException) {
                 msg = th.getMessage();
             } else {
-                msg = String.format("Error occurred while processing '%s' command: %s", command.toUpperCase(), th.getMessage());
+                msg = UIUtils.getResourceString("ErrorWhileProcessingCommand.error", command.toUpperCase(), th.getMessage());
             }
             _appUI.displayErrorMessage(msg);
             Logger.error(msg);

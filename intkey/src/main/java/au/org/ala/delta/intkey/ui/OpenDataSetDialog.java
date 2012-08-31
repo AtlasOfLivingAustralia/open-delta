@@ -128,7 +128,7 @@ public class OpenDataSetDialog extends IntkeyDialog {
         _btnCancel.setAction(actionMap.get("OpenDataSetDialog_Cancel"));
         _pnlButtons.add(_btnCancel);
 
-        _btnHelp = new JButton("Help");
+        _btnHelp = new JButton();
         _btnHelp.setAction(actionMap.get("OpenDataSetDialog_Help"));
         _pnlButtons.add(_btnHelp);
 

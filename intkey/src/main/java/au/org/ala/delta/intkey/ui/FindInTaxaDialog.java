@@ -234,7 +234,7 @@ public class FindInTaxaDialog extends JDialog {
         gbc_btnFind.gridy = 0;
         _pnlInnerButtons.add(_btnFindNext, gbc_btnFind);
 
-        _btnPrevious = new JButton("Previous");
+        _btnPrevious = new JButton();
         _btnPrevious.setAction(actionMap.get("previousFoundTaxon"));
         _btnPrevious.setEnabled(false);
         GridBagConstraints gbc_btnPrevious = new GridBagConstraints();
@@ -243,7 +243,7 @@ public class FindInTaxaDialog extends JDialog {
         gbc_btnPrevious.gridy = 1;
         _pnlInnerButtons.add(_btnPrevious, gbc_btnPrevious);
 
-        _btnDone = new JButton("Done");
+        _btnDone = new JButton();
         _btnDone.setAction(actionMap.get("findTaxaDone"));
         GridBagConstraints gbc_btnDone = new GridBagConstraints();
         gbc_btnDone.fill = GridBagConstraints.HORIZONTAL;

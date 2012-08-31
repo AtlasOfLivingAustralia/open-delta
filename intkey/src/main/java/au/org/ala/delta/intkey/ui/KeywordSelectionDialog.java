@@ -144,10 +144,10 @@ public abstract class KeywordSelectionDialog extends ListSelectionDialog impleme
         flowLayout.setHgap(20);
         _panelButtons.add(_panelRadioButtons, BorderLayout.SOUTH);
 
-        lblSelectFrom = new JLabel("Select from:");
+        lblSelectFrom = new JLabel(UIUtils.getResourceString("KeywordSelectionDialog.selectFromCaption"));
         _panelRadioButtons.add(lblSelectFrom);
 
-        _rdbtnSelectFromAll = new JRadioButton("All characters");
+        _rdbtnSelectFromAll = new JRadioButton(UIUtils.getResourceString("KeywordSelectionDialog.allCharactersCaption"));
         _rdbtnSelectFromAll.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 _selectFromIncluded = false;
@@ -156,7 +156,7 @@ public abstract class KeywordSelectionDialog extends ListSelectionDialog impleme
         buttonGroup.add(_rdbtnSelectFromAll);
         _panelRadioButtons.add(_rdbtnSelectFromAll);
 
-        _rdbtnSelectFromIncluded = new JRadioButton("Included characters");
+        _rdbtnSelectFromIncluded = new JRadioButton(UIUtils.getResourceString("KeywordSelectionDialog.includedCharactersCaption"));
         _rdbtnSelectFromIncluded.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 _selectFromIncluded = true;

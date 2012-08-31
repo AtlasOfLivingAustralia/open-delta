@@ -68,7 +68,7 @@ public class OutputFileSelectionDialog extends IntkeyDialog {
         _btnOk.setAction(actionMap.get("outputFileSelectionDialog_OkPressed"));
         _btnPanel.add(_btnOk);
 
-        JButton _btnCancel = new JButton("Cancel");
+        JButton _btnCancel = new JButton();
         _btnCancel.setAction(actionMap.get("outputFileSelectionDialog_CancelPressed"));
         _btnPanel.add(_btnCancel);
 

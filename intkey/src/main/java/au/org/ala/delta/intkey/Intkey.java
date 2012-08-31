@@ -1369,7 +1369,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     }
 
     private JMenu buildReExecuteMenu(ActionMap actionMap) {
-        JMenu mnuReExecute = new JMenu("ReExecute...");
+        JMenu mnuReExecute = new JMenu();
         mnuReExecute.setName("mnuReExecute");
 
         JMenuItem mnuItReExecute = new JMenuItem();
@@ -1718,7 +1718,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
             executeDirective(new DifferencesDirective(), directiveTextBuilder.toString());
         } else {
-            displayInformationMessage("Select two or more taxa for comparison");
+            displayInformationMessage(UIUtils.getResourceString("SelectTwoOrMoreTaxa.caption"));
         }
 
 
@@ -1762,7 +1762,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             if (ex instanceof IntkeyDirectiveParseException) {
                 msg = ex.getMessage();
             } else {
-                msg = String.format("Error occurred while processing '%s' command: %s", data.toUpperCase(), ex.getMessage());
+                msg = UIUtils.getResourceString("ErrorWhileProcessingCommand.error", data.toUpperCase(), ex.getMessage());
             }
             displayErrorMessage(msg);
             Logger.error(msg);
@@ -2306,7 +2306,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             try {
                 icon = readImageIconFromFile(iconFile);
             } catch (IOException ex) {
-                displayErrorMessage("Error reading image from file " + iconFile.getAbsolutePath());
+                displayErrorMessage(UIUtils.getResourceString("ErrorReadingIconImageFromFile.error", iconFile.getAbsolutePath()));
             }
         }
 
@@ -2317,7 +2317,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                 try {
                     icon = readImageIconFromFile(relativeIconFile);
                 } catch (IOException ex) {
-                    displayErrorMessage("Error reading image from file " + iconFile.getAbsolutePath());
+                    displayErrorMessage(UIUtils.getResourceString("ErrorReadingIconImageFromFile.error", iconFile.getAbsolutePath()));
                 }
             }
         }
@@ -2345,7 +2345,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         }
 
         if (icon == null) {
-            displayErrorMessage("Could not find image " + imageFileName);
+            displayErrorMessage(UIUtils.getResourceString("CouldNotFromImage.error", imageFileName));
             return;
         }
 
@@ -3153,7 +3153,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         String datasetPath = null;
         if (startupFileData != null && startupFileData.isRemoteDataset()) {
-            int chosenOption = JOptionPane.showConfirmDialog(getMainFrame(), "Save downloaded dataset '" + datasetTitle + "' ?", "Save", JOptionPane.YES_NO_OPTION);
+            int chosenOption = JOptionPane.showConfirmDialog(getMainFrame(), UIUtils.getResourceString("SaveDownloadedDatasetPrompt.caption", datasetTitle), UIUtils.getResourceString("Save.caption"), JOptionPane.YES_NO_OPTION);
             if (chosenOption == JOptionPane.YES_OPTION) {
                 JFileChooser fileChooser = new JFileChooser();
                 fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -3173,7 +3173,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                         // place.
                         UIUtils.removeFileFromMRU(_context.getDatasetStartupFile().getAbsolutePath());
                     } catch (IOException ex) {
-                        displayErrorMessage("Error saving downloaded dataset");
+                        Logger.error("Error saving downloaded dataset", ex);
+                        displayErrorMessage(UIUtils.getResourceString("ErrorSavingDownloadedDataset.error", ex.getMessage()));
                         // not much we can do here, just abort saving/adding to
                         // recents list.
                         return;
@@ -3200,17 +3201,17 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         String promptMessage = null;
         if (startupFileData != null && startupFileData.isRemoteDataset()) {
             if (remoteDatasetSavedLocally) {
-                promptMessage = "Add saved copy of dataset '" + datasetTitle + "' to index?";
+                promptMessage = UIUtils.getResourceString("AddSavedCopyOfDatasetToIndexPrompt.caption", datasetTitle);
             } else {
-                promptMessage = "Add URL for remote dataset '" + datasetTitle + "' to index?";
+                promptMessage = UIUtils.getResourceString("AddURLForRemoteDatasetToIndexPrompt.caption", datasetTitle);
             }
         } else {
-            promptMessage = "Add dataset '" + datasetTitle + "' to index?";
+            promptMessage = UIUtils.getResourceString("AddDatasetToIndexPrompt.caption", datasetTitle);
         }
 
         // check if the datasetPath is already present in the index
         if (!UIUtils.getDatasetIndexAsMap().containsKey(datasetPath)) {
-            int chosenOption = JOptionPane.showConfirmDialog(getMainFrame(), promptMessage, "Add to dataset index", JOptionPane.YES_NO_OPTION);
+            int chosenOption = JOptionPane.showConfirmDialog(getMainFrame(), promptMessage, UIUtils.getResourceString("AddToDataset.caption"), JOptionPane.YES_NO_OPTION);
             if (chosenOption == JOptionPane.YES_OPTION) {
                 addToDatasetIndex(datasetTitle, datasetPath);
             }
@@ -3275,7 +3276,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     @Action
     public void chooseFont() {
         Font f = UIManager.getFont("Label.font");
-        Font newFont = JFontChooser.showDialog(getMainFrame(), "Please select a font", f);
+        Font newFont = JFontChooser.showDialog(getMainFrame(), UIUtils.getResourceString("SelectFontPrompt.caption"), f);
         if (newFont != null) {
             FontUIResource fontResource = new FontUIResource(newFont);
             Enumeration<Object> keys = UIManager.getDefaults().keys();

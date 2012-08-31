@@ -378,7 +378,7 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
             _multipleImageViewer.replaySound();
         } catch (Exception ex) {
             Logger.error(ex);
-            JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(ImageDialog.this), "Error occurred playing sound: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(ImageDialog.this), au.org.ala.delta.intkey.ui.UIUtils.getResourceString("ErrorPlayingSound.error",  ex.getMessage()), au.org.ala.delta.intkey.ui.UIUtils.getResourceString("Error.caption"), JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -554,7 +554,7 @@ public class ImageDialog extends IntkeyDialog implements OverlaySelectionObserve
                 handleNewImageSelected();
             } catch (Exception ex) {
                 Logger.error(ex);
-                JOptionPane.showMessageDialog(ImageDialog.this, "Error occurred loading image: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(ImageDialog.this, au.org.ala.delta.intkey.ui.UIUtils.getResourceString("ErrorLoadingImage.error",  ex.getMessage()), au.org.ala.delta.intkey.ui.UIUtils.getResourceString("Error.caption"), JOptionPane.ERROR_MESSAGE);
             }
         }
     }

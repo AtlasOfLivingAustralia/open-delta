@@ -192,7 +192,7 @@ public class ImageUtils {
                 _imageDisplayDialog.requestFocus();
             } catch (Exception ex) {
                 ex.printStackTrace();
-                JOptionPane.showMessageDialog(_applicationWindow, "Error occurred loading image: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(_applicationWindow, au.org.ala.delta.intkey.ui.UIUtils.getResourceString("ErrorLoadingImage.error",  ex.getMessage()), au.org.ala.delta.intkey.ui.UIUtils.getResourceString("Error.caption"), JOptionPane.ERROR_MESSAGE);
             }
         }
     }

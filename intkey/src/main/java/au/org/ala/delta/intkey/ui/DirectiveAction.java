@@ -15,6 +15,7 @@
 package au.org.ala.delta.intkey.ui;
 
 import java.awt.event.ActionEvent;
+import java.text.MessageFormat;
 
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
@@ -49,7 +50,7 @@ public class DirectiveAction extends AbstractAction {
             Logger.error(msg);
         } catch (Exception ex) {
             ex.printStackTrace();
-            String msg = String.format("Error occurred while processing '%s' command: %s", StringUtils.join(_directive.getControlWords(), " ").toUpperCase(), ex.getMessage());
+            String msg = MessageFormat.format(UIUtils.getResourceString("ErrorWhileProcessingCommand.error"), StringUtils.join(_directive.getControlWords(), " ").toUpperCase(), ex.getMessage());
             JOptionPane.showMessageDialog(UIUtils.getMainFrame(), msg, "Error", JOptionPane.ERROR_MESSAGE);
             Logger.error(msg);
             Logger.error(ex);

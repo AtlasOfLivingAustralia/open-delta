@@ -171,7 +171,7 @@ public class TaxonInformationDialog extends IntkeyDialog {
         _btnDeselectAll.setAction(actionMap.get("deselectAllTaxonInformation"));
         _btnPanel.add(_btnDeselectAll);
 
-        _btnDone = new JButton("Done");
+        _btnDone = new JButton();
         _btnDone.setAction(actionMap.get("done"));
         _btnPanel.add(_btnDone);
 
@@ -224,7 +224,7 @@ public class TaxonInformationDialog extends IntkeyDialog {
         _sclPnOther.setViewportView(_listOther);
         _pnlListOther.add(_sclPnOther, BorderLayout.CENTER);
 
-        _lblOther = new JLabel("Other");
+        _lblOther = new JLabel();
         _pnlListOther.add(_lblOther, BorderLayout.NORTH);
 
         _pnlListIllustrations = new JPanel();
@@ -232,7 +232,7 @@ public class TaxonInformationDialog extends IntkeyDialog {
         _pnlLists.add(_pnlListIllustrations);
         _pnlListIllustrations.setLayout(new BorderLayout(0, 0));
 
-        _lblIllustrations = new JLabel("Illustrations");
+        _lblIllustrations = new JLabel();
         _pnlListIllustrations.add(_lblIllustrations, BorderLayout.NORTH);
 
         _listIllustrations = new JList();
@@ -554,13 +554,13 @@ public class TaxonInformationDialog extends IntkeyDialog {
             URL linkFileURL = _infoSettings.findFileOnResourcePath(_linkFileName, false);
 
             if (linkFileURL == null) {
-                _context.getUI().displayErrorMessage("Could not locate file " + _linkFileName);
+                _context.getUI().displayErrorMessage(UIUtils.getResourceString("CouldNotLocateFile.error", _linkFileName));
             }
 
             try {
                 _context.getUI().displayFile(linkFileURL, _description);
             } catch (Exception ex) {
-                _context.getUI().displayErrorMessage("Badly formed URL: " + linkFileURL.toString());
+                _context.getUI().displayErrorMessage(UIUtils.getResourceString("CouldNotLocateFile.error", linkFileURL.toString()));
             }
         }
 

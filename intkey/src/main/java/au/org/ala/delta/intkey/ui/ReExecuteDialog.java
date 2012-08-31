@@ -87,7 +87,7 @@ public class ReExecuteDialog extends JDialog {
         flowLayout.setHgap(10);
         getContentPane().add(_pnlButtons, BorderLayout.SOUTH);
 
-        _btnExecute = new JButton("Execute");
+        _btnExecute = new JButton();
         _btnExecute.setAction(actionMap.get("reExecuteDialog_Execute"));
 
         // execute button only become enabled when a directive from the list is
@@ -96,12 +96,12 @@ public class ReExecuteDialog extends JDialog {
 
         _pnlButtons.add(_btnExecute);
 
-        _btnCancel = new JButton("Cancel");
+        _btnCancel = new JButton();
         _btnCancel.setAction(actionMap.get("reExecuteDialog_Cancel"));
 
         _pnlButtons.add(_btnCancel);
 
-        _btnEdit = new JButton("Edit");
+        _btnEdit = new JButton();
         _btnEdit.setAction(actionMap.get("reExecuteDialog_Edit"));
         // execute button only become enabled when a directive from the list is
         // selected

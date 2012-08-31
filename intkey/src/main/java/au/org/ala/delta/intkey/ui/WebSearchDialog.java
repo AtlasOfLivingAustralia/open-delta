@@ -48,6 +48,7 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
 
+import au.org.ala.delta.Logger;
 import au.org.ala.delta.util.LocalConfigFiles;
 
 public class WebSearchDialog extends JDialog {
@@ -172,7 +173,7 @@ public class WebSearchDialog extends JDialog {
 				if (desc != null) {
 					engines.add(desc);
 				} else {
-					System.err.println("Could not parse search engine descriptor: " + line);
+					Logger.log("Could not parse search engine descriptor: " + line);
 				}
 			}
 

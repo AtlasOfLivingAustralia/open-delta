@@ -110,7 +110,6 @@ public class BusyGlassPane extends JPanel {
     }
 
     public void setIcon(Icon icon) {
-        System.out.println("Setting icon");
         this.icon = icon;
     }
 
