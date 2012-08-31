@@ -20,9 +20,6 @@
 		that they must be preceeded by a * (e.g. *SET), and the parameters may
 		extend over more than one line. Each command must start on a new line.
 
-
-
-
 	
 	</li> To facilitate the location of errors in an input file, put a DISPLAY
 	INPUT ON command at the start of the file.
@@ -56,8 +53,12 @@
 	<h3>
 		FILE CLOSE <i>filename</i>
 	</h3>
-	<p>This command causes a file previously named in a FILE OUTPUT
-		command to be output and closed.</p>
+	<p>In intkey5 this command caused a file previously named in a FILE
+		OUTPUT command to be output and closed. In the open-delta edition of
+		intkey this directive is a NO-OP - it has no effect. It is no longer
+		required because open input files are closed whenever the application
+		is closed or a new output file is selected. The directive is retained
+		as a NO-OP for backward compatibility.</p>
 
 	<h3>
 		FILE CHARACTERS <i>filename</i>

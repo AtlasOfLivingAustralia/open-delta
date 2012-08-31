@@ -17,7 +17,8 @@
     <tocitem text="Buttons in dialog boxes" target="dialog_buttons" />
     <tocitem text="Command line" target="command_line" />
     <tocitem text="Saving output" target="saving_output" />
-    <tocitem text="Data-sets index and startup parameters" target="data_sets_index_startup_parameters" />
+    <tocitem text="Data-sets and data-sets index " target="data_sets_index" />
+    <tocitem text="Startup Parameters" target="startup_parameters" />
     <tocitem text="Hardware requirements" target="hardware_requirements" />
     <tocitem text="Conditions of use" target="conditions_of_use" />
     <tocitem text="Characters toolbar buttons" target="characters_toolbar_buttons" />
