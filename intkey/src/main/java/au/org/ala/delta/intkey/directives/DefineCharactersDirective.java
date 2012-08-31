@@ -20,6 +20,7 @@ import java.util.List;
 import au.org.ala.delta.intkey.directives.invocation.DefineCharactersDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 public class DefineCharactersDirective extends StandardIntkeyDirective {
 
@@ -30,7 +31,7 @@ public class DefineCharactersDirective extends StandardIntkeyDirective {
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new StringArgument("keyword", "Enter keyword", null, true));
+        arguments.add(new StringArgument("keyword", UIUtils.getResourceString("EnterKeyword.caption"), null, true));
         arguments.add(new CharacterListArgument("characters", null, false, true));
         return arguments;
     }

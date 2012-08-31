@@ -21,6 +21,7 @@ import java.util.List;
 import au.org.ala.delta.intkey.directives.invocation.FileLogDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 public class FileLogDirective extends StandardIntkeyDirective {
     public FileLogDirective() {
@@ -30,7 +31,7 @@ public class FileLogDirective extends StandardIntkeyDirective {
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new FileArgument("file", "Files (*.log)", null, Arrays.asList(new String[] { "log" }), true));
+        arguments.add(new FileArgument("file", UIUtils.getResourceString("LogFileChooserDescription.caption"), null, Arrays.asList(new String[] { "log" }), true));
         return arguments;
     }
 

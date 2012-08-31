@@ -21,6 +21,7 @@ import java.util.List;
 import au.org.ala.delta.intkey.directives.invocation.FileTaxaDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 /**
  * The FILE TAXA directive - specifies the name of the intkey taxa (items) file.
@@ -38,7 +39,7 @@ public class FileTaxaDirective extends StandardIntkeyDirective {
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new FileArgument("file", "Files (iitems*)", null, Arrays.asList(new String[] { "iitems" }), false));
+        arguments.add(new FileArgument("file", UIUtils.getResourceString("TaxaFileChooserDescription.caption"), null, Arrays.asList(new String[] { "iitems" }), false));
         return arguments;
     }
 

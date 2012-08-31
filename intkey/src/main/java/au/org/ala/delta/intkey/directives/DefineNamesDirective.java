@@ -90,7 +90,7 @@ public class DefineNamesDirective extends IntkeyDirective {
         String directiveName = StringUtils.join(getControlWords(), " ").toUpperCase();
 
         if (StringUtils.isEmpty(keyword)) {
-            keyword = context.getDirectivePopulator().promptForString("Enter keyword", null, directiveName);
+            keyword = context.getDirectivePopulator().promptForString(UIUtils.getResourceString("EnterKeyword.caption"), null, directiveName);
             if (keyword == null) {
                 // cancelled
                 return null;

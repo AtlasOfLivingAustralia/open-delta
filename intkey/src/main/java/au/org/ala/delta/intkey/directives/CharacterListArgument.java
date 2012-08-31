@@ -76,9 +76,13 @@ public class CharacterListArgument extends IntkeyDirectiveArgument<List<au.org.a
             } else {
                 characters = new ArrayList<au.org.ala.delta.model.Character>();
                 while (token != null) {
+                    try {
                     characters.addAll(ParsingUtils.parseCharacterToken(token, context));
                     selectedKeywordsOrCharacterNumbers.add(token);
                     token = inputTokens.poll();
+                    } catch (IllegalArgumentException ex) {
+                        throw new IntkeyDirectiveParseException("UnrecognizedCharacterKeyword.error", token);
+                    }
                 }
 
                 if (!(overrideExcludedCharacters || _selectFromAll)) {

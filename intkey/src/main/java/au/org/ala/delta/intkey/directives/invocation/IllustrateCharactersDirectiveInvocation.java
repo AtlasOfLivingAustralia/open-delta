@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Character;
 
 public class IllustrateCharactersDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
@@ -41,7 +42,7 @@ public class IllustrateCharactersDirectiveInvocation extends BasicIntkeyDirectiv
         _characters.removeAll(charsWithoutImages);
         
         if (_characters.isEmpty()) {
-            context.getUI().displayErrorMessage("No images for the specified characters");
+            context.getUI().displayErrorMessage(UIUtils.getResourceString("NoImagesForSpecifiedCharacters.error"));
             return false;
         }
         

@@ -20,6 +20,7 @@ import java.util.List;
 import au.org.ala.delta.intkey.directives.invocation.DefineSubjectsDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 public class DefineSubjectsDirective extends StandardIntkeyDirective {
     public DefineSubjectsDirective() {
@@ -29,7 +30,7 @@ public class DefineSubjectsDirective extends StandardIntkeyDirective {
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new StringArgument("subjects", "Enter subjects", null, false));
+        arguments.add(new StringArgument("subjects", UIUtils.getResourceString("EnterSubjects.caption"), null, false));
         return arguments;
     }
 

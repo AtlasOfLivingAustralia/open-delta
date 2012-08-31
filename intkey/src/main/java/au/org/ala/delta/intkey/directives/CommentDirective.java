@@ -20,6 +20,7 @@ import java.util.List;
 import au.org.ala.delta.intkey.directives.invocation.CommentDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 public class CommentDirective extends StandardIntkeyDirective {
 
@@ -30,7 +31,7 @@ public class CommentDirective extends StandardIntkeyDirective {
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new StringArgument("text", "Enter text", null, false));
+        arguments.add(new StringArgument("text", UIUtils.getResourceString("EnterText.caption"), null, false));
         return arguments;
     }
 

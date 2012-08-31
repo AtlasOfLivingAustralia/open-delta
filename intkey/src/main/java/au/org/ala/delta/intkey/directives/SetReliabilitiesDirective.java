@@ -28,6 +28,7 @@ import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocat
 import au.org.ala.delta.intkey.directives.invocation.SetReliabilitiesDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.IntkeyDataset;
+import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Character;
 
 public class SetReliabilitiesDirective extends IntkeyDirective {
@@ -78,7 +79,7 @@ public class SetReliabilitiesDirective extends IntkeyDirective {
                 return null;
             }
 
-            Float reliability = Float.parseFloat(context.getDirectivePopulator().promptForString("Enter reliability value", null, getControlWordsAsString()));
+            Float reliability = Float.parseFloat(context.getDirectivePopulator().promptForString(UIUtils.getResourceString("ReliabilityPrompt.caption"), null, getControlWordsAsString()));
             for (Character ch : characters) {
                 reliabilitiesMap.put(ch, reliability);
             }

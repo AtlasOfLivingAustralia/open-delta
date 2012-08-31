@@ -20,6 +20,7 @@ import java.util.List;
 import au.org.ala.delta.intkey.directives.invocation.FindCharactersDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 public class FindCharactersDirective extends StandardIntkeyDirective {
 
@@ -30,7 +31,7 @@ public class FindCharactersDirective extends StandardIntkeyDirective {
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new StringArgument("searchText", "Enter search string", null, true));
+        arguments.add(new StringArgument("searchText", UIUtils.getResourceString("EnterSearchString.caption"), null, true));
         return arguments;
     }
 

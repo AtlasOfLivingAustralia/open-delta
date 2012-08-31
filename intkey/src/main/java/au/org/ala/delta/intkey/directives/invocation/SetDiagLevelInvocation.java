@@ -29,7 +29,7 @@ public class SetDiagLevelInvocation extends BasicIntkeyDirectiveInvocation {
         if (_diagLevel > 0) {
             context.setDiagLevel(_diagLevel);
         } else {
-            context.getUI().displayErrorMessage("DiagLevel must be an integer greater than zero.");
+            context.getUI().displayErrorMessage("DiagLevelMustBeGtZero.error");
         }
         return true;
     }

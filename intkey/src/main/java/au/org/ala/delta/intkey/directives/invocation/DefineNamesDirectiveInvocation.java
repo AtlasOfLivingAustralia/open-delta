@@ -14,6 +14,7 @@
  ******************************************************************************/
 package au.org.ala.delta.intkey.directives.invocation;
 
+import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -42,7 +43,7 @@ public class DefineNamesDirectiveInvocation extends BasicIntkeyDirectiveInvocati
         try {
             context.setTaxaKeyword(_keyword, taxaNumbers);
         } catch (IllegalArgumentException ex) {
-            context.getUI().displayErrorMessage(String.format("'%s' is a system keyword and cannot be redefined", _keyword));
+            context.getUI().displayErrorMessage(MessageFormat.format("RedefineSystemKeyword.error", _keyword));
             return false;
         }
 

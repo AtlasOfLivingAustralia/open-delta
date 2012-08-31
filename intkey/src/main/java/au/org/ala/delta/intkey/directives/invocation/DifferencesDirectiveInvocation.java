@@ -113,7 +113,7 @@ public class DifferencesDirectiveInvocation extends LongRunningIntkeyDirectiveIn
         }
 
         if (numberOfTaxa < 2) {
-            throw new IntkeyDirectiveInvocationException(String.format("At least two taxa required for comparison."));
+            throw new IntkeyDirectiveInvocationException("TwoTaxaRequiredForComparison.error");
         }
 
         if (_useGlobalMatchValues) {
@@ -218,7 +218,7 @@ public class DifferencesDirectiveInvocation extends LongRunningIntkeyDirectiveIn
             rtfWriter.endDocument();
             return tempFile;
         } catch (IOException ex) {
-            throw new IntkeyDirectiveInvocationException(ex, "Error generating differences report: %s.", ex.getMessage());
+            throw new IntkeyDirectiveInvocationException(ex, "DifferencesDirectives.ReportGeneration.error", ex.getMessage());
         }
     }
 

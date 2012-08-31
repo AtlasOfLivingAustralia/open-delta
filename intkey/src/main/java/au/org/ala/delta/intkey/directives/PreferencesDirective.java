@@ -21,6 +21,7 @@ import java.util.List;
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.PreferencesDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 public class PreferencesDirective extends StandardIntkeyDirective {
     public PreferencesDirective() {
@@ -30,7 +31,7 @@ public class PreferencesDirective extends StandardIntkeyDirective {
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new FileArgument("file", "Files (*.prf)", null, Arrays.asList(new String[] { "prf" }), false));
+        arguments.add(new FileArgument("file", UIUtils.getResourceString("PreferencesFileChooserDescription.caption"), null, Arrays.asList(new String[] { "prf" }), false));
         return arguments;
     }
 

@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Item;
 
 public class IllustrateTaxaDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
@@ -41,7 +42,7 @@ public class IllustrateTaxaDirectiveInvocation extends BasicIntkeyDirectiveInvoc
         _taxa.removeAll(taxaWithoutImages);
         
         if (_taxa.isEmpty()) {
-            context.getUI().displayErrorMessage("No images for the specified taxa");
+            context.getUI().displayErrorMessage(UIUtils.getResourceString("NoImagesForSpecifiedTaxa.error"));
             return false;
         }
         

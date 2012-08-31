@@ -20,6 +20,7 @@ import java.util.List;
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.SetImagePathDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 public class SetImagePathDirective extends StandardIntkeyDirective {
 
@@ -30,7 +31,7 @@ public class SetImagePathDirective extends StandardIntkeyDirective {
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new StringArgument("imagePaths", "Enter the path specification for image files", null, false));
+        arguments.add(new StringArgument("imagePaths", UIUtils.getResourceString("ImagePathPrompt.caption"), null, false));
         return arguments;
     }
 

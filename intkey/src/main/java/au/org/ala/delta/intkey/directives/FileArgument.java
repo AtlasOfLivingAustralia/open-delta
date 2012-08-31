@@ -48,7 +48,7 @@ public class FileArgument extends IntkeyDirectiveArgument<File> {
             try {
                 file = context.getDirectivePopulator().promptForFile(_fileExtensions, getPromptText(), _createFileIfNonExistant);
             } catch (IOException ex) {
-                throw new IntkeyDirectiveParseException("Error creating file");
+                throw new IntkeyDirectiveParseException("ErrorCreatingFile.error");
             }
         } else {
             file = Utils.createFileFromPath(filePath, context.getDatasetDirectory());
@@ -57,13 +57,13 @@ public class FileArgument extends IntkeyDirectiveArgument<File> {
                 try {
                     file.createNewFile();
                 } catch (IOException ex) {
-                    throw new IntkeyDirectiveParseException(String.format("Error creating file %s", file.getAbsolutePath()));
+                    throw new IntkeyDirectiveParseException("ErrorCreatingFileWithName.error", file.getAbsolutePath());
                 }
             }
         }
 
         if (file != null && !file.exists()) {
-            throw new IntkeyDirectiveParseException(String.format("File '%s' does not exist", file.getAbsolutePath()));
+            throw new IntkeyDirectiveParseException("FileDoesNotExist.error", file.getAbsolutePath());
         }
 
         if (file != null) {

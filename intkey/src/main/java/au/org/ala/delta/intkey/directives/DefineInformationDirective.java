@@ -20,6 +20,7 @@ import java.util.List;
 import au.org.ala.delta.intkey.directives.invocation.DefineInformationDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 public class DefineInformationDirective extends StandardIntkeyDirective {
 
@@ -30,13 +31,12 @@ public class DefineInformationDirective extends StandardIntkeyDirective {
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new StringArgument("subject", "Enter subject", null, true));
-        arguments.add(new StringArgument("command", "Enter command string", null, false));
+        arguments.add(new StringArgument("subject", UIUtils.getResourceString("EnterSubject.caption"), null, true));
+        arguments.add(new StringArgument("command", UIUtils.getResourceString("EnterCommandString.caption"), null, false));
         return arguments;
     }
 
-    @Override
-    protected List<IntkeyDirectiveFlag> buildFlagsList() {
+    @Override   protected List<IntkeyDirectiveFlag> buildFlagsList() {
         return null;
     }
 

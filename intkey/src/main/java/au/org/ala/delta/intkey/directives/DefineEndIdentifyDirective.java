@@ -20,6 +20,7 @@ import java.util.List;
 import au.org.ala.delta.intkey.directives.invocation.DefineEndIdentifyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 public class DefineEndIdentifyDirective extends StandardIntkeyDirective {
 
@@ -30,7 +31,7 @@ public class DefineEndIdentifyDirective extends StandardIntkeyDirective {
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new StringArgument("commands", "Enter the command(s) to be executed", null, true));
+        arguments.add(new StringArgument("commands", UIUtils.getResourceString("EnterCommandsToExecute.caption"), null, true));
         return arguments;
     }
 

@@ -16,6 +16,7 @@ package au.org.ala.delta.intkey.directives.invocation;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.SearchUtils;
+import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
@@ -46,7 +47,7 @@ public class FindCharactersDirectiveInvocation extends BasicIntkeyDirectiveInvoc
 
         builder.endDocument();
 
-        context.getUI().displayRTFReport(builder.toString(), "Find");
+        context.getUI().displayRTFReport(builder.toString(), UIUtils.getResourceString("Find.caption"));
 
         return true;
     }

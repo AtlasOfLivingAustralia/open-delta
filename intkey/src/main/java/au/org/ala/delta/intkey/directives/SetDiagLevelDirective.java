@@ -20,6 +20,7 @@ import java.util.List;
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.SetDiagLevelInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 public class SetDiagLevelDirective extends StandardIntkeyDirective {
 
@@ -30,7 +31,7 @@ public class SetDiagLevelDirective extends StandardIntkeyDirective {
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new IntegerArgument("diagLevel", "Enter value of DiagLevel", context.getDiagLevel()));
+        arguments.add(new IntegerArgument("diagLevel", UIUtils.getResourceString("DiagLevelValuePrompt.caption"), context.getDiagLevel()));
         return arguments;
     }
 

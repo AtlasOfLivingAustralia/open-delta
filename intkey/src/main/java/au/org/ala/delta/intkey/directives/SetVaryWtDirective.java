@@ -20,6 +20,7 @@ import java.util.List;
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.SetVaryWtDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 public class SetVaryWtDirective extends StandardIntkeyDirective {
     public SetVaryWtDirective() {
@@ -29,7 +30,7 @@ public class SetVaryWtDirective extends StandardIntkeyDirective {
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new RealArgument("varyWt", "Enter value of VARYWT", context.getVaryWeight()));
+        arguments.add(new RealArgument("varyWt", UIUtils.getResourceString("VaryWtPrompt.caption"), context.getVaryWeight()));
         return arguments;
     }
 

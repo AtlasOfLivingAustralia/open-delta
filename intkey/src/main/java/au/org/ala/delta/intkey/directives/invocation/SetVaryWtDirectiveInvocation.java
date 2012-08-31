@@ -15,6 +15,7 @@
 package au.org.ala.delta.intkey.directives.invocation;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 public class SetVaryWtDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
     private double _varyWt;
@@ -36,7 +37,7 @@ public class SetVaryWtDirectiveInvocation extends BasicIntkeyDirectiveInvocation
                 context.getUI().handleUpdateAll();
             }
         } else {
-            context.getUI().displayErrorMessage("Value out of range. A valid value is a real number in the range 0-1.");
+            context.getUI().displayErrorMessage(UIUtils.getResourceString("InvalidVaryWtValue.error"));
         }
         return true;
     }

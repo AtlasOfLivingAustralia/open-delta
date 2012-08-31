@@ -17,6 +17,7 @@ package au.org.ala.delta.intkey.directives.invocation;
 import java.util.List;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
@@ -50,7 +51,7 @@ public class TaxaDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
         builder.endDocument();
 
-        context.getUI().displayRTFReport(builder.toString(), "Taxa");
+        context.getUI().displayRTFReport(builder.toString(), UIUtils.getResourceString("Taxa.caption"));
 
         return true;
     }

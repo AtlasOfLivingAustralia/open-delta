@@ -17,6 +17,7 @@ package au.org.ala.delta.intkey.directives.invocation;
 import java.util.List;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Character;
 
 public class DeleteDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
@@ -39,7 +40,7 @@ public class DeleteDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
             // TODO this warning really should be displayed BEFORE the user is
             // prompted to select characters
             // to delete.
-            context.getUI().displayErrorMessage("No character values have been used to describe the specimen");
+            context.getUI().displayErrorMessage(UIUtils.getResourceString("NoValuesSetInSpecimen.error"));
             return false;
         }
 

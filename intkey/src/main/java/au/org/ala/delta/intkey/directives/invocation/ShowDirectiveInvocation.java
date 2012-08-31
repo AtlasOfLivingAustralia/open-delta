@@ -15,6 +15,7 @@
 package au.org.ala.delta.intkey.directives.invocation;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.rtf.RTFBuilder;
 
 public class ShowDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
@@ -31,7 +32,7 @@ public class ShowDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
         builder.startDocument();
         builder.appendPreformattedRTF(_text);
         builder.endDocument();
-        context.getUI().displayRTFReport(builder.toString(), "Information");
+        context.getUI().displayRTFReport(builder.toString(), UIUtils.getResourceString("Information.caption"));
         return true;
     }
 

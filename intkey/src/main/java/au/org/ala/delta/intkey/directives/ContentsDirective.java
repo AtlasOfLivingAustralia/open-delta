@@ -21,6 +21,7 @@ import java.util.List;
 import au.org.ala.delta.intkey.directives.invocation.ContentsDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 public class ContentsDirective extends StandardIntkeyDirective {
 
@@ -31,7 +32,7 @@ public class ContentsDirective extends StandardIntkeyDirective {
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new FileArgument("file", "Files (*.ind)", null, Arrays.asList(new String[] { "ind" }), false));
+        arguments.add(new FileArgument("file", UIUtils.getResourceString("ContentsFileChooserDescription.caption"), null, Arrays.asList(new String[] { "ind" }), false));
         return arguments;
     }
 

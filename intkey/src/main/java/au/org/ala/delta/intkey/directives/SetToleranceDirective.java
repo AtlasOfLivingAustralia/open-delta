@@ -20,6 +20,7 @@ import java.util.List;
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.SetToleranceDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 public class SetToleranceDirective extends StandardIntkeyDirective {
 
@@ -30,7 +31,7 @@ public class SetToleranceDirective extends StandardIntkeyDirective {
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new IntegerArgument("toleranceValue", "Enter value of TOLERANCE", context.getTolerance()));
+        arguments.add(new IntegerArgument("toleranceValue", UIUtils.getResourceString("TolerancePrompt.caption"), context.getTolerance()));
         return arguments;
     }
 

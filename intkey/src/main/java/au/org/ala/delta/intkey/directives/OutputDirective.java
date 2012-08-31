@@ -33,7 +33,7 @@ public abstract class OutputDirective extends StandardIntkeyDirective {
     @Override
     public IntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
         if (context.getOutputFile() == null) {
-            throw new IntkeyDirectiveParseException("No output file is open. Use FILE OPEN to open an output file.");
+            throw new IntkeyDirectiveParseException("NoOutputFileOpen.error");
         }
 
         return super.doProcess(context, data);

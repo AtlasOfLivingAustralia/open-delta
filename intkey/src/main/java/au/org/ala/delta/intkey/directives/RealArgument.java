@@ -17,6 +17,7 @@ package au.org.ala.delta.intkey.directives;
 import java.util.Queue;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 public class RealArgument extends IntkeyDirectiveArgument<Double> {
 
@@ -44,7 +45,7 @@ public class RealArgument extends IntkeyDirectiveArgument<Double> {
                 stringRepresentationBuilder.append(parsedDouble);
                 return parsedDouble;
             } catch (NumberFormatException ex) {
-                throw new IntkeyDirectiveParseException("Real value required");
+                throw new IntkeyDirectiveParseException(UIUtils.getResourceString("RealValueRequired.error"));
             }
         }
         return null;

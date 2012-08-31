@@ -20,6 +20,7 @@ import java.util.List;
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.SetRBaseDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 /**
  * The SET RBASE directive - sets the base of the logarithmic
@@ -39,7 +40,7 @@ public class SetRBaseDirective extends StandardIntkeyDirective {
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new RealArgument("rbase", "Enter value of RBASE", context.getRBase()));
+        arguments.add(new RealArgument("rbase", UIUtils.getResourceString("RbaseValuePrompt.caption"), context.getRBase()));
         return arguments;
     }
 

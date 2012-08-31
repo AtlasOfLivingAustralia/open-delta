@@ -20,6 +20,7 @@ import java.util.List;
 import au.org.ala.delta.intkey.directives.invocation.DefineTaxaDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 public class DefineTaxaDirective extends StandardIntkeyDirective {
 
@@ -30,7 +31,7 @@ public class DefineTaxaDirective extends StandardIntkeyDirective {
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new StringArgument("keyword", "Enter keyword", null, true));
+        arguments.add(new StringArgument("keyword", UIUtils.getResourceString("EnterKeyword.caption"), null, true));
         arguments.add(new TaxonListArgument("taxa", null, false, true));
         return arguments;
     }

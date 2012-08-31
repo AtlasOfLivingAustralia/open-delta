@@ -71,7 +71,7 @@ public class DisplayImagesDirectiveInvocation extends BasicIntkeyDirectiveInvoca
             }
 
             builder.endDocument();
-            context.getUI().displayRTFReport(builder.toString(), "Display");
+            context.getUI().displayRTFReport(builder.toString(), UIUtils.getResourceString("Display.caption"));
         }
 
         return true;

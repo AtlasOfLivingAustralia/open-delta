@@ -14,9 +14,11 @@
  ******************************************************************************/
 package au.org.ala.delta.intkey.directives;
 
+import java.text.MessageFormat;
 import java.util.Queue;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 public class OnOffArgument extends IntkeyDirectiveArgument<Boolean> {
 
@@ -48,7 +50,7 @@ public class OnOffArgument extends IntkeyDirectiveArgument<Boolean> {
                 stringRepresentationBuilder.append(OFF_VALUE);
                 return false;
             } else {
-                throw new IntkeyDirectiveParseException(String.format("Invalid value '%s', expecting '%s' or '%s'", token, ON_VALUE, OFF_VALUE));
+                throw new IntkeyDirectiveParseException(MessageFormat.format(UIUtils.getResourceString("InvalidOnOffValue.error"), token, ON_VALUE, OFF_VALUE));
             }
         }
     }

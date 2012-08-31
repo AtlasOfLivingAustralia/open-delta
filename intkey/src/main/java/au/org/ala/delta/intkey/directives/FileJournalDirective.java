@@ -21,6 +21,7 @@ import java.util.List;
 import au.org.ala.delta.intkey.directives.invocation.FileJournalDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 public class FileJournalDirective extends StandardIntkeyDirective {
     public FileJournalDirective() {
@@ -30,7 +31,7 @@ public class FileJournalDirective extends StandardIntkeyDirective {
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new FileArgument("file", "Files (*.jou)", null, Arrays.asList(new String[] { "jou" }), true));
+        arguments.add(new FileArgument("file", UIUtils.getResourceString("JournalFileChooserDescription.caption"), null, Arrays.asList(new String[] { "jou" }), true));
         return arguments;
     }
 

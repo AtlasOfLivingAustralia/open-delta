@@ -17,6 +17,7 @@ package au.org.ala.delta.intkey.directives.invocation;
 import java.util.List;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.NumericCharacter;
@@ -60,7 +61,7 @@ public class CharactersDirectiveInvocation extends BasicIntkeyDirectiveInvocatio
         
         builder.endDocument();
 
-        context.getUI().displayRTFReport(builder.toString(), "Characters");
+        context.getUI().displayRTFReport(builder.toString(), UIUtils.getResourceString("Characters.caption"));
 
         return true;
     }

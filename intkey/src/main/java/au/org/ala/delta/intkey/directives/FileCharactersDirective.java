@@ -21,6 +21,7 @@ import java.util.List;
 import au.org.ala.delta.intkey.directives.invocation.FileCharactersDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 /**
  * The FILE CHARACTERS directive - specifies the name of the intkey characters
@@ -38,7 +39,7 @@ public class FileCharactersDirective extends StandardIntkeyDirective {
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new FileArgument("file", "Files (ichars*)", null, Arrays.asList(new String[] { "ichars" }), false));
+        arguments.add(new FileArgument("file", UIUtils.getResourceString("CharactersFileChooserDescription.caption"), null, Arrays.asList(new String[] { "ichars" }), false));
         return arguments;
     }
 

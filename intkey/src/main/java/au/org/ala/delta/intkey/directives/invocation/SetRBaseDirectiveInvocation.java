@@ -15,6 +15,7 @@
 package au.org.ala.delta.intkey.directives.invocation;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 public class SetRBaseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
@@ -37,7 +38,7 @@ public class SetRBaseDirectiveInvocation extends BasicIntkeyDirectiveInvocation 
                 context.getUI().handleUpdateAll();
             }
         } else {
-            context.getUI().displayErrorMessage("Value out of range. A valid value is a real number in the range 1-5.");
+            context.getUI().displayErrorMessage(UIUtils.getResourceString("InvalidRbaseValue.error"));
         }
         return true;
     }

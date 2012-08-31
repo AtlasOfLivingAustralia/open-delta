@@ -42,6 +42,8 @@ import au.org.ala.delta.util.Pair;
 import au.org.ala.delta.util.Utils;
 
 public class DescribeDirectiveInvocation extends LongRunningIntkeyDirectiveInvocation<File> {
+    
+    public static final String TEMP_FILE_PREFIX = "IntkeyDescribe";
 
     private List<Item> _taxa;
     private boolean _includeSpecimen;
@@ -66,7 +68,7 @@ public class DescribeDirectiveInvocation extends LongRunningIntkeyDirectiveInvoc
         // Similarities output can be very large so write it to a temporary
         // file.
         try {
-            File tempFile = File.createTempFile("IntkeyDescribe", null);
+            File tempFile = File.createTempFile(TEMP_FILE_PREFIX, null);
             tempFile.deleteOnExit();
             FileWriter fw = new FileWriter(tempFile);
             RTFWriter rtfWriter = new RTFWriter(fw);
@@ -80,7 +82,7 @@ public class DescribeDirectiveInvocation extends LongRunningIntkeyDirectiveInvoc
 
             return tempFile;
         } catch (IOException ex) {
-            throw new IntkeyDirectiveInvocationException(ex, "Error generating describe report: %s.", ex.getMessage());
+            throw new IntkeyDirectiveInvocationException(ex, "DescribeDirective.error", ex.getMessage());
         }
     }
 
@@ -102,7 +104,7 @@ public class DescribeDirectiveInvocation extends LongRunningIntkeyDirectiveInvoc
         updateProgess(numTaxaProcessed, _taxa.size());
 
         if (_includeSpecimen) {
-            writer.writeText("Specimen");
+            writer.writeText(UIUtils.getResourceString("Specimen.caption"));
             writer.increaseIndent();
 
             String currentItemSubheading = null;
@@ -189,7 +191,7 @@ public class DescribeDirectiveInvocation extends LongRunningIntkeyDirectiveInvoc
         updateProgess(numTaxaProcessed, _taxa.size());
 
         if (_includeSpecimen) {
-            writer.writeText("Specimen");
+            writer.writeText(UIUtils.getResourceString("Specimen.caption"));
             writer.increaseIndent();
 
             String currentItemSubheading = null;

@@ -15,6 +15,7 @@
 package au.org.ala.delta.intkey.directives.invocation;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 public class SetFixDirectiveInvocation extends OnOffDirectiveInvocation {
 
@@ -22,12 +23,12 @@ public class SetFixDirectiveInvocation extends OnOffDirectiveInvocation {
     public boolean execute(IntkeyContext context) {
 
         if (_value == true && context.charactersFixed()) {
-            context.getUI().displayErrorMessage("Characters already fixed.");
+            context.getUI().displayErrorMessage(UIUtils.getResourceString("CharactersAlreadyFixed.error"));
             return false;
         }
 
         if (_value == true && context.getUsedCharacters().isEmpty()) {
-            context.getUI().displayErrorMessage("No characters in specimen description to fix.");
+            context.getUI().displayErrorMessage(UIUtils.getResourceString("NoCharactersToFix.error"));
             return false;
         }
 

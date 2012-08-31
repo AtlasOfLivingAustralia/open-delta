@@ -20,6 +20,7 @@ import java.util.List;
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.SetInfoPathDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 public class SetInfoPathDirective extends StandardIntkeyDirective {
 
@@ -30,7 +31,7 @@ public class SetInfoPathDirective extends StandardIntkeyDirective {
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new StringArgument("infoPaths", "Enter the path specification for information files", null, false));
+        arguments.add(new StringArgument("infoPaths", UIUtils.getResourceString("InfoPathPrompt.caption"), null, false));
         return arguments;
     }
 

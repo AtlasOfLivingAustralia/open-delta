@@ -19,6 +19,7 @@ import java.util.Map;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.model.SearchUtils;
+import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.TextAttribute;
 import au.org.ala.delta.model.format.AttributeFormatter;
@@ -64,7 +65,7 @@ public class FindTaxaDirectiveInvocation extends BasicIntkeyDirectiveInvocation 
 
         builder.endDocument();
 
-        context.getUI().displayRTFReport(builder.toString(), "Taxa");
+        context.getUI().displayRTFReport(builder.toString(), UIUtils.getResourceString("Find.caption"));
 
         return true;
     }

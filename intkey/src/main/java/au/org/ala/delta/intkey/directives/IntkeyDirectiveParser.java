@@ -14,6 +14,7 @@
  ******************************************************************************/
 package au.org.ala.delta.intkey.directives;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,6 +27,7 @@ import au.org.ala.delta.directives.DirectiveParser;
 import au.org.ala.delta.directives.DirectiveSearchResult;
 import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
 
@@ -156,7 +158,7 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
 
     @Override
     protected void handleUnrecognizedDirective(IntkeyContext context, List<String> controlWords) {
-        String message = String.format("Unrecognized command - '%s' ", StringUtils.join(controlWords, " "));
+        String message = MessageFormat.format(UIUtils.getResourceString("UnrecognizedCommand.error"), StringUtils.join(controlWords, " "));
         Logger.log(message);
         context.getUI().displayErrorMessage(message);
     }

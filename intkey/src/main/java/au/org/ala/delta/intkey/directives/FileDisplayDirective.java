@@ -21,6 +21,7 @@ import java.util.Arrays;
 import au.org.ala.delta.intkey.directives.invocation.FileDisplayDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.util.Utils;
 
 public class FileDisplayDirective extends IntkeyDirective {
@@ -35,7 +36,7 @@ public class FileDisplayDirective extends IntkeyDirective {
         FileDisplayDirectiveInvocation invoc = null;
 
         if (filePath == null || filePath.toUpperCase().startsWith(IntkeyDirectiveArgument.DEFAULT_DIALOG_WILDCARD)) {
-            File file = context.getDirectivePopulator().promptForFile(Arrays.asList(new String[] { "rtf", "doc", "htm", "html", "wav", "ink" }), "Files (*.rtf, *.doc, *.htm, *.wav, *.ink)", false);
+            File file = context.getDirectivePopulator().promptForFile(Arrays.asList(new String[] { "rtf", "doc", "htm", "html", "wav", "ink" }), UIUtils.getResourceString("FileDisplayFileChooserDescription.caption"), false);
             invoc = new FileDisplayDirectiveInvocation(file.toURI().toURL(), file.getName());
         } else if (filePath.startsWith("http://")) {
             try {

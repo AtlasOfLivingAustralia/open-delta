@@ -16,9 +16,11 @@ package au.org.ala.delta.intkey.directives.invocation;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.MessageFormat;
 
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 public class FileJournalDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
     private File _file;
@@ -34,7 +36,7 @@ public class FileJournalDirectiveInvocation extends BasicIntkeyDirectiveInvocati
             return true;
         } catch (IOException ex) {
             Logger.error(ex);
-            context.getUI().displayErrorMessage(String.format("Error opening journal file %s", _file.getAbsolutePath()));
+            context.getUI().displayErrorMessage(MessageFormat.format(UIUtils.getResourceString("OpenJournalFile.error"), _file.getAbsolutePath()));
             return false;
         }
     }

@@ -92,7 +92,7 @@ public class OutputSimilaritiesDirectiveInvocation extends LongRunningIntkeyDire
         }
 
         if (numberOfTaxa < 2) {
-            throw new IntkeyDirectiveInvocationException(String.format("At least two taxa required for comparison."));
+            throw new IntkeyDirectiveInvocationException("TwoTaxaRequiredForComparison.error");
         }
         
         if (_useGlobalMatchValues) {

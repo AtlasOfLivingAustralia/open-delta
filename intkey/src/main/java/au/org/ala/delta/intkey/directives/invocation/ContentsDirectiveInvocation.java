@@ -24,6 +24,7 @@ import java.util.LinkedHashMap;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 public class ContentsDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
@@ -46,7 +47,7 @@ public class ContentsDirectiveInvocation extends BasicIntkeyDirectiveInvocation 
                 if (line.contains("*")) {
                     String[] tokens = line.split("\\*");
                     if (tokens.length != 2) {
-                        context.getUI().displayErrorMessage("Badly formed contents file.");
+                        context.getUI().displayErrorMessage(UIUtils.getResourceString("BadlyFormedContentsFile.error"));
                         return false;
                     }
 
@@ -57,7 +58,7 @@ public class ContentsDirectiveInvocation extends BasicIntkeyDirectiveInvocation 
                         String description = StringUtils.join(Arrays.copyOf(tokens, tokens.length - 1), " ");
                         String fileName = tokens[tokens.length - 1];
 
-                        // TODO massive hack here. Really should be building
+                        // TODO hack here. Really should be building
                         // IntkeyDirectiveInvocation objects
                         // from both line formats and passing them to the
                         // contents directive, rather than
