@@ -149,19 +149,7 @@ done${UNSECTION_ID}:
 
 # Uninstaller sections
 Section /o -un.Main UNSEC0000
-    Delete /REBOOTOK "$INSTDIR\*.exe"
-    Delete /REBOOTOK "$INSTDIR\lib\*.jar"
-    RmDir /REBOOTOK "$INSTDIR\lib"
-
-    ; Do With JRE/No JRE specific stuff here    
-    Call un.CustomRemoveFiles
-    
-    Delete /REBOOTOK "$INSTDIR\sample\*"
-    RmDir /REBOOTOK "$INSTDIR\sample"
-    
-    FlushINI "$INSTDIR\uninstall.ini"
-    Delete /REBOOTOK "$INSTDIR\uninstall.ini"
-
+    RmDir /r /REBOOTOK "$INSTDIR"
     DeleteRegValue SHELL_CONTEXT "${REGKEY}\Components" Main
 SectionEnd
 
