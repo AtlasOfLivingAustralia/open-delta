@@ -29,7 +29,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.UUID;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -478,6 +477,35 @@ public class UIUtils {
         }
 
         return map;
+    }
+
+    /**
+     * Constants for setting of look and feel.
+     */
+    public static String LOOK_AND_FEEL_KEY = "lookAndFeel";
+    public static String DEFAULT_LOOK_AND_FEEL = "system";
+    public static String SYSTEM_LOOK_AND_FEEL = "system";
+    public static String METAL_LOOK_AND_FEEL = "javax.swing.plaf.metal.MetalLookAndFeel";
+    public static String NIMBUS_LOOK_AND_FEEL = "nimbus";
+
+    public static void setPreferredLookAndFeel(String lookAndFeelName) {
+        Preferences prefs = Preferences.userNodeForPackage(Intkey.class);
+        if (prefs != null) {
+            prefs.put(LOOK_AND_FEEL_KEY, lookAndFeelName);
+            try {
+                prefs.sync();
+            } catch (BackingStoreException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public static String getPreferredLookAndFeel() {
+        Preferences prefs = Preferences.userNodeForPackage(Intkey.class);
+        if (prefs != null) {
+            return prefs.get(LOOK_AND_FEEL_KEY, DEFAULT_LOOK_AND_FEEL);
+        }
+        return DEFAULT_LOOK_AND_FEEL;
     }
 
 }

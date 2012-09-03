@@ -33,6 +33,7 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -453,6 +454,12 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     public static void main(String[] args) {
         setupMacSystemProperties(Intkey.class);
         launch(Intkey.class, args);
+    }
+
+    public Intkey() {
+        // Update resources bundle with desired look and feel before the swing
+        // application framework can set the defaults.
+        setLookAndFeel();
     }
 
     @Override
@@ -960,8 +967,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             _context.setCharacterOrderNatural();
             _context.setDisplayEndIdentify(false);
         }
-        
-        //Show the dataset index on startup
+
+        // Show the dataset index on startup
         executeDirective(new NewDatasetDirective(), null);
     }
 
@@ -1705,7 +1712,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         for (int i : _listEliminatedTaxa.getSelectedIndices()) {
             selectedTaxa.add((Item) _eliminatedTaxaListModel.getElementAt(i));
         }
-        
+
         // Ensure that at least two taxa are selected
         if (selectedTaxa.size() >= 2) {
             StringBuilder directiveTextBuilder = new StringBuilder();
@@ -1720,7 +1727,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         } else {
             displayInformationMessage(UIUtils.getResourceString("SelectTwoOrMoreTaxa.caption"));
         }
-
 
     }
 
@@ -3153,7 +3159,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         String datasetPath = null;
         if (startupFileData != null && startupFileData.isRemoteDataset()) {
-            int chosenOption = JOptionPane.showConfirmDialog(getMainFrame(), UIUtils.getResourceString("SaveDownloadedDatasetPrompt.caption", datasetTitle), UIUtils.getResourceString("Save.caption"), JOptionPane.YES_NO_OPTION);
+            int chosenOption = JOptionPane.showConfirmDialog(getMainFrame(), UIUtils.getResourceString("SaveDownloadedDatasetPrompt.caption", datasetTitle), UIUtils.getResourceString("Save.caption"),
+                    JOptionPane.YES_NO_OPTION);
             if (chosenOption == JOptionPane.YES_OPTION) {
                 JFileChooser fileChooser = new JFileChooser();
                 fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -3241,19 +3248,40 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         return r;
     }
 
+    private void setLookAndFeel() {
+        // To avoid setting the look and feel twice, we are updating the
+        // resource bundle before the Swing
+        // Application Framework sets the look and feel.
+        try {
+            getContext().setApplicationClass(Intkey.class);
+
+            ResourceMap resources = getContext().getResourceMap();
+            Method method = ResourceMap.class.getDeclaredMethod("getBundlesMap");
+            method.setAccessible(true);
+            Map<String, Object> resourceMap = (Map<String, Object>) method.invoke(resources);
+            resourceMap.put("Application.lookAndFeel", UIUtils.getPreferredLookAndFeel());
+
+        } catch (Throwable t) {
+            // Doesn't matter if we fail, going with the defaults is fine.
+        }
+    }
+
     @Action
     public void systemLookAndFeel() {
         au.org.ala.delta.ui.util.UIUtils.systemLookAndFeel(getMainFrame());
+        UIUtils.setPreferredLookAndFeel(UIUtils.SYSTEM_LOOK_AND_FEEL);
     }
 
     @Action
     public void metalLookAndFeel() {
         au.org.ala.delta.ui.util.UIUtils.metalLookAndFeel(getMainFrame());
+        UIUtils.setPreferredLookAndFeel(UIUtils.METAL_LOOK_AND_FEEL);
     }
 
     @Action
     public void nimbusLookAndFeel() {
         au.org.ala.delta.ui.util.UIUtils.nimbusLookAndFeel(getMainFrame());
+        UIUtils.setPreferredLookAndFeel(UIUtils.NIMBUS_LOOK_AND_FEEL);
     }
 
     @Action
