@@ -1762,7 +1762,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             if (ex instanceof IntkeyDirectiveParseException) {
                 msg = ex.getMessage();
             } else {
-                msg = UIUtils.getResourceString("ErrorWhileProcessingCommand.error", data.toUpperCase(), ex.getMessage());
+                msg = UIUtils.getResourceString("ErrorWhileProcessingCommand.error", StringUtils.join(dir.getControlWords()).toUpperCase(), ex.getMessage());
             }
             displayErrorMessage(msg);
             Logger.error(msg);

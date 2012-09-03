@@ -21,8 +21,6 @@
 <mapID target="saving_output" url="topics/saving_output.html" />
 <mapID target="data_sets_index" url="topics/data_sets_index.html" />
 <mapID target="startup_parameters" url="topics/startup_parameters.html" />
-<mapID target="hardware_requirements" url="topics/hardware_requirements.html" />
-<mapID target="conditions_of_use" url="topics/conditions_of_use.html" />
 
 <mapID target="commands" url="topics/commands.html" />
 <mapID target="characters_toolbar_buttons" url="topics/characters_toolbar_buttons.html"/>
