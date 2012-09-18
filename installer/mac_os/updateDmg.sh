@@ -1,8 +1,10 @@
 #!/bin/bash
-VERSION=1.0-RC3
+VERSION=1.0-RC4
+rm /tmp/Open\ DELTA.dmg
 cp Open\ DELTA.dmg /tmp
 hdiutil attach /tmp/Open\ DELTA.dmg
 cd ../../target
+rm Open\ DELTA.dmg
 unzip open-delta-$VERSION-mac_os_bundle.zip
 cd open-delta-$VERSION
 cp -R Open\ DELTA /Volumes/Open\ DELTA/
