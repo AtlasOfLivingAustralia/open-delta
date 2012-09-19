@@ -20,6 +20,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 
 
 public class StartupUtils {
@@ -35,7 +36,6 @@ public class StartupUtils {
     }
     
     public static File saveRemoteDataset(IntkeyContext context, File saveDir) throws IOException {
-        File startupFile = context.getDatasetStartupFile();
         StartupFileData startupFileData = context.getStartupFileData();
         File datasetZip = startupFileData.getDataFileLocalCopy();
         
@@ -45,7 +45,7 @@ public class StartupUtils {
         File copyZipFile = new File(saveDir, datasetZip.getName());
         
         //Write a new .ink file 
-        File newInkFile = new File(saveDir, startupFileData.getInkFileLocation().getFile());
+        File newInkFile = new File(saveDir, FilenameUtils.getName(startupFileData.getInkFileLocation().getFile()));
         
         FileWriter fw = new FileWriter(newInkFile);
         BufferedWriter bufFW = new BufferedWriter(fw);
