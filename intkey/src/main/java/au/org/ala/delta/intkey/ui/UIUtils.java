@@ -121,7 +121,7 @@ public class UIUtils {
             ((SingleFrameApplication) Application.getInstance()).show(dlg);
         } else if (fileName.toLowerCase().endsWith(".html")) {
             if (desktop == null || !desktop.isSupported(Desktop.Action.BROWSE)) {
-                throw new IllegalArgumentException("Desktop is null or browse not supported");
+                throw new UnsupportedOperationException("Desktop is null or browse not supported");
             }
             desktop.browse(fileURL.toURI());
         } else if (fileName.toLowerCase().endsWith(".ink")) {
@@ -134,12 +134,12 @@ public class UIUtils {
             // the browser
             if (fileURL.getProtocol().equalsIgnoreCase("http")) {
                 if (desktop == null || !desktop.isSupported(Desktop.Action.BROWSE)) {
-                    throw new IllegalArgumentException("Desktop is null or browse not supported");
+                    throw new UnsupportedOperationException("Desktop is null or browse not supported");
                 }
                 desktop.browse(fileURL.toURI());
             } else {
                 if (desktop == null || !desktop.isSupported(Desktop.Action.OPEN)) {
-                    throw new IllegalArgumentException("Desktop is null or open not supported");
+                    throw new UnsupportedOperationException("Desktop is null or open not supported");
                 }
                 File file = Utils.saveURLToTempFile(fileURL, "Intkey", 30000);
                 desktop.open(file);

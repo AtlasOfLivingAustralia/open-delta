@@ -41,6 +41,8 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -670,6 +672,7 @@ public class Utils {
         versionInfo.append("\n");
         versionInfo.append("user.region: ");
         versionInfo.append(System.getProperty("user.region"));
+        versionInfo.append("\n");
         versionInfo.append("user.dir: ");
         versionInfo.append(System.getProperty("user.dir"));
 
@@ -1319,4 +1322,49 @@ public class Utils {
     public static boolean isFileURL(URL url) {
         return url.getProtocol().equalsIgnoreCase("file");
     }
+    
+    /**
+     * Use this method when you want to save a file to a directory but do not want to overwrite an existing file with the same name.
+     * @param saveDir The directory that you want to save to
+     * @param saveFileName The name that you want to use for the file
+     * @return If no file with the specified name exists in the directory, a file with the exact name in the specified directory will be returned. Otherwise,
+     * a file with the name specified, but with a number in brackets between the base file name and the extension.
+     */
+    public static File getSaveFileForDirectory(File saveDir, String saveFileName) {
+        if (!saveDir.exists() || !saveDir.isDirectory()) {
+            throw new IllegalArgumentException("Save directory does not exist or is not a directory");
+        }
+        
+        // If a file with the exact name specified does not exist in the directory, use a file with the exact name
+        File fileWithExactName = new File(saveDir, saveFileName);
+        if (!fileWithExactName.exists()) {
+            return fileWithExactName;
+        }
+        
+        // Otherwise, look for existing files with the name specified, but with a number in brackets between the
+        // base file name and the extension. Use a file with a number in brackets one higher than the highest number appended to 
+        // existing files with the same base file name/extension.
+        
+        String fileExtension = FilenameUtils.getExtension(saveFileName);
+        String filenameWithoutExtension = FilenameUtils.getBaseName(saveFileName);
+        
+        Pattern pattern = Pattern.compile(".*" + filenameWithoutExtension + "\\((\\d+)\\)\\." + fileExtension + "$");
+        
+        int highestAppendedNumber = 0;
+        
+        for (File f: saveDir.listFiles()) {
+            if (f.isFile()) {
+                Matcher matcher = pattern.matcher(f.getAbsolutePath());
+                if (matcher.matches()) {
+                    String strAppendedNumber = matcher.group(1);
+                    highestAppendedNumber = Integer.parseInt(strAppendedNumber);
+                }
+            }
+        }
+        
+        String modifiedSaveFileName = String.format("%s(%s).%s", filenameWithoutExtension, highestAppendedNumber + 1, fileExtension);
+        
+        return new File(saveDir, modifiedSaveFileName);
+    }
+    
 }

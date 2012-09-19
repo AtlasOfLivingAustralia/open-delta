@@ -22,49 +22,54 @@ import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
+import au.org.ala.delta.util.Utils;
 
 public class StartupUtils {
-    
+
     public static final String INIT_FILE_INK_FILE_KEYWORD = "InkFile";
-    public static final String INIT_FILE_DATA_FILE_KEYWORD= "DataFile";
+    public static final String INIT_FILE_DATA_FILE_KEYWORD = "DataFile";
     public static final String INIT_FILE_INITIALIZATION_FILE_KEYWORD = "InitializationFile";
     public static final String INIT_FILE_IMAGE_PATH_KEYWORD = "ImagePath";
     public static final String INIT_FILE_INFO_PATH_KEYWORD = "InfoPath";
 
     public static void loadDataset(IntkeyContext context, File startupFile) {
-        //TODO
+        // TODO
     }
-    
+
     public static File saveRemoteDataset(IntkeyContext context, File saveDir) throws IOException {
         StartupFileData startupFileData = context.getStartupFileData();
         File datasetZip = startupFileData.getDataFileLocalCopy();
-        
-        //Copy the zipped dataset as downloaded from the web
-        FileUtils.copyFileToDirectory(datasetZip, saveDir);
 
-        File copyZipFile = new File(saveDir, datasetZip.getName());
-        
-        //Write a new .ink file 
-        File newInkFile = new File(saveDir, FilenameUtils.getName(startupFileData.getInkFileLocation().getFile()));
-        
+        // Copy the zipped dataset as downloaded from the web
+        // FileUtils.copyFileToDirectory(datasetZip, saveDir);
+
+        // Copy the zipped dataset as downloaded from the web
+        // Use utility method to avoid overwriting existing files with the same name
+        File copyZipFile = Utils.getSaveFileForDirectory(saveDir, datasetZip.getName());
+        FileUtils.copyFile(datasetZip, copyZipFile);
+
+        // Write a new .ink file
+        // Use utility method to avoid overwriting existing files with the same name
+        File newInkFile = Utils.getSaveFileForDirectory(saveDir, FilenameUtils.getName(startupFileData.getInkFileLocation().getFile()));
+
         FileWriter fw = new FileWriter(newInkFile);
         BufferedWriter bufFW = new BufferedWriter(fw);
-        
+
         bufFW.append(INIT_FILE_INK_FILE_KEYWORD);
         bufFW.append("=");
         bufFW.append(newInkFile.toURI().toURL().toString());
         bufFW.append("\n");
-        
+
         bufFW.append(INIT_FILE_DATA_FILE_KEYWORD);
         bufFW.append("=");
         bufFW.append(copyZipFile.toURI().toURL().toString());
         bufFW.append("\n");
-        
+
         bufFW.append(INIT_FILE_INITIALIZATION_FILE_KEYWORD);
         bufFW.append("=");
         bufFW.append(startupFileData.getInitializationFileLocation());
-        bufFW.append("\n");     
-        
+        bufFW.append("\n");
+
         String imagePath = startupFileData.getImagePath();
         if (imagePath != null) {
             bufFW.append(INIT_FILE_IMAGE_PATH_KEYWORD);
@@ -72,7 +77,7 @@ public class StartupUtils {
             bufFW.append(imagePath);
             bufFW.append("\n");
         }
-        
+
         String infoPath = startupFileData.getInfoPath();
         if (infoPath != null) {
             bufFW.append(INIT_FILE_INFO_PATH_KEYWORD);
@@ -80,10 +85,10 @@ public class StartupUtils {
             bufFW.append(infoPath);
             bufFW.append("\n");
         }
-        
+
         bufFW.flush();
         bufFW.close();
-        
+
         return newInkFile;
     }
 
