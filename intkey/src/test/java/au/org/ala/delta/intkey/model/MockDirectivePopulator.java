@@ -22,7 +22,7 @@ import java.util.Set;
 import org.apache.commons.lang.math.FloatRange;
 import org.apache.commons.lang.mutable.MutableBoolean;
 
-import au.org.ala.delta.intkey.directives.DirectivePopulator;
+import au.org.ala.delta.intkey.ui.DirectivePopulator;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.IntegerCharacter;
 import au.org.ala.delta.model.Item;

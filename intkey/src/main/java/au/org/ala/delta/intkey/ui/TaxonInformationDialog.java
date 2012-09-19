@@ -114,6 +114,13 @@ public class TaxonInformationDialog extends IntkeyDialog {
 
     @Resource
     String noImagesCaption;
+    
+    @Resource 
+    String fullDescriptionCaption;
+    
+    @Resource
+    String title;
+    
     private JButton _btnWebSearch;
 
     public TaxonInformationDialog(Frame owner, List<Item> taxa, IntkeyContext context, boolean imageDisplayEnabled) {
@@ -126,7 +133,7 @@ public class TaxonInformationDialog extends IntkeyDialog {
         resourceMap.injectFields(this);
         ActionMap actionMap = Application.getInstance().getContext().getActionMap(TaxonInformationDialog.class, this);
 
-        setTitle("Taxon Information");
+        setTitle(title);
         getContentPane().setLayout(new BorderLayout(0, 0));
 
         _mainPanel = new JPanel();
@@ -349,6 +356,13 @@ public class TaxonInformationDialog extends IntkeyDialog {
             otherListModel.addElement(subject);
             _cmds.add(new RunDirectiveCommand(directiveCommand, subject));
         }
+        
+        // If no link files or directive commands have been defined, display an entry labelled "Full description" that will
+        // run the describe command for the taxon
+        if (otherListModel.isEmpty()) {
+            otherListModel.addElement(fullDescriptionCaption);
+            _cmds.add(new RunDirectiveCommand("DESCRIBE (?S) all", fullDescriptionCaption));
+        }
 
         _listOther.setModel(otherListModel);
 
@@ -458,6 +472,11 @@ public class TaxonInformationDialog extends IntkeyDialog {
     }
 
     private void displaySelectedTaxonImage(int imageIndex, boolean fitDialogToFirstImageDisplayed) {
+        // Do nothing if the user tries to display the "No Images" caption
+        if (_images.isEmpty()) {
+            return;
+        }
+        
         try {
             Item selectedTaxon = getSelectedTaxon();
             TaxonImageDialog dlg = new TaxonImageDialog(UIUtils.getMainFrame(), _imageSettings, _taxaWithImages, false, !_context.displayContinuous(), _context.displayScaled(),

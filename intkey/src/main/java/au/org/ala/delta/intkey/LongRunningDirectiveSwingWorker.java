@@ -9,6 +9,7 @@ import javax.swing.SwingWorker;
 import au.org.ala.delta.intkey.directives.invocation.DirectiveInvocationProgressHandler;
 import au.org.ala.delta.intkey.directives.invocation.LongRunningIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.IntkeyUI;
 
 public class LongRunningDirectiveSwingWorker extends SwingWorker<Object, String> {
 

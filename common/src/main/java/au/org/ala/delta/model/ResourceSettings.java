@@ -15,6 +15,8 @@
 package au.org.ala.delta.model;
 
 import au.org.ala.delta.util.FileUtils;
+
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -329,9 +331,14 @@ public class ResourceSettings {
         if (fileLocation.getProtocol().equalsIgnoreCase("file")) {
             return fileLocation;
         } else {
-            // Use the hashCode of the URL as the name for the copy of the file
-            // in the cache directory
-            File cachedCopy = new File(_cacheDir, Integer.toString(fileLocation.hashCode()));
+            // Use the md5 hash of the URL as the name for the copy of the file
+            // in the cache directory. Include the file extension as this is needed in some cases
+            // to work out how to open the file.
+            String fileExtension = FilenameUtils.getExtension(fileLocation.getFile());
+            String md5Hash = DigestUtils.md5Hex(fileLocation.toString());
+            String cacheFileName = md5Hash + "." + fileExtension;
+            
+            File cachedCopy = new File(_cacheDir, cacheFileName);
             if (!cachedCopy.exists()) {
                 // download the file and save it to the cache directory
                 org.apache.commons.io.FileUtils.copyURLToFile(fileLocation, cachedCopy);

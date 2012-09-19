@@ -158,7 +158,7 @@ public class IntkeyDirectiveParser extends DirectiveParser<IntkeyContext> {
 
     @Override
     protected void handleUnrecognizedDirective(IntkeyContext context, List<String> controlWords) {
-        String message = MessageFormat.format(UIUtils.getResourceString("UnrecognizedCommand.error"), StringUtils.join(controlWords, " "));
+        String message = UIUtils.getResourceString("UnrecognizedCommand.error", StringUtils.join(controlWords, " "));
         Logger.log(message);
         context.getUI().displayErrorMessage(message);
     }

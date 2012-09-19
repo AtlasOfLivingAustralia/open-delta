@@ -72,8 +72,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.plaf.FontUIResource;
 
@@ -110,7 +108,6 @@ import au.org.ala.delta.intkey.directives.DefineTaxaDirective;
 import au.org.ala.delta.intkey.directives.DescribeDirective;
 import au.org.ala.delta.intkey.directives.DiagnoseDirective;
 import au.org.ala.delta.intkey.directives.DifferencesDirective;
-import au.org.ala.delta.intkey.directives.DirectivePopulator;
 import au.org.ala.delta.intkey.directives.DisplayCharacterOrderBestDirective;
 import au.org.ala.delta.intkey.directives.DisplayCharacterOrderNaturalDirective;
 import au.org.ala.delta.intkey.directives.DisplayCharacterOrderSeparateDirective;
@@ -199,6 +196,8 @@ import au.org.ala.delta.intkey.ui.CharacterSelectionDialog;
 import au.org.ala.delta.intkey.ui.ContentsDialog;
 import au.org.ala.delta.intkey.ui.DefineButtonDialog;
 import au.org.ala.delta.intkey.ui.DirectiveAction;
+import au.org.ala.delta.intkey.ui.DirectivePopulator;
+import au.org.ala.delta.intkey.ui.DirectivePopulatorInterceptor;
 import au.org.ala.delta.intkey.ui.DisplayImagesDialog;
 import au.org.ala.delta.intkey.ui.EditDatasetIndexDialog;
 import au.org.ala.delta.intkey.ui.FindInCharactersDialog;
@@ -207,6 +206,8 @@ import au.org.ala.delta.intkey.ui.ImageDialog;
 import au.org.ala.delta.intkey.ui.ImageUtils;
 import au.org.ala.delta.intkey.ui.IntKeyDialogController;
 import au.org.ala.delta.intkey.ui.IntegerInputDialog;
+import au.org.ala.delta.intkey.ui.IntkeyUI;
+import au.org.ala.delta.intkey.ui.IntkeyUIInterceptor;
 import au.org.ala.delta.intkey.ui.MenuBuilder;
 import au.org.ala.delta.intkey.ui.MessagePanel;
 import au.org.ala.delta.intkey.ui.MultiStateInputDialog;
@@ -538,7 +539,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _helpController = new HelpController(HELPSET_PATH);
 
         _taxonformatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, true, false, true);
-        _context = new IntkeyContext(this, this);
+        _context = new IntkeyContext(new IntkeyUIInterceptor(this), new DirectivePopulatorInterceptor(this));
 
         _advancedModeOnlyDynamicButtons = new ArrayList<JButton>();
         _normalModeOnlyDynamicButtons = new ArrayList<JButton>();
@@ -945,6 +946,14 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _rootSplitPane.setDividerLocation(2.0 / 3.0);
         _innerSplitPaneLeft.setDividerLocation(2.0 / 3.0);
         _innerSplitPaneRight.setDividerLocation(2.0 / 3.0);
+        
+        loadDesktopInBackground();
+
+        if (_advancedMode) {
+            _context.setImageDisplayMode(ImageDisplayMode.MANUAL);
+            _context.setCharacterOrderNatural();
+            _context.setDisplayEndIdentify(false);
+        }
 
         // If a dataset was supplied on the command line, load it
         if (_datasetInitFileToOpen != null) {
@@ -960,16 +969,11 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             executeDirective(new PreferencesDirective(), "\"" + _startupPreferencesFile + "\"");
         }
 
-        loadDesktopInBackground();
-
-        if (_advancedMode) {
-            _context.setImageDisplayMode(ImageDisplayMode.MANUAL);
-            _context.setCharacterOrderNatural();
-            _context.setDisplayEndIdentify(false);
+        // Show the dataset index on startup if no dataset was supplied on the
+        // command line
+        if (_datasetInitFileToOpen == null) {
+            executeDirective(new NewDatasetDirective(), null);
         }
-
-        // Show the dataset index on startup
-        executeDirective(new NewDatasetDirective(), null);
     }
 
     @Override
@@ -2261,8 +2265,11 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             _busyGlassPane = new BusyGlassPane(message);
             getMainFrame().setGlassPane(_busyGlassPane);
             _busyGlassPane.setVisible(true);
+            getMainFrame().validate();
+            _busyGlassPane.paintImmediately(getMainFrame().getBounds());
         } else {
             _busyGlassPane.setMessage(message);
+            _busyGlassPane.paintImmediately(getMainFrame().getBounds());
         }
     }
 
@@ -2298,8 +2305,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         if (!closePromptAfterAutoDisplay || (imagesAutoDisplayText == null && otherItemsAutoDisplayText == null)) {
             show(dlg);
         }
-
-        // TODO need to tile windows!
     }
 
     @Override
@@ -2484,8 +2489,10 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         try {
             UIUtils.displayFileFromURL(fileURL, description, _desktopWorker.get());
         } catch (IllegalArgumentException ex) {
+            Logger.error(ex);
             promptForString(UIUtils.getResourceString("CouldNotDisplayFileDesktopError.error", fileURL.toString()), fileURL.toString(), "");
         } catch (Exception ex) {
+            Logger.error(ex);
             displayErrorMessage(UIUtils.getResourceString("CouldNotDisplayFile.error", fileURL.toString()));
         }
     }

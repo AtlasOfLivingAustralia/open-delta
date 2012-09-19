@@ -22,7 +22,7 @@ import java.util.List;
 
 import javax.swing.SwingWorker;
 
-import au.org.ala.delta.intkey.IntkeyUI;
+import au.org.ala.delta.intkey.ui.IntkeyUI;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
 

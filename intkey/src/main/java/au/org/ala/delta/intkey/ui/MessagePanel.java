@@ -27,7 +27,6 @@ import javax.swing.SwingConstants;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 
-import au.org.ala.delta.intkey.IntkeyUI;
 import java.awt.GridLayout;
 
 /**

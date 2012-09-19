@@ -30,10 +30,10 @@ import org.junit.Test;
 
 import au.org.ala.delta.directives.DirectiveSearchResult;
 import au.org.ala.delta.intkey.Intkey;
-import au.org.ala.delta.intkey.directives.DirectivePopulator;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParseException;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParser;
 import au.org.ala.delta.intkey.directives.UseDirective;
+import au.org.ala.delta.intkey.ui.DirectivePopulator;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.IntegerAttribute;
 import au.org.ala.delta.model.IntegerCharacter;

@@ -18,9 +18,7 @@ import au.org.ala.delta.Logger;
 import au.org.ala.delta.best.Best;
 import au.org.ala.delta.best.DiagType;
 import au.org.ala.delta.directives.AbstractDeltaContext;
-import au.org.ala.delta.intkey.IntkeyUI;
 import au.org.ala.delta.intkey.LongRunningDirectiveSwingWorker;
-import au.org.ala.delta.intkey.directives.DirectivePopulator;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParseException;
 import au.org.ala.delta.intkey.directives.IntkeyDirectiveParser;
 import au.org.ala.delta.intkey.directives.SetMatchDirective;
@@ -28,6 +26,8 @@ import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocationException;
 import au.org.ala.delta.intkey.directives.invocation.LongRunningIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.UseDirectiveInvocation;
+import au.org.ala.delta.intkey.ui.DirectivePopulator;
+import au.org.ala.delta.intkey.ui.IntkeyUI;
 import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
@@ -478,12 +478,13 @@ public class IntkeyContext extends AbstractDeltaContext {
         cleanupOldDataset();
 
         initializeIdentification();
-
+        
         // Loading of a new dataset can take a long time and hence can lock up
         // the UI. If this method is called from the Swing Event Dispatch
         // Thread, load the
         // new dataset on a background thread using a SwingWorker.
         if (SwingUtilities.isEventDispatchThread()) {
+            _appUI.displayBusyMessage(UIUtils.getResourceString("LoadingDataset.caption"));
             SwingWorker<Void, Void> startupWorker = new SwingWorker<Void, Void>() {
 
                 @Override
@@ -509,7 +510,6 @@ public class IntkeyContext extends AbstractDeltaContext {
             };
 
             startupWorker.execute();
-            _appUI.displayBusyMessage(UIUtils.getResourceString("LoadingDataset.caption"));
         } else {
             try {
                 processStartupFile(datasetFileURL);

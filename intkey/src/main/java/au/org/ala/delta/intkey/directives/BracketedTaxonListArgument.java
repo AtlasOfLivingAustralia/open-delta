@@ -23,6 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableBoolean;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.DirectivePopulator;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.util.Pair;
 import au.org.ala.delta.util.Utils;
