@@ -34,6 +34,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -946,7 +947,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _rootSplitPane.setDividerLocation(2.0 / 3.0);
         _innerSplitPaneLeft.setDividerLocation(2.0 / 3.0);
         _innerSplitPaneRight.setDividerLocation(2.0 / 3.0);
-        
+
         loadDesktopInBackground();
 
         if (_advancedMode) {
@@ -3164,7 +3165,21 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
         boolean remoteDatasetSavedLocally = false;
 
-        String datasetPath = null;
+        // Always use the path to the startup file supplied to the NEWDATASET
+        // directive
+        // Ignore the "inkFile" URL listed in the startup file.
+        String datasetPath;
+        URL startupFileURL = _context.getDatasetStartupURL();
+        if (startupFileURL.getProtocol().equalsIgnoreCase("file")) {
+            try {
+                datasetPath = new File(startupFileURL.toURI()).getAbsolutePath();
+            } catch (URISyntaxException ex) {
+                datasetPath = startupFileURL.toString();
+            }
+        } else {
+            datasetPath = startupFileURL.toString();
+        }
+
         if (startupFileData != null && startupFileData.isRemoteDataset()) {
             int chosenOption = JOptionPane.showConfirmDialog(getMainFrame(), UIUtils.getResourceString("SaveDownloadedDatasetPrompt.caption", datasetTitle), UIUtils.getResourceString("Save.caption"),
                     JOptionPane.YES_NO_OPTION);
@@ -3193,16 +3208,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                         // recents list.
                         return;
                     }
-                } else {
-                    // Link to the remote copy of the webstart file
-                    datasetPath = startupFileData.getInkFileLocation().toString();
                 }
-            } else {
-                // Link to the remote copy of the webstart file
-                datasetPath = startupFileData.getInkFileLocation().toString();
             }
-        } else {
-            datasetPath = _context.getDatasetStartupFile().getAbsolutePath();
         }
 
         // Add to list of most recently used datasets.
@@ -3217,7 +3224,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             if (remoteDatasetSavedLocally) {
                 promptMessage = UIUtils.getResourceString("AddSavedCopyOfDatasetToIndexPrompt.caption", datasetTitle);
             } else {
-                promptMessage = UIUtils.getResourceString("AddURLForRemoteDatasetToIndexPrompt.caption", datasetTitle);
+                promptMessage = UIUtils.getResourceString("AddStartupFileForRemoteDatasetToIndexPrompt.caption", datasetTitle);
             }
         } else {
             promptMessage = UIUtils.getResourceString("AddDatasetToIndexPrompt.caption", datasetTitle);
