@@ -50,7 +50,6 @@ public class OverlayButton extends JButton implements ActionListener, Selectable
 
 	@Override
 	public OverlayLocation location(ImageViewer viewer) {
-	    System.out.println(this.getMargin());
 		return new PreferredSizeTextOverlayLocation(viewer, this, _overlay.getLocation(0));
 	}
 
