@@ -14,6 +14,7 @@
  ******************************************************************************/
 package au.org.ala.delta.ui.image.overlay;
 
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -39,6 +40,7 @@ public class OverlayButton extends JButton implements ActionListener, Selectable
 		_overlay = overlay;
 		_support = new SelectableOverlaySupport();
 		addActionListener(this);
+		this.setMargin(new Insets(2, 2, 2, 2));
 	}
 
 	@Override
@@ -48,6 +50,7 @@ public class OverlayButton extends JButton implements ActionListener, Selectable
 
 	@Override
 	public OverlayLocation location(ImageViewer viewer) {
+	    System.out.println(this.getMargin());
 		return new PreferredSizeTextOverlayLocation(viewer, this, _overlay.getLocation(0));
 	}
 
