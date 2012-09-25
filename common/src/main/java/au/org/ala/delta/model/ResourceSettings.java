@@ -22,6 +22,7 @@ import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -225,7 +226,7 @@ public class ResourceSettings {
         try {
             fileLocation = new URL(fileName);
             try {
-                URL urlForCachedFile = cacheFileIfRemote(fileLocation);
+                URL urlForCachedFile = cacheFileIfRemote(fileName, fileLocation);
                 return urlForCachedFile;
             } catch (IOException ex) {
                 // cache operation failed. return location to the original file.
@@ -235,9 +236,7 @@ public class ResourceSettings {
             // do nothing
         }
 
-        List<String> locationsToSearch = getResourcePathLocations();
-
-        // First check to see if the filename is an absolute filename on the
+        // Check to see if the filename is an absolute filename on the
         // file system
         File file = new File(fileName);
         if (file.exists() && file.isAbsolute()) {
@@ -259,6 +258,13 @@ public class ResourceSettings {
             }
         }
 
+        // Finally, before searching the resource path, check if the file has previously been saved in the cache
+        URL urlForPreviouslyCachedFile = loadFileFromCache(fileName);
+        if (urlForPreviouslyCachedFile != null) {
+            return urlForPreviouslyCachedFile;
+        }
+
+        List<String> locationsToSearch = getResourcePathLocations();
         // If file cannot be found at any of the resource path locations, also
         // search the
         // dataset path itself.
@@ -282,7 +288,8 @@ public class ResourceSettings {
                     // was successfully found at that location. Unfortunately
                     // there is no better way to
                     // test existence of a remote file.
-                    fileLocation.openStream();
+                    InputStream stream = fileLocation.openStream();
+                    stream.close();
                     break;
                 } else {
                     File f = new File(resourcePath + File.separator + fileName);
@@ -310,7 +317,8 @@ public class ResourceSettings {
             return fileLocation;
         } else {
             try {
-                URL urlForCachedFile = cacheFileIfRemote(fileLocation);
+                // Attempt to cache the file found on the resource path.
+                URL urlForCachedFile = cacheFileIfRemote(fileName, fileLocation);
                 return urlForCachedFile;
             } catch (IOException ex) {
                 // cache operation failed. return location to the original file.
@@ -319,34 +327,56 @@ public class ResourceSettings {
         }
     }
 
+    // Use the md5 hash of the URL as the name for the copy of the file
+    // in the cache directory. Include the file extension as this is needed in
+    // some cases
+    // to work out how to open the file.
+    private String generateCacheNameForFile(String fileName) {
+        String fileExtension = FilenameUtils.getExtension(fileName);
+        String md5Hash = DigestUtils.md5Hex(fileName);
+        String cacheFileName = md5Hash + "." + fileExtension;
+        return cacheFileName;
+    }
+
+    private URL loadFileFromCache(String fileName) {
+        String cacheFileName = generateCacheNameForFile(fileName);
+        File cachedFile = new File(_cacheDir, cacheFileName);
+        if (cachedFile.exists()) {
+            try {
+                return cachedFile.toURI().toURL();
+            } catch (MalformedURLException ex) {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
     /**
-     * For a given URL
      * 
-     * @param fileLocation
-     * @return
+     * Cache the supplied file if it is not stored locally
+     *  
+     * @param fileName - the name of the file
+     * @param fileLocation - the URL of at which the file is located
+     * @return A URL. If the original file is stored remotely, this will be a URL pointing to a cached local copy of the file.
+     * If the original file is stored locally, the URL will be same as the supplied fileLocation
      * @throws IOException
      */
-    private URL cacheFileIfRemote(URL fileLocation) throws IOException {
+    private URL cacheFileIfRemote(String fileName, URL fileLocation) throws IOException {
         // Don't bother caching if the URL points to a local file.
-        if (fileLocation.getProtocol().equalsIgnoreCase("file")) {
-            return fileLocation;
-        } else {
-            // Use the md5 hash of the URL as the name for the copy of the file
-            // in the cache directory. Include the file extension as this is needed in some cases
-            // to work out how to open the file.
-            String fileExtension = FilenameUtils.getExtension(fileLocation.getFile());
-            String md5Hash = DigestUtils.md5Hex(fileLocation.toString());
-            String cacheFileName = md5Hash + "." + fileExtension;
-            
+        if (!fileLocation.getProtocol().equalsIgnoreCase("file")) {
+            String cacheFileName = generateCacheNameForFile(fileName);
             File cachedCopy = new File(_cacheDir, cacheFileName);
             if (!cachedCopy.exists()) {
                 // download the file and save it to the cache directory
                 org.apache.commons.io.FileUtils.copyURLToFile(fileLocation, cachedCopy);
                 cachedCopy.deleteOnExit();
+                
+                return cachedCopy.toURI().toURL();
             }
-            return cachedCopy.toURI().toURL();
         }
-
+        
+        return fileLocation;
     }
 
     /**

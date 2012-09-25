@@ -29,6 +29,7 @@ import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
+import org.jdesktop.application.SingleFrameApplication;
 
 import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.image.ImageSettings;
@@ -115,8 +116,7 @@ public class TextInputDialog extends CharacterValueInputDialog {
     void handleBtnImagesClicked() {
         CharacterImageDialog dlg = new CharacterImageDialog(this, Arrays.asList(new au.org.ala.delta.model.Character[] { _ch }), null, _imageSettings, true, true, _imagesStartScaled);
         dlg.displayImagesForCharacter(_ch);
-        dlg.showImage(0);
-        dlg.setVisible(true);
+        ((SingleFrameApplication) Application.getInstance()).show(dlg);
 
         _inputData = dlg.getInputTextValues();
         if (_inputData != null && !_inputData.isEmpty()) {

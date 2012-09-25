@@ -23,6 +23,7 @@ import org.apache.commons.lang.math.FloatRange;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
 import org.jdesktop.application.ResourceMap;
+import org.jdesktop.application.SingleFrameApplication;
 
 import au.org.ala.delta.intkey.directives.ParsingUtils;
 import au.org.ala.delta.model.RealCharacter;
@@ -96,8 +97,7 @@ public class RealInputDialog extends NumberInputDialog {
     void handleBtnImagesClicked() {
         CharacterImageDialog dlg = new CharacterImageDialog(this, Arrays.asList(new au.org.ala.delta.model.Character[] { _ch }), null, _imageSettings, true, true, _imagesStartScaled);
         dlg.displayImagesForCharacter(_ch);
-        dlg.showImage(0);
-        dlg.setVisible(true);
+        ((SingleFrameApplication) Application.getInstance()).show(dlg);
 
         try {
             FloatRange rangeFromImageDialog = dlg.getInputRealValues();
