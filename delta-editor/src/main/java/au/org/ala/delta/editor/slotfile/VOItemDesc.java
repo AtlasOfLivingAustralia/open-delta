@@ -14,6 +14,11 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile;
 
+import au.org.ala.delta.io.BinFile;
+import au.org.ala.delta.model.image.ImageType;
+import au.org.ala.delta.rtf.RTFUtils;
+import au.org.ala.delta.util.Utils;
+
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -22,11 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-
-import au.org.ala.delta.io.BinFile;
-import au.org.ala.delta.model.image.ImageType;
-import au.org.ala.delta.rtf.RTFUtils;
-import au.org.ala.delta.util.Utils;
 
 public class VOItemDesc extends VOImageHolderDesc implements INameHolder {
 
@@ -214,8 +214,8 @@ public class VOItemDesc extends VOImageHolderDesc implements INameHolder {
 			_fixedData.itemFlags |= ITEM_VARIANT;
 		} else {
 			_fixedData.itemFlags &= ~ITEM_VARIANT;
-			setDirty();
 		}
+        setDirty();
 	}
 
 	public Set<Integer> getEncodedChars() {
