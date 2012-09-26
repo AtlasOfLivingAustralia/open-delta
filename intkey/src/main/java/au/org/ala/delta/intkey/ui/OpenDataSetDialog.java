@@ -183,6 +183,8 @@ public class OpenDataSetDialog extends IntkeyDialog {
                 _txtFldFileName.setText(null);
             }
         });
+        
+        _startBrowseDirectory = startBrowseDirectory;
     }
 
     @Action
