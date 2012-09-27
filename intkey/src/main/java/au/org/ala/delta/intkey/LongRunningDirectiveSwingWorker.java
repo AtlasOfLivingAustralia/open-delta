@@ -11,6 +11,13 @@ import au.org.ala.delta.intkey.directives.invocation.LongRunningIntkeyDirectiveI
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.ui.IntkeyUI;
 
+/**
+ * Swing worker used to run potentially long-running directives on background
+ * threads to avoid locking up the UI
+ * 
+ * @author ChrisF
+ * 
+ */
 public class LongRunningDirectiveSwingWorker extends SwingWorker<Object, String> {
 
     private LongRunningIntkeyDirectiveInvocation<?> _invoc;

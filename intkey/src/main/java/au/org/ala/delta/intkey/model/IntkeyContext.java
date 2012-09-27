@@ -70,31 +70,36 @@ import java.util.UUID;
  */
 public class IntkeyContext extends AbstractDeltaContext {
 
-    // dataset
-    // other settings
-
-    // set of commands that have been run
-    // other stuff
-
+    /** Pre-defined character keywords */
     public static final String CHARACTER_KEYWORD_ALL = "all";
     public static final String CHARACTER_KEYWORD_USED = "used";
     public static final String CHARACTER_KEYWORD_AVAILABLE = "available";
     public static final String CHARACTER_KEYWORD_NONE = "none";
     public static final String CHARACTER_KEYWORD_SELECTED = "selected";
 
+    /** Pre-defined taxon keywords */
     public static final String TAXON_KEYWORD_ALL = "all";
     public static final String TAXON_KEYWORD_ELIMINATED = "eliminated";
     public static final String TAXON_KEYWORD_REMAINING = "remaining";
     public static final String TAXON_KEYWORD_NONE = "none";
     public static final String TAXON_KEYWORD_SELECTED = "selected";
 
+    /** Pre-defined keyword for the specimen */
     public static final String SPECIMEN_KEYWORD = "specimen";
 
+    /** Width of output files - including log and journal files */
     public static final int OUTPUT_FILE_WIDTH = 80;
 
+    /** The taxa file associated with the dataset. This is usually called iitems */
     private File _taxaFile;
+
+    /**
+     * The characters file associated with the dataset. This is usually called
+     * ichars
+     */
     private File _charactersFile;
 
+    /** The currently-loaded dataset */
     private IntkeyDataset _dataset;
 
     /**
@@ -145,12 +150,23 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     private List<IntkeyDirectiveInvocation> _executedDirectives;
 
+    /**
+     * The Intkey UI
+     */
     private IntkeyUI _appUI;
+
+    /**
+     * Handles user prompts for input when handling directives
+     */
     private DirectivePopulator _directivePopulator;
 
+    /**
+     * The specimen. Holds character values set by the user pertaining to the
+     * current investigation
+     */
     private Specimen _specimen;
 
-    // values set by SET directives
+    /** values set by SET directives */
     private boolean _autoTolerance;
     private int _diagLevel;
     private DiagType _diagType;
@@ -169,12 +185,12 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     private boolean _demonstrationMode;
 
-    // A saved version of the values set for the SET, INCLUDE and DISPLAY
-    // directives at the time that
-    // SET DEMONSTRATION was set to ON. While SET DEMONSTRATION is on, the
-    // IntkeyContext is reverted back to these baseline settings every time the
-    // investigation is
-    // restarted (RESTART directive)
+    /**
+     * A saved version of the values set for the SET, INCLUDE and DISPLAY
+     * directives at the time that SET DEMONSTRATION was set to ON. While SET
+     * DEMONSTRATION is on, the IntkeyContext is reverted back to these baseline
+     * settings every time the investigation is restarted (RESTART directive)
+     */
     private DemonstrationModeSettings _demonstrationModeSettings;
 
     // values set by DISPLAY directives
@@ -189,43 +205,100 @@ public class IntkeyContext extends AbstractDeltaContext {
     private boolean _displayEndIdentify;
     private boolean _displayInput;
 
+    /** Ordering type to use when sorting characters for display */
     private IntkeyCharacterOrder _characterOrder;
 
-    // The taxon to be separated when using the SEPARATE character order.
+    /** The taxon to be separated when using the SEPARATE character order. */
     private int _taxonToSeparate;
 
+    /**
+     * The BEST characters, or the characters used to SEPARATE a taxon, along
+     * with the weight of each character as determined by the BEST algorithm. A
+     * linked hash map is used to maintain character ordering.
+     */
     private LinkedHashMap<Character, Double> _bestOrSeparateCharacters;
 
+    /** The set of currently included characters */
     private Set<Integer> _includedCharacters;
+
+    /** The set of currently included taxa */
     private Set<Integer> _includedTaxa;
 
     private List<Pair<String, String>> _taxonInformationDialogCommands;
 
-    // Use linked hashmap so that the keys list will be returned in
-    // order of insertion.
+    /**
+     * The user defined character keywords, along with the characters associated
+     * with each keyword. A linked hashmap is used so that the keys list will be
+     * returned in order of insertion.
+     */
     private LinkedHashMap<String, Set<Integer>> _userDefinedCharacterKeywords;
 
-    // Use linked hashmap so that the keys list will be returned in
-    // order of insertion.
+    /**
+     * The user defined taxon keywords, along with the characters associated
+     * with each keyword. A linked hashmap is used so that the keys list will be
+     * returned in order of insertion.
+     */
     private LinkedHashMap<String, Set<Integer>> _userDefinedTaxonKeywords;
 
+    /**
+     * A list of directive commands to run when a taxon is identified (i.e. 1
+     * taxon remains during an investigation) and _displayEndIdentify is true
+     */
     private List<String> _endIdentifyCommands;
+
+    /**
+     * Image subjects. The words or phrases are placed in the "subjects" list
+     * box in the "select multiple images" dialog box. The images displayed are
+     * then restricted to those whose "subjects" contain any of the words of
+     * phrases selected in the list box
+     */
     private List<String> _imageSubjects;
 
+    /**
+     * True if the last line output to an output file a comment, output via the
+     * OUTPUT COMMENT directive
+     */
     private boolean _lastOutputLineWasComment;
 
+    /**
+     * The log file
+     */
     private File _logFile;
+
+    /**
+     * The journal file
+     */
     private File _journalFile;
+
+    /**
+     * PrintFile wrapper for log file
+     */
     private PrintFile _logPrintFile;
+
+    /**
+     * PrintFile wrapper for the journal file
+     */
     private PrintFile _journalPrintFile;
 
-    // Intkey can only write to a single output file at a time, so need to keep
-    // track of the
-    // current file
+    /**
+     * The current output file. Intkey can only write to a single output file at
+     * a time, so need to keep track of the current file
+     */
     private File _currentOutputFile;
+
+    /**
+     * PrintFile wrapper for the current output file
+     */
     private PrintFile _currentOutputPrintFile;
 
+    /**
+     * Cache of all lines output to log files
+     */
     private List<String> _logCache;
+
+    /**
+     * Cache of all lines output to journal files
+     */
     private List<String> _journalCache;
 
     /**
@@ -239,6 +312,8 @@ public class IntkeyContext extends AbstractDeltaContext {
      * 
      * @param appUI
      *            A reference to the main Intkey UI
+     * @param directivePopulator
+     *            A reference to the directive populator
      */
     public IntkeyContext(IntkeyUI appUI, DirectivePopulator directivePopulator) {
         if (appUI == null) {
@@ -312,6 +387,12 @@ public class IntkeyContext extends AbstractDeltaContext {
         _imageSubjects = new ArrayList<String>();
     }
 
+    /**
+     * Set the preferences file
+     * 
+     * @param preferencesFile
+     *            the preferences file
+     */
     public synchronized void setPreferencesFile(File preferencesFile) {
         _preferencesFile = preferencesFile;
     }
@@ -327,6 +408,12 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
+    /**
+     * Process the directives a file supplied via the FILE INPUT directive
+     * 
+     * @param directivesFile
+     *            the directives file
+     */
     public synchronized void processInputFile(File directivesFile) {
         // Keep track of old value for _processingInputFile. There could
         // be a case where there is a call to FILE INPUT inside a
@@ -403,6 +490,12 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
+    /**
+     * Process the directives in the supplied file
+     * 
+     * @param directivesFile
+     *            The directives file
+     */
     private synchronized void processDirectivesFile(File directivesFile) {
         Logger.log("Reading in directives from file: %s", directivesFile.getAbsolutePath());
 
@@ -478,7 +571,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         cleanupOldDataset();
 
         initializeIdentification();
-        
+
         // Loading of a new dataset can take a long time and hence can lock up
         // the UI. If this method is called from the Swing Event Dispatch
         // Thread, load the
@@ -523,13 +616,25 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
+    /**
+     * Process the directives in a dataset initialization file (typically will
+     * have extension .ink or .ini)
+     * 
+     * @param initializationFile
+     *            The initialization file
+     */
     private void processInitializationFile(File initializationFile) {
         _initializationFile = initializationFile;
         processDirectivesFile(initializationFile);
         executePreferencesFileDirectives();
     }
 
-    // TODO Does this belong here?
+    /**
+     * Parse and execute a directive command
+     * 
+     * @param command
+     *            The directive command
+     */
     public synchronized void parseAndExecuteDirective(String command) {
         try {
             _directiveParser.parse(new StringReader(command), this);
@@ -595,6 +700,15 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
+    /**
+     * Called when a directive has successfully been executed
+     * 
+     * @param invoc
+     *            Command pattern object representing the executed directive
+     * @param executedDirectivesIndex
+     *            index in which to insert the executed directive in the list of
+     *            executed directives
+     */
     public void handleDirectiveExecutionComplete(IntkeyDirectiveInvocation invoc, int executedDirectivesIndex) {
         // Omit directive calls from the log and journal if a directives
         // file is being processes, except in the case
@@ -612,6 +726,14 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
+    /**
+     * Called when execution of a directive failed.
+     * 
+     * @param invoc
+     *            Command pattern object representing the executed directive
+     * @param logInsertionIndex
+     *            The in the log at which the directive was recorded.
+     */
     public void handleDirectiveExecutionFailed(IntkeyDirectiveInvocation invoc, int logInsertionIndex) {
         // The directive failed so remove the directive call from the log. The
         // use case is a special case. The use directive logic handles appending
@@ -637,7 +759,6 @@ public class IntkeyContext extends AbstractDeltaContext {
      * @param attribute
      *            the character value
      */
-    // TODO take a character number rather than a character object?
     public synchronized void setSpecimenAttributeForCharacter(au.org.ala.delta.model.Character ch, Attribute attribute) {
         Logger.log("Using character");
         _specimen.setAttributeForCharacter(ch, attribute);
@@ -648,7 +769,6 @@ public class IntkeyContext extends AbstractDeltaContext {
      * 
      * @param ch
      */
-    // TODO take a character number rather than a character object?
     public synchronized void removeValueForCharacter(Character ch) {
         Logger.log("Deleting character");
         _specimen.removeValueForCharacter(ch);
@@ -888,6 +1008,14 @@ public class IntkeyContext extends AbstractDeltaContext {
         _userDefinedTaxonKeywords.put(keyword, taxaNumbers);
     }
 
+    /**
+     * Get the list of taxa that are represented by the supplied keyword
+     * 
+     * @param keyword
+     *            the keyword.
+     * @return the list of taxa that are represented by the supplied
+     *         keyword
+     */
     public synchronized List<Item> getTaxaForKeyword(String keyword) {
         List<Item> retList = new ArrayList<Item>();
 
@@ -904,7 +1032,6 @@ public class IntkeyContext extends AbstractDeltaContext {
         } else if (keyword.equals(TAXON_KEYWORD_NONE)) {
             return Collections.EMPTY_LIST;
         } else {
-            // TODO match if supplied text matches the beginning of a taxon name
             Set<Integer> taxaNumbersSet = _userDefinedTaxonKeywords.get(keyword);
 
             // If there is no exact match for the specified keyword text, try
@@ -1038,7 +1165,6 @@ public class IntkeyContext extends AbstractDeltaContext {
      * Resets the context state to prepare for a new identification
      */
     public synchronized void restartIdentification() {
-        // TODO need to account for fixed characters etc here.
 
         if (_dataset != null) {
 
@@ -1169,15 +1295,22 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     }
 
+    /**
+     * @return The required level for diagnostic descriptions
+     */
     public synchronized int getDiagLevel() {
         return _diagLevel;
     }
 
+    /**
+     * Sets the required level of diagnostic descriptions.
+     * @param diagLevel
+     */
     public synchronized void setDiagLevel(int diagLevel) {
-        if (diagLevel > 0) {
+        if (diagLevel >= 1) {
             this._diagLevel = diagLevel;
         } else {
-            throw new IllegalArgumentException("DiagLevel must be an integer greater than zero");
+            throw new IllegalArgumentException("DiagLevel must be an integer greater than one");
         }
     }
 
@@ -1205,6 +1338,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         return _datasetStartupFile;
     }
 
+    
     public synchronized URL getDatasetStartupURL() {
         return _datasetStartupURL;
     }

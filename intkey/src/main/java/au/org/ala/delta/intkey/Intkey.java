@@ -253,8 +253,15 @@ import au.org.ala.delta.util.Pair;
 
 import com.l2fprod.common.swing.JFontChooser;
 
+/**
+ * Main UI Class
+ * 
+ * @author ChrisF
+ * 
+ */
 public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, DirectivePopulator {
 
+    // HELP IDs
     public static final String HELPSET_PATH = "help/Intkey";
 
     public static final String HELP_ID_TOPICS = "topics";
@@ -389,8 +396,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     private BusyGlassPane _busyGlassPane = null;
     private Component _defaultGlassPane;
 
-    private boolean _advancedMode = false;
-
     private List<Character> _foundAvailableCharacters = null;
     private List<Character> _foundUsedCharacters = null;
     private List<Item> _foundAvailableTaxa = null;
@@ -436,16 +441,42 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     private RtfReportDisplayDialog _logDialog;
 
-    private static String INTKEY_ICON_PATH = "/au/org/ala/delta/intkey/resources/icons";
-
-    private String _datasetInitFileToOpen = null;
-    private String _startupPreferencesFile = null;
-    private boolean _suppressStartupImages = false;
-    private File _lastOpenedDatasetDirectory = null;
-
     private ItemFormatter _taxonformatter;
 
     private HelpController _helpController;
+
+    /**
+     * The resource path where icons are located
+     */
+    private static String INTKEY_ICON_PATH = "/au/org/ala/delta/intkey/resources/icons";
+
+    /**
+     * True if the user interface is in advanced mode
+     */
+    private boolean _advancedMode = false;
+
+    /**
+     * The initialization file to open on startup, as supplied on the command
+     * line
+     */
+    private String _datasetInitFileToOpen = null;
+
+    /**
+     * The preferences file to execute on startup, as supplied on the command
+     * line
+     */
+    private String _startupPreferencesFile = null;
+
+    /**
+     * If true, dataset startup images should not be displayed.
+     */
+    private boolean _suppressStartupImages = false;
+
+    /**
+     * The directory containing the startup file for the last dataset that was
+     * opened.
+     */
+    private File _lastOpenedDatasetDirectory = null;
 
     /**
      * Calls Desktop.getDesktop on a background thread as it's slow to
@@ -453,17 +484,43 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
      */
     private SwingWorker<Desktop, Void> _desktopWorker;
 
+    /**
+     * Main method.
+     * 
+     * @param args
+     *            Command line arguments:<br/>
+     *            1. filename Specifies the name of an initialization file (for
+     *            example, C:\\ANGIO\\INTKEY.INI). The corresponding data set is
+     *            then automatically loaded when the program starts, and the
+     *            data-set selection box is not displayed.<br/>
+     *            2. -A Sets Advanced mode.<br/>
+     *            3. -I Suppresses display of startup images.<br/>
+     *            4. -P=filename Specifies the name of a preferences file - see
+     *            help for the "Preferences" command. The default directory is
+     *            the one containing the program.
+     */
     public static void main(String[] args) {
         setupMacSystemProperties(Intkey.class);
         launch(Intkey.class, args);
     }
 
+    /**
+     * ctor - Not called directly. This is called by the swing application
+     * framework
+     */
     public Intkey() {
         // Update resources bundle with desired look and feel before the swing
         // application framework can set the defaults.
         setLookAndFeel();
     }
 
+    /**
+     * Perform initialization before the GUI is contstructed. This method is
+     * called by the swing application framework
+     * 
+     * @param args
+     *            - Command line arguments from the main method
+     */
     @Override
     protected void initialize(String[] args) {
         ResourceMap resourceMap = getContext().getResourceMap(Intkey.class);
@@ -527,7 +584,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     }
 
     /**
-     * @wbp.parser.entryPoint
+     * Creates and shows the GUI. Called by the swing application framework
      */
     @Override
     protected void startup() {
@@ -941,6 +998,10 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         show(_rootPanel);
     }
 
+    /**
+     * Performs additional tasks after the GUI has been constructed and shown.
+     * Called by the swing application framework
+     */
     @Override
     protected void ready() {
         super.ready();
@@ -977,6 +1038,9 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         }
     }
 
+    /**
+     * Performs cleanup and related tasks before the application is shutdown
+     */
     @Override
     protected void shutdown() {
         UIUtils.savePreviousApplicationMode(_advancedMode);
@@ -985,6 +1049,13 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         super.shutdown();
     }
 
+    /**
+     * Build the main GUI window's menus
+     * 
+     * @param advancedMode
+     *            true if the application is in advanced mode
+     * @return a JMenuBar containing the menus
+     */
     private JMenuBar buildMenus(boolean advancedMode) {
 
         _cmdMenus = new HashMap<String, JMenu>();
@@ -1007,6 +1078,15 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         return menuBar;
     }
 
+    /**
+     * Build the file menu
+     * 
+     * @param advancedMode
+     *            true if the application is in advanced mode
+     * @param actionMap
+     *            The action map for the main GUI window
+     * @return a JMenu for the file menu
+     */
     private JMenu buildFileMenu(boolean advancedMode, ActionMap actionMap) {
         MenuBuilder mnuFileBuilder = new MenuBuilder("mnuFile", _context);
 
@@ -1069,6 +1149,11 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         return mnuFileBuilder.getMenu();
     }
 
+    /**
+     * Build a menu of recently opened datasets
+     * 
+     * @return A JMenu of recently opened datasets
+     */
     private JMenu buildRecentFilesMenu() {
         Map<String, String> datasetIndexMap = UIUtils.getDatasetIndexAsMap();
 
@@ -1111,6 +1196,13 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         return mnuFileRecents;
     }
 
+    /**
+     * Build the queries menu
+     * 
+     * @param actionMap
+     *            The action map for the main GUI window
+     * @return The JMenu for the queries menu
+     */
     private JMenu buildQueriesMenu(ActionMap actionMap) {
         // Some menus/menu items should be disabled if no dataset is loaded.
         boolean isDatasetLoaded = _context.getDataset() != null;
@@ -1156,6 +1248,13 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         return mnuQueries;
     }
 
+    /**
+     * Build the browsing menu
+     * 
+     * @param actionMap
+     *            The action map for the main GUI window
+     * @return The JMenu for the browsing menu
+     */
     private JMenu buildBrowsingMenu(ActionMap actionMap) {
         // Some menus/menu items should be disabled if no dataset is loaded.
         boolean isDatasetLoaded = _context.getDataset() != null;
@@ -1214,6 +1313,13 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         return mnuBrowsing;
     }
 
+    /**
+     * Build the settings menu
+     * 
+     * @param actionMap
+     *            The action map for the main GUI window
+     * @return The JMenu for the settings menu
+     */
     private JMenu buildSettingsMenu(ActionMap actionMap) {
         // Some menus/menu items should be disabled if no dataset is loaded.
         boolean isDatasetLoaded = _context.getDataset() != null;
@@ -1380,6 +1486,13 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         return mnuSettings;
     }
 
+    /**
+     * Build the re-execute menu
+     * 
+     * @param actionMap
+     *            The action map for the main GUI window
+     * @return The JMenu for the re-execute menu
+     */
     private JMenu buildReExecuteMenu(ActionMap actionMap) {
         JMenu mnuReExecute = new JMenu();
         mnuReExecute.setName("mnuReExecute");
@@ -1391,6 +1504,13 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         return mnuReExecute;
     }
 
+    /**
+     * Build the window menu
+     * 
+     * @param actionMap
+     *            The action map for the main GUI window
+     * @return The JMenu for the window menu
+     */
     private JMenu buildWindowMenu(ActionMap actionMap) {
         JMenu mnuWindow = new JMenu();
         mnuWindow.setName("mnuWindow");
@@ -1449,6 +1569,13 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         return mnuWindow;
     }
 
+    /**
+     * Build the help menu
+     * 
+     * @param actionMap
+     *            The action map for the main GUI window
+     * @return The JMenu for the help menu
+     */
     private JMenu buildHelpMenu(boolean advancedMode, ActionMap actionMap) {
         JMenu mnuHelp = new JMenu();
         mnuHelp.setName("mnuHelp");
@@ -1490,6 +1617,9 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     // ============== File menu actions ==============================
 
+    /**
+     * Edit the dataset index
+     */
     @Action
     public void mnuItEditDataSetIndex() {
         EditDatasetIndexDialog dlg = new EditDatasetIndexDialog(getMainFrame(), UIUtils.readDatasetIndex());
@@ -1509,16 +1639,25 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         resourceMap.injectComponents(getMainFrame());
     }
 
+    /**
+     * Switch to normal mode
+     */
     @Action
     public void mnuItNormalMode() {
         toggleAdvancedMode();
     }
 
+    /**
+     * Switch to advanced mode
+     */
     @Action
     public void mnuItAdvancedMode() {
         toggleAdvancedMode();
     }
 
+    /**
+     * Toggles between normal and advanced mode
+     */
     private void toggleAdvancedMode() {
         _advancedMode = !_advancedMode;
 
@@ -1558,6 +1697,9 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _rootPanel.revalidate();
     }
 
+    /**
+     * Exits the application
+     */
     @Action
     public void mnuItExitApplication() {
         exit();
@@ -1566,6 +1708,9 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     // ============================ ReExecute menu actions
     // ===========================
 
+    /**
+     * Opens the re-execute dialog
+     */
     @Action
     public void mnuItReExecute() {
         ReExecuteDialog dlg = new ReExecuteDialog(getMainFrame(), _context.getExecutedDirectives(), _context);
@@ -1574,16 +1719,26 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     // ============================= Window menu actions
     // ==============================
+
+    /**
+     * Cascade windows
+     */
     @Action
     public void mnuItCascadeWindows() {
         IntKeyDialogController.cascadeWindows();
     }
 
+    /**
+     * Tile windows
+     */
     @Action
     public void mnuItTileWindows() {
         IntKeyDialogController.tileWindows();
     }
 
+    /**
+     * Close all windows
+     */
     @Action
     public void mnuItCloseAllWindows() {
         IntKeyDialogController.closeWindows();
@@ -1591,14 +1746,10 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     // ====================== Help menu actions
     // ====================================
-    @Action
-    public void mnuItHelpIntroduction() {
-    }
 
-    @Action
-    public void mnuItHelpCommands() {
-    }
-
+    /**
+     * Displays the about box
+     */
     @Action
     public void mnuItHelpAbout() {
         AboutBox aboutBox = new AboutBox(getMainFrame(), IconHelper.createRed32ImageIcon());
@@ -1608,6 +1759,10 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     // ============================== Global option buttons
     // ================================
 
+    /**
+     * Set up the GUI to launch contextual help for the next widget that is
+     * clicked on by the user
+     */
     @Action
     public void btnContextHelp() {
         // Get the HelpOnItemCursor. This is installed by the java help library.
@@ -1625,16 +1780,25 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     // ========================= Character toolbar button actions
     // ===================
 
+    /**
+     * Restart the investigation
+     */
     @Action
     public void btnRestart() {
         executeDirective(new RestartDirective(), null);
     }
 
+    /**
+     * Switch to best character ordering
+     */
     @Action
     public void btnBestOrder() {
         executeDirective(new DisplayCharacterOrderBestDirective(), null);
     }
 
+    /**
+     * Switch to separate character ordering for the currently selected taxon
+     */
     @Action
     public void btnSeparate() {
         Object[] selectedRemainingTaxa = _listRemainingTaxa.getSelectedValues();
@@ -1648,31 +1812,49 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         executeDirective(new DisplayCharacterOrderSeparateDirective(), Integer.toString(selectedTaxon.getItemNumber()));
     }
 
+    /**
+     * Switch to natural character ordering
+     */
     @Action
     public void btnNaturalOrder() {
         executeDirective(new DisplayCharacterOrderNaturalDirective(), null);
     }
 
+    /**
+     * Display a differences report between the current specimen and the remaining taxa
+     */
     @Action
     public void btnDiffSpecimenTaxa() {
         executeDirective(new DifferencesDirective(), "/E (specimen remaining) all");
     }
 
+    /**
+     * Set the tolerance
+     */
     @Action
     public void btnSetTolerance() {
         executeDirective(new SetToleranceDirective(), null);
     }
 
+    /**
+     * Set the match settings
+     */
     @Action
     public void btnSetMatch() {
         executeDirective(new SetMatchDirective(), null);
     }
 
+    /**
+     * Set the included characters
+     */
     @Action
     public void btnSubsetCharacters() {
         executeDirective(new IncludeCharactersDirective(), null);
     }
 
+    /**
+     * Launches the find characters dialog
+     */
     @Action
     public void btnFindCharacter() {
         new FindInCharactersDialog(this, _context).setVisible(true);
@@ -1681,11 +1863,17 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     // ============================= Taxon toolbar button actions
     // ===========================
 
+    /**
+     * Launches the taxon information dialog for the currently selected taxa
+     */
     @Action
     public void btnTaxonInfo() {
         displayInfoForSelectedTaxa();
     }
 
+    /**
+     * Launches the taxon information dialog for the currently selected taxa
+     */
     private void displayInfoForSelectedTaxa() {
         List<Item> selectedTaxa = new ArrayList<Item>();
 
@@ -1706,6 +1894,9 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         show(dlg);
     }
 
+    /**
+     * Display a differences report for two or more selected taxa
+     */
     @Action
     public void btnDiffTaxa() {
         List<Item> selectedTaxa = new ArrayList<Item>();
@@ -1735,11 +1926,17 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     }
 
+    /**
+     * Set the included taxa
+     */
     @Action
     public void btnSubsetTaxa() {
         executeDirective(new IncludeTaxaDirective(), null);
     }
 
+    /**
+     * Launches the find taxa dialog
+     */
     @Action
     public void btnFindTaxon() {
         new FindInTaxaDialog(this).setVisible(true);
@@ -1748,6 +1945,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     // =========================================================================================
 
     /**
+     * Load the Desktop in the background.
      * We do this because Desktop.getDesktop() can be very slow
      */
     private void loadDesktopInBackground() {
@@ -1764,6 +1962,11 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _desktopWorker.execute();
     }
 
+    /**
+     * Execute a directive
+     * @param dir the directive to execute
+     * @param data the data (arguments) for the directive
+     */
     private void executeDirective(AbstractDirective<IntkeyContext> dir, String data) {
         try {
             dir.parseAndProcess(_context, data);
@@ -1780,10 +1983,16 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         }
     }
 
+    /**
+     * Called to initialize a new identification
+     */
     private void initializeIdentification() {
         handleUpdateAll();
     }
 
+    /**
+     * Update the view of available characters
+     */
     private void updateAvailableCharacters() {
 
         IntkeyCharacterOrder charOrder = _context.getCharacterOrder();
@@ -1902,6 +2111,9 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         }
     }
 
+    /**
+     * Called to handle the case that no characters are available
+     */
     private void handleNoAvailableCharacters() {
         String message = null;
 
@@ -1924,10 +2136,6 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
      * Used to calculate the best characters in a separate thread, then update
      * the UI accordingly when the operation is finished
      * 
-     * @author ChrisF
-     * 
-     */
-    /**
      * @author ChrisF
      * 
      */
@@ -1957,6 +2165,9 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         }
     }
 
+    /**
+     * Update the view of used characters
+     */
     private void updateUsedCharacters() {
 
         Specimen specimen = _context.getSpecimen();
@@ -1978,6 +2189,12 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _lblNumUsedCharacters.setText(MessageFormat.format(usedCharactersCaption, _usedCharacterListModel.getSize()));
     }
 
+    /**
+     * Update the view of available taxa
+     * @param availableTaxa the available taxa
+     * @param taxaDifferingCharacters The differing characters for each taxa. Used when the tolerance is greater than zero to display a 
+     * count of differing characters against each taxon 
+     */
     private void updateAvailableTaxa(List<Item> availableTaxa, Map<Item, Set<Character>> taxaDifferingCharacters) {
         _availableTaxaListModel = new DefaultListModel();
 
@@ -2001,7 +2218,13 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _listRemainingTaxa.repaint();
     }
 
-    private void updateUsedTaxa(List<Item> eliminatedTaxa, Map<Item, Set<Character>> taxaDifferingCharacters) {
+    /**
+     * Update the view of available taxa
+     * @param availableTaxa the available taxa
+     * @param taxaDifferingCharacters The differing characters for each taxa. Used when the tolerance is greater than zero to display a 
+     * count of differing characters against each taxon 
+     */
+    private void updateEliminatedTaxa(List<Item> eliminatedTaxa, Map<Item, Set<Character>> taxaDifferingCharacters) {
         // sort eliminated taxa by difference count
         Collections.sort(eliminatedTaxa, new DifferenceCountComparator(taxaDifferingCharacters));
 
@@ -2140,7 +2363,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
             updateUsedCharacters();
             updateAvailableTaxa(availableTaxa, _context.getSpecimen().getTaxonDifferences());
-            updateUsedTaxa(eliminatedTaxa, _context.getSpecimen().getTaxonDifferences());
+            updateEliminatedTaxa(eliminatedTaxa, _context.getSpecimen().getTaxonDifferences());
 
             updateDynamicButtons();
         }

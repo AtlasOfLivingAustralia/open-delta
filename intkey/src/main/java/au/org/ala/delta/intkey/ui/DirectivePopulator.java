@@ -244,10 +244,35 @@ public interface DirectivePopulator {
      */
     List<Object> promptForMatchSettings();
 
+    /**
+     * Prompts the user to enter information to define a toolbar button.
+     * 
+     * @return A list of objects containing the following information:<br/>
+     *         1. boolean - if true, a space should be inserted in the button
+     *         toolbar, and no button created<br/>
+     *         2. boolean - if true, the button toolbar should be cleared, and
+     *         no button created<br/>
+     *         3. String - path to the image file to use for the button's icon
+     *         4. String - A semi-colon separated list of directive commands to
+     *         run when the button is pressed 5. String - short (tooltip) help
+     *         for the button 6. String - longer help for the button
+     */
     List<Object> promptForButtonDefinition();
 
+    /**
+     * Prompt the user to select the image display mode, and optionally a type
+     * of image report to display
+     * 
+     * @return A pair, first item is the image display mode, second item is the
+     *         image report type to display. If no image report is to be
+     *         displayed, the second value will be null
+     */
     Pair<ImageDisplayMode, DisplayImagesReportType> promptForImageDisplaySettings();
-    
+
+    /**
+     * Prompt for a dataset to open
+     * @return The path to the startup file for the dataset. This may be a URL or a file path
+     */
     String promptForDataset();
 
 }

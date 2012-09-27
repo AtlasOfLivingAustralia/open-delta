@@ -27,10 +27,10 @@ public class SetDiagLevelInvocation extends BasicIntkeyDirectiveInvocation {
 
     @Override
     public boolean execute(IntkeyContext context) {
-        if (_diagLevel > 0) {
+        if (_diagLevel >= 1) {
             context.setDiagLevel(_diagLevel);
         } else {
-            context.getUI().displayErrorMessage(UIUtils.getResourceString("DiagLevelMustBeGtZero.error"));
+            context.getUI().displayErrorMessage(UIUtils.getResourceString("DiagLevelMustBeGtEqOne.error"));
         }
         return true;
     }

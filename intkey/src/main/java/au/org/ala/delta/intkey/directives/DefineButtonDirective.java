@@ -84,7 +84,7 @@ public class DefineButtonDirective extends IntkeyDirective {
         }
     }
 
-    private BasicIntkeyDirectiveInvocation processDefineButton(List<String> tokens, IntkeyContext context) {
+    private BasicIntkeyDirectiveInvocation processDefineButton(List<String> tokens, IntkeyContext context) throws IntkeyDirectiveParseException {
         boolean displayAdvancedOnly = false;
         boolean displayNormalOnly = false;
         boolean inactiveUnlessUsed = false;
@@ -116,8 +116,7 @@ public class DefineButtonDirective extends IntkeyDirective {
         }
 
         if (fileName == null || directivesToRun == null || shortHelp == null) {
-            context.getDirectivePopulator().promptForButtonDefinition();
-            return null;
+            throw new IntkeyDirectiveParseException("InvalidButtonDefinition.error");
         } else {
             return new DefineButtonDirectiveInvocation(displayAdvancedOnly, displayNormalOnly, inactiveUnlessUsed, fileName, directivesToRun, shortHelp, fullHelp);
         }
