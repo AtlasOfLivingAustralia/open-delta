@@ -16,6 +16,7 @@ package au.org.ala.delta.intkey.directives;
 
 import au.org.ala.delta.intkey.directives.invocation.DisplayCommentsDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.OnOffDirectiveInvocation;
+import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class DisplayCommentsDirective extends OnOffDirective {
 
@@ -26,6 +27,11 @@ public class DisplayCommentsDirective extends OnOffDirective {
     @Override
     public OnOffDirectiveInvocation buildCommandObject() {
         return new DisplayCommentsDirectiveInvocation();
+    }
+
+    @Override
+    boolean getInitialOnOffValue(IntkeyContext context) {
+        return context.displayComments();
     }
 
 }

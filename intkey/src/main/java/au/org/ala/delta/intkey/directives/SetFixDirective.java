@@ -16,6 +16,7 @@ package au.org.ala.delta.intkey.directives;
 
 import au.org.ala.delta.intkey.directives.invocation.OnOffDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.SetFixDirectiveInvocation;
+import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class SetFixDirective extends OnOffDirective {
 
@@ -27,5 +28,9 @@ public class SetFixDirective extends OnOffDirective {
     public OnOffDirectiveInvocation buildCommandObject() {
         return new SetFixDirectiveInvocation();
     }
-
+    
+    @Override
+    boolean getInitialOnOffValue(IntkeyContext context) {
+        return context.charactersFixed();
+    }
 }

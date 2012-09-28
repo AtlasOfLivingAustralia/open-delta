@@ -16,6 +16,7 @@ package au.org.ala.delta.intkey.directives;
 
 import au.org.ala.delta.intkey.directives.invocation.DisplayContinuousDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.OnOffDirectiveInvocation;
+import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class DisplayContinuousDirective extends OnOffDirective {
     public DisplayContinuousDirective() {
@@ -25,5 +26,10 @@ public class DisplayContinuousDirective extends OnOffDirective {
     @Override
     public OnOffDirectiveInvocation buildCommandObject() {
         return new DisplayContinuousDirectiveInvocation();
+    }
+    
+    @Override
+    boolean getInitialOnOffValue(IntkeyContext context) {
+        return context.displayContinuous();
     }
 }

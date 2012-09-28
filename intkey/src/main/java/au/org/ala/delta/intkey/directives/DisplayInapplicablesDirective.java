@@ -16,6 +16,7 @@ package au.org.ala.delta.intkey.directives;
 
 import au.org.ala.delta.intkey.directives.invocation.DisplayInapplicablesDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.OnOffDirectiveInvocation;
+import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class DisplayInapplicablesDirective extends OnOffDirective {
 
@@ -26,6 +27,11 @@ public class DisplayInapplicablesDirective extends OnOffDirective {
     @Override
     public OnOffDirectiveInvocation buildCommandObject() {
         return new DisplayInapplicablesDirectiveInvocation();
+    }
+    
+    @Override
+    boolean getInitialOnOffValue(IntkeyContext context) {
+        return context.displayInapplicables();
     }
 
 }

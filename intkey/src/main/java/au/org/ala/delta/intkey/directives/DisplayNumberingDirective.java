@@ -16,6 +16,7 @@ package au.org.ala.delta.intkey.directives;
 
 import au.org.ala.delta.intkey.directives.invocation.DisplayNumberingDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.OnOffDirectiveInvocation;
+import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class DisplayNumberingDirective extends OnOffDirective {
 
@@ -28,4 +29,8 @@ public class DisplayNumberingDirective extends OnOffDirective {
         return new DisplayNumberingDirectiveInvocation();
     }
 
+    @Override
+    boolean getInitialOnOffValue(IntkeyContext context) {
+        return context.displayNumbering();
+    }
 }

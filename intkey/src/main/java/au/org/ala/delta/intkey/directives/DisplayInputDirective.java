@@ -16,6 +16,7 @@ package au.org.ala.delta.intkey.directives;
 
 import au.org.ala.delta.intkey.directives.invocation.DisplayInputDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.OnOffDirectiveInvocation;
+import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class DisplayInputDirective extends OnOffDirective {
 
@@ -26,5 +27,10 @@ public class DisplayInputDirective extends OnOffDirective {
     @Override
     public OnOffDirectiveInvocation buildCommandObject() {
         return new DisplayInputDirectiveInvocation();
+    }
+    
+    @Override
+    boolean getInitialOnOffValue(IntkeyContext context) {
+        return context.displayInput();
     }
 }

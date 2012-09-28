@@ -16,6 +16,7 @@ package au.org.ala.delta.intkey.directives;
 
 import au.org.ala.delta.intkey.directives.invocation.OnOffDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.SetDemonstrationDirectiveInvocation;
+import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class SetDemonstrationDirective extends OnOffDirective {
 
@@ -27,5 +28,9 @@ public class SetDemonstrationDirective extends OnOffDirective {
     public OnOffDirectiveInvocation buildCommandObject() {
         return new SetDemonstrationDirectiveInvocation();
     }
-
+    
+    @Override
+    boolean getInitialOnOffValue(IntkeyContext context) {
+        return context.isDemonstrationMode();
+    }
 }

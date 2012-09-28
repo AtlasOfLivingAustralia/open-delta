@@ -16,6 +16,7 @@ package au.org.ala.delta.intkey.directives;
 
 import au.org.ala.delta.intkey.directives.invocation.DisplayUnknownsDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.OnOffDirectiveInvocation;
+import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class DisplayUnknownsDirective extends OnOffDirective {
 
@@ -26,6 +27,11 @@ public class DisplayUnknownsDirective extends OnOffDirective {
     @Override
     public OnOffDirectiveInvocation buildCommandObject() {
         return new DisplayUnknownsDirectiveInvocation();
+    }
+    
+    @Override
+    boolean getInitialOnOffValue(IntkeyContext context) {
+        return context.displayUnknowns();
     }
 
 }

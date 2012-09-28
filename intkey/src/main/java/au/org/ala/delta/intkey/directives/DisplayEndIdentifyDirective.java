@@ -16,6 +16,7 @@ package au.org.ala.delta.intkey.directives;
 
 import au.org.ala.delta.intkey.directives.invocation.DisplayEndIdentifyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.OnOffDirectiveInvocation;
+import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class DisplayEndIdentifyDirective extends OnOffDirective {
 
@@ -28,4 +29,8 @@ public class DisplayEndIdentifyDirective extends OnOffDirective {
         return new DisplayEndIdentifyDirectiveInvocation();
     }
 
+    @Override
+    boolean getInitialOnOffValue(IntkeyContext context) {
+        return context.displayEndIdentify();
+    }
 }

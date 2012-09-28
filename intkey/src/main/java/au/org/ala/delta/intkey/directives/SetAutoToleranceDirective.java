@@ -16,6 +16,7 @@ package au.org.ala.delta.intkey.directives;
 
 import au.org.ala.delta.intkey.directives.invocation.OnOffDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.SetAutoToleranceDirectiveInvocation;
+import au.org.ala.delta.intkey.model.IntkeyContext;
 
 public class SetAutoToleranceDirective extends OnOffDirective {
 
@@ -26,5 +27,10 @@ public class SetAutoToleranceDirective extends OnOffDirective {
     @Override
     public OnOffDirectiveInvocation buildCommandObject() {
         return new SetAutoToleranceDirectiveInvocation();
+    }
+    
+    @Override
+    boolean getInitialOnOffValue(IntkeyContext context) {
+        return context.isAutoTolerance();
     }
 }

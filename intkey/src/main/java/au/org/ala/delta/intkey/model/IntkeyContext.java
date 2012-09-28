@@ -1013,8 +1013,7 @@ public class IntkeyContext extends AbstractDeltaContext {
      * 
      * @param keyword
      *            the keyword.
-     * @return the list of taxa that are represented by the supplied
-     *         keyword
+     * @return the list of taxa that are represented by the supplied keyword
      */
     public synchronized List<Item> getTaxaForKeyword(String keyword) {
         List<Item> retList = new ArrayList<Item>();
@@ -1304,6 +1303,7 @@ public class IntkeyContext extends AbstractDeltaContext {
 
     /**
      * Sets the required level of diagnostic descriptions.
+     * 
      * @param diagLevel
      */
     public synchronized void setDiagLevel(int diagLevel) {
@@ -1331,18 +1331,36 @@ public class IntkeyContext extends AbstractDeltaContext {
     }
 
     /**
-     * @return a reference to the most recently loaded dataset initialization
-     *         file, or null if no such files have been loaded
+     * @return An .ink file used to load a new dataset. May be a jnlp style file
+     *         specifying where data is to be downloaded from. Or may be a
+     *         directives file that is run to load the dataset in intkey,
+     *         initialize values etc. In the latter case, this value will be the
+     *         same as _initializationFile (see below).
+     * 
+     *         If _datasetStartupURL points to remote content (i.e. it is not a
+     *         file URL), this will be a temporary file used to save the remote
+     *         content referenced by the URL.
+     * 
+     *         If no dataset has been loaded, NULL will be returned
+     * 
      */
     public synchronized File getDatasetStartupFile() {
         return _datasetStartupFile;
     }
 
-    
+    /**
+     * @return A URL pointing to the dataset startup file. If the dataset is
+     *         located on disk, this will be a file URL. NULL will be returned
+     *         if no dataset has been loaded
+     */
     public synchronized URL getDatasetStartupURL() {
         return _datasetStartupURL;
     }
 
+    /**
+     * @return The directory in which the currently loaded dataset is located,
+     *         or NULL is no dataset has been loaded
+     */
     public synchronized File getDatasetDirectory() {
         if (_initializationFile != null) {
             return _initializationFile.getParentFile();
@@ -1363,6 +1381,9 @@ public class IntkeyContext extends AbstractDeltaContext {
         return _characterOrder;
     }
 
+    /**
+     * Use BEST character ordering
+     */
     public synchronized void setCharacterOrderBest() {
         this._characterOrder = IntkeyCharacterOrder.BEST;
         this._taxonToSeparate = -1;
@@ -1372,6 +1393,9 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
+    /**
+     * Use NATURAL character ordering
+     */
     public synchronized void setCharacterOrderNatural() {
         this._characterOrder = IntkeyCharacterOrder.NATURAL;
         this._taxonToSeparate = -1;
@@ -1380,6 +1404,12 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
+    /**
+     * Use SEPARATE character ordering to separate the specified taxon
+     * 
+     * @param taxonToSeparate
+     *            the number of the taxon to separate
+     */
     public synchronized void setCharacterOrderSeparate(int taxonToSeparate) {
         this._characterOrder = IntkeyCharacterOrder.SEPARATE;
         this._taxonToSeparate = taxonToSeparate;
@@ -1389,12 +1419,12 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
+    /**
+     * @return The number of the taxon currently being separated using SEPARATE
+     *         character ordering
+     */
     public synchronized int getTaxonToSeparate() {
         return _taxonToSeparate;
-    }
-
-    public synchronized void setTaxonToSeparate(int taxonToSeparate) {
-        this._taxonToSeparate = taxonToSeparate;
     }
 
     /**
@@ -1438,18 +1468,50 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
+    /**
+     * @return true if inapplicable should match any value when comparing
+     *         character values when processing the USE, DIFFERENCES or
+     *         SIMILARITIES directives
+     */
     public synchronized boolean getMatchInapplicables() {
         return _matchInapplicables;
     }
 
+    /**
+     * @return true if inapplicable should match any value when comparing
+     *         character values when processing the USE, DIFFERENCES or
+     *         SIMILARITIES directives
+     */
     public synchronized boolean getMatchUnknowns() {
         return _matchUnknowns;
     }
 
+    /**
+     * @return The match type - one of overlap (two sets of values match if they
+     *         overlap), subset (two sets of values match if one is a subset of
+     *         the other) or exact (two sets of values match only if they are
+     *         identical) - to use when comparing character values when
+     *         processing the USE, DIFFERENCES or SIMILARITIES directives
+     */
     public synchronized MatchType getMatchType() {
         return _matchType;
     }
 
+    /**
+     * Set the match settings - these specifiy which character values are to be
+     * regarded as equal when processing the USE, DIFFERENCES or SIMILARITIES
+     * directives
+     * 
+     * @param matchUnknowns
+     *            if true, unknown should match any value
+     * @param matchInapplicables
+     *            if true, inapplicable should match any value
+     * @param matchType
+     *            the match type - one of overlap (two sets of values match if
+     *            they overlap), subset (two sets of values match if one is a
+     *            subset of the other) or exact (two sets of values match only
+     *            if they are identical)
+     */
     public synchronized void setMatchSettings(boolean matchUnknowns, boolean matchInapplicables, MatchType matchType) {
         _matchType = matchType;
 
@@ -1480,10 +1542,11 @@ public class IntkeyContext extends AbstractDeltaContext {
         appendToLog(UIUtils.getResourceString("SetMatch.log", StringUtils.join(matchSettingWords, ", ")));
     }
 
-    // Update the specimen with new match settings. This needs to be called each
-    // time the match settings are updated
-    // so that the eliminated taxa can be recalculated given the new match
-    // settings.
+    /**
+     * Update the specimen with new match settings. This needs to be called each
+     * time the match settings are updated so that the eliminated taxa can be
+     * recalculated given the new match settings.
+     */
     private void updateSpecimenMatchSettings() {
         if (_dataset != null) {
             Specimen newSpecimen = new Specimen(_dataset, false, _matchInapplicables, _matchUnknowns, _matchType, _specimen);
@@ -1492,17 +1555,47 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
+    /**
+     * @return The diagType. This specifies whether DIAGNOSE will generate
+     *         specimen- or taxon-diagnostic descriptions. A specimen-diagnostic
+     *         description must be able to distinguish any specimen belonging to
+     *         the diagnosed taxon from any specimen belonging to any other
+     *         taxon. A taxon-diagnostic description must be able to distinguish
+     *         the diagnosed taxon from any other taxon. When generating
+     *         specimen-diagnostic descriptions, the program will not include
+     *         characters which may be inapplicable to specimens in the
+     *         diagnosed taxon, because, for some specimens, such characters
+     *         cannot contribute to the desired separation. The default is
+     *         SPECIMENS.
+     */
     public synchronized DiagType getDiagType() {
         return _diagType;
     }
 
+    /**
+     * Sets the diag type. The diagType Specifies whether DIAGNOSE will generate
+     * specimen- or taxon-diagnostic descriptions. A specimen-diagnostic
+     * description must be able to distinguish any specimen belonging to the
+     * diagnosed taxon from any specimen belonging to any other taxon. A
+     * taxon-diagnostic description must be able to distinguish the diagnosed
+     * taxon from any other taxon. When generating specimen-diagnostic
+     * descriptions, the program will not include characters which may be
+     * inapplicable to specimens in the diagnosed taxon, because, for some
+     * specimens, such characters cannot contribute to the desired separation.
+     * The default is SPECIMENS.
+     * 
+     * @param diagType
+     *            The diag type
+     */
     public synchronized void setDiagType(DiagType diagType) {
         this._diagType = diagType;
 
         appendToLog(UIUtils.getResourceString("DiagtypeSet.log", diagType.toString()));
     }
 
-    // Returns included characters ordered by character number
+    /**
+     * @return included characters ordered by character number
+     */
     public synchronized List<Character> getIncludedCharacters() {
         List<Character> retList = new ArrayList<Character>();
 
@@ -1515,14 +1608,18 @@ public class IntkeyContext extends AbstractDeltaContext {
         return retList;
     }
 
-    // Returns included characters ordered by character number
+    /**
+     * @return excluded characters ordered by character number
+     */
     public synchronized List<Character> getExcludedCharacters() {
         List<Character> excludedCharacters = _dataset.getCharactersAsList();
         excludedCharacters.removeAll(getIncludedCharacters());
         return excludedCharacters;
     }
 
-    // Returns included taxa ordered by taxon number
+    /**
+     * @return included taxa ordered by taxon number
+     */
     public synchronized List<Item> getIncludedTaxa() {
         List<Item> retList = new ArrayList<Item>();
 
@@ -1535,13 +1632,21 @@ public class IntkeyContext extends AbstractDeltaContext {
         return retList;
     }
 
-    // Returns included taxa ordered by taxon number
+    /**
+     * @return excluded taxa ordered by taxon number
+     */
     public synchronized List<Item> getExcludedTaxa() {
         List<Item> excludedTaxa = _dataset.getItemsAsList();
         excludedTaxa.removeAll(getIncludedTaxa());
         return excludedTaxa;
     }
 
+    /**
+     * Set what characters are included
+     * 
+     * @param includedCharacters
+     *            the set of characters that are included
+     */
     public synchronized void setIncludedCharacters(Set<Integer> includedCharacters) {
         doSetIncludedCharacters(includedCharacters);
 
@@ -1552,6 +1657,12 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
+    /**
+     * Helper method for setIncludedCharacters() and setExcludedCharacters()
+     * 
+     * @param includedCharacters
+     *            the set of included characters
+     */
     private synchronized void doSetIncludedCharacters(Set<Integer> includedCharacters) {
         if (includedCharacters == null || includedCharacters.isEmpty()) {
             throw new IllegalArgumentException("Cannot exclude all characters");
@@ -1570,6 +1681,12 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
+    /**
+     * Set what taxa are included
+     * 
+     * @param includedTaxa
+     *            the set of included taxa
+     */
     public synchronized void setIncludedTaxa(Set<Integer> includedTaxa) {
         doSetIncludedTaxa(includedTaxa);
 
@@ -1580,6 +1697,11 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
+    /**
+     * Helper method for setIncludedTaxa() and setExcludedTaxa()
+     * 
+     * @param includedTaxa
+     */
     private synchronized void doSetIncludedTaxa(Set<Integer> includedTaxa) {
         if (includedTaxa == null || includedTaxa.isEmpty()) {
             throw new IllegalArgumentException("Cannot exclude all taxa");
@@ -1597,7 +1719,13 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
-    // Use all available characters aside from those specified.
+    /**
+     * Set what characters are excluded. All characters aside from those
+     * specified will be included.
+     * 
+     * @param excludedCharacters
+     *            The set of excluded characters.
+     */
     public synchronized void setExcludedCharacters(Set<Integer> excludedCharacters) {
         Set<Integer> includedCharacters = new HashSet<Integer>();
         for (int i = 1; i < _dataset.getNumberOfCharacters() + 1; i++) {
@@ -1615,7 +1743,13 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
-    // Use all available taxa aside from those specified.
+    /**
+     * Set what characters are excluded. All characters aside from those
+     * specified will be included.
+     * 
+     * @param excludedCharacters
+     *            The set of excluded characters.
+     */
     public synchronized void setExcludedTaxa(Set<Integer> excludedTaxa) {
         Set<Integer> includedTaxa = new HashSet<Integer>();
         for (int i = 1; i < _dataset.getNumberOfTaxa() + 1; i++) {
@@ -1633,8 +1767,10 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
-    // The currently included characters minus the characters
-    // that have values set in the specimen
+    /**
+     * @return The currently included characters minus the characters that have
+     *         values set in the specimen. Ordered by character number.
+     */
     public synchronized List<Character> getAvailableCharacters() {
         List<Character> retList = getIncludedCharacters();
 
@@ -1647,16 +1783,29 @@ public class IntkeyContext extends AbstractDeltaContext {
         return retList;
     }
 
+    /**
+     * @return The list of characters that have values set in the specimen.
+     *         Ordered by character number
+     */
     public synchronized List<Character> getUsedCharacters() {
         return _specimen.getUsedCharacters();
     }
 
+    /**
+     * @return The list of included taxa, minus the characters that have been
+     *         eliminated from the current investigation. Ordered by taxon
+     *         number.
+     */
     public synchronized List<Item> getAvailableTaxa() {
         List<Item> availableTaxa = getIncludedTaxa();
         availableTaxa.removeAll(getEliminatedTaxa());
         return availableTaxa;
     }
 
+    /**
+     * @return The list of taxa that have been eliminated from the current
+     *         investigation. Ordered by taxon number.
+     */
     public synchronized List<Item> getEliminatedTaxa() {
         Map<Item, Set<Character>> taxaDifferingCharacters = _specimen.getTaxonDifferences();
 
@@ -1699,6 +1848,10 @@ public class IntkeyContext extends AbstractDeltaContext {
         return eliminatedTaxa;
     }
 
+    /**
+     * @return An instance of ImageSettings which contains the default settings
+     *         to use when displaying images and image overlays.
+     */
     public synchronized ImageSettings getImageSettings() {
         ImageSettings imageSettings = new ImageSettings();
 
@@ -1742,35 +1895,85 @@ public class IntkeyContext extends AbstractDeltaContext {
         return infoSettings;
     }
 
-    // Only used for saving settings when SET DEMONSTRATION is set to ON.
+    /**
+     * This method is only used for saving settings when SET DEMONSTRATION is
+     * set to ON.
+     * 
+     * @return The list of locations to search for images.
+     */
     synchronized List<String> getImagePaths() {
         return new ArrayList<String>(_imagePathLocations);
     }
 
+    /**
+     * Sets locations which will be searched for images (characters, taxa,
+     * keywords or startup images).
+     * 
+     * @param imagePaths
+     *            The list of locations to search for images. These may be
+     *            either file paths (relative to the dataset directory if not
+     *            absolute) or urls for remote locations.
+     */
     public synchronized void setImagePaths(List<String> imagePaths) {
         _imagePathLocations = new ArrayList<String>(imagePaths);
 
         appendToLog(UIUtils.getResourceString("ImagepathSet.log", StringUtils.join(imagePaths, ";")));
     }
 
-    // Only used for saving settings when SET DEMONSTRATION is set to ON.
+    /**
+     * This method is only used for saving settings when SET DEMONSTRATION is
+     * set to ON.
+     * 
+     * @return The list of locations to search for information files.
+     */
     synchronized List<String> getInfoPaths() {
         return new ArrayList<String>(_infoPathLocations);
     }
 
+    /**
+     * Sets locations which will be searched for files listed in the taxon
+     * information dialog (accessed via the INFORMATION directive).
+     * 
+     * @param infoPaths
+     *            The list of locations to search for information files. These
+     *            may be either file paths (relative to the dataset directory if
+     *            not absolute) or urls for remote locations.
+     */
     public synchronized void setInfoPaths(List<String> infoPaths) {
         _infoPathLocations = new ArrayList<String>(infoPaths);
         appendToLog(UIUtils.getResourceString("InfopathSet.log", StringUtils.join(infoPaths, ";")));
     }
 
+    /**
+     * Makes a command available in the taxon information dialog.
+     * 
+     * @param subject
+     *            The subject under which the command should be listed in the
+     *            taxon information dialog
+     * @param command
+     *            The directive command to run when the associated subject is
+     *            selected in the taxon information dialog. This may include the
+     *            special parameter "?S" which will be substituted for the
+     *            number of the taxon being examined in the taxon information
+     *            dialog.
+     */
     public synchronized void addTaxonInformationDialogCommand(String subject, String command) {
         _taxonInformationDialogCommands.add(new Pair<String, String>(subject, command));
     }
 
+    /**
+     * @return The subject/command pairs that are listed in the taxon
+     *         information dialog. The command text may include the special
+     *         parameter "?S" which will be substituted for the number of the
+     *         taxon being examined in the dialog when the command is run.
+     */
     public synchronized List<Pair<String, String>> getTaxonInformationDialogCommands() {
         return new ArrayList<Pair<String, String>>(_taxonInformationDialogCommands);
     }
 
+    /**
+     * Called before a new dataset is loaded
+     */
     private void cleanupOldDataset() {
         // need to do this first, as the UI may want to access the
         // _startupFileData as part of its cleanup process
@@ -1811,22 +2014,51 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
+    /**
+     * @return The IntkeyUI
+     */
     public synchronized IntkeyUI getUI() {
         return _appUI;
     }
 
+    /**
+     * 
+     * @return The data contained within the JNLP-style startup file for the
+     *         current dataset, if the dataset was loaded using such a file.
+     *         Otherwise the method returns null.
+     */
     public synchronized StartupFileData getStartupFileData() {
         return _startupFileData;
     }
 
+    /**
+     * @return The directive populator
+     */
     public synchronized DirectivePopulator getDirectivePopulator() {
         return _directivePopulator;
     }
 
+    /**
+     * 
+     * @return true if the values (attributes) set for characters in the
+     *         specimen are fixed such that they are not cleared by the RESTART
+     *         command. In addition, the values set for these characters cannot
+     *         be changed. Used by the SET FIX directive.
+     */
     public synchronized boolean charactersFixed() {
         return _charactersFixed;
     }
 
+    /**
+     * Used by the SET FIX directive. Sets whether or not character values
+     * (attributes) in the specimen are fixed.
+     * 
+     * @param charactersFixed
+     *            If true, the values (attributes) set for characters in the
+     *            specimen will fixed such that they are not cleared by the
+     *            RESTART command. In addition, the values set for these
+     *            characters will be unable to be changed.
+     */
     public synchronized void setCharactersFixed(boolean charactersFixed) {
         if (charactersFixed != this._charactersFixed) {
             this._charactersFixed = charactersFixed;
@@ -1880,18 +2112,57 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
+    /**
+     * @return true if the TOLERANCE is decreased automatically by the program
+     *         to the smallest value such that the number of taxa remaining is
+     *         non-zero; the value is never automatically increased. The default
+     *         is ON in Normal mode, and OFF in Advanced mode.
+     */
     public synchronized boolean isAutoTolerance() {
         return _autoTolerance;
     }
 
+    /**
+     * Sets auto tolerance on or off.
+     * 
+     * @param autoTolerance
+     *            if true then the TOLERANCE is decreased automatically by the
+     *            program to the smallest value such that the number of taxa
+     *            remaining is non-zero; the value is never automatically
+     *            increased. The default is ON in Normal mode, and OFF in
+     *            Advanced mode.
+     */
     public synchronized void setAutoTolerance(boolean autoTolerance) {
         this._autoTolerance = autoTolerance;
     }
 
+    /**
+     * When DEMONSTRATION mode is ON, the RESTART command restores the SET,
+     * DISPLAY, and INCLUDE parameters to the values they had when demonstration
+     * mode was turned on, or the values associated with the selected operation
+     * mode (automatic or manual). When DEMONSTRATION is turned ON from an input
+     * command file it cannot subsequently be turned OFF except from another
+     * input file. This option is intended for running unattended demonstrations
+     * of the program. The default is OFF.
+     * 
+     * @return true if demonstration mode is set to ON.
+     */
     public synchronized boolean isDemonstrationMode() {
         return _demonstrationMode;
     }
 
+    /**
+     * Sets demonstration mode on or off. When DEMONSTRATION mode is ON, the
+     * RESTART command restores the SET, DISPLAY, and INCLUDE parameters to the
+     * values they had when demonstration mode was turned on, or the values
+     * associated with the selected operation mode (automatic or manual). When
+     * DEMONSTRATION is turned ON from an input command file it cannot
+     * subsequently be turned OFF except from another input file. This option is
+     * intended for running unattended demonstrations of the program. The
+     * default is OFF.
+     * 
+     * @param demonstrationMode
+     */
     public synchronized void setDemonstrationMode(boolean demonstrationMode) {
         this._demonstrationMode = demonstrationMode;
         if (_demonstrationMode) {
@@ -1902,6 +2173,14 @@ public class IntkeyContext extends AbstractDeltaContext {
         getUI().setDemonstrationMode(demonstrationMode);
     }
 
+    /**
+     * Gets the set of exact characters. These are characters which are to be
+     * regarded as not subject to error. When such a character is USEd, taxa
+     * inconsistent with the specified value are eliminated, regardless of the
+     * TOLERANCE value.
+     * 
+     * @return The set of exact characters
+     */
     public synchronized Set<Character> getExactCharacters() {
         Set<Character> exactCharacters = new HashSet<Character>();
         for (int charNum : _exactCharactersSet) {
@@ -1910,6 +2189,15 @@ public class IntkeyContext extends AbstractDeltaContext {
         return exactCharacters;
     }
 
+    /**
+     * Sets the set of exact characters. These are characters which are to be
+     * regarded as not subject to error. When such a character is USEd, taxa
+     * inconsistent with the specified value are eliminated, regardless of the
+     * TOLERANCE value.
+     * 
+     * @param characters
+     *            The set of exact characters
+     */
     public synchronized void setExactCharacters(Set<Integer> characters) {
         _exactCharactersSet = new HashSet<Integer>(characters);
 
@@ -1920,104 +2208,241 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
+    /**
+     * Returns true if a character is exact - if it is regarded as not subject
+     * to error. When such a character is USEd, taxa inconsistent with the
+     * specified value are eliminated, regardless of the TOLERANCE value.
+     * 
+     * @param ch
+     *            The character
+     * @return true if the specified character is set to exact.
+     */
     private boolean isCharacterExact(Character ch) {
         return _exactCharactersSet.contains(ch.getCharacterId());
     }
 
+    /**
+     * @return The number of characters which a DIAGNOSE command must find
+     *         before it stops searching for acceptable characters. Characters
+     *         are processed in order of decreasing reliability. If n is 0,
+     *         which is the default, all the characters are examined.
+     */
     public synchronized int getStopBest() {
         return _stopBest;
     }
 
+    /**
+     * Sets the stopbest value - the number of characters which a DIAGNOSE
+     * command must find before it stops searching for acceptable characters.
+     * Characters are processed in order of decreasing reliability. If n is 0,
+     * which is the default, all the characters are examined.
+     * 
+     * @param stopBest
+     *            The stopbest value
+     */
     public synchronized void setStopBest(int stopBest) {
         this._stopBest = stopBest;
     }
 
+    /**
+     * @return true of numbering should be displayed beside character and taxon
+     *         names
+     */
     public synchronized boolean displayNumbering() {
         return _displayNumbering;
     }
 
+    /**
+     * Sets whether or not numbering should be displayed beside character and
+     * taxon names
+     * 
+     * @param displayNumbering
+     *            if true, numbering will be displayed
+     */
     public synchronized void setDisplayNumbering(boolean displayNumbering) {
         this._displayNumbering = displayNumbering;
         updateUI();
     }
 
+    /**
+     * @return true if inapplicable characters should be displayed in the output
+     *         of the DESCRIBE command
+     */
     public synchronized boolean displayInapplicables() {
         return _displayInapplicables;
     }
 
+    /**
+     * Sets whether or not inapplicable characters should be displayed in the
+     * output of the DESCIRBE command.
+     * 
+     * @param displayInapplicables
+     *            if true, inapplicable characters will be displayed in the
+     *            output of the DESCRIBE command.
+     */
     public synchronized void setDisplayInapplicables(boolean displayInapplicables) {
         this._displayInapplicables = displayInapplicables;
     }
 
+    /**
+     * @return true if unknown characters should be displayed in the output of
+     *         the DESCRIBE command
+     */
     public synchronized boolean displayUnknowns() {
         return _displayUnknowns;
     }
 
+    /**
+     * Sets whether or not unknown characters should be displayed in the output
+     * of the DESCIRBE command.
+     * 
+     * @param displayUnknowns
+     *            if true, inapplicable characters will be displayed in the
+     *            output of the DESCRIBE command.
+     */
     public synchronized void setDisplayUnknowns(boolean displayUnknowns) {
         this._displayUnknowns = displayUnknowns;
     }
 
+    /**
+     * @return true if comments in taxon names should be displayed in list boxes
+     *         and in the output of the TAXA command
+     */
     public synchronized boolean displayComments() {
         return _displayComments;
     }
 
+    /**
+     * Sets whether or not comments in taxon names should be displayed in list
+     * boxes and in the output of the TAXA command
+     * 
+     * @param displayComments
+     *            if true, comments in taxon names will be displayed in list
+     *            boxes and in the output of the TAXA command
+     */
     public synchronized void setDisplayComments(boolean displayComments) {
         this._displayComments = displayComments;
         updateUI();
     }
 
+    /**
+     * @return true if CONTINUOUS is on. When CONTINUOUS is ON, images are
+     *         displayed in a continuous loop, and the "Multiple Images" option
+     *         in taxon-image windows is unavailable. The default is OFF.
+     */
     public synchronized boolean displayContinuous() {
         return _displayContinuous;
     }
 
+    /**
+     * Sets whether or not CONTINUOUS is on. When CONTINUOUS is ON, images are
+     * displayed in a continuous loop, and the "Multiple Images" option in
+     * taxon-image windows is unavailable. The default is OFF.
+     * 
+     * @param displayContinuous
+     *            if true, continuous will be set to on.
+     */
     public synchronized void setDisplayContinuous(boolean displayContinuous) {
         this._displayContinuous = displayContinuous;
     }
 
+    /**
+     * Gets the image display mode
+     * 
+     * @return the image display mode
+     */
     public synchronized ImageDisplayMode getImageDisplayMode() {
         return _displayImagesMode;
     }
 
+    /**
+     * Sets the image display mode
+     * 
+     * @param imageDisplayMode
+     *            the image display mode
+     */
     public synchronized void setImageDisplayMode(ImageDisplayMode imageDisplayMode) {
         this._displayImagesMode = imageDisplayMode;
     }
 
+    /**
+     * @return true if keyword selection dialogs should be displayed when
+     *         prompting for characters or taxa. If false, the default character
+     *         or taxon menu will be displayed
+     */
     public synchronized boolean displayKeywords() {
         return _displayKeywords;
     }
 
+    /**
+     * Sets whether or not keyword selection dialogs should be displayed when
+     * prompting for characters or tax
+     * 
+     * @param displayKeywords
+     *            if true, keyword selection dialogs will be displayed when
+     *            prompting for characters or taxa. If false, the default
+     *            character or taxon menu will be displayed
+     */
     public synchronized void setDisplayKeywords(boolean displayKeywords) {
         this._displayKeywords = displayKeywords;
     }
 
+    /**
+     * @return If true, images should be automatically scaled to fit within the
+     *         image window.
+     */
     public synchronized boolean displayScaled() {
         return _displayScaled;
     }
 
+    /**
+     * Sets whether or not images should be automatically scaled to fit within
+     * the image window.
+     * 
+     * @param displayScaled
+     *            True if images should be automatically scaled to fit within
+     *            the image window
+     */
     public synchronized void setDisplayScaled(boolean displayScaled) {
         this._displayScaled = displayScaled;
     }
 
+    /**
+     * @return True if commands specified by DEFINE ENDIDENTIFY are executed at
+     *         the end of an identification.
+     */
     public synchronized boolean displayEndIdentify() {
         return _displayEndIdentify;
     }
 
+    /**
+     * Sets whether or not commands specified by DEFINE ENDIDENTIFY are executed
+     * when a taxon is successfully identified in an investigation.
+     * 
+     * @param displayEndIdentify
+     *            True if commands specified by DEFINE ENDIDENTIFY are executed
+     *            when a taxon is successfully identified in an investigation.
+     */
     public synchronized void setDisplayEndIdentify(boolean displayEndIdentify) {
         this._displayEndIdentify = displayEndIdentify;
     }
 
+    /**
+     * Sets the directive commands that should be run when a taxon is
+     * successfully identified in an investigation.
+     * 
+     * @param commands
+     *            The commands to run when a taxon is successfully identified in
+     *            an investigation
+     */
     public synchronized void setEndIdentifyCommands(List<String> commands) {
         _endIdentifyCommands = new ArrayList<String>(commands);
     }
 
-    public synchronized boolean displayInput() {
-        return _displayInput;
-    }
-
-    public synchronized void setDisplayInput(boolean displayInput) {
-        this._displayInput = displayInput;
-    }
-
+    /**
+     * Run the directive commands set for execution when a taxon is successfully
+     * identified in an investigation.
+     */
     private void executeEndIdentifyCommands() {
         if (_endIdentifyCommands != null) {
             for (String cmd : _endIdentifyCommands) {
@@ -2026,6 +2451,33 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
+    /**
+     * @return true if the contents of an input file are displayed (and included
+     *         in the LOG and JOURNAL files) as it is executed
+     */
+    public synchronized boolean displayInput() {
+        return _displayInput;
+    }
+
+    /**
+     * Sets whether or not the contents of an input file are displayed (and
+     * included in the LOG and JOURNAL files) as it is executed
+     * 
+     * @param displayInput
+     *            If true, the contents of an input file will be displayed (and
+     *            included in the LOG and JOURNAL files) as it is executed
+     */
+    public synchronized void setDisplayInput(boolean displayInput) {
+        this._displayInput = displayInput;
+    }
+
+    /**
+     * Sets the file to write logging output to
+     * 
+     * @param logFile
+     *            the log file
+     * @throws IOException
+     */
     public synchronized void setLogFile(File logFile) throws IOException {
         if (_logPrintFile != null) {
             _logPrintFile.close();
@@ -2038,6 +2490,13 @@ public class IntkeyContext extends AbstractDeltaContext {
         _logPrintFile.setTrimInput(false, true);
     }
 
+    /**
+     * Sets the file to write journal output to
+     * 
+     * @param journalFile
+     *            the journal file
+     * @throws IOException
+     */
     public synchronized void setJournalFile(File journalFile) throws IOException {
         if (_journalPrintFile != null) {
             _journalPrintFile.close();
@@ -2055,6 +2514,13 @@ public class IntkeyContext extends AbstractDeltaContext {
         _journalPrintFile.setTrimInput(false, true);
     }
 
+    /**
+     * Use a new file to write output information to
+     * 
+     * @param outputFile
+     *            the new output file
+     * @throws IOException
+     */
     public synchronized void newOutputFile(File outputFile) throws IOException {
         if (_currentOutputFile != null && !_currentOutputFile.equals(outputFile)) {
             if (_currentOutputFile != null) {
@@ -2067,6 +2533,12 @@ public class IntkeyContext extends AbstractDeltaContext {
         _currentOutputPrintFile.setTrimInput(false, true);
     }
 
+    /**
+     * Close the specified output file
+     * 
+     * @param outputFile
+     *            the output file to close
+     */
     public synchronized void closeOutputFile(File outputFile) {
         if (_currentOutputFile != null && _currentOutputFile.equals(outputFile)) {
             _currentOutputPrintFile.close();
@@ -2074,14 +2546,27 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
+    /**
+     * @return The journal file, or null if one has not been specified
+     */
     public synchronized File getJournalFile() {
         return _journalFile;
     }
 
+    /**
+     * The log file, or null if one has not been specified
+     * 
+     * @return
+     */
     public synchronized File getLogFile() {
         return _logFile;
     }
 
+    /**
+     * The current output file, or null if one has not been specified.
+     * 
+     * @return
+     */
     public synchronized File getOutputFile() {
         return _currentOutputFile;
     }
@@ -2101,6 +2586,9 @@ public class IntkeyContext extends AbstractDeltaContext {
         _currentOutputPrintFile.outputLine(text);
     }
 
+    /**
+     * Appends a blank line to the current output file
+     */
     public synchronized void appendBlankLineToOutputFile() {
         if (_currentOutputFile == null) {
             throw new IllegalStateException("No output file is open");
@@ -2109,18 +2597,52 @@ public class IntkeyContext extends AbstractDeltaContext {
         _currentOutputPrintFile.writeBlankLines(1, 0);
     }
 
+    /**
+     * Returns true if the last line appended to the current output file was a
+     * comment specified via the OUTPUT COMMENT directive
+     * 
+     * @return
+     */
     public synchronized boolean getLastOutputLineWasComment() {
         return _lastOutputLineWasComment;
     }
 
+    /**
+     * Sets whether or not the last line appended to the current output file was
+     * a comment specified via the OUTPUT COMMENT directive
+     * 
+     * @param lastOutputLineWasComment
+     *            true if the last line appended to the current output file was
+     *            a comment specified via the OUTPUT COMMENT directive
+     * @return
+     */
     public synchronized boolean setLastOutputLineWasComment(boolean lastOutputLineWasComment) {
         return _lastOutputLineWasComment = lastOutputLineWasComment;
     }
 
+    /**
+     * @return The image subjects. These words or phrases are placed in the
+     *         "Subjects" list box in the "Select Multiple Images" dialog box,
+     *         which is invoked by the "Multiple Images" option of the "Control"
+     *         menu in taxon-image windows. The images displayed are restricted
+     *         to those whose "subjects" contain any of the words or phrases
+     *         selected in the list box.
+     */
     public synchronized List<String> getImageSubjects() {
         return _imageSubjects;
     }
 
+    /**
+     * Sets the image subjects.
+     * 
+     * @param imageSubjects
+     *            These words or phrases will be placed in the "Subjects" list
+     *            box in the "Select Multiple Images" dialog box, which is
+     *            invoked by the "Multiple Images" option of the "Control" menu
+     *            in taxon-image windows. The images displayed are restricted to
+     *            those whose "subjects" contain any of the words or phrases
+     *            selected in the list box.
+     */
     public synchronized void setImageSubjects(List<String> imageSubjects) {
         _imageSubjects = new ArrayList<String>(imageSubjects);
     }
@@ -2147,6 +2669,11 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
+    /**
+     * Appends the supplied text to the journal
+     * 
+     * @param text
+     */
     public synchronized void appendToJournal(String text) {
         if (_journalPrintFile != null) {
             _journalPrintFile.outputLine(text);
@@ -2155,14 +2682,26 @@ public class IntkeyContext extends AbstractDeltaContext {
         _journalCache.add(text);
     }
 
+    /**
+     * Returns all lines previously written to the log
+     * 
+     * @return The list of lines previously written to the log
+     */
     public synchronized List<String> getLogEntries() {
         return new ArrayList<String>(_logCache);
     }
 
+    /**
+     * @return The directory in which images and information files pulled from
+     *         remote locations are cached.
+     */
     public synchronized File getFileCacheDirectory() {
         return _fileCacheDirectory;
     }
 
+    /**
+     * Updates the entire UI.
+     */
     private void updateUI() {
         // Don't update the UI in the middle of processing an input file. Wait
         // and update once when the
@@ -2172,6 +2711,16 @@ public class IntkeyContext extends AbstractDeltaContext {
         }
     }
 
+    /**
+     * Process the dataset startup file at the specified URL. This URL may point
+     * to either a JNLP style "webstart" file for a dataset, or an actual
+     * directives file with directive commands used to initalize and load the
+     * dataset.
+     * 
+     * @param startupFileUrl
+     *            URL to the startup file.
+     * @throws Exception
+     */
     private synchronized void processStartupFile(URL startupFileUrl) throws Exception {
         URL inkFileLocation = null;
         URL dataFileLocation = null;
@@ -2270,6 +2819,7 @@ public class IntkeyContext extends AbstractDeltaContext {
             }
         } else {
             processInitializationFile(startupFile);
+            _startupFileData = null;
         }
 
         _datasetStartupFile = startupFile;
