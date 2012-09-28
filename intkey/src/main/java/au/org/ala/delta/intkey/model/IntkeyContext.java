@@ -1213,7 +1213,7 @@ public class IntkeyContext extends AbstractDeltaContext {
     /**
      * FOR UNIT TESTING ONLY
      * 
-     * @param processing
+     * @param processing if true, a directives file is currently being processed.
      */
     public synchronized void setProcessingDirectivesFile(boolean processing) {
         _processingDirectivesFile = processing;

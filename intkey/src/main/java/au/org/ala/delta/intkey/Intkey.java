@@ -1822,7 +1822,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     }
 
     /**
-     * Display a differences report between the current specimen and the remaining taxa
+     * Display a differences report between the current specimen and the
+     * remaining taxa
      */
     @Action
     public void btnDiffSpecimenTaxa() {
@@ -1946,8 +1947,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     // =========================================================================================
 
     /**
-     * Load the Desktop in the background.
-     * We do this because Desktop.getDesktop() can be very slow
+     * Load the Desktop in the background. We do this because
+     * Desktop.getDesktop() can be very slow
      */
     private void loadDesktopInBackground() {
         _desktopWorker = new SwingWorker<Desktop, Void>() {
@@ -1965,8 +1966,11 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     /**
      * Execute a directive
-     * @param dir the directive to execute
-     * @param data the data (arguments) for the directive
+     * 
+     * @param dir
+     *            the directive to execute
+     * @param data
+     *            the data (arguments) for the directive
      */
     private void executeDirective(AbstractDirective<IntkeyContext> dir, String data) {
         try {
@@ -2192,9 +2196,13 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     /**
      * Update the view of available taxa
-     * @param availableTaxa the available taxa
-     * @param taxaDifferingCharacters The differing characters for each taxa. Used when the tolerance is greater than zero to display a 
-     * count of differing characters against each taxon 
+     * 
+     * @param availableTaxa
+     *            the available taxa
+     * @param taxaDifferingCharacters
+     *            The differing characters for each taxa. Used when the
+     *            tolerance is greater than zero to display a count of differing
+     *            characters against each taxon
      */
     private void updateAvailableTaxa(List<Item> availableTaxa, Map<Item, Set<Character>> taxaDifferingCharacters) {
         _availableTaxaListModel = new DefaultListModel();
@@ -2221,9 +2229,13 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
 
     /**
      * Update the view of available taxa
-     * @param availableTaxa the available taxa
-     * @param taxaDifferingCharacters The differing characters for each taxa. Used when the tolerance is greater than zero to display a 
-     * count of differing characters against each taxon 
+     * 
+     * @param availableTaxa
+     *            the available taxa
+     * @param taxaDifferingCharacters
+     *            The differing characters for each taxa. Used when the
+     *            tolerance is greater than zero to display a count of differing
+     *            characters against each taxon
      */
     private void updateEliminatedTaxa(List<Item> eliminatedTaxa, Map<Item, Set<Character>> taxaDifferingCharacters) {
         // sort eliminated taxa by difference count
@@ -3205,7 +3217,18 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     // ======== Methods for "find in characters" and "find in taxa" functions
     // ====================
 
-    // Returns number of taxa matched
+    /**
+     * Find taxa in the main UI window whose names and or synonyms match the
+     * supplied search text. Highlight these taxa with a different color.
+     * 
+     * @param searchText
+     *            the text to search with
+     * @param searchSynonyms
+     *            if true, search synonym text for taxa
+     * @param searchEliminatedTaxa
+     *            if true, include eliminated taxa in the search
+     * @return the number of matching taxa.
+     */
     public int findTaxa(String searchText, boolean searchSynonyms, boolean searchEliminatedTaxa) {
 
         IntkeyDataset dataset = _context.getDataset();
@@ -3252,6 +3275,13 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         return _foundAvailableTaxa.size() + _foundEliminatedTaxa.size();
     }
 
+    /**
+     * Select one of the taxa matched by the findTaxa() method. Used to iterate
+     * over the matched taxa
+     * 
+     * @param matchedTaxonIndex
+     *            the index of the matched taxon in the list of matched taxa..
+     */
     public void selectCurrentMatchedTaxon(int matchedTaxonIndex) {
 
         if (matchedTaxonIndex < _foundAvailableTaxa.size()) {
@@ -3268,6 +3298,9 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         }
     }
 
+    /**
+     * Select all taxa matched by the findTaxa() method
+     */
     public void selectAllMatchedTaxa() {
 
         int[] availableTaxaSelectedIndices = new int[_foundAvailableTaxa.size()];
@@ -3286,7 +3319,19 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         _listEliminatedTaxa.setSelectedIndices(eliminatedTaxaSelectedIndices);
     }
 
-    // Returns number of characters matched
+    /**
+     * Find characters in the main UI window whose names and or state
+     * descriptions match the supplied search text. Highlight these characters
+     * with a different color.
+     * 
+     * @param searchText
+     *            the text to search with
+     * @param searchStates
+     *            if true, search synonym text for taxa
+     * @param searchUsedCharacters
+     *            if true, include used characers in the search
+     * @return the number of matching characters.
+     */
     public int findCharacters(String searchText, boolean searchStates, boolean searchUsedCharacters) {
         List<Character> availableCharacters;
 
@@ -3332,6 +3377,14 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         return _foundAvailableCharacters.size() + _foundUsedCharacters.size();
     }
 
+    /**
+     * Select one of the characters matched by the findCharacters() method. Used
+     * to iterate over the matched characters
+     * 
+     * @param matchedCharacterIndex
+     *            the index of the matched character in the list of matched
+     *            characters
+     */
     public void selectCurrentMatchedCharacter(int matchedCharacterIndex) {
 
         if (matchedCharacterIndex < _foundAvailableCharacters.size()) {
@@ -3349,10 +3402,24 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         }
     }
 
+    /**
+     * Comparator to sort taxa by the number of character values (attributes)
+     * differing from the specimen, then by taxon number
+     * 
+     * @author ChrisF
+     * 
+     */
     private class DifferenceCountComparator implements Comparator<Item> {
 
         private Map<Item, Set<Character>> _taxaDifferingCharacters;
 
+        /**
+         * Constructor
+         * 
+         * @param taxaDifferingCharacters
+         *            A map containing the characters for each taxa whose values
+         *            differ from the current specimen.
+         */
         public DifferenceCountComparator(Map<Item, Set<Character>> taxaDifferingCharacters) {
             _taxaDifferingCharacters = taxaDifferingCharacters;
         }
@@ -3370,16 +3437,22 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         }
     }
 
+    /**
+     * Used to open a previously opened dataset via its initialization file
+     * 
+     * @param fileName
+     */
     private void openPreviouslyOpenedFile(String fileName) {
         executeDirective(new NewDatasetDirective(), "\"" + fileName + "\"");
     }
 
     /**
-     * This method saves information about the currently opened dataset: 1. If
-     * the dataset was downloaded from a remote location, the user will be given
-     * the option to save it to disk 2. The dataset is added to the list of most
-     * recently used datasets 3. If the dataset is not currently saved in the
-     * dataset index, the user will be given the option to do this.
+     * This method saves information about the currently opened dataset:<br/>
+     * 1. If the dataset was downloaded from a remote location, the user will be
+     * given the option to save it to disk<br/>
+     * 2. The dataset is added to the list of most recently used datasets<br/>
+     * 3. If the dataset is not currently saved in the dataset index, the user
+     * will be given the option to do this.
      */
     private void saveCurrentlyOpenedDataset() {
         String datasetTitle = _context.getDataset().getHeading().trim();
@@ -3463,6 +3536,15 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         }
     }
 
+    /**
+     * Add a dataset to the dataset index
+     * 
+     * @param datasetTitle
+     *            the dataset's title
+     * @param datasetPath
+     *            the path to the dataset's startup file. This may be a local
+     *            file path or a URL to a remotely hosted file.
+     */
     private void addToDatasetIndex(String datasetTitle, String datasetPath) {
         EditDatasetIndexDialog dlg = new EditDatasetIndexDialog(getMainFrame(), UIUtils.readDatasetIndex(), datasetTitle, datasetPath);
         show(dlg);
@@ -3472,6 +3554,11 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         }
     }
 
+    /**
+     * Get the bounds of the main window
+     * 
+     * @return the bounds of the main window
+     */
     public Rectangle getClientBounds() {
         Rectangle r = _rootSplitPane.getBounds();
         // Rectangle outer = getMainFrame().getBounds();
@@ -3486,6 +3573,9 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         return r;
     }
 
+    /**
+     * Set the preferred look and feel as saved in preferences.
+     */
     private void setLookAndFeel() {
         // To avoid setting the look and feel twice, we are updating the
         // resource bundle before the Swing
@@ -3504,24 +3594,36 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         }
     }
 
+    /**
+     * Use the system look and feel
+     */
     @Action
     public void systemLookAndFeel() {
         au.org.ala.delta.ui.util.UIUtils.systemLookAndFeel(getMainFrame());
         UIUtils.setPreferredLookAndFeel(UIUtils.SYSTEM_LOOK_AND_FEEL);
     }
 
+    /**
+     * Use the metal look and feel
+     */
     @Action
     public void metalLookAndFeel() {
         au.org.ala.delta.ui.util.UIUtils.metalLookAndFeel(getMainFrame());
         UIUtils.setPreferredLookAndFeel(UIUtils.METAL_LOOK_AND_FEEL);
     }
 
+    /**
+     * Use the nimbus look and feel
+     */
     @Action
     public void nimbusLookAndFeel() {
         au.org.ala.delta.ui.util.UIUtils.nimbusLookAndFeel(getMainFrame());
         UIUtils.setPreferredLookAndFeel(UIUtils.NIMBUS_LOOK_AND_FEEL);
     }
 
+    /**
+     * Prompt the user to set the size of the main window
+     */
     @Action
     public void mnuItSetMainWindowSize() {
         JFrame mainFrame = getMainFrame();
@@ -3539,6 +3641,9 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
         }
     }
 
+    /**
+     * Prompt the user to select the font to use in the application
+     */
     @Action
     public void chooseFont() {
         Font f = UIManager.getFont("Label.font");
