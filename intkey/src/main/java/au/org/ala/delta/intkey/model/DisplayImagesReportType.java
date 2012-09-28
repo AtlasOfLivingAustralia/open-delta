@@ -14,6 +14,25 @@
  ******************************************************************************/
 package au.org.ala.delta.intkey.model;
 
+/**
+ * Type of display images report. For use with DISPLAY IMAGES directive
+ * 
+ * @author ChrisF
+ * 
+ */
 public enum DisplayImagesReportType {
-    MISSING_IMAGE_LIST, CHARACTER_IMAGE_LIST, TAXON_IMAGE_LIST
+    /**
+     * List of missing images
+     */
+    MISSING_IMAGE_LIST,
+
+    /**
+     * List of character images
+     */
+    CHARACTER_IMAGE_LIST,
+
+    /**
+     * List of taxon images
+     */
+    TAXON_IMAGE_LIST
 }

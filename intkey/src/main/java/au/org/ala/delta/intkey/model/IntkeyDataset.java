@@ -40,11 +40,31 @@ import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.ImageSettings.FontInfo;
 import au.org.ala.delta.model.impl.ControllingInfo;
 
+/**
+ * Intkey dataset
+ * @author ChrisF
+ *
+ */
 public class IntkeyDataset implements DeltaDataSet {
 
+    /**
+     * The characters file used to create the dataset
+     */
     private File _charactersFile;
+    
+    /**
+     * The items (taxa) file used create the dataset
+     */
     private File _itemsFile;
+    
+    /**
+     * items (taxa) file header
+     */
     private ItemsFileHeader _itemsFileHeader;
+    
+    /**
+     * 
+     */
     private CharactersFileHeader _charactersFileHeader;
     private List<Character> _characters;
     private Set<Character> _charactersToIgnoreForBest;

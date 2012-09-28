@@ -24,6 +24,12 @@ import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.delta.util.Utils;
 
+/**
+ * Misc formatting utilities
+ * 
+ * @author ChrisF
+ * 
+ */
 public class FormattingUtils {
 
     /**

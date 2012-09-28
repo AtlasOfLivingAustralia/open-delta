@@ -14,8 +14,25 @@
  ******************************************************************************/
 package au.org.ala.delta.intkey.model;
 
+/**
+ * Ordering to use when sorting characters for display in the main UI
+ * 
+ * @author ChrisF
+ * 
+ */
 public enum IntkeyCharacterOrder {
+    /**
+     * Natural ordering
+     */
     NATURAL,
+
+    /**
+     * Best ordering
+     */
     BEST,
+
+    /**
+     * Separate a character
+     */
     SEPARATE
 }

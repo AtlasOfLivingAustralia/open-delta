@@ -14,8 +14,26 @@
  ******************************************************************************/
 package au.org.ala.delta.intkey.model;
 
+/**
+ * Image display mode. For use with DISPLAY IMAGES directive
+ * 
+ * @author ChrisF
+ * 
+ */
 public enum ImageDisplayMode {
+
+    /**
+     * Automatically display images
+     */
     AUTO,
+
+    /**
+     * Manually display images
+     */
     MANUAL,
+
+    /**
+     * Suppress display of images
+     */
     OFF
 }

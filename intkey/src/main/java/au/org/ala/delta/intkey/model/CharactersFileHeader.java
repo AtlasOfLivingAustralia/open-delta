@@ -14,31 +14,123 @@
  ******************************************************************************/
 package au.org.ala.delta.intkey.model;
 
+/**
+ * In memory representation of Intkey characters file header.
+ * 
+ * @author ChrisF
+ * 
+ */
 public class CharactersFileHeader {
 
+    /**
+     * the number of characters
+     */
     private int _nc;
-    private int _maxDes; //Not used
+
+    /**
+     * the maximum length of any character description. (not used)
+     */
+    private int _maxDes;
+
+    /**
+     * the record number for the character description information.
+     */
     private int rpCdes;
+
+    /**
+     * the record number for the numbers of character states.
+     */
     private int rpStat;
+
+    /**
+     * the record number for the character notes.
+     */
     private int rpChlp;
+
+    /**
+     * the record number for the character notes groups.
+     */
     private int rpChlpGrp;
+
+    /**
+     * the record number for formatting information (TYPSET) for character notes
+     * output in the main INTKEY window.
+     */
     private int rpChlpFmt1;
+
+    /**
+     * the record number for formatting information (TYPSET) for character notes
+     * output in a help window.
+     */
     private int rpChlpFmt2;
+
+    /**
+     * the record number for character image data.
+     */
     private int rpCImagesC;
+
+    /**
+     * the record number for startup image data.
+     */
     private int rpStartupImages;
+
+    /**
+     * the record number for character keyword image data.
+     */
     private int rpCKeyImages;
+
+    /**
+     * the record number for taxon keyword image data.
+     */
     private int rpTKeyImages;
+
+    /**
+     * the record number for the heading (or dataset registration heading) text.
+     */
     private int rpHeading;
+
+    /**
+     * the record number for the dataset registration subheading text.
+     */
     private int rpRegSubHeading;
+
+    /**
+     * the record number for the dataset validation string.
+     */
     private int rpValidationString;
-    private int rpCharacterMask; //Not used
+
+    /**
+     * the record number for the character mask used when creating the
+     * characters file. (Not used)
+     */
+    private int rpCharacterMask;
+
+    /**
+     * the record number for the string to be used for "or".
+     */
     private int rpOrWord;
+
+    /**
+     * the record number for the name of the characters file to be located on a
+     * CD. (Not used)
+     */
     private int rpCheckForCd;
+
+    /**
+     * the record number for font information for image overlays.
+     */
     private int rpFont;
+
+    /**
+     * the record number for the item subheading information.
+     */
     private int rpItemSubHead;
-    
+
+    /**
+     * ???? Not used
+     */
     private int _cptr;
-    
+
     public int getNC() {
         return _nc;
     }

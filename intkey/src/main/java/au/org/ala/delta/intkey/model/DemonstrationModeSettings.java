@@ -28,6 +28,15 @@ import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MatchType;
 
+/**
+ * Used with the SET DEMONSTATION MODE directive. Saves the values for SET,
+ * DISPLAY and INCLUDE directives that were saved when demonstration mode
+ * enabled. When the investigation is restarted, the settings for these
+ * directives is reverted to the saved values.
+ * 
+ * @author ChrisF
+ * 
+ */
 public class DemonstrationModeSettings {
 
     private boolean _autoTolerance;
@@ -73,7 +82,7 @@ public class DemonstrationModeSettings {
         _charactersFixed = context.charactersFixed();
         if (_charactersFixed) {
             _fixedCharactersAttributes = new ArrayList<Attribute>();
-            for (int charNum: context.getFixedCharactersList()) {
+            for (int charNum : context.getFixedCharactersList()) {
                 Character ch = context.getDataset().getCharacter(charNum);
                 Attribute attr = context.getSpecimen().getAttributeForCharacter(ch);
                 _fixedCharactersAttributes.add(attr);
@@ -84,7 +93,7 @@ public class DemonstrationModeSettings {
         for (Character ch : context.getExactCharacters()) {
             _exactCharactersSet.add(ch.getCharacterId());
         }
-        
+
         _imagePathLocations = context.getImagePaths();
         _infoPathLocations = context.getInfoPaths();
         _matchInapplicables = context.getMatchInapplicables();
@@ -118,10 +127,15 @@ public class DemonstrationModeSettings {
         for (Item taxon : context.getIncludedTaxa()) {
             _includedTaxa.add(taxon.getItemNumber());
         }
-        
 
     }
 
+    /**
+     * Set values for each applicable directive back to the saved value
+     * 
+     * @param context
+     *            the context to apply the settings to.
+     */
     public void loadIntoContext(IntkeyContext context) {
         context.setAutoTolerance(_autoTolerance);
         context.setDiagLevel(_diagLevel);
@@ -159,52 +173,53 @@ public class DemonstrationModeSettings {
         default:
             throw new IllegalArgumentException("Unrecognized character order");
         }
-        
+
         context.setIncludedCharacters(_includedCharacters);
         context.setIncludedTaxa(_includedTaxa);
 
         if (_charactersFixed) {
-            // sort fixed character attributes to that attributes for controlling characters appear
+            // sort fixed character attributes to that attributes for
+            // controlling characters appear
             // in the list before attributes for any dependent characters
             Collections.sort(_fixedCharactersAttributes, new ControllingCharacterAttributeComparator(context));
             context.setFixedCharactersFromAttributes(_fixedCharactersAttributes);
         }
     }
-    
+
     private class ControllingCharacterAttributeComparator implements Comparator<Attribute> {
 
         private IntkeyContext _context;
-        
+
         public ControllingCharacterAttributeComparator(IntkeyContext context) {
             _context = context;
         }
-        
+
         @Override
         public int compare(Attribute attr1, Attribute attr2) {
             Character c1 = attr1.getCharacter();
             Character c2 = attr2.getCharacter();
             List<Character> c1ControllingChars = getAllControllingCharactersForCharacter(c1);
             List<Character> c2ControllingChars = getAllControllingCharactersForCharacter(c2);
-            
+
             if (c2ControllingChars.contains(c1)) {
                 return -1;
             } else if (c1ControllingChars.contains(c2)) {
                 return 1;
             } else {
-                return 0;                
+                return 0;
             }
         }
-        
+
         private List<Character> getAllControllingCharactersForCharacter(Character ch) {
             List<Character> controllingCharacters = new ArrayList<Character>();
-            for (CharacterDependency charDep: ch.getControllingCharacters()) {
+            for (CharacterDependency charDep : ch.getControllingCharacters()) {
                 Character cc = _context.getDataset().getCharacter(charDep.getControllingCharacterId());
                 controllingCharacters.add(cc);
                 controllingCharacters.addAll(getAllControllingCharactersForCharacter(cc));
             }
-            
+
             return controllingCharacters;
         }
-        
+
     }
 }
