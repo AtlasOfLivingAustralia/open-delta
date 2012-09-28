@@ -44,12 +44,14 @@ public class MockDirectivePopulator implements DirectivePopulator {
     }
 
     @Override
-    public List<Item> promptForTaxaByKeyword(String directiveName, boolean selectFromIncludedTaxaOnly, boolean noneKeywordAvailable, boolean includeSpecimenAsOption, MutableBoolean specimenSelected, List<String> returnSelectedKeywords) {
+    public List<Item> promptForTaxaByKeyword(String directiveName, boolean selectFromIncludedTaxaOnly, boolean noneKeywordAvailable, boolean includeSpecimenAsOption, MutableBoolean specimenSelected,
+            List<String> returnSelectedKeywords) {
         return null;
     }
 
     @Override
-    public List<Item> promptForTaxaByList(String directiveName, boolean selectFromIncludedTaxaOnly, boolean autoSelectSingleValue, boolean singleSelect, boolean includeSpecimenAsOption, MutableBoolean specimenSelected, List<String> returnSelectedKeywords) {
+    public List<Item> promptForTaxaByList(String directiveName, boolean selectFromIncludedTaxaOnly, boolean autoSelectSingleValue, boolean singleSelect, boolean includeSpecimenAsOption,
+            MutableBoolean specimenSelected, List<String> returnSelectedKeywords) {
         return null;
     }
 
@@ -84,7 +86,7 @@ public class MockDirectivePopulator implements DirectivePopulator {
     }
 
     @Override
-    public File promptForFile(List<String> fileExtensions, String description, boolean createFileIfNonExistant) throws IOException {
+    public File promptForFile(List<String> fileExtensions, List<String> filePrefixes, String description, boolean createFileIfNonExistant) throws IOException {
         return null;
     }
 

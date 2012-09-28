@@ -39,7 +39,7 @@ public class FileCharactersDirective extends StandardIntkeyDirective {
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new FileArgument("file", UIUtils.getResourceString("CharactersFileChooserDescription.caption"), null, Arrays.asList(new String[] { "ichars" }), false));
+        arguments.add(new FileArgument("file", UIUtils.getResourceString("CharactersFileChooserDescription.caption"), null, null, Arrays.asList(new String[] { "ichars" }), false));
         return arguments;
     }
 

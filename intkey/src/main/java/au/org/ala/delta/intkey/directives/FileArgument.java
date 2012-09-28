@@ -25,11 +25,17 @@ import au.org.ala.delta.util.Utils;
 public class FileArgument extends IntkeyDirectiveArgument<File> {
 
     private List<String> _fileExtensions;
+    private List<String> _filePrefixes;
     private boolean _createFileIfNonExistant;
 
-    public FileArgument(String name, String promptText, File initialValue, List<String> fileExtensions, boolean createFileIfNonExistant) {
+    public FileArgument(String name, String promptText, File initialValue, List<String> fileExtensions, List<String> filePrefixes, boolean createFileIfNonExistant) {
         super(name, promptText, initialValue);
+        if (fileExtensions != null && filePrefixes != null) {
+            throw new IllegalArgumentException("Only one of the file extensions or file prefixes should be non-null");
+        }
+        
         _fileExtensions = fileExtensions;
+        _filePrefixes = filePrefixes;
         _createFileIfNonExistant = createFileIfNonExistant;
     }
 
@@ -46,7 +52,7 @@ public class FileArgument extends IntkeyDirectiveArgument<File> {
             }
             
             try {
-                file = context.getDirectivePopulator().promptForFile(_fileExtensions, getPromptText(), _createFileIfNonExistant);
+                file = context.getDirectivePopulator().promptForFile(_fileExtensions, _filePrefixes, getPromptText(), _createFileIfNonExistant);
             } catch (IOException ex) {
                 throw new IntkeyDirectiveParseException("ErrorCreatingFile.error");
             }

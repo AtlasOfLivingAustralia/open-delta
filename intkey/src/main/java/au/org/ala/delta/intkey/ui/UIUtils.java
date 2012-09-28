@@ -35,6 +35,7 @@ import java.util.prefs.Preferences;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import net.sf.json.JSONArray;
@@ -178,7 +179,11 @@ public class UIUtils {
      * Prompts for a file using the file chooser dialog
      * 
      * @param fileExtensions
-     *            Accepted file extensions
+     *            Accepted file extensions - must be null if filePrefixes is
+     *            non-null
+     * @param filePrefixes
+     *            Accepted file prefixes - must be null if fileExtensions is
+     *            non-null
      * @param description
      *            Description of the acceptable files
      * @param createFileIfNonExistant
@@ -191,12 +196,39 @@ public class UIUtils {
      * @return the selected file, or null if no file was selected.
      * @throws IOException
      */
-    public static File promptForFile(List<String> fileExtensions, String description, boolean createFileIfNonExistant, File startBrowseDirectory, Component parent) throws IOException {
-        String[] extensionsArray = new String[fileExtensions.size()];
-        fileExtensions.toArray(extensionsArray);
+    public static File promptForFile(List<String> fileExtensions, List<String> filePrefixes, final String description, boolean createFileIfNonExistant, File startBrowseDirectory, Component parent)
+            throws IOException {
+        if (fileExtensions != null && filePrefixes != null) {
+            throw new IllegalArgumentException("Only one of the file extensions or file prefixes should be non-null");
+        }
 
         JFileChooser chooser = new JFileChooser(startBrowseDirectory);
-        FileNameExtensionFilter filter = new FileNameExtensionFilter(description, extensionsArray);
+        FileFilter filter;
+
+        if (fileExtensions != null) {
+            String[] extensionsArray = new String[fileExtensions.size()];
+            fileExtensions.toArray(extensionsArray);
+            filter = new FileNameExtensionFilter(description, extensionsArray);
+        } else {
+            final String[] prefixesArray = new String[filePrefixes.size()];
+            filePrefixes.toArray(prefixesArray);
+            filter = new FileFilter() {
+
+                @Override
+                public String getDescription() {
+                    return description;
+                }
+
+                @Override
+                public boolean accept(File f) {
+                    if (f.isDirectory()) {
+                        return true;
+                    } else {
+                        return StringUtils.startsWithAny(f.getName(), prefixesArray);
+                    }
+                }
+            };
+        }
         chooser.setFileFilter(filter);
 
         int returnVal;

@@ -32,7 +32,7 @@ public class FileInputDirective extends StandardIntkeyDirective {
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new FileArgument("file", UIUtils.getResourceString("InputFileChooserDescription.caption"), null, Arrays.asList(new String[] { ".inp" }), false));
+        arguments.add(new FileArgument("file", UIUtils.getResourceString("InputFileChooserDescription.caption"), null, Arrays.asList(new String[] { "inp" }), null,  false));
         return arguments;
     }
 

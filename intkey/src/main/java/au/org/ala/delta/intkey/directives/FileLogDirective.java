@@ -31,7 +31,7 @@ public class FileLogDirective extends StandardIntkeyDirective {
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new FileArgument("file", UIUtils.getResourceString("LogFileChooserDescription.caption"), null, Arrays.asList(new String[] { "log" }), true));
+        arguments.add(new FileArgument("file", UIUtils.getResourceString("LogFileChooserDescription.caption"), null, Arrays.asList(new String[] { "log" }), null, true));
         return arguments;
     }
 

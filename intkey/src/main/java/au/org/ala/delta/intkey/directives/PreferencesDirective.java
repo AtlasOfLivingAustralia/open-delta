@@ -31,7 +31,7 @@ public class PreferencesDirective extends StandardIntkeyDirective {
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new FileArgument("file", UIUtils.getResourceString("PreferencesFileChooserDescription.caption"), null, Arrays.asList(new String[] { "prf" }), false));
+        arguments.add(new FileArgument("file", UIUtils.getResourceString("PreferencesFileChooserDescription.caption"), null, Arrays.asList(new String[] { "prf" }), null, false));
         return arguments;
     }
 

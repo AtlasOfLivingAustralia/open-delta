@@ -36,7 +36,14 @@ public class FileDisplayDirective extends IntkeyDirective {
         FileDisplayDirectiveInvocation invoc = null;
 
         if (filePath == null || filePath.toUpperCase().startsWith(IntkeyDirectiveArgument.DEFAULT_DIALOG_WILDCARD)) {
-            File file = context.getDirectivePopulator().promptForFile(Arrays.asList(new String[] { "rtf", "doc", "htm", "html", "wav", "ink" }), UIUtils.getResourceString("FileDisplayFileChooserDescription.caption"), false);
+            File file = context.getDirectivePopulator().promptForFile(Arrays.asList(new String[] { "rtf", "doc", "htm", "html", "wav", "ink" }), null,
+                    UIUtils.getResourceString("FileDisplayFileChooserDescription.caption"), false);
+
+            if (file == null) {
+                // Cancelled
+                return null;
+            }
+
             invoc = new FileDisplayDirectiveInvocation(file.toURI().toURL(), file.getName());
         } else if (filePath.startsWith("http://")) {
             try {
@@ -49,7 +56,7 @@ public class FileDisplayDirective extends IntkeyDirective {
             File file = Utils.createFileFromPath(filePath, context.getDatasetDirectory());
             invoc = new FileDisplayDirectiveInvocation(file.toURI().toURL(), file.getName());
         }
-        
+
         invoc.setStringRepresentation(getControlWordsAsString() + " " + filePath);
 
         return invoc;

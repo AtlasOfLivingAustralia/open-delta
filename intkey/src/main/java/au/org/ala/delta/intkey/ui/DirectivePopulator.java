@@ -206,10 +206,12 @@ public interface DirectivePopulator {
     Set<Integer> promptForMultiStateValue(MultiStateCharacter ch, Set<Integer> currentSelectedStates, Character dependentCharacter);
 
     /**
-     * Prompt the user to select a file
+     * Prompt the user to select a file, with files filtered either by extension or prefix
      * 
      * @param fileExtensions
-     *            permitted file extensions
+     *            permitted file extensions - must be null if filePrefixes is not null 
+     * @param filePrefixes
+     *            permitted file prefixes - must be null if fileExtensions is not null          
      * @param description
      *            description of the file type
      * @param createFileIfNonExistant
@@ -217,7 +219,7 @@ public interface DirectivePopulator {
      * @return The selected file, or null if the user cancelled the operation
      * @throws IOException
      */
-    File promptForFile(List<String> fileExtensions, String description, boolean createFileIfNonExistant) throws IOException;
+    File promptForFile(List<String> fileExtensions, List<String> filePrefixes, String description, boolean createFileIfNonExistant) throws IOException;
 
     /**
      * Prompt the user to select an on/off value for an intkey option

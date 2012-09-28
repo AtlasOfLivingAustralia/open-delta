@@ -39,7 +39,7 @@ public class FileTaxaDirective extends StandardIntkeyDirective {
     @Override
     protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
         List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
-        arguments.add(new FileArgument("file", UIUtils.getResourceString("TaxaFileChooserDescription.caption"), null, Arrays.asList(new String[] { "iitems" }), false));
+        arguments.add(new FileArgument("file", UIUtils.getResourceString("TaxaFileChooserDescription.caption"), null, null, Arrays.asList(new String[] { "iitems" }), false));
         return arguments;
     }
 

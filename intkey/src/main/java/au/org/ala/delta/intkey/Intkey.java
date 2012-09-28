@@ -131,6 +131,7 @@ import au.org.ala.delta.intkey.directives.FileInputDirective;
 import au.org.ala.delta.intkey.directives.FileJournalDirective;
 import au.org.ala.delta.intkey.directives.FileLogDirective;
 import au.org.ala.delta.intkey.directives.FileOutputDirective;
+import au.org.ala.delta.intkey.directives.FileTaxaDirective;
 import au.org.ala.delta.intkey.directives.FindCharactersDirective;
 import au.org.ala.delta.intkey.directives.FindTaxaDirective;
 import au.org.ala.delta.intkey.directives.IllustrateCharactersDirective;
@@ -1111,7 +1112,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
             // mnuFileBuilder.addDirectiveMenuItem("mnuItFileClose", new
             // FileCloseDirective()); ** File Close is now a NO-OP
             mnuFileBuilder.addDirectiveMenuItem("mnuItFileCharacters", new FileCharactersDirective(), true);
-            mnuFileBuilder.addDirectiveMenuItem("mnuItFileTaxa", new FileCharactersDirective(), true);
+            mnuFileBuilder.addDirectiveMenuItem("mnuItFileTaxa", new FileTaxaDirective(), true);
             mnuFileBuilder.endSubMenu();
 
             mnuFileBuilder.startSubMenu("mnuOutputCmds", true);
@@ -2392,7 +2393,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
                 List<String> fileExtensions = new ArrayList<String>();
                 fileExtensions.add("rtf");
                 try {
-                    File destinationFile = promptForFile(fileExtensions, UIUtils.getResourceString("RtfReportDisplayDialog.fileFilterDescription"), true);
+                    File destinationFile = promptForFile(fileExtensions, null, UIUtils.getResourceString("RtfReportDisplayDialog.fileFilterDescription"), true);
                     if (destinationFile == null) {
                         // user hit cancel.
                         return;
@@ -3123,8 +3124,8 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     }
 
     @Override
-    public File promptForFile(List<String> fileExtensions, String description, boolean createFileIfNonExistant) throws IOException {
-        return UIUtils.promptForFile(fileExtensions, description, createFileIfNonExistant, _lastOpenedDatasetDirectory, getMainFrame());
+    public File promptForFile(List<String> fileExtensions, List<String> filePrefixes, String description, boolean createFileIfNonExistant) throws IOException {
+        return UIUtils.promptForFile(fileExtensions, filePrefixes, description, createFileIfNonExistant, _lastOpenedDatasetDirectory, getMainFrame());
     }
 
     @Override

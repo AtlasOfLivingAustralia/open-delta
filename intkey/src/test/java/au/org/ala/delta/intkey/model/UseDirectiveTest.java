@@ -715,7 +715,7 @@ public class UseDirectiveTest extends IntkeyDatasetTestCase {
         }
         
         @Override
-        public File promptForFile(List<String> fileExtensions, String description, boolean createFileIfNonExistant) throws IOException {
+        public File promptForFile(List<String> fileExtensions, List<String> filePrefixes, String description, boolean createFileIfNonExistant) throws IOException {
             return null;
         }
         

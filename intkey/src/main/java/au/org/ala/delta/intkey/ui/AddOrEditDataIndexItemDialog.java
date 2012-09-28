@@ -173,7 +173,7 @@ public class AddOrEditDataIndexItemDialog extends IntkeyDialog {
 
         List<String> fileExtensions = Arrays.asList(new String[] { "ini", "ink" });
         try {
-            File selectedFile = UIUtils.promptForFile(fileExtensions, fileChooserDescription, false, startBrowseDirectory, this);
+            File selectedFile = UIUtils.promptForFile(fileExtensions, null, fileChooserDescription, false, startBrowseDirectory, this);
             if (selectedFile != null) {
                 _txtFldFilePath.setText(selectedFile.getAbsolutePath());
             }

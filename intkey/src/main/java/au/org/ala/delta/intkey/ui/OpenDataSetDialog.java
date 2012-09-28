@@ -191,7 +191,7 @@ public class OpenDataSetDialog extends IntkeyDialog {
     public void OpenDataSetDialog_Browse() {
         List<String> fileExtensions = Arrays.asList(new String[] { "ini", "ink" });
         try {
-            File selectedFile = UIUtils.promptForFile(fileExtensions, fileChooserDescription, false, _startBrowseDirectory, this);
+            File selectedFile = UIUtils.promptForFile(fileExtensions, null, fileChooserDescription, false, _startBrowseDirectory, this);
             if (selectedFile != null) {
                 // Clear any selection in the list if a file is chosen using the
                 // Browse button

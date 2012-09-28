@@ -131,9 +131,9 @@ public class DirectivePopulatorInterceptor implements DirectivePopulator {
     }
 
     @Override
-    public File promptForFile(List<String> fileExtensions, String description, boolean createFileIfNonExistant) throws IOException {
+    public File promptForFile(List<String> fileExtensions, List<String> filePrefixes, String description, boolean createFileIfNonExistant) throws IOException {
         if (SwingUtilities.isEventDispatchThread()) {
-            return _wrappedDirectivePopulator.promptForFile(fileExtensions, description, createFileIfNonExistant);
+            return _wrappedDirectivePopulator.promptForFile(fileExtensions, filePrefixes, description, createFileIfNonExistant);
         } else {
             return null;
         }
