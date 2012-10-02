@@ -58,23 +58,51 @@ public class IntkeyDataset implements DeltaDataSet {
     private File _itemsFile;
     
     /**
+     * BinFile wrapper for items file
+     */
+    private BinFile _itemsBinFile;
+    
+    /**
      * items (taxa) file header
      */
     private ItemsFileHeader _itemsFileHeader;
     
     /**
-     * 
+     * Characters file header
      */
     private CharactersFileHeader _charactersFileHeader;
+    
+    /**
+     * Dataset characters
+     */
     private List<Character> _characters;
+    
+    /**
+     * The set of character that should be ignored when ordering the best characters using the BEST algorithm
+     */
     private Set<Character> _charactersToIgnoreForBest;
+    
+    /**
+     * Dataset taxa
+     */
     private List<Item> _taxa;
-    private BinFile _itemsBinFile;
 
+    /**
+     * Dataset heading
+     */
     private String _heading;
+    
+    /**
+     * Dataset subheading
+     */
     private String _subHeading;
+    
+    /**
+     * Dataset validation string
+     */
     private String _validationString;
 
+    
     private String _mainCharNotesFormattingInfo;
     private String _helpCharNotesFormattingInfo;
 
