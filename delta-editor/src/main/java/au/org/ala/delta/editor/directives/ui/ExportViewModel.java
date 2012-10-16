@@ -14,15 +14,14 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.directives.ui;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-
 import au.org.ala.delta.editor.directives.DirectiveFileInfo;
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.slotfile.model.DirectiveFile;
+import org.apache.commons.lang.StringUtils;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Manages the data displayed in the ImportExportDialog during an export 
@@ -64,6 +63,12 @@ public class ExportViewModel extends ImportExportViewModel {
 		String exportPath = model.getExportPath();
 		if (StringUtils.isEmpty(exportPath)) {
 			exportPath = model.getDataSetPath();
+
+            // This will happen if the dataset is new and has not yet been saved.
+            if (StringUtils.isEmpty(exportPath)) {
+                _showWarning = true;
+                exportPath = System.getProperty("user.home");
+            }
 		}
 		setCurrentDirectory(new File(exportPath));
 	}

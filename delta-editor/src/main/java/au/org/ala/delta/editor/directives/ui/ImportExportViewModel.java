@@ -40,11 +40,13 @@ public abstract class ImportExportViewModel {
 	protected List<DirectiveFileInfo> _includedDirectivesFiles;
 	protected List<DirectiveFileInfo> _excludedDirectiveFiles;
 	protected boolean _specsDisabled;
+    protected boolean _showWarning;
 
 	public ImportExportViewModel() {
 		_includedDirectivesFiles = new ArrayList<DirectiveFileInfo>();
 		_excludedDirectiveFiles = new ArrayList<DirectiveFileInfo>();
 		_specsDisabled = false;
+        _showWarning = false;
 	}
 
 	public void include(DirectiveFileInfo file) {
@@ -221,6 +223,10 @@ public abstract class ImportExportViewModel {
 	public void setExcludedDirectiveFiles(List<DirectiveFileInfo> excludedDirectiveFiles) {
 		this._excludedDirectiveFiles = excludedDirectiveFiles;
 	}
-	
+
+    public boolean getShowWarning() {
+        return _showWarning;
+    }
+
 	public abstract void populate(EditorViewModel model);
 }

@@ -391,8 +391,22 @@ public class ImportExportDialog extends JDialog {
 		panel_6.setLayout(gl_panel_6);
 
 		JPanel topPanel = new JPanel();
+        JLabel warningLabel = new JLabel();
+        if (_model.getShowWarning()) {
+            warningLabel.setName("datasetNotSavedWarningLabel");
 
-		JLabel lblImportDirectory = new JLabel(directoryLabelText);
+            Icon warningIcon = IconHelper.createImageIconFromAbsolutePath("/au/org/ala/delta/editor/resources/icons/error.png");
+            warningLabel.setIcon(warningIcon);
+            warningLabel.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(new Color(0xFD, 0xD0, 0x17), 2),
+                    BorderFactory.createEmptyBorder(0, 3, 0, 0)));
+            warningLabel.setBackground(Color.WHITE);
+            warningLabel.setOpaque(true);
+        }
+        else {
+            warningLabel.setVisible(false);
+        }
+        JLabel lblImportDirectory = new JLabel(directoryLabelText);
 
 		currentDirectoryTextField = new JTextField();
 		currentDirectoryTextField.setColumns(10);
@@ -436,16 +450,18 @@ public class ImportExportDialog extends JDialog {
 				gl_rightPanel.createSequentialGroup().addGap(5).addComponent(panel_5, GroupLayout.DEFAULT_SIZE, 459, Short.MAX_VALUE)));
 		rightPanel.setLayout(gl_rightPanel);
 		GroupLayout gl_topPanel = new GroupLayout(topPanel);
-		gl_topPanel.setHorizontalGroup(gl_topPanel.createParallelGroup(Alignment.LEADING).addGroup(
-				gl_topPanel.createSequentialGroup().addGap(10).addComponent(lblImportDirectory).addGap(5).addComponent(currentDirectoryTextField, GroupLayout.DEFAULT_SIZE, 353, Short.MAX_VALUE)
-						.addGap(12).addComponent(btnChange).addContainerGap()));
+		gl_topPanel.setHorizontalGroup(gl_topPanel.createParallelGroup(Alignment.LEADING).addGroup(gl_topPanel.createSequentialGroup()
+                .addGap(10).addComponent(warningLabel).addGap(10)).addGroup(
+                gl_topPanel.createSequentialGroup().addGap(10).addComponent(lblImportDirectory).addGap(5).addComponent(currentDirectoryTextField, GroupLayout.DEFAULT_SIZE, 353, Short.MAX_VALUE)
+                        .addGap(12).addComponent(btnChange).addContainerGap()));
 		gl_topPanel
 				.setVerticalGroup(gl_topPanel
-						.createParallelGroup(Alignment.LEADING)
-						.addComponent(lblImportDirectory, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
-						.addGroup(
-								gl_topPanel.createParallelGroup(Alignment.BASELINE).addComponent(currentDirectoryTextField, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
-										.addComponent(btnChange)));
+                        .createSequentialGroup().addGroup(gl_topPanel.createSequentialGroup().addComponent(warningLabel)).addGap(5).addGroup(
+                                gl_topPanel.createParallelGroup(Alignment.LEADING)
+                                        .addComponent(lblImportDirectory, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
+                                        .addGroup(
+                                                gl_topPanel.createParallelGroup(Alignment.BASELINE).addComponent(currentDirectoryTextField, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(btnChange))).addGap(5));
 		topPanel.setLayout(gl_topPanel);
 		getContentPane().setLayout(groupLayout);
 		setPreferredSize(new Dimension(600, 600));
