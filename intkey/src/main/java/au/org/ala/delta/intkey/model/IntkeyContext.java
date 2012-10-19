@@ -27,6 +27,7 @@ import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocationEx
 import au.org.ala.delta.intkey.directives.invocation.LongRunningIntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.directives.invocation.UseDirectiveInvocation;
 import au.org.ala.delta.intkey.ui.DirectivePopulator;
+import au.org.ala.delta.intkey.ui.IntKeyDialogController;
 import au.org.ala.delta.intkey.ui.IntkeyUI;
 import au.org.ala.delta.intkey.ui.UIUtils;
 import au.org.ala.delta.model.Attribute;
@@ -567,6 +568,9 @@ public class IntkeyContext extends AbstractDeltaContext {
      */
     public synchronized void newDataSetFile(final URL datasetFileURL) {
         Logger.log("Reading in directives from url: %s", datasetFileURL.toString());
+
+        // Close any dialogs that have been left open.
+        IntKeyDialogController.closeWindows();
 
         cleanupOldDataset();
 
@@ -1213,7 +1217,8 @@ public class IntkeyContext extends AbstractDeltaContext {
     /**
      * FOR UNIT TESTING ONLY
      * 
-     * @param processing if true, a directives file is currently being processed.
+     * @param processing
+     *            if true, a directives file is currently being processed.
      */
     public synchronized void setProcessingDirectivesFile(boolean processing) {
         _processingDirectivesFile = processing;

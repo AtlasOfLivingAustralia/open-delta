@@ -28,7 +28,7 @@ import au.org.ala.delta.util.Utils;
  */
 public class ImageSettings extends ResourceSettings {
 
-    public static final int DEFAULT_FONT_SIZE = 10;
+    public static final int DEFAULT_FONT_SIZE = 8;
 
     /**
      * Fonts specified using delta's OVERLAY FONTS directive assume a DPI of
