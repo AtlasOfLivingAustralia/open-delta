@@ -61,10 +61,29 @@ import au.org.ala.delta.model.impl.SimpleAttributeData;
 import au.org.ala.delta.util.Pair;
 import au.org.ala.delta.util.Utils;
 
+/**
+ * Utility class for reading intkey datasets
+ * 
+ * @author ChrisF
+ * 
+ */
 public final class IntkeyDatasetFileReader {
 
+    /**
+     * The default word to use for "or" in natural language descriptions. This
+     * is used if no such word is supplied in the dataset.
+     */
     private static String DEFAULT_OR_WORD = "or";
 
+    /**
+     * Read an intkey dataset
+     * 
+     * @param charactersFile
+     *            The intkey characters file. Usually named ichars.
+     * @param itemsFile
+     *            The item items (taxa) file. Usually named iitems.
+     * @return An object representation of the intkey dataset
+     */
     public static IntkeyDataset readDataSet(File charactersFile, File itemsFile) {
 
         // TODO should modify BinFile so that you can pass in a File.
@@ -134,6 +153,14 @@ public final class IntkeyDatasetFileReader {
         return ds;
     }
 
+    /**
+     * Read header information from the characters file
+     * 
+     * @param charBinFile
+     *            The characters file
+     * @param charFileHeader
+     *            The object to store header information in
+     */
     private static void readCharactersFileHeader(BinFile charBinFile, CharactersFileHeader charFileHeader) {
         // read first record which contains header file information;
 
@@ -183,6 +210,14 @@ public final class IntkeyDatasetFileReader {
         charFileHeader.setCptr(headerBytes.getInt());
     }
 
+    /**
+     * Read header information from the items (taxa) file
+     * 
+     * @param itemBinFile
+     *            The items (taxa) file
+     * @param itemFileHeader
+     *            The object to store header information in
+     */
     private static void readItemsFileHeader(BinFile itemBinFile, ItemsFileHeader itemFileHeader) {
 
         ByteBuffer headerBytes = readRecord(itemBinFile, 1);
@@ -304,6 +339,19 @@ public final class IntkeyDatasetFileReader {
         }
     }
 
+    /**
+     * Read the dataset heading, subheading and validation string
+     * 
+     * @param charFileHeader
+     *            Characters file header
+     * @param charBinFile
+     *            Characters file
+     * @param itemBinFile
+     *            Items (taxa) file
+     * @param ds
+     *            Object representation of intkey dataset. This object will be
+     *            updated with the read information
+     */
     private static void readHeadingsAndValidationString(CharactersFileHeader charFileHeader, BinFile charBinFile, BinFile itemBinFile, IntkeyDataset ds) {
         // read and display data heading
         BinFile hFile;
@@ -334,6 +382,27 @@ public final class IntkeyDatasetFileReader {
         }
     }
 
+    /**
+     * Read character data
+     * 
+     * @param charFileHeader
+     *            Characters file header
+     * @param itemFileHeader
+     *            Items (taxa) file header
+     * @param charBinFile
+     *            Characters file
+     * @param itemBinFile
+     *            Items (taxa) file
+     * @param characters
+     *            List to populate with object representations of the dataset
+     *            characters. The calling method must set this data on the
+     *            object representation of the intkey dataset.
+     * @param ds
+     *            Object representation of the intkey dataset. This object will
+     *            be updated with some of the read information, however note
+     *            that the calling method must set the characters on the dataset
+     *            using the list that is returned.
+     */
     private static void readCharacters(CharactersFileHeader charFileHeader, ItemsFileHeader itemFileHeader, BinFile charBinFile, BinFile itemBinFile, List<Character> characters, IntkeyDataset ds) {
 
         int numChars = charFileHeader.getNC();
@@ -357,7 +426,6 @@ public final class IntkeyDatasetFileReader {
 
             au.org.ala.delta.model.Character newChar = null;
             CharacterData impl = new DefaultCharacterData(i + 1);
-
 
             switch (charType) {
             case 1:
@@ -515,6 +583,21 @@ public final class IntkeyDatasetFileReader {
 
     }
 
+    /**
+     * Read character descriptions and states
+     * 
+     * @param charFileHeader
+     *            Characters file header data
+     * @param charBinFile
+     *            Characters file
+     * @param characters
+     *            List of object representations of dataset characters, ordered
+     *            by character number. These objects will be updated with the
+     *            read information.
+     * @param numCharacterStates
+     *            Number of characters for each dataset character, ordered by
+     *            character number.
+     */
     private static void readCharacterDescriptionsAndStates(CharactersFileHeader charFileHeader, BinFile charBinFile, List<Character> characters, List<Integer> numCharacterStates) {
         int numChars = charFileHeader.getNC();
 
@@ -587,6 +670,22 @@ public final class IntkeyDatasetFileReader {
         }
     }
 
+    /**
+     * Read notes for each dataset character
+     * 
+     * @param charFileHeader
+     *            Characters file header
+     * @param charBinFile
+     *            Characters file
+     * @param characters
+     *            List of object representations of dataset characters, ordered
+     *            by character number. These objects will be updated with the
+     *            read information.
+     * @param ds
+     *            Object representation of the intkey dataset. This object will
+     *            be updated with the character notes formatting information, if
+     *            such data is supplied with the dataset.
+     */
     private static void readCharacterNotes(CharactersFileHeader charFileHeader, BinFile charBinFile, List<Character> characters, IntkeyDataset ds) {
         int numChars = charFileHeader.getNC();
 
@@ -615,6 +714,19 @@ public final class IntkeyDatasetFileReader {
         }
     }
 
+    /**
+     * Read maximum and minimum values for integer characters
+     * 
+     * @param itemFileHeader
+     *            Items file header data
+     * @param itemBinFile
+     *            Items file
+     * 
+     * @param characters
+     *            List of object representations of dataset characters, ordered
+     *            by character number. These objects will be updated with the
+     *            read information.
+     */
     private static void readCharacterMinimumsAndMaximums(ItemsFileHeader itemFileHeader, BinFile itemBinFile, List<Character> characters) {
         int numChars = itemFileHeader.getNChar();
 
@@ -645,6 +757,18 @@ public final class IntkeyDatasetFileReader {
         }
     }
 
+    /**
+     * Read character dependencies
+     * 
+     * @param itemFileHeader
+     *            Items file header data
+     * @param itemBinFile
+     *            Items file
+     * @param characters
+     *            List of object representations of dataset characters, ordered
+     *            by character number. These objects will be updated with the
+     *            read information.
+     */
     private static void readCharacterDependencies(ItemsFileHeader itemFileHeader, BinFile itemBinFile, List<Character> characters) {
         DeltaDataSetFactory factory = new DefaultDataSetFactory();
         int numChars = itemFileHeader.getNChar();
@@ -752,6 +876,18 @@ public final class IntkeyDatasetFileReader {
         }
     }
 
+    /**
+     * Read taxon data
+     * 
+     * @param itemFileHeader
+     *            Items (taxa) file header data
+     * @param itemBinFile
+     *            Items (taxa) file
+     * @param taxa
+     *            List of object representation of taxa, ordered by taxon
+     *            number. The calling method must set this data on the object
+     *            representation of the intkey dataset.
+     */
     private static void readTaxonData(ItemsFileHeader itemFileHeader, BinFile itemBinFile, List<Item> taxa) {
 
         int numItems = itemFileHeader.getNItem();
@@ -786,6 +922,22 @@ public final class IntkeyDatasetFileReader {
         readTaxonLinksFiles(itemFileHeader, itemBinFile, taxa);
     }
 
+    /**
+     * Read character images
+     * 
+     * @param charFileHeader
+     *            The characters file header
+     * @param charBinFile
+     *            The characters file
+     * @param itemFileHeader
+     *            The items (taxa) file header data
+     * @param itemBinFile
+     *            The items (taxa) file
+     * @param characters
+     *            The list of object representations of characters in character
+     *            number order. These objects will be updated with the read
+     *            image information.
+     */
     private static void readCharacterImages(CharactersFileHeader charFileHeader, BinFile charBinFile, ItemsFileHeader itemFileHeader, BinFile itemBinFile, List<Character> characters) {
         int numChars = charFileHeader.getNC();
 
@@ -823,6 +975,18 @@ public final class IntkeyDatasetFileReader {
         }
     }
 
+    /**
+     * Read taxon images
+     * 
+     * @param itemFileHeader
+     *            The items (taxa) file reader information
+     * @param itemBinFile
+     *            The items (taxa) File
+     * @param taxa
+     *            The list of object representations of taxa in taxon number
+     *            order. These objects will be updated with the read image
+     *            information.
+     */
     private static void readTaxonImages(ItemsFileHeader itemFileHeader, BinFile itemBinFile, List<Item> taxa) {
         int numItems = itemFileHeader.getNItem();
         int recNo = itemFileHeader.getRpTimages();
@@ -845,6 +1009,17 @@ public final class IntkeyDatasetFileReader {
         }
     }
 
+    /**
+     * Read dataset startup images
+     * 
+     * @param charFileHeader
+     *            The characters file header data
+     * @param charBinFile
+     *            The characters file
+     * @param ds
+     *            Object representation of intkey dataset. This object will be
+     *            updated with the read image information
+     */
     private static void readStartupImages(CharactersFileHeader charFileHeader, BinFile charBinFile, IntkeyDataset ds) {
         if (charFileHeader.getRpStartupImages() > 0) {
             seekToRecord(charBinFile, charFileHeader.getRpStartupImages());
@@ -863,6 +1038,17 @@ public final class IntkeyDatasetFileReader {
         }
     }
 
+    /**
+     * Read character keyword images
+     * 
+     * @param charFileHeader
+     *            The characters file header data
+     * @param charBinFile
+     *            The characters file
+     * @param ds
+     *            Object representation of intkey dataset. This object will be
+     *            updated with the read image information
+     */
     private static void readCharacterKeywordImages(CharactersFileHeader charFileHeader, BinFile charBinFile, IntkeyDataset ds) {
         if (charFileHeader.getRpCKeyImages() > 0) {
             seekToRecord(charBinFile, charFileHeader.getRpCKeyImages());
@@ -881,6 +1067,17 @@ public final class IntkeyDatasetFileReader {
         }
     }
 
+    /**
+     * Read taxon keyword images
+     * 
+     * @param charFileHeader
+     *            The characters file header data
+     * @param charBinFile
+     *            The characters file
+     * @param ds
+     *            Object representation of intkey dataset. This object will be
+     *            updated with the read image information
+     */
     private static void readTaxonKeywordImages(CharactersFileHeader charFileHeader, BinFile charBinFile, IntkeyDataset ds) {
         if (charFileHeader.getRpTKeyImages() > 0) {
             seekToRecord(charBinFile, charFileHeader.getRpTKeyImages());
@@ -899,6 +1096,19 @@ public final class IntkeyDatasetFileReader {
         }
     }
 
+    /**
+     * Read the word to use for "or" when generating natural language
+     * descriptions. If no such data is supplied in the dataset, the
+     * DEFAULT_OR_WORD is used.
+     * 
+     * @param charFileHeader
+     *            Characters file header data
+     * @param charBinFile
+     *            Characters file
+     * @param ds
+     *            Object representation of intkey dataset. This object will be
+     *            updated with the read image information
+     */
     private static void readOrWord(CharactersFileHeader charFileHeader, BinFile charBinFile, IntkeyDataset ds) {
         int recordNo = charFileHeader.getRpOrWord();
         String orWord = null;
@@ -914,6 +1124,18 @@ public final class IntkeyDatasetFileReader {
         ds.setOrWord(orWord);
     }
 
+    /**
+     * Read information about the fonts to use when generating text labels on
+     * image overlays
+     * 
+     * @param charFileHeader
+     *            Characters file header data
+     * @param charBinFile
+     *            Characters file
+     * @param ds
+     *            Object representation of intkey dataset. This object will be
+     *            updated with the read image information
+     */
     private static void readOverlayFonts(CharactersFileHeader charFileHeader, BinFile charBinFile, IntkeyDataset ds) {
         int recordNo = charFileHeader.getRpFont();
         if (recordNo != 0) {
@@ -947,6 +1169,13 @@ public final class IntkeyDatasetFileReader {
         }
     }
 
+    /**
+     * Parse the string used to specify an overlay font
+     * 
+     * @param fontInfoStr
+     *            String representation of an overlay font
+     * @return Object representation of an overlay font
+     */
     private static FontInfo parseOverlayFontString(String fontInfoStr) {
 
         String[] tokens = fontInfoStr.split(" ");
@@ -961,6 +1190,23 @@ public final class IntkeyDatasetFileReader {
         return new FontInfo(size, weight, italic, pitch, family, charSet, name);
     }
 
+    /**
+     * Read character item subheadings. These are used in natural language
+     * descriptions
+     * 
+     * @param charFileHeader
+     *            Characters file header data
+     * @param charBinFile
+     *            Characters file
+     * @param characters
+     *            The list of object representations of characters in character
+     *            number order. These objects will be updated with character
+     *            item subheading data as appropriate.
+     * @param ds
+     *            Object representation of intkey dataset. This object will be
+     *            updated with a boolean specifying whether or not character
+     *            item subheadings are present in the dataset.
+     */
     private static void readCharacterItemSubheadings(CharactersFileHeader charFileHeader, BinFile charBinFile, List<Character> characters, IntkeyDataset ds) {
         int numChars = charFileHeader.getNC();
         int recordNo = charFileHeader.getRpItemSubHead();
@@ -974,6 +1220,20 @@ public final class IntkeyDatasetFileReader {
         }
     }
 
+    /**
+     * Read key state boundaries for real-value characters. These are used to
+     * convert real values for characters into multistate values for use in the
+     * BEST algorithm.
+     * 
+     * @param itemFileHeader
+     *            Items (taxa) file header data.
+     * @param itemBinFile
+     *            Items (taxa) file
+     * @param characters
+     *            The list of object representations of characters in character
+     *            number order. These objects will be updated with key state
+     *            boundaries as appropriate.
+     */
     private static void readRealCharacterKeyStateBoundaries(ItemsFileHeader itemFileHeader, BinFile itemBinFile, List<Character> characters) {
         int numChars = itemFileHeader.getNChar();
         int recNo = itemFileHeader.getRpNkbd();
@@ -1018,6 +1278,19 @@ public final class IntkeyDatasetFileReader {
         ds.setDeltaOutputPermitted(deltaOutputEnabled);
     }
 
+    /**
+     * Read links to files to list for taxa in the intkey taxon information
+     * dialog.
+     * 
+     * @param itemFileHeader
+     *            Items (taxa) file header
+     * @param itemBinFile
+     *            Items (taxa) file
+     * @param taxa
+     *            The list of object representations of characters in character
+     *            number order. These objects will be updated with key state
+     *            boundaries as appropriate.
+     */
     private static void readTaxonLinksFiles(ItemsFileHeader itemFileHeader, BinFile itemBinFile, List<Item> taxa) {
         int numItems = itemFileHeader.getNItem();
 
@@ -1077,10 +1350,40 @@ public final class IntkeyDatasetFileReader {
         }
     }
 
+    /**
+     * Read all attributes for the specified character and taxa. Attribute data
+     * is read off disk on demand because it is often too large to store in
+     * memory.
+     * 
+     * @param itemFileHeader
+     *            Items (taxa) file header data
+     * @param itemBinFile
+     *            Items (taxa) file
+     * @param ch
+     *            The character to read attributes for
+     * @param taxa
+     *            The taxa to read attributes for
+     * @return A list of attributes in the order of the list of taxa supplied to
+     *         the method
+     */
     public static List<Attribute> readAllAttributesForCharacter(ItemsFileHeader itemFileHeader, BinFile itemBinFile, Character ch, List<Item> taxa) {
         return readAttributes(itemFileHeader, itemBinFile, ch, taxa);
     }
 
+    /**
+     * Read the attribute for a character/taxon pair. Attribute data is read off
+     * disk on demand because it is often too large to store in memory.
+     * 
+     * @param itemFileHeader
+     *            Items (taxa) file header data
+     * @param itemBinFile
+     *            Items (taxa) file
+     * @param ch
+     *            The character to read the attribute for
+     * @param taxon
+     *            The taxon to read the character for
+     * @return The attribute data for the character/taxon pair.
+     */
     public static Attribute readAttribute(ItemsFileHeader itemFileHeader, BinFile itemBinFile, Character ch, Item taxon) {
         List<Item> taxonInList = new ArrayList<Item>();
         taxonInList.add(taxon);
@@ -1090,10 +1393,15 @@ public final class IntkeyDatasetFileReader {
 
     /**
      * Read attributes from the items file
-     * @param itemFileHeader item file header
-     * @param itemBinFile item file data
-     * @param c character that we want attributes for
-     * @param taxa taxa that we want attributes for
+     * 
+     * @param itemFileHeader
+     *            item file header
+     * @param itemBinFile
+     *            item file data
+     * @param c
+     *            character that we want attributes for
+     * @param taxa
+     *            taxa that we want attributes for
      * @return a list of attributes for the supplied character and taxa.
      */
     private static List<Attribute> readAttributes(ItemsFileHeader itemFileHeader, BinFile itemBinFile, Character c, List<Item> taxa) {
@@ -1304,27 +1612,58 @@ public final class IntkeyDatasetFileReader {
     // --------------- UTILITY METHODS
     // --------------------------------------------------------
 
-    // Note that records are 1 indexed.
+    /**
+     * Seek to the specified record in the supplied binary file
+     * 
+     * @param bFile
+     *            the binary (characters or taxa) file
+     * @param recordNumber
+     *            The record to seek to. Note that records are 1 indexed.
+     */
     private static void seekToRecord(BinFile bFile, int recordNumber) {
         bFile.seek((recordNumber - 1) * Constants.RECORD_LENGTH_INTEGERS * Constants.SIZE_INT_IN_BYTES);
     }
 
-    // Read the designed record from the file. Note that records are 1 indexed.
+    /**
+     * Read the supplied record from the supplied binary file
+     * 
+     * @param bFile
+     *            the binary (characters or taxa) file
+     * @param recordNumber
+     *            The record to read. Note that records are 1 indexed.
+     * @return the bytes of the specified record.
+     */
     private static ByteBuffer readRecord(BinFile bFile, int recordNumber) {
         seekToRecord(bFile, recordNumber);
         return bFile.readByteBuffer(Constants.RECORD_LENGTH_INTEGERS * Constants.SIZE_INT_IN_BYTES);
     }
 
+    /**
+     * Read a string from the current pointer location in the supplied binary
+     * file.
+     * 
+     * @param bFile
+     *            the binary (characters or taxa) file
+     * @param numBytes
+     * @return
+     */
     private static String readString(BinFile bFile, int numBytes) {
         byte[] bytes = bFile.read(numBytes);
         return BinFileEncoding.decode(bytes);
     }
 
-    // Helper method to deal with a common pattern in intkey data files - one
-    // record
-    // contains a single integer which is the length of the string in bytes, the
-    // following
-    // record contains the text of the string
+    /**
+     * Helper method to deal with a common pattern in intkey data files - one
+     * record contains a single integer which is the length of the string in
+     * bytes, the following record contains the text of the string
+     * 
+     * @param bFile
+     *            the binary (characters or taxa) file
+     * @param recordNumber
+     *            The record containing the length of a string which is stored
+     *            in the following record. Note that records are 1 indexed.
+     * @return the bytes of the specified record.
+     */
     private static String readReferencedString(BinFile bFile, int recordNumber) {
         seekToRecord(bFile, recordNumber);
         int stringLength = bFile.readInt();
@@ -1332,11 +1671,20 @@ public final class IntkeyDatasetFileReader {
         return readString(bFile, stringLength);
     }
 
-    // Helper method to deak with a common pattern in intkey data files - a
-    // record contains
-    // N integer values, each of which, if non-zero point to records from which
-    // a string can be
-    // read using readReferencedString (see above)
+    /**
+     * Helper method to deal with a common pattern in intkey data files - a
+     * record contains N integer values, each of which, if non-zero point to
+     * records from which a string can be read using readReferencedString (see
+     * above)
+     * 
+     * @param bFile
+     *            the binary (characters or taxa) file
+     * @param recordNumber
+     *            The record containing a refer. Note that records are 1
+     *            indexed.
+     * 
+     * @return the list of strings
+     */
     private static List<String> readStringList(BinFile bFile, int recordNumber, int listSize) {
         List<String> returnList = new ArrayList<String>();
 
@@ -1354,6 +1702,16 @@ public final class IntkeyDatasetFileReader {
         return returnList;
     }
 
+    /**
+     * Read a list of integers from the current pointer location in the supplied
+     * binary file
+     * 
+     * @param bFile
+     *            the binary (characters or taxa) file
+     * @param numInts
+     *            the number of integers to read
+     * @return the list of integers
+     */
     private static List<Integer> readIntegerList(BinFile bFile, int numInts) {
         ByteBuffer bb = bFile.readByteBuffer(numInts * Constants.SIZE_INT_IN_BYTES);
 
@@ -1364,6 +1722,16 @@ public final class IntkeyDatasetFileReader {
         return retList;
     }
 
+    /**
+     * Read a list of floating-point values from the current pointer location in
+     * the supplied binary file
+     * 
+     * @param bFile
+     *            the binary (characters or taxa) file
+     * @param numInts
+     *            the number of floating point values to read
+     * @return the list of floating point values
+     */
     private static List<Float> readFloatList(BinFile bFile, int numFloats) {
         ByteBuffer bb = bFile.readByteBuffer(numFloats * Constants.SIZE_INT_IN_BYTES);
 
@@ -1374,14 +1742,30 @@ public final class IntkeyDatasetFileReader {
         return retList;
     }
 
+    /**
+     * Get the number of records spanned by the supplied number of bytes
+     * 
+     * @param numBytes
+     *            The number of bytes
+     * @return The number of records spanned by the supplied number of bytes,
+     *         rounded up.
+     */
     private static int recordsSpannedByBytes(int numBytes) {
         return (int) (Math.ceil((double) numBytes / (double) Constants.RECORD_LENGTH_BYTES));
     }
 
-    // parse a string containing filenames and metadata data in the format
-    // filename {<file information>} filename {<file information>} ...
-    // where <file information> is optional
-    // and return a list of filename and file information pairs.
+    /**
+     * Parse a string containing filenames and metadata data in the format
+     * filename {<file information>} filename {<file information>} ... where
+     * <file information> is optional and return a list of filename and file
+     * information pairs.
+     * 
+     * @param fileData
+     *            file data string in the format described above
+     * @return A list of file name, file information pairs. If no file
+     *         information is supplied for an item, this value will be null in
+     *         the pair.
+     */
     public static List<Pair<String, String>> parseFileData(String fileData) {
         List<Pair<String, String>> retList = new ArrayList<Pair<String, String>>();
 
@@ -1405,11 +1789,17 @@ public final class IntkeyDatasetFileReader {
         return retList;
     }
 
-    // take a string with format:
-    // "filename <file information> <more file information> ..."
-    // and return a list with two items, the first being the filename, and the
-    // second being all
-    // of the file information.
+    /**
+     * take a string with format:
+     * "filename <file information> <more file information> ..." and return a
+     * list with two items, the first being the filename, and the second being
+     * all of the file information.
+     * 
+     * @param filesData
+     *            file information string in the format described above
+     * @return a list with two items, the first being the filename and the
+     *         second being all of the file information
+     */
     public static List<String> separateFileDataStrings(String filesData) {
         List<String> filesDataList = new ArrayList<String>();
 
@@ -1443,6 +1833,18 @@ public final class IntkeyDatasetFileReader {
         return filesDataList;
     }
 
+    /**
+     * Create an object representation of an intkey dataset image.
+     * 
+     * @param fileName
+     *            File name for the image
+     * @param comments
+     *            comments for the image
+     * @param imageType
+     *            The image type, as defined in
+     *            au.org.ala.delta.model.image.ImageType
+     * @return The object representation of the dataset image
+     */
     private static Image createImage(String fileName, String comments, int imageType) {
         DefaultImageData imageData = new DefaultImageData(fileName);
         Image image = new Image(imageData);
