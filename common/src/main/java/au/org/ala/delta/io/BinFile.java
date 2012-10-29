@@ -122,7 +122,6 @@ public class BinFile {
 		}
 		// Clean up the file after closing if it is a temporary file.
 		if (_fileMode == BinFileMode.FM_TEMPORARY) {
-			System.out.println("Deleting "+_filename);
 			File temp = new File(_filename);
 			temp.delete();
 		}

@@ -221,7 +221,6 @@ public class DeltaEditor extends InternalFrameApplication implements PreferenceC
 	protected void ready() {
 
 		EditorPreferences.addPreferencesChangeListener(this);
-		JOptionPane.showConfirmDialog(getMainFrame(), warning, warningTitle, JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE);
 		super.ready();
 		
 		if (_args != null && _args.length > 0) {
