@@ -176,7 +176,7 @@ public class AboutBox extends JDialog implements HyperlinkListener {
 
 	@Action
 	public void showSystemInfo() {
-		SystemInfoBox sysInfoBox = new SystemInfoBox(this);
+		SystemInfoBox sysInfoBox = new SystemInfoBox(this, applicationTitle);
 		sysInfoBox.setVisible(true);
 	}
 

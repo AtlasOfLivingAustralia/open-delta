@@ -626,7 +626,7 @@ public class Utils {
 
     private static final int BYTES_IN_MEGABTYE = 1048576;
 
-    public static String generateSystemInfo() {
+    public static String generateSystemInfo(String applicationTitle) {
 
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss zzzz", Locale.ENGLISH);
         Calendar cal = Calendar.getInstance();
@@ -638,7 +638,7 @@ public class Utils {
         long totalMemory = Runtime.getRuntime().totalMemory() / BYTES_IN_MEGABTYE;
 
         StringBuilder versionInfo = new StringBuilder();
-        versionInfo.append("DELTA Editor " + getVersionFromManifest());
+        versionInfo.append(applicationTitle + " " + getVersionFromManifest());
         versionInfo.append("\n");
         versionInfo.append("date: ");
         versionInfo.append(df.format(currentTime));

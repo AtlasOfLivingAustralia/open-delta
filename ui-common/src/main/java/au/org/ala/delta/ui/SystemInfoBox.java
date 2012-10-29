@@ -45,14 +45,14 @@ public class SystemInfoBox extends JDialog {
 	@Resource
 	String windowTitle;
 	
-	public SystemInfoBox(Dialog owner) {
+	public SystemInfoBox(Dialog owner, String applicationName) {
 		super(owner, true);
 		
 		ActionMap actionMap = Application.getInstance().getContext().getActionMap(this);
 		ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(AboutBox.class);
 		resourceMap.injectFields(this);
 		
-		this.configDetails = Utils.generateSystemInfo();
+		this.configDetails = Utils.generateSystemInfo(applicationName);
 		
 		setTitle(windowTitle);
 		this.setMinimumSize(new Dimension(800, 400));
