@@ -22,6 +22,6 @@ public class DisplayWindowingDirectiveInvocation extends BasicIntkeyDirectiveInv
         // Do nothing. This directive appears to be left over from an older
         // version of Intkey. It is implemented here as a NO OP purely for
         // backwards compatbility.
-        return false;
+        return true;
     }
 }

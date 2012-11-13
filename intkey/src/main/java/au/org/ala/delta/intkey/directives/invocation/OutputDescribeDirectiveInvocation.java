@@ -15,7 +15,6 @@
 package au.org.ala.delta.intkey.directives.invocation;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -39,7 +38,6 @@ import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.util.Pair;
-import au.org.ala.delta.util.Utils;
 
 public class OutputDescribeDirectiveInvocation extends LongRunningIntkeyDirectiveInvocation<Void> {
 

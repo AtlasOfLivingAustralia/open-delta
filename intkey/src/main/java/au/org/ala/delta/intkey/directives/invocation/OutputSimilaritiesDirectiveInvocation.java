@@ -125,7 +125,7 @@ public class OutputSimilaritiesDirectiveInvocation extends LongRunningIntkeyDire
             if (context.getLastOutputLineWasComment()) {
                 context.setLastOutputLineWasComment(false);
             } else {
-                context.appendTextToOutputFile("OUTPUT SIMILARITIES");
+                context.appendTextToOutputFile(this.toString());
             }
             context.appendTextToOutputFile(Utils.formatIntegersAsListOfRanges(similarCharNumbers));
         } catch (IllegalStateException ex) {

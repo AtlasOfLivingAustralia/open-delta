@@ -118,7 +118,7 @@ public class OutputReportsTest extends IntkeyDatasetTestCase {
         String fileContents = FileUtils.readFileToString(tempFile);
         fileContents = fileContents.trim();
 
-        assertEquals("OUTPUT DIFFERENCES" + lineSeparator + "1-5 7-9 11-13 15-16 18-20 25-28 30-31 34-35 37-41 44-54 56-82 84-87", fileContents);
+        assertEquals("OUTPUT DIFFERENCES all all" + lineSeparator + "1-5 7-9 11-13 15-16 18-20 25-28 30-31 34-35 37-41 44-54 56-82 84-87", fileContents);
     }
 
     @Test
@@ -151,7 +151,7 @@ public class OutputReportsTest extends IntkeyDatasetTestCase {
         String fileContents = FileUtils.readFileToString(tempFile);
         fileContents = fileContents.trim();
 
-        assertEquals("OUTPUT SIMILARITIES" + lineSeparator + "6 10 14 17 21-24 29 32-33 36 42-43 55 83", fileContents);
+        assertEquals("OUTPUT SIMILARITIES all all" + lineSeparator + "6 10 14 17 21-24 29 32-33 36 42-43 55 83", fileContents);
     }
 
     @Test

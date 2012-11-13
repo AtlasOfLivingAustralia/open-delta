@@ -125,7 +125,7 @@ public class OutputDifferencesDirectiveInvocation extends LongRunningIntkeyDirec
             if (context.getLastOutputLineWasComment()) {
                 context.setLastOutputLineWasComment(false);
             } else {
-                context.appendTextToOutputFile("OUTPUT DIFFERENCES");
+                context.appendTextToOutputFile(this.toString());
             }
             context.appendTextToOutputFile(Utils.formatIntegersAsListOfRanges(differingCharNumbers));
         } catch (IllegalStateException ex) {

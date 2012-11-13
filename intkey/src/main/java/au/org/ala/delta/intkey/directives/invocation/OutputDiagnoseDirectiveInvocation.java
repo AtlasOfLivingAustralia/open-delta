@@ -37,8 +37,7 @@ public class OutputDiagnoseDirectiveInvocation extends AbstractDiagnoseDirective
         if (_context.getLastOutputLineWasComment()) {
             _context.setLastOutputLineWasComment(false);
         } else {
-            //TODO - need to include arguments to command here
-            _context.appendTextToOutputFile("OUTPUT DIAGNOSE");
+            _context.appendTextToOutputFile(this.toString());
         }
         
         doDiagnose(context, UIUtils.getResourceString("OutputDiagnoseDirective.Progress.Generating"));

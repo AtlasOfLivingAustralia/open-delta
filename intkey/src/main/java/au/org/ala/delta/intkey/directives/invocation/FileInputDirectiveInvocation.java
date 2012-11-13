@@ -18,7 +18,7 @@ import java.io.File;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
 
-public class FileInputDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
+public class FileInputDirectiveInvocation extends LongRunningIntkeyDirectiveInvocation<Void> {
 
     private File _file;
 
@@ -27,9 +27,17 @@ public class FileInputDirectiveInvocation extends BasicIntkeyDirectiveInvocation
     }
 
     @Override
-    public boolean execute(IntkeyContext context) {
+    protected Void doRunInBackground(IntkeyContext context) throws IntkeyDirectiveInvocationException {
         context.processInputFile(_file);
-        return true;
+        
+        return null;
+    }
+
+    @Override
+    protected void handleProcessingDone(IntkeyContext context, Void result) {
+        // Update the UI as the input file may have included operations that have modified the UI which will have been ignored given that this
+        // task is done in the background and all UI updates are ignored from background tasks.
+        context.getUI().handleUpdateAll();
     }
 
 }

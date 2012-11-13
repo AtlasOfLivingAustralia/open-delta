@@ -14,21 +14,36 @@
  ******************************************************************************/
 package au.org.ala.delta.intkey.directives;
 
-import au.org.ala.delta.intkey.directives.invocation.FileCloseDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
-import au.org.ala.delta.intkey.model.IntkeyContext;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-public class FileCloseDirective extends IntkeyDirective {
+import au.org.ala.delta.intkey.directives.invocation.FileCloseDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
+import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
+
+public class FileCloseDirective extends StandardIntkeyDirective {
 
     public FileCloseDirective() {
         super(false, "file", "close");
     }
 
     @Override
-    protected BasicIntkeyDirectiveInvocation doProcess(IntkeyContext context, String data) throws Exception {
-        FileCloseDirectiveInvocation invoc = new FileCloseDirectiveInvocation();
-        invoc.setStringRepresentation(getControlWordsAsString() + " " + data);
-        return invoc;
+    protected List<IntkeyDirectiveArgument<?>> generateArgumentsList(IntkeyContext context) {
+        List<IntkeyDirectiveArgument<?>> arguments = new ArrayList<IntkeyDirectiveArgument<?>>();
+        arguments.add(new FileArgument("file", UIUtils.getResourceString("OutputFileChooserDescription.caption"), null, Arrays.asList(new String[] { "out" }), null, true));
+        return arguments;
+    }
+
+    @Override
+    protected List<IntkeyDirectiveFlag> buildFlagsList() {
+        return null;
+    }
+
+    @Override
+    protected IntkeyDirectiveInvocation buildCommandObject() {
+        return new FileCloseDirectiveInvocation();
     }
 
 }

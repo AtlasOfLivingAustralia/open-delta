@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import au.org.ala.delta.intkey.directives.invocation.FileInputDirectiveInvocation;
-import au.org.ala.delta.intkey.directives.invocation.BasicIntkeyDirectiveInvocation;
+import au.org.ala.delta.intkey.directives.invocation.IntkeyDirectiveInvocation;
 import au.org.ala.delta.intkey.model.IntkeyContext;
 import au.org.ala.delta.intkey.ui.UIUtils;
 
@@ -42,7 +42,7 @@ public class FileInputDirective extends StandardIntkeyDirective {
     }
 
     @Override
-    protected BasicIntkeyDirectiveInvocation buildCommandObject() {
+    protected IntkeyDirectiveInvocation buildCommandObject() {
         return new FileInputDirectiveInvocation();
     }
 

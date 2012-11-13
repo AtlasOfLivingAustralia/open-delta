@@ -14,6 +14,30 @@
  ******************************************************************************/
 package au.org.ala.delta.intkey.model;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.io.StringReader;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.IntRange;
+
 import au.org.ala.delta.Logger;
 import au.org.ala.delta.best.Best;
 import au.org.ala.delta.best.DiagType;
@@ -41,27 +65,6 @@ import au.org.ala.delta.model.image.ImageSettings.FontInfo;
 import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.util.Pair;
 import au.org.ala.delta.util.Utils;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.IntRange;
-
-import javax.swing.*;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.StringReader;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
 
 /**
  * Model. Maintains global application state.
@@ -514,7 +517,8 @@ public class IntkeyContext extends AbstractDeltaContext {
         try {
             parser.parse(directivesFile, IntkeyContext.this);
         } catch (Throwable th) {
-            Logger.log(th.getMessage());
+            th.printStackTrace();
+            Logger.error(th);
             _appUI.displayErrorMessage(UIUtils.getResourceString("ErrorProcessingDirectivesFile.error", directivesFile.getAbsolutePath(), th.getMessage()));
         }
 
@@ -686,7 +690,7 @@ public class IntkeyContext extends AbstractDeltaContext {
         // If this is a long running directive and we are on the event dispatch
         // thread, run the task in the
         // background using a SwingWorker.
-        if (invoc instanceof LongRunningIntkeyDirectiveInvocation && SwingUtilities.isEventDispatchThread()) {
+        if (invoc instanceof LongRunningIntkeyDirectiveInvocation && SwingUtilities.isEventDispatchThread() && !_processingInputFile && !_processingDirectivesFile) {
             LongRunningIntkeyDirectiveInvocation<?> longInvoc = (LongRunningIntkeyDirectiveInvocation<?>) invoc;
             LongRunningDirectiveSwingWorker worker = new LongRunningDirectiveSwingWorker(longInvoc, this, _appUI, executedDirectivesIndex, logInsertionIndex);
             worker.execute();
@@ -2544,8 +2548,8 @@ public class IntkeyContext extends AbstractDeltaContext {
      * @param outputFile
      *            the output file to close
      */
-    public synchronized void closeOutputFile(File outputFile) {
-        if (_currentOutputFile != null && _currentOutputFile.equals(outputFile)) {
+    public synchronized void closeOutputFile(File outputFile) throws IOException {
+        if (_currentOutputFile != null || _currentOutputFile.equals(outputFile)) {
             _currentOutputPrintFile.close();
             _currentOutputFile = null;
         }

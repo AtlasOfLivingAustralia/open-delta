@@ -14,17 +14,32 @@
  ******************************************************************************/
 package au.org.ala.delta.intkey.directives.invocation;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.MessageFormat;
+
+import au.org.ala.delta.Logger;
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 public class FileCloseDirectiveInvocation extends BasicIntkeyDirectiveInvocation {
 
+    private File _file;
+
+    public void setFile(File file) {
+        this._file = file;
+    }
+
     @Override
     public boolean execute(IntkeyContext context) {
-        // Do nothing. This directive is no longer needed as content is now
-        // written out to output files
-        // Immediately. It is implemented here as a NO OP purely for backwards
-        // compatbility.
-        return false;
+        try {
+            context.closeOutputFile(_file);
+            return true;
+        } catch (IOException ex) {
+            Logger.error(ex);
+            context.getUI().displayErrorMessage(MessageFormat.format(UIUtils.getResourceString("CloseOutputFile.error"), _file.getAbsolutePath()));
+            return false;
+        }
     }
 
 }

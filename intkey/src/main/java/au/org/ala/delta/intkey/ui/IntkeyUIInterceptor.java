@@ -35,7 +35,7 @@ public class IntkeyUIInterceptor implements IntkeyUI {
         if (SwingUtilities.isEventDispatchThread()) {
             _wrappedUI.handleNewDataset(dataset);
         } else {
-            Logger.error("Ignoring IntkeyUI.handleNewDataset() called from background thread");
+            Logger.debug("Ignoring IntkeyUI.handleNewDataset() called from background thread");
         }
     }
 
@@ -44,7 +44,7 @@ public class IntkeyUIInterceptor implements IntkeyUI {
         if (SwingUtilities.isEventDispatchThread()) {
             _wrappedUI.handleDatasetClosed();
         } else {
-            Logger.error("Ignoring IntkeyUI.handleDatasetClosed() called from background thread");
+            Logger.debug("Ignoring IntkeyUI.handleDatasetClosed() called from background thread");
         }
     }
 
@@ -53,7 +53,7 @@ public class IntkeyUIInterceptor implements IntkeyUI {
         if (SwingUtilities.isEventDispatchThread()) {
             _wrappedUI.handleUpdateAll();
         } else {
-            Logger.error("Ignoring IntkeyUI.handleUpdateAll() called from background thread");
+            Logger.debug("Ignoring IntkeyUI.handleUpdateAll() called from background thread");
         }
     }
 
@@ -62,7 +62,7 @@ public class IntkeyUIInterceptor implements IntkeyUI {
         if (SwingUtilities.isEventDispatchThread()) {
             _wrappedUI.handleIdentificationRestarted();
         } else {
-            Logger.error("Ignoring IntkeyUI.handleIdentificationRestarted() called from background thread");
+            Logger.debug("Ignoring IntkeyUI.handleIdentificationRestarted() called from background thread");
         }
     }
 
