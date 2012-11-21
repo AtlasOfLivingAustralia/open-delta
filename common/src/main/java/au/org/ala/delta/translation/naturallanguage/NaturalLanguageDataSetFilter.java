@@ -55,7 +55,7 @@ public class NaturalLanguageDataSetFilter extends AbstractDataSetFilter implemen
 		if (attribute.isUnknown()) { 
 			return false;
 		}
-		if (attribute.isExclusivelyInapplicable()) {
+		if (attribute.isExclusivelyInapplicable() || _context.getDataSet().checkApplicability(character, item).isInapplicable()) {
 			return false;
 		}
 		if (item.isVariant()) {

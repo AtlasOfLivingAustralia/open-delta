@@ -14,19 +14,12 @@
  ******************************************************************************/
 package au.org.ala.delta.translation.naturallanguage;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.commons.lang.StringUtils;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
-import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateAttribute;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
@@ -39,6 +32,12 @@ import au.org.ala.delta.translation.attribute.AttributeParser;
 import au.org.ala.delta.translation.attribute.AttributeTranslator;
 import au.org.ala.delta.translation.attribute.AttributeTranslatorFactory;
 import au.org.ala.delta.translation.attribute.CommentedValueList.Values;
+import org.apache.commons.lang.StringUtils;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * The NaturalLanguageTranslator is responsible for turning a DELTA data set

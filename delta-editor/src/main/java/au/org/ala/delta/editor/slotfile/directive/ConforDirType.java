@@ -314,7 +314,7 @@ public class ConforDirType {
         new Directive(new String[] {"SUBJECT", "FOR", "OUTPUT", "FILES"}, 4, ConforDirType.SUBJECT_FOR_OUTPUT_FILES, DirectiveArgType.DIRARG_TEXT, new DirInDefault(), new DirOutDefault()),
         new Directive(new String[] {"TAXON", "IMAGES", "", ""}, 4, ConforDirType.TAXON_IMAGES, DirectiveArgType.DIRARG_INTERNAL, DirInTaxonImages.class, new DirInDefault(), new DirOutTaxonImages()),
         new Directive(new String[] {"TAXON", "KEYWORD", "IMAGES", ""}, 4, ConforDirType.TAXON_KEYWORD_IMAGES, DirectiveArgType.DIRARG_TEXT, new DirInDefault(), new DirOutDefault()),
-        new Directive(new String[] {"TAXON", "LINKS", "", ""}, 4, ConforDirType.TAXON_LINKS, DirectiveArgType.DIRARG_ITEMFILELIST, null, null),
+        new Directive(new String[] {"TAXON", "LINKS", "", ""}, 4, ConforDirType.TAXON_LINKS, DirectiveArgType.DIRARG_ITEMFILELIST, new DirInDefault(), new DirOutDefault()),
         new Directive(new String[] {"TRANSLATE", "IMPLICIT", "VALUES", ""}, 4, ConforDirType.TRANSLATE_IMPLICIT_VALUES, DirectiveArgType.DIRARG_NONE, new DirInDefault(), new DirOutDefault()),
         new Directive(new String[] {"TRANSLATE", "INTO", "ALICE", "FORMAT"}, 4, ConforDirType.TRANSLATE_INTO_ALICE_FORMAT, DirectiveArgType.DIRARG_TRANSLATION, new DirInDefault(), new DirOutDefault()),
         new Directive(new String[] {"TRANSLATE", "INTO", "DELTA", "FORMAT"}, 4, ConforDirType.TRANSLATE_INTO_DELTA_FORMAT, DirectiveArgType.DIRARG_TRANSLATION, new DirInDefault(), new DirOutDefault()),
