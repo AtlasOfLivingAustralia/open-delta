@@ -17,6 +17,7 @@ package au.org.ala.delta.intkey.directives.invocation;
 import java.io.File;
 
 import au.org.ala.delta.intkey.model.IntkeyContext;
+import au.org.ala.delta.intkey.ui.UIUtils;
 
 public class FileInputDirectiveInvocation extends LongRunningIntkeyDirectiveInvocation<Void> {
 
@@ -28,6 +29,7 @@ public class FileInputDirectiveInvocation extends LongRunningIntkeyDirectiveInvo
 
     @Override
     protected Void doRunInBackground(IntkeyContext context) throws IntkeyDirectiveInvocationException {
+        progress(UIUtils.getResourceString("FileInputDirective.Progress"));
         context.processInputFile(_file);
         
         return null;
