@@ -70,7 +70,7 @@ public class PlainTextNaturalLanguageTranslatorTest extends NaturalLangaugeTrans
 	public void testOmitRedundantVariantAttributes() throws Exception {
 		initialiseContext(DEFAULT_DATASET_PATH);
 		_context.setOmitRedundantVariantAttributes(true);
-		
+
 		_dataSetTranslator.translateItems();
 		checkResult("redundant_variant_attr_omitted.txt");
 	}

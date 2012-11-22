@@ -1,0 +1,39 @@
+*SHOW ~ open-delta simple test data set.
+
+*CHARACTER LIST
+#1. character text <with comment 1>/
+
+#2. character integer numeric <comment 2>/
+       whole units/
+
+#3. character real numeric <comment 3>/
+       real units/
+       
+#4. character unordered multistate <comment 4>/
+       1. state 1/
+       2. state 2/
+
+#5. character ordered multistate/
+       1. state 3/
+       2. state 4/
+       3. state 5/
+
+#6. linked <comment 1>/
+       1. state 6/
+       2. state 7/
+       3. state 8/
+
+#7. linked <comment 2>/
+       1. state 9/
+       2. state 10/
+       3. state 11/
+
+#8. linked <comment 3>/
+       1. state 12/
+       2. state 13/
+       3. state 14/
+
+#9. linked <comment 4>/
+       1. state 15/
+       2. state 16/
+       3. state 17/
