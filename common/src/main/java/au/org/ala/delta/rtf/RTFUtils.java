@@ -14,12 +14,12 @@
  ******************************************************************************/
 package au.org.ala.delta.rtf;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.IntRange;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.IntRange;
 
 public class RTFUtils {
 
@@ -89,8 +89,8 @@ public class RTFUtils {
             // Ignore, and return the original text
             return -1;
         }
-
-        return text.indexOf(handler.getFilteredText());
+        IntRange firstKeyWordPos = handler.getFirstKeywordPosition();
+        return firstKeyWordPos.getMaximumInteger()-1;
     }
 
     /**

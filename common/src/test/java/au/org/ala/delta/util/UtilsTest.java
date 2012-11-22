@@ -14,11 +14,12 @@
  ******************************************************************************/
 package au.org.ala.delta.util;
 
+import junit.framework.TestCase;
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import junit.framework.TestCase;
 
 public class UtilsTest extends TestCase {
 
@@ -139,7 +140,14 @@ public class UtilsTest extends TestCase {
 		System.out.println(ilist);	
 		assertEquals(Arrays.asList(expected).toString(), ilist.toString());
 	}
-	
+
+
+    @Test
+    public void testCapitalizeFirstWord() {
+        String text = "\\i{}pleonites 1\\endash{}3\\i0{}";
+
+        assertEquals("\\i{}Pleonites 1\\endash{}3\\i0{}", Utils.capitaliseFirstWord(text));
+    }
 	
 	
 //	/**

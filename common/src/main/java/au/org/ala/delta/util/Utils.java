@@ -839,7 +839,7 @@ public class Utils {
             if (tmp.charAt(index) == '\\') {
                 index = RTFUtils.skipKeyword(text, index);
 
-                if (index < 0 || Character.isLetterOrDigit(tmp.charAt(index))) {
+                if (index < 0 || index >= tmp.length() || Character.isLetterOrDigit(tmp.charAt(index))) {
                     break;
                 }
             }
