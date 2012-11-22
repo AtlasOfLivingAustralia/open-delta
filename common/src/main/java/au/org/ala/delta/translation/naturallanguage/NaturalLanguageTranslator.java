@@ -23,6 +23,7 @@ import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.format.AttributeFormatter;
 import au.org.ala.delta.model.format.CharacterFormatter;
 import au.org.ala.delta.model.format.ItemFormatter;
+import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.translation.AbstractIterativeTranslator;
 import au.org.ala.delta.translation.ItemListTypeSetter;
 import au.org.ala.delta.translation.PrintFile;
@@ -414,6 +415,9 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
     	if (StringUtils.isEmpty(master) || StringUtils.isEmpty(text)) {
             return text;
         }
+        master = RTFUtils.stripFormatting(master);
+        text = RTFUtils.stripFormatting(text);
+
         String[] masterWords = master.split("\\s+");
         String[] words = text.split("\\s+");
         

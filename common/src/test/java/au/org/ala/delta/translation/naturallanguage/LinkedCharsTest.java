@@ -60,6 +60,16 @@ public class LinkedCharsTest extends NaturalLangaugeTranslatorTest {
 		_dataSetTranslator.translateItems();
 		checkResult("/dataset/inapplicable/expected_results/test.prt");
 	}
+
+    @Test
+    public void testTransationWithCharacterDependencies() throws Exception {
+        initialiseContext("/dataset/inapplicable/tonat");
+
+
+
+        _dataSetTranslator.translateItems();
+        checkResult("/dataset/inapplicable/expected_results/test.prt");
+    }
 	
 
 }

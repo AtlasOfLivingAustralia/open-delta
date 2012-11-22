@@ -10,14 +10,13 @@ item 2 <comment 2>
 
       (1) Character text attribute 2,1. (2) Character integer numeric 1 whole
 units. (4) Character unordered multistate state 1. (5) Character ordered
-multistate state 5. (6) Linked state 7; (7) state 10; (8) state 13; (9) state
-16.
+multistate state 5. (7) Linked state 10; (8) state 13; (9) state 16.
 
 
 item 3
 
       (1) Character text attribute 3,1. (5) Character ordered multistate state
-5. (7) Linked state 10; (8) state 14.
+5. (7) Linked state 10, or not applicable; (8) state 14.
 
 
 item 4
