@@ -1,0 +1,26 @@
+item 1 <comment 1>
+
+      (1) Character text attribute 1,1. (2) Character integer numeric 1-3 whole
+units. (3) Character real numeric 2.5 real units. (4) Character unordered
+multistate state 1, or state 2. (5) Character ordered multistate state 3 to
+state 5. (6) Linked state 6; (7) state 10; (8) state 14; (9) state 15.
+
+
+item 2 <comment 2>
+
+      (1) Character text attribute 2,1. (2) Character integer numeric 1 whole
+units. (4) Character unordered multistate state 1. (5) Character ordered
+multistate state 5. (6) Linked state 7; (7) state 10; (8) state 13; (9) state
+16.
+
+
+item 3
+
+      (1) Character text attribute 3,1. (5) Character ordered multistate state
+5. (7) Linked state 10; (8) state 14.
+
+
+item 4
+
+      (1) Character text attribute 4,1. (3) Character real numeric 22.1 real
+units. (6) Linked state 8; (7) state 11; (8) state 14; (9) state 17.
