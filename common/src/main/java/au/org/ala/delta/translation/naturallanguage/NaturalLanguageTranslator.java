@@ -27,7 +27,6 @@ import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.translation.AbstractIterativeTranslator;
 import au.org.ala.delta.translation.ItemListTypeSetter;
 import au.org.ala.delta.translation.PrintFile;
-import au.org.ala.delta.translation.Words;
 import au.org.ala.delta.translation.Words.Word;
 import au.org.ala.delta.translation.attribute.AttributeParser;
 import au.org.ala.delta.translation.attribute.AttributeTranslator;
@@ -242,12 +241,11 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
         if (item.isVariant()) {
             // next character is a capital
             _printer.capitaliseNextWord();
-            _printer.writeJustifiedText(Words.word(Word.VARIANT), 0);
         }
 
         Attribute attribute = _dataSet.getAttribute(item.getItemNumber(), characterNumber);
        
-        String itemDescription = attribute.getValueAsString();
+        String itemDescription = _itemFormatter.formatItemDescription(item, attribute.getValueAsString());
         _printer.writeJustifiedText(itemDescription, 0);
 
         complete(completionAction, itemDescription);

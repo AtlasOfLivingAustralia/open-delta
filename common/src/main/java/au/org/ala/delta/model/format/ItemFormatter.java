@@ -65,6 +65,17 @@ public class ItemFormatter extends Formatter {
     }
 
     /**
+     * Used to format an item description where the description is obtained via the CHARACTER FOR TAXON NAMES
+     * directive.
+     * @param item the Item
+     * @param description the description text.
+     * @return the item description.
+     */
+    public String formatItemDescription(Item item, String description) {
+        return formatItemDescription(item, description, _commentStrippingMode);
+    }
+
+    /**
      * Formats the supplied item in a standard way according to the parameters
      * supplied at construction time.
      * 
