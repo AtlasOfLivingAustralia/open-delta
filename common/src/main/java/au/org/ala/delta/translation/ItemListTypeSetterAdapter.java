@@ -47,6 +47,13 @@ public class ItemListTypeSetterAdapter implements ItemListTypeSetter {
 	@Override
 	public void afterItemHeading() {}
 
+
+    @Override
+    public void beforeItemSubheading() {}
+
+    @Override
+    public void afterItemSubheading() {}
+
 	@Override
 	public void beforeItemName() {}
 

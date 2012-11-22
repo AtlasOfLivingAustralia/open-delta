@@ -146,10 +146,6 @@ public class PrintFile {
         _outputFixedWidth = outputFixedWidth;
     }
 
-    public void insertTypeSettingMarks(int number) {
-
-    }
-
     public void close() {
         _output.flush();
         if (_output != System.out && _output != System.err) {

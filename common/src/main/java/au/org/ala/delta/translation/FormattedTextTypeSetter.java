@@ -14,11 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.translation;
 
-import java.text.ParseException;
-import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
@@ -26,6 +21,10 @@ import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.TypeSettingMark;
 import au.org.ala.delta.model.TypeSettingMark.MarkPosition;
 import au.org.ala.delta.model.format.Formatter.CommentExtractor;
+import org.apache.commons.lang.StringUtils;
+
+import java.text.ParseException;
+import java.util.Map;
 
 
 /**
@@ -130,8 +129,15 @@ public class FormattedTextTypeSetter extends PlainTextTypeSetter {
 	public void afterItemHeading() {
 		writeTypeSettingMark(MarkPosition.AFTER_ITEM_HEADING);
 	}
-	
-	
+
+    public void beforeItemSubheading() {
+        writeTypeSettingMark(MarkPosition.BEFORE_ITEM_SUBHEADING);
+    }
+
+    public void afterItemSubheading() {
+        writeTypeSettingMark(MarkPosition.AFTER_ITEM_SUBHEADING);
+    }
+
 	public void beforeItemName() {
 		if (!_firstItemInFile) {
 			if (hasTypeSettingMark(MarkPosition.BEFORE_ITEM_NAME)) {
@@ -149,7 +155,7 @@ public class FormattedTextTypeSetter extends PlainTextTypeSetter {
 	
 	public void newParagraph() {
 		_printer.endLine();
-		_printer.insertTypeSettingMarks(16);
+		//_printer.insertTypeSettingMarks(16);
 	}
 	
 	@Override

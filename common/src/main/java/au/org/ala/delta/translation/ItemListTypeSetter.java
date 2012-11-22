@@ -39,6 +39,10 @@ public interface ItemListTypeSetter {
 
 	public abstract void afterItemHeading();
 
+    public abstract void beforeItemSubheading();
+
+    public abstract void afterItemSubheading();
+
 	public abstract void beforeItemName();
 
 	public abstract void afterItemName();

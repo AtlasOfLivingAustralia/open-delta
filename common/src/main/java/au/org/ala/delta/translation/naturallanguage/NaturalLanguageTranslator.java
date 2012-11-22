@@ -568,11 +568,12 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
         
 		if (StringUtils.isNotEmpty(itemSubheading)) {
 			_lastItemSubheadingWritten = character.getCharacterId();
-			
-            _printer.insertTypeSettingMarks(32);
+
+
+            _typeSetter.beforeItemSubheading();
             writeSentence(itemSubheading, 0);
 
-            _printer.insertTypeSettingMarks(33);
+            _typeSetter.afterItemSubheading();
         }
 	}
 
