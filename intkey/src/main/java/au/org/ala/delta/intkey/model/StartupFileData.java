@@ -17,16 +17,60 @@ package au.org.ala.delta.intkey.model;
 import java.io.File;
 import java.net.URL;
 
+/**
+ * In memory representation of the data contained in the JNLP-style startup
+ * files for delta datasets.
+ * 
+ * @author ChrisF
+ * 
+ */
 public class StartupFileData {
 
+    /**
+     * Remote location at which the startup file itself can be located
+     */
     private URL _inkFileLocation;
+
+    /**
+     * Remote location for the zip file containing the intkey dataset
+     */
     private URL _dataFileLocation;
+
+    /**
+     * The name of the directives file inside the dataset zip archive to use to
+     * initialize the dataset
+     */
     private String _initializationFileLocation;
+
+    /**
+     * A semi-colon separated list of locations to search for dataset images.
+     * These may be relative locations inside the unzipped dataset, or remote
+     * locations
+     */
     private String _imagePath;
+
+    /**
+     * A semi-colon separated list of locations to search for dataset
+     * information files. These may be relative locations inside the unzipped
+     * dataset, or remote locations
+     */
     private String _infoPath;
+
+    /**
+     * If true, the dataset was downloaded from a remote location. If false, the
+     * dataset is one that has been saved locally.
+     */
     private boolean _remoteDataset;
 
+    /**
+     * Local copy of the zip file containing the dataset
+     */
     private File _dataFileLocalCopy;
+
+    /**
+     * Location on local disk for the dataset initialization file, extracted
+     * from the zip file.
+     */
     private File _initializationFileLocalCopy;
 
     public URL getInkFileLocation() {
@@ -84,7 +128,7 @@ public class StartupFileData {
     public void setInitializationFileLocalCopy(File initializationFileLocalCopy) {
         this._initializationFileLocalCopy = initializationFileLocalCopy;
     }
-    
+
     public boolean isRemoteDataset() {
         return _remoteDataset;
     }

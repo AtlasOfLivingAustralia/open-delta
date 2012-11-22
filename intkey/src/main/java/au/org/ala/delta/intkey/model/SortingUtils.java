@@ -81,7 +81,6 @@ public class SortingUtils {
         return doOrdering(context, OrderingType.SEPARATE, taxonToSeparate);
     }    
 
-    // TODO change arguments, pass in something other than the entire context.
     /**
      * Determines best order and separating power of all characters in the
      * supplied context's dataset

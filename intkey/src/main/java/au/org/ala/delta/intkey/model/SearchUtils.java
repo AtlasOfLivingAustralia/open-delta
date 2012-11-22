@@ -26,11 +26,27 @@ import au.org.ala.delta.model.TextAttribute;
 
 /**
  * Utility methods for searching for text in characters and taxa
+ * 
  * @author ChrisF
- *
+ * 
  */
 public class SearchUtils {
-    
+
+    /**
+     * Returns true if the supplied text is contained in the character
+     * description and optionally its states.
+     * 
+     * @param ch
+     *            The character
+     * @param searchText
+     *            The search text
+     * @param searchStates
+     *            If true, the characters states (in the case of a multistate)
+     *            or the character's units (in the case of a numeric character)
+     *            will also be searched for the supplied text
+     * @return True if the supplied text is contained within the character's
+     *         description, or optionally the character's states or units.
+     */
     public static boolean characterMatches(Character ch, String searchText, boolean searchStates) {
         boolean result = false;
 
@@ -59,7 +75,21 @@ public class SearchUtils {
 
         return result;
     }
-    
+
+    /**
+     * Returns true if the supplied text matches the taxon description, or any
+     * of the taxon's synonym strings if provided.
+     * 
+     * @param searchText
+     *            The search text
+     * @param taxon
+     *            The taxon
+     * @param synonymStrings
+     *            The synonym strings for the taxon that should also be searched
+     *            for the search text. Supply null if not applicable.
+     * @return true if the supplied text matches the taxon description, or any
+     *         of the taxon's synonym strings if provided.
+     */
     public static boolean taxonMatches(String searchText, Item taxon, List<String> synonymStrings) {
         String searchTextLowerCase = searchText.toLowerCase();
 
@@ -77,7 +107,18 @@ public class SearchUtils {
 
         return false;
     }
-    
+
+    /**
+     * Returns the synonymy strings for a taxon
+     * 
+     * @param taxon
+     *            The taxon
+     * @param taxaSynonymyAttributes
+     *            The map of taxon to synonymy attributes for all taxa in the
+     *            dataset.
+     * @return The synonymy strings for the taxon, or an empty list if there
+     *         aren't any.
+     */
     public static List<String> getSynonymyStringsForTaxon(Item taxon, Map<Item, List<TextAttribute>> taxaSynonymyAttributes) {
         List<TextAttribute> taxonSynonymyAttributes = taxaSynonymyAttributes.get(taxon);
         List<String> synonymyStrings = new ArrayList<String>();
@@ -85,7 +126,7 @@ public class SearchUtils {
         for (TextAttribute attr : taxonSynonymyAttributes) {
             synonymyStrings.add(attr.getText());
         }
-        
+
         return synonymyStrings;
     }
 }

@@ -21,17 +21,25 @@ import au.org.ala.delta.model.impl.DefaultItemData;
 
 import java.util.List;
 
+/**
+ * Intkey implementation of ItemData. Makes getAttributes(), getAttribute() and
+ * addAttribute() unsupported operations because due to memory restrictions,
+ * this data needs to be read straight from disk in Intkey.
+ * 
+ * @author ChrisF
+ * 
+ */
 public class IntkeyItemData extends DefaultItemData {
-    
+
     // These methods are not supported as to get attribute data,
-    // Intkey has to read this data off disk using methods provided 
+    // Intkey has to read this data off disk using methods provided
     // in the IntkeyDataset class.
 
     public IntkeyItemData(int number) {
-		super(number, null);
-	}
+        super(number, null);
+    }
 
-	@Override
+    @Override
     public List<Attribute> getAttributes() {
         throw new UnsupportedOperationException();
     }

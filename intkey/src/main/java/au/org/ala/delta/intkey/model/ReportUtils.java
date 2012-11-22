@@ -55,6 +55,34 @@ import au.org.ala.delta.util.Utils;
  */
 public class ReportUtils {
 
+    /**
+     * Generates summary information for the supplied multistate character and
+     * list of taxa
+     * 
+     * @param ch
+     *            The character
+     * @param attrs
+     *            All attributes for the character
+     * @param taxa
+     *            The taxa
+     * @param outputToDeltaFormat
+     *            True if the summary is being output to delta format. The
+     *            output is slightly different in this situation.
+     * @return A list of objects:
+     *         <ol>
+     *         <li>The number of unknown attributes for the supplied character
+     *         and taxa (int)</li>
+     *         <li>The number of inapplicable attributes for the supplied
+     *         character and taxa (int)</li>
+     *         <li>The number of inapplicable attributes for the supplied
+     *         character and taxa (int)</li>
+     *         <li>The number of recorded attributes for the supplied character
+     *         and taxa (int)</li>
+     *         <li>State distribution - Map of state number to total number of
+     *         instances of that state number in attributes for the supplied
+     *         taxa. (Map Integer to Integer)</li>
+     *         </ol>
+     */
     public static List<Object> generateMultiStateSummaryInformation(MultiStateCharacter ch, List<Attribute> attrs, List<Item> taxa, boolean outputToDeltaFormat) {
         int numUnknown = 0;
         int numInapplicable = 0;
@@ -99,6 +127,38 @@ public class ReportUtils {
         return Arrays.asList(new Object[] { numUnknown, numInapplicable, numRecorded, stateDistribution });
     }
 
+    /**
+     * Generates summary information for the supplied integer character and list
+     * of taxa
+     * 
+     * @param ch
+     *            The character
+     * @param attrs
+     *            All attributes for the character
+     * @param taxa
+     *            The taxa
+     * @param outputToDeltaFormat
+     *            True if the summary is being output to delta format. The
+     *            output is slightly different in this situation.
+     * @return A list of objects:
+     *         <ol>
+     *         <li>The number of unknown attributes for the supplied character
+     *         and taxa (int)</li>
+     *         <li>The number of inapplicable attributes for the supplied
+     *         character and taxa (int)</li>
+     *         <li>The number of inapplicable attributes for the supplied
+     *         character and taxa (int)</li>
+     *         <li>The number of recorded attributes for the supplied character
+     *         and taxa (int)</li>
+     *         <li>State distribution - Map of integer value to total number of
+     *         instances of that value in attributes for the supplied taxa. (Map
+     *         Integer to Integer)</li>
+     *         <li>Mean of the values for the attributes for the supplied
+     *         character and taxa (Double)</li>
+     *         <li>Standard deviation of the values for the attributes for the
+     *         supplied character and taxa (Double)</li>
+     *         </ol>
+     */
     public static List<Object> generateIntegerSummaryInformation(IntegerCharacter ch, List<Attribute> attrs, List<Item> taxa, boolean outputToDeltaFormat) {
         int numUnknown = 0;
         int numInapplicable = 0;
@@ -156,6 +216,43 @@ public class ReportUtils {
         return Arrays.asList(new Object[] { numUnknown, numInapplicable, numRecorded, valueDistribution, mean, stdDev });
     }
 
+    /**
+     * Generates summary information for the supplied real character and list of
+     * taxa
+     * 
+     * @param ch
+     *            The character
+     * @param attrs
+     *            All attributes for the character
+     * @param taxa
+     *            The taxa
+     * @param outputToDeltaFormat
+     *            True if the summary is being output to delta format. The
+     *            output is slightly different in this situation.
+     * @return A list of objects:
+     *         <ol>
+     *         <li>The number of unknown attributes for the supplied character
+     *         and taxa (int)</li>
+     *         <li>The number of inapplicable attributes for the supplied
+     *         character and taxa (int)</li>
+     *         <li>The number of inapplicable attributes for the supplied
+     *         character and taxa (int)</li>
+     *         <li>The number of recorded attributes for the supplied character
+     *         and taxa (int)</li>
+     *         <li>Minimum value for the attributes for the supplied character
+     *         and taxa (Double)</li>
+     *         <li>Maximum value for the attributes for the supplied character
+     *         and taxa (Double)</li>
+     *         <li>The number of the taxon whose attribute for the supplied
+     *         character has the minimum value (int)</li>
+     *         <li>The number of the taxon whose attribute for the supplied
+     *         character has the maximum value (int)</li>
+     *         <li>Mean of the values for the attributes for the supplied
+     *         character and taxa (Double)</li>
+     *         <li>Standard deviation of the values for the attributes for the
+     *         supplied character and taxa (Double)</li>
+     *         </ol>
+     */
     public static List<Object> generateRealSummaryInformation(RealCharacter ch, List<Attribute> attrs, List<Item> taxa, boolean outputToDeltaFormat) {
         int numUnknown = 0;
         int numInapplicable = 0;
@@ -213,6 +310,31 @@ public class ReportUtils {
         return Arrays.asList(new Object[] { numUnknown, numInapplicable, numRecorded, minValue, maxValue, minValueTaxonIndex, maxValueTaxonIndex, mean, stdDev });
     }
 
+    /**
+     * Generates summary information for the supplied text character and list of
+     * taxa
+     * 
+     * @param ch
+     *            The character
+     * @param attrs
+     *            All attributes for the character
+     * @param taxa
+     *            The taxa
+     * @param outputToDeltaFormat
+     *            True if the summary is being output to delta format. The
+     *            output is slightly different in this situation.
+     * @return A list of objects:
+     *         <ol>
+     *         <li>The number of unknown attributes for the supplied character
+     *         and taxa (int)</li>
+     *         <li>The number of inapplicable attributes for the supplied
+     *         character and taxa (int)</li>
+     *         <li>The number of inapplicable attributes for the supplied
+     *         character and taxa (int)</li>
+     *         <li>The number of recorded attributes for the supplied character
+     *         and taxa (int)</li>
+     *         </ol>
+     */
     public static List<Object> generateTextSummaryInformation(TextCharacter ch, List<Attribute> attrs, List<Item> taxa, boolean outputToDeltaFormat) {
         int numUnknown = 0;
         int numInapplicable = 0;
@@ -241,6 +363,15 @@ public class ReportUtils {
         return Arrays.asList(new Object[] { numUnknown, numInapplicable, numRecorded });
     }
 
+    /**
+     * Calculates the mean and standard deviation for the supplied list of
+     * doubles
+     * 
+     * @param valuesForMeanAndStdDev
+     *            List of doubles
+     * @return A pair of doubles. First is the mean, second is the standard
+     *         deviation.
+     */
     private static Pair<Double, Double> calcuateMeanAndStandardDeviation(List<Double> valuesForMeanAndStdDev) {
         double sum = 0;
         for (double value : valuesForMeanAndStdDev) {
@@ -261,6 +392,15 @@ public class ReportUtils {
         return new Pair<Double, Double>(mean, stdDev);
     }
 
+    /**
+     * Generate RTF content for the STATUS DISPLAY directive and append it to
+     * the supplied RTF builder.
+     * 
+     * @param context
+     *            The intkey context
+     * @param builder
+     *            The RTF builder
+     */
     public static void generateStatusDisplayContent(IntkeyContext context, RTFBuilder builder) {
         String onValue = UIUtils.getResourceString("Status.onValue");
         String offValue = UIUtils.getResourceString("Status.offValue");
@@ -297,6 +437,15 @@ public class ReportUtils {
 
     }
 
+    /**
+     * Generate RTF content for the STATUS INCLUDE CHARACTERS directive and
+     * append it to the supplied RTF builder.
+     * 
+     * @param context
+     *            The intkey context
+     * @param builder
+     *            The RTF builder
+     */
     public static void generateStatusIncludeCharactersContent(IntkeyContext context, RTFBuilder builder) {
         List<Character> includedCharacters = context.getIncludedCharacters();
         List<Integer> includedCharacterNumbers = new ArrayList<Integer>();
@@ -309,6 +458,15 @@ public class ReportUtils {
         builder.appendText(UIUtils.getResourceString("Status.IncludeCharacters.content", includedCharacters.size(), formattedCharacterNumbers));
     }
 
+    /**
+     * Generate RTF content for the STATUS INCLUDE TAXA directive and append it
+     * to the supplied RTF builder.
+     * 
+     * @param context
+     *            The intkey context
+     * @param builder
+     *            The RTF builder
+     */
     public static void generateStatusIncludeTaxaContent(IntkeyContext context, RTFBuilder builder) {
         List<Item> includedTaxa = context.getIncludedTaxa();
         List<Integer> includedTaxaNumbers = new ArrayList<Integer>();
@@ -321,6 +479,15 @@ public class ReportUtils {
         builder.appendText(UIUtils.getResourceString("Status.IncludeTaxa.content", includedTaxa.size(), formattedTaxaNumbers));
     }
 
+    /**
+     * Generate RTF content for the STATUS EXCLUDE CHARACTERS directive and
+     * append it to the supplied RTF builder.
+     * 
+     * @param context
+     *            The intkey context
+     * @param builder
+     *            The RTF builder
+     */
     public static void generateStatusExcludeCharactersContent(IntkeyContext context, RTFBuilder builder) {
         List<Character> excludedCharacters = context.getExcludedCharacters();
         List<Integer> excludedCharacterNumbers = new ArrayList<Integer>();
@@ -334,6 +501,15 @@ public class ReportUtils {
 
     }
 
+    /**
+     * Generate RTF content for the STATUS EXCLUDE TAXA directive and append it
+     * to the supplied RTF builder.
+     * 
+     * @param context
+     *            The intkey context
+     * @param builder
+     *            The RTF builder
+     */
     public static void generateStatusExcludeTaxaContent(IntkeyContext context, RTFBuilder builder) {
         List<Item> excludedTaxa = context.getExcludedTaxa();
         List<Integer> excludedTaxaNumbers = new ArrayList<Integer>();
@@ -346,6 +522,15 @@ public class ReportUtils {
         builder.appendText(UIUtils.getResourceString("Status.ExcludeTaxa.content", excludedTaxa.size(), formattedTaxaNumbers));
     }
 
+    /**
+     * Generate RTF content for the STATUS FILE directive and append it to the
+     * supplied RTF builder.
+     * 
+     * @param context
+     *            The intkey context
+     * @param builder
+     *            The RTF builder
+     */
     public static void generateStatusFileContent(IntkeyContext context, RTFBuilder builder) {
         File journalFile = context.getJournalFile();
         File logFile = context.getLogFile();
@@ -370,6 +555,15 @@ public class ReportUtils {
         }
     }
 
+    /**
+     * Generate RTF content for the STATUS SET directive and append it to the
+     * supplied RTF builder.
+     * 
+     * @param context
+     *            The intkey context
+     * @param builder
+     *            The RTF builder
+     */
     public static void generateStatusSetContent(IntkeyContext context, RTFBuilder builder) {
         builder.appendText(UIUtils.getResourceString("Status.Set.heading"));
 
@@ -452,7 +646,16 @@ public class ReportUtils {
 
         builder.appendText(UIUtils.getResourceString("Status.Set.fixedCharacters", fixedCharacterNumbersAsString));
     }
-    
+
+    /**
+     * Build a string stating the character reliabilities for the supplied list
+     * of the characters
+     * 
+     * @param characters
+     *            The list of characters
+     * @return A string stating the character reliabilities for the supplied
+     *         list of the characters
+     */
     private static String buildReliabilitiesString(List<Character> characters) {
         StringBuilder builder = new StringBuilder();
 
@@ -495,7 +698,15 @@ public class ReportUtils {
 
         builder.append(" ");
     }
-    
+
+    /**
+     * Convert a list of characters to a list of integers containing the
+     * characters' ids.
+     * 
+     * @param characters
+     *            The list of characters
+     * @return The list of integer character ids.
+     */
     public static List<Integer> characterListToIntegerList(List<Character> characters) {
         List<Integer> characterNumbers = new ArrayList<Integer>();
 
@@ -506,6 +717,13 @@ public class ReportUtils {
         return characterNumbers;
     }
 
+    /**
+     * Convert a list of taxa to a list of integers containing the taxa ids.
+     * 
+     * @param taxa
+     *            The list of taxa
+     * @return The taxa ids.
+     */
     public static List<Integer> taxonListToIntegerList(List<Item> taxa) {
         List<Integer> taxaNumbers = new ArrayList<Integer>();
 
@@ -515,7 +733,14 @@ public class ReportUtils {
 
         return taxaNumbers;
     }
-    
+
+    /**
+     * Generate the full text description of a character in RTF
+     * 
+     * @param ch
+     *            The character
+     * @return the full text description of the character in RTF.
+     */
     public static String generateFullCharacterTextRTF(Character ch) {
         CharacterFormatter charFormatter = new CharacterFormatter(true, CommentStrippingMode.RETAIN, AngleBracketHandlingMode.REMOVE_SURROUNDING_REPLACE_INNER, true, false);
 
@@ -524,7 +749,7 @@ public class ReportUtils {
         rtfBuilder.appendText(charFormatter.formatCharacterDescription(ch));
 
         rtfBuilder.increaseIndent();
-        
+
         if (ch instanceof MultiStateCharacter) {
             MultiStateCharacter msChar = (MultiStateCharacter) ch;
             for (int i = 0; i < msChar.getNumberOfStates(); i++) {
@@ -539,7 +764,7 @@ public class ReportUtils {
         }
 
         rtfBuilder.endDocument();
-        
+
         return rtfBuilder.toString();
     }
 

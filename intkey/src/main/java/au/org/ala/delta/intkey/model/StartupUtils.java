@@ -24,18 +24,36 @@ import org.apache.commons.io.FilenameUtils;
 
 import au.org.ala.delta.util.Utils;
 
+/**
+ * Utility methods and constants to assist with dataset startup
+ * 
+ * @author ChrisF
+ * 
+ */
 public class StartupUtils {
 
+    /**
+     * String constants used to parse content of JNLP-style Intkey dataset
+     * startup files.
+     */
     public static final String INIT_FILE_INK_FILE_KEYWORD = "InkFile";
     public static final String INIT_FILE_DATA_FILE_KEYWORD = "DataFile";
     public static final String INIT_FILE_INITIALIZATION_FILE_KEYWORD = "InitializationFile";
     public static final String INIT_FILE_IMAGE_PATH_KEYWORD = "ImagePath";
     public static final String INIT_FILE_INFO_PATH_KEYWORD = "InfoPath";
 
-    public static void loadDataset(IntkeyContext context, File startupFile) {
-        // TODO
-    }
-
+    /**
+     * Save a copy of a dataset that was opened from a remote location
+     * 
+     * @param context
+     *            Intkey context
+     * @param saveDir
+     *            Directory in which to save a copy of the dataset
+     * @return A copy of the JNLP-style dataset startup file to use to open the
+     *         saved copy of the dataset.
+     * @throws IOException
+     *             If saving to disk failed.
+     */
     public static File saveRemoteDataset(IntkeyContext context, File saveDir) throws IOException {
         StartupFileData startupFileData = context.getStartupFileData();
         File datasetZip = startupFileData.getDataFileLocalCopy();
@@ -44,12 +62,14 @@ public class StartupUtils {
         // FileUtils.copyFileToDirectory(datasetZip, saveDir);
 
         // Copy the zipped dataset as downloaded from the web
-        // Use utility method to avoid overwriting existing files with the same name
+        // Use utility method to avoid overwriting existing files with the same
+        // name
         File copyZipFile = Utils.getSaveFileForDirectory(saveDir, datasetZip.getName());
         FileUtils.copyFile(datasetZip, copyZipFile);
 
         // Write a new .ink file
-        // Use utility method to avoid overwriting existing files with the same name
+        // Use utility method to avoid overwriting existing files with the same
+        // name
         File newInkFile = Utils.getSaveFileForDirectory(saveDir, FilenameUtils.getName(startupFileData.getInkFileLocation().getFile()));
 
         FileWriter fw = new FileWriter(newInkFile);
