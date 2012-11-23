@@ -28,7 +28,7 @@ public class OmitRedundantVariantAttributes extends AbstractNoArgDirective {
 	
 	@Override
 	public void process(DeltaContext context, DirectiveArguments directiveArguments) throws Exception {
-		context.setOmitRedundantVariantAttributes(false);
+		context.setOmitRedundantVariantAttributes(true);
 	}
 
 	@Override
