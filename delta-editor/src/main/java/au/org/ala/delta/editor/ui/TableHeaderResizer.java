@@ -14,13 +14,10 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.ui;
 
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.event.MouseEvent;
-
-import javax.swing.JScrollPane;
+import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
+import java.awt.*;
+import java.awt.event.MouseEvent;
 
 /**
  * The TableHeaderResizer listens for mouse events on the grid view table header component
@@ -92,7 +89,6 @@ public class TableHeaderResizer extends MouseInputAdapter {
 	public void mouseReleased(MouseEvent e) {
 		resizing = false;
 		_tableHeader.setDragEnabled(true);
-		
 	}
 	
 	private boolean inResizeZone(MouseEvent e) {
@@ -111,10 +107,12 @@ public class TableHeaderResizer extends MouseInputAdapter {
 			
 			int newHeight = mouseY - mouseYOffset;
 			if (newHeight > 0) {
-				
-				_tableHeader.setPreferredSize(new Dimension(1000, newHeight));
-				_scrollPane.getColumnHeader().setPreferredSize(new Dimension(1000, newHeight));
-				_tableRowHeaderScrollPane.getColumnHeader().setPreferredSize(new Dimension(10000, newHeight));
+				int width = _tableHeader.getPreferredSize().width;
+				_tableHeader.setPreferredSize(new Dimension(width, newHeight));
+                width = _scrollPane.getColumnHeader().getPreferredSize().width;
+				_scrollPane.getColumnHeader().setPreferredSize(new Dimension(width, newHeight));
+                width = _tableRowHeaderScrollPane.getColumnHeader().getPreferredSize().width;
+				_tableRowHeaderScrollPane.getColumnHeader().setPreferredSize(new Dimension(width, newHeight));
 				_scrollPane.revalidate();
 				_tableRowHeaderScrollPane.revalidate();
 			}
