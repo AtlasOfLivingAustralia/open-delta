@@ -59,7 +59,9 @@ public class NaturalLanguageDataSetFilter extends AbstractDataSetFilter implemen
 			return false;
 		}
 		if (item.isVariant()) {
-			return outputVariantAttribute((VariantItem)item, character);
+			if (!outputVariantAttribute((VariantItem)item, character)) {
+                return false;
+            }
 		}
 		
 		if (attribute instanceof MultiStateAttribute && ((MultiStateAttribute)attribute).isImplicit()) {

@@ -19,6 +19,7 @@ import au.org.ala.delta.TranslateType;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.VariantItem;
 
 public abstract class AbstractDataSetFilter implements DataSetFilter {
@@ -56,8 +57,18 @@ public abstract class AbstractDataSetFilter implements DataSetFilter {
 				// Don't output this attribute
 				return false;
 			}
-			Attribute attribute = variantItem.getAttribute(character);
-			return !(attribute.getValueAsString().equals(variantItem.getParentAttribute(character).getValueAsString()));
+
+            String parentAttributeVal =  variantItem.getParentAttribute(character).getValueAsString();
+            if (parentAttributeVal == null && character instanceof MultiStateCharacter) {
+                int implictValue = ((MultiStateCharacter)character).getUncodedImplicitState();
+                if (implictValue > 0) {
+                    parentAttributeVal = Integer.toString(implictValue);
+                }
+            }
+
+            String val = variantItem.getAttribute(character).getValueAsString();
+
+			return !(val.equals(parentAttributeVal));
 				
 		}
 		
@@ -83,7 +94,8 @@ public abstract class AbstractDataSetFilter implements DataSetFilter {
 		    
 			TranslateType type = _context.getTranslateType();
 			if (type == TranslateType.NaturalLanguage || type == TranslateType.Delta) {
-				return _context.getInsertImplicitValues();
+
+				return _context.getInsertImplicitValues() && !attribute.getItem().isVariant();
 			}
 		}
 		return true;
