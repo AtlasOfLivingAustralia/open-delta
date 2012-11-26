@@ -97,7 +97,8 @@ public class NaturalLanguageTranslator extends AbstractIterativeTranslator {
 
         printTaxonName(item);
 
-        _newParagraph = true;
+        // Start a new paragraph at the first character unless the NEW PARAGRAPH AT CHARACTERS directive has been used.
+        _newParagraph = _context.getNewParagraphCharacters().isEmpty();
     }
 
     @Override
