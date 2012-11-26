@@ -39,7 +39,8 @@ public abstract class DirectiveArgsParser extends AbstractStreamParser {
 	
 	protected DirectiveArguments _args;
 	protected int _markedInt;
-	
+	protected boolean _validateRangeOrder = true;
+
 	public DirectiveArgsParser(AbstractDeltaContext context, Reader reader) {
 		super(context, reader);
 	}
@@ -121,6 +122,11 @@ public abstract class DirectiveArgsParser extends AbstractStreamParser {
             startPos = _position;
             int last = readInteger();
             validateId(last, validator, startPos);
+
+            if (_validateRangeOrder && first > last) {
+                throw DirectiveError.asException(DirectiveError.Error.RANGE_SEQUENCE_ERROR, startPos);
+            }
+
             return new IntRange(first, last);
         }
         return new IntRange(first);

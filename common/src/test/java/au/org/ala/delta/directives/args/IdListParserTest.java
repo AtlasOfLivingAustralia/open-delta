@@ -97,6 +97,19 @@ public class IdListParserTest extends TestCase {
 			assertEquals(5, e.getErrorOffset());
 		}
 	}
-	
+
+    @Test
+    public void testOutOfOrderRange() {
+        IdListParser parser = parserFor("13-12,14", null);
+
+        try {
+            parser.parse();
+            fail("An exception should have been thrown");
+        }
+        catch (ParseException e) {
+            assertEquals(4, e.getErrorOffset());
+        }
+
+    }
 	
 }
