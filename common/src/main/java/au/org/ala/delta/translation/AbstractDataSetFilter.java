@@ -80,10 +80,10 @@ public abstract class AbstractDataSetFilter implements DataSetFilter {
 		int characterNum = character.getCharacterId();
 		if (_context.isCharacterExcluded(characterNum)) {
 			result = 0;
-			// if _context.isCharacterAdded(int item, int character) ||
-			// _context.isEmphasized(int item, int character) {
-			// result = 2;
-			// }
+			if (_context.isCharacterAdded(item.getItemNumber(), characterNum) ||
+			   _context.isCharacterEmphasized(item.getItemNumber(), characterNum)) {
+			   result = 2;
+			}
 		}
 	
 		return result;
