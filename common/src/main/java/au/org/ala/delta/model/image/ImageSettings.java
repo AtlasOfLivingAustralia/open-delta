@@ -338,6 +338,12 @@ public class ImageSettings extends ResourceSettings {
         location.drawType = OLDrawType.rectangle;
         location.setW(250);
         location.setH(250);
+        if (getHotspotsPopup()) {
+            location.setPopup(true);
+        }
+        if (getUseCustomPopupColour()) {
+            location.setColor(getCustomPopupColour().getRGB());
+        }
     }
 
     // The dataset name (or "heading") needs to be accessible via the image

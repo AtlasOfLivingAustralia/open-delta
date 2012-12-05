@@ -14,10 +14,11 @@
  ******************************************************************************/
 package au.org.ala.delta.model.image;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 
 
@@ -292,12 +293,14 @@ public class ImageOverlay {
 	}
 
 	public void deleteLocation(OverlayLocation selectedOverlayLocation) {
-		for (OverlayLocation location : this.location) {
-			if (location.ID == selectedOverlayLocation.ID) {
-				this.location.remove(location);
-			}
-		}
-	}
+        Iterator<OverlayLocation> i = this.location.iterator();
+        while (i.hasNext()) {
+            if (i.next().ID == selectedOverlayLocation.ID) {
+                i.remove();
+                break;
+            }
+        }
+    }
 	
 	
 }

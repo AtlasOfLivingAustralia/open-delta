@@ -374,6 +374,7 @@ public class ImageOverlayEditorController {
 
 	@Action
 	public void addAllUsualOverlays() {
+        _selection.getSelectedPoint().setLocation(Integer.MIN_VALUE, Integer.MIN_VALUE);
 		Image image = _selection.getSelectedImage();
 		if (image.getSubject() instanceof Character) {
 			Character character = (Character) image.getSubject();
@@ -472,8 +473,7 @@ public class ImageOverlayEditorController {
 		for (int i=1; i<=character.getNumberOfStates(); i++) {
 			if (!states.contains(i)) {
 				ImageOverlay overlay = newStateOverlay(i);
-				configureOverlay(overlay);
-				_selection.getSelectedImage().updateOverlay(_selection.getSelectedOverlay());
+                editOverlay(overlay);
 				break;
 			}
 		}
@@ -483,8 +483,9 @@ public class ImageOverlayEditorController {
 	public void addHotspot() {
 		ImageOverlay overlay = _selection.getSelectedOverlay();
 		if (overlay.isType(OverlayType.OLSTATE)) {
-			addHotspot(overlay);
+			OverlayLocation location = addHotspot(overlay);
 			_selection.getSelectedImage().updateOverlay(overlay);
+            editHotspot(location);
 		}
 	}
 	
@@ -566,8 +567,8 @@ public class ImageOverlayEditorController {
 			newLocation.Y = 450;
 		}
 		if (anOverlay.isButton()) {
-			int bhClient = newLocation.H;
-			int bwClient = newLocation.W;
+			int bhClient = 30;
+			int bwClient = 50;
 			newLocation.W = newLocation.H = Short.MIN_VALUE;
 			ButtonAlignment align = _alignment;
 			if (align == ButtonAlignment.NO_ALIGN)

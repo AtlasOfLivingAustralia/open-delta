@@ -14,26 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.ui.image;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Stroke;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JPopupMenu;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-
 import au.org.ala.delta.editor.model.EditorViewModel;
 import au.org.ala.delta.editor.ui.util.MessageDialogHelper;
 import au.org.ala.delta.editor.ui.util.PopupMenuListener;
@@ -43,6 +23,13 @@ import au.org.ala.delta.model.image.ImageSettings.ButtonAlignment;
 import au.org.ala.delta.ui.image.ImageViewer;
 import au.org.ala.delta.ui.image.overlay.OverlayLocation;
 import au.org.ala.delta.ui.image.overlay.OverlayLocationProvider;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Extends the functionality of the ImageView to allow editing (as well as
@@ -80,6 +67,12 @@ public class ImageEditorPanel extends ImageViewer {
 			select(null);
 		}
 	}
+
+    public void clearSelection() {
+        _selection.setSelectedOverlayComponent(null);
+        _selectedOverlayComp = null;
+        repaint();
+    }
 	
 	private void addEventHandlers() {
 		
@@ -169,7 +162,7 @@ public class ImageEditorPanel extends ImageViewer {
 			drawButtonSelectionBorder(g);
 		}
 		else {
-			if (_selectedOverlayComp != null) {
+			if (_selectedOverlayComp != null && _selectedOverlayComp.isVisible()) {
 			drawSelectionBorder(_selectedOverlayComp.getBounds(), g);
 			}
 			_lastButtonBorder = null;
