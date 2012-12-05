@@ -14,41 +14,48 @@
  ******************************************************************************/
 package au.org.ala.delta.model.image;
 
-import java.io.File;
-
 import junit.framework.TestCase;
-
+import org.junit.Before;
 import org.junit.Test;
+
+import java.awt.*;
+import java.io.File;
 
 /**
  * Tests the ImageSettings class.
  */
 public class ImageSettingsTest extends TestCase {
 
+    private String dataSetPath;
+    private ImageSettings imageSettings;
+
+    @Before
+    public void setUp() {
+        dataSetPath = File.listRoots()[0].getAbsolutePath()+
+                "test"+File.separatorChar+"path"+File.separatorChar;
+
+        imageSettings = new ImageSettings(dataSetPath);
+    }
+
 	/**
 	 * Tests adding a subdirectory of the data set path to the image path.
 	 */
 	@Test
 	public void testAddToImagePathSubDirectoryOfDataSet() {
-		String dataSetPath = File.listRoots()[0].getAbsolutePath()+
-			"test"+File.separatorChar+"path"+File.separatorChar;
-		String newPath = dataSetPath+"moreimages";
-		
-		ImageSettings imageSettings = new ImageSettings(dataSetPath);
-		
-		imageSettings.addToResourcePath(new File(newPath));
+
+        String newPath = dataSetPath+"moreimages";
+
+        imageSettings.addToResourcePath(new File(newPath));
 	
 		assertEquals("images;moreimages", imageSettings.getResourcePath());	
 	}
 	
 	@Test
 	public void testAddToImagePathNotSubDirectoryOfDataSet() {
-		String dataSetPath = File.listRoots()[0].getAbsolutePath()+
-		    "test"+File.separatorChar+"path"+File.separatorChar;
+
 		String newPath = File.listRoots()[0].getAbsolutePath()+
 			"test"+File.separatorChar+"moreimages";
-		ImageSettings imageSettings = new ImageSettings(dataSetPath);
-		
+
 		imageSettings.addToResourcePath(new File(newPath));
 	
 		assertEquals("images;.."+File.separatorChar+"moreimages", imageSettings.getResourcePath());	
@@ -58,5 +65,22 @@ public class ImageSettingsTest extends TestCase {
 		
 		assertEquals("images;.."+File.separatorChar+"moreimages;.."+File.separatorChar+".."+File.separatorChar+"moreimages", imageSettings.getResourcePath());	
 	}
+
+    @Test
+    public void testFontInfoConversion() {
+
+        String family = Font.DIALOG;
+        int style = Font.BOLD;
+        int size = 13;
+        Font font = new Font(family, style, size);
+        imageSettings.setDefaultFont(font);
+
+        Font convertedFont = imageSettings.getDefaultFont();
+
+        assertEquals(family, convertedFont.getFamily());
+        assertEquals(style, convertedFont.getStyle());
+        assertEquals(size, convertedFont.getSize());
+
+    }
 
 }

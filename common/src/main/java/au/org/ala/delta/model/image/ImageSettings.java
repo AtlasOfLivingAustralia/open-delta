@@ -14,13 +14,12 @@
  ******************************************************************************/
 package au.org.ala.delta.model.image;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.util.ArrayList;
-
 import au.org.ala.delta.model.ResourceSettings;
 import au.org.ala.delta.model.image.OverlayLocation.OLDrawType;
 import au.org.ala.delta.util.Utils;
+
+import java.awt.*;
+import java.util.ArrayList;
 
 /**
  * The ImageSettings class maintains the defaults used when creating images and
@@ -315,9 +314,11 @@ public class ImageSettings extends ResourceSettings {
 
     private void fontToFontInfo(Font font, FontInfo fontInfo) {
         fontInfo.name = font.getFamily();
-        fontInfo.size = font.getSize();
+        fontInfo.size = Utils.adjustFontInfoSize(font.getSize(), DELTA_DEFAULT_DPI_RESOLUTION);
         fontInfo.italic = font.isItalic();
         fontInfo.weight = font.isBold() ? 7 : 4;
+
+
     }
 
     private Font fontInfoToFont(FontInfo info) {

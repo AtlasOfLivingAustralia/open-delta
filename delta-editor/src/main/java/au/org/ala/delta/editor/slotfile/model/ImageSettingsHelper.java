@@ -14,8 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile.model;
 
-import java.awt.Color;
-
 import au.org.ala.delta.editor.slotfile.VOImageInfoDesc;
 import au.org.ala.delta.editor.slotfile.VOImageInfoDesc.LOGFONT;
 import au.org.ala.delta.model.image.ImageOverlay;
@@ -24,6 +22,8 @@ import au.org.ala.delta.model.image.ImageSettings.FontInfo;
 import au.org.ala.delta.model.image.ImageSettings.OverlayFontType;
 import au.org.ala.delta.model.image.OverlayLocation;
 import au.org.ala.delta.util.Pair;
+
+import java.awt.*;
 
 /**
  * Helper class for converting between a VOImageInfoDesc and ImageSettings
@@ -97,7 +97,7 @@ public class ImageSettingsHelper {
 	public static FontInfo toFontInfo(Pair<LOGFONT, String> values) {
 		FontInfo info = new FontInfo();
 		LOGFONT font = values.getFirst();
-		info.size = -(font.lfHeight * 72 / 120);
+		info.size = (int)-Math.round((double)font.lfHeight * 72d/ 120d);
 		info.weight = font.lfWeight/100;
 		info.italic = font.lfItalic == 0 ? false : true;
 		info.pitch = font.lfPitchAndFamily & 3;
@@ -112,7 +112,7 @@ public class ImageSettingsHelper {
 	
 	public static Pair<LOGFONT, String> fromFontInfo(FontInfo fontInfo) {
 		LOGFONT font = new LOGFONT();
-		font.lfHeight = -(fontInfo.size * 120 / 72);
+		font.lfHeight = (int)-Math.round((double)fontInfo.size * 120d / 72d);
 		font.lfWeight = fontInfo.weight * 100;
 		font.lfItalic = (fontInfo.italic ? (byte)1 : (byte)0);
 		font.lfPitchAndFamily |= fontInfo.pitch;

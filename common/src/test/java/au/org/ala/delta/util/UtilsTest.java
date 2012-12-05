@@ -148,8 +148,7 @@ public class UtilsTest extends TestCase {
 
         assertEquals("\\i{}Pleonites 1\\endash{}3\\i0{}", Utils.capitaliseFirstWord(text));
     }
-	
-	
+
 //	/**
 //	 * Tests the remove comments method with nested comments
 //	 */

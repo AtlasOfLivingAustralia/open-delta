@@ -979,9 +979,18 @@ public class Utils {
      *         2d to the target DPI. See comment above.
      */
     public static int adjustFontSize(int fontSize, int targetDPI) {
-        int adjustedFontSize = (int) Math.round(Math.abs(fontSize) * targetDPI / 72.0);
+        int adjustedFontSize = (int) Math.round(Math.abs(fontSize) * (double)targetDPI / 72.0);
         return adjustedFontSize;
     }
+
+    /**
+     * Performs the opposite operation to adjustFontSize.
+     */
+    public static int adjustFontInfoSize(int fontInfoSize, int targetDPI) {
+        return (int)Math.round(Math.abs(fontInfoSize) * 72.0 / (double)targetDPI);
+    }
+
+
 
     /**
      * Format a list of integers as a set of ranges, with spaces as the list

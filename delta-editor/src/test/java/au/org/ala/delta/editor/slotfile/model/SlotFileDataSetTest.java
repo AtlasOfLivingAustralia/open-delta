@@ -23,8 +23,10 @@ import au.org.ala.delta.model.MultiStateCharacter;
 import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.TextAttribute;
 import au.org.ala.delta.model.TextCharacter;
+import au.org.ala.delta.model.image.ImageSettings;
 import org.junit.Test;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -474,6 +476,32 @@ public class SlotFileDataSetTest  extends DeltaTestCase {
 		
 		
 	}
+
+    @Test
+    public void testImageSettings() throws Exception {
+        File f = copyURLToFile("/SAMPLE.DLT");
+        MutableDeltaDataSet dataSet = _repo.findByName(f.getAbsolutePath(), null);
+
+        ImageSettings imageSettings = dataSet.getImageSettings();
+
+        String family = Font.DIALOG;
+        int style = Font.BOLD;
+        int size = 17;
+        Font font = new Font(family, style, size);
+
+        imageSettings.setDefaultFont(font);
+
+        // The point of this is the ImageSettings undergoes a conversion when stored in the data set.
+        // This ensures the conversion is both symmetric and is preserving the changes.
+        dataSet.setImageSettings(imageSettings);
+        imageSettings = dataSet.getImageSettings();
+
+        Font savedFont = imageSettings.getDefaultFont();
+        assertEquals(family, savedFont.getFamily());
+        assertEquals(style, savedFont.getStyle());
+        assertEquals(size, savedFont.getSize());
+    }
+
 
     private String tempFileName() throws IOException {
         File temp = File.createTempFile("test", ".dlt");
