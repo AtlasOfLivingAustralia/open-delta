@@ -374,7 +374,10 @@ public class ImageOverlayEditorController {
 
 	@Action
 	public void addAllUsualOverlays() {
-        _selection.getSelectedPoint().setLocation(Integer.MIN_VALUE, Integer.MIN_VALUE);
+        // We dont' want to base the overlay position on the menu click location in this case.
+        if (_selection.getSelectedPoint() != null) {
+            _selection.getSelectedPoint().setLocation(Integer.MIN_VALUE, Integer.MIN_VALUE);
+        }
 		Image image = _selection.getSelectedImage();
 		if (image.getSubject() instanceof Character) {
 			Character character = (Character) image.getSubject();
