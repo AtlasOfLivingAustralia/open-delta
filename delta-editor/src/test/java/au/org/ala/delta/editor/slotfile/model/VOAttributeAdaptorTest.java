@@ -14,15 +14,17 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile.model;
 
+import au.org.ala.delta.model.CharacterType;
+import au.org.ala.delta.model.IntegerCharacter;
+import au.org.ala.delta.model.Item;
+import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.NumericRange;
 import junit.framework.TestCase;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import au.org.ala.delta.model.CharacterType;
-import au.org.ala.delta.model.Item;
-import au.org.ala.delta.model.MultiStateCharacter;
+import java.util.List;
 
 /**
  * Tests the VOAttributeAdaptor class.
@@ -33,16 +35,23 @@ public class VOAttributeAdaptorTest extends TestCase {
 	private SlotFileDataSet _dataSet = (SlotFileDataSet)_repo.newDataSet();
 	private VOAttributeAdaptor _attributeAdaptor;
 	private MultiStateCharacter _character;
+    private IntegerCharacter _integerCharacter;
+    private VOAttributeAdaptor _integerAttributeAdaptor;
 	
 	@Before
 	public void setUp() {
 		Item item = _dataSet.addItem();
 		_character = (MultiStateCharacter)_dataSet.addCharacter(CharacterType.OrderedMultiState);
 		_character.setNumberOfStates(3);
+
+        _integerCharacter = (IntegerCharacter)_dataSet.addCharacter(CharacterType.IntegerNumeric);
 		
 		VOItemAdaptor voItemAdaptor = (VOItemAdaptor)item.getItemData();
 		VOCharacterAdaptor voCharAdaptor = (VOCharacterAdaptor)_character.getImpl(); 
 		_attributeAdaptor = new VOAttributeAdaptor(voItemAdaptor.getItemDesc(), voCharAdaptor.getCharBaseDesc());
+
+        VOCharacterAdaptor intCharAdaptor = (VOCharacterAdaptor)_integerCharacter.getImpl();
+        _integerAttributeAdaptor= new VOAttributeAdaptor(voItemAdaptor.getItemDesc(), intCharAdaptor.getCharBaseDesc());
 		
 	}
 	
@@ -138,5 +147,25 @@ public class VOAttributeAdaptorTest extends TestCase {
 		_attributeAdaptor.setStatePresent(2, false);
 		assertEquals("1", _attributeAdaptor.getValueAsString());
 	}
+
+    @Test
+    public void testGetNumericRange() {
+        _integerAttributeAdaptor.setValueFromString("1-2/(2-)3-5-6(-7)");
+        List<NumericRange> range = _integerAttributeAdaptor.getNumericValue();
+        assertEquals(2, range.size());
+
+        NumericRange first = range.get(0);
+        assertEquals(1, first.getFullRange().getMinimumInteger());
+        assertEquals(2, first.getFullRange().getMaximumInteger());
+
+        NumericRange second = range.get(1);
+        assertEquals(2, second.getExtremeLow().intValue());
+        assertEquals(2, second.getFullRange().getMinimumInteger());
+        assertEquals(6, second.getNormalRange().getMaximumInteger());
+        assertEquals(5, second.getMiddle().intValue());
+        assertEquals(7, second.getExtremeHigh().intValue());
+
+
+    }
 
 }

@@ -17,6 +17,7 @@ package au.org.ala.delta.editor.slotfile.model;
 import au.org.ala.delta.editor.slotfile.AttrChunk;
 import au.org.ala.delta.editor.slotfile.Attribute;
 import au.org.ala.delta.editor.slotfile.Attribute.AttrIterator;
+import au.org.ala.delta.editor.slotfile.CharType;
 import au.org.ala.delta.editor.slotfile.ChunkType;
 import au.org.ala.delta.editor.slotfile.DeltaVOP;
 import au.org.ala.delta.editor.slotfile.TextType;
@@ -27,7 +28,9 @@ import au.org.ala.delta.model.attribute.ParsedAttribute;
 import au.org.ala.delta.model.impl.AttributeData;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.FloatRange;
+import org.apache.commons.lang.math.NumberRange;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -325,8 +328,61 @@ public class VOAttributeAdaptor implements AttributeData {
 
 	@Override
 	public List<NumericRange> getNumericValue() {
-		throw new UnsupportedOperationException();
-	}
+
+        if (!CharType.isNumeric(_charBaseDesc.getCharType())) {
+            throw new IllegalArgumentException("getNumericValue is only valid for numeric attributes");
+        }
+
+        List<NumericRange> ranges = new ArrayList<NumericRange>();
+        NumericRange range = new NumericRange();
+        List<Number> numbers = new ArrayList<Number>();
+
+        synchronized (_vop) {
+            Attribute attribute = _itemDesc.readAttribute(_charBaseDesc.getUniId());
+            if (attribute != null) {
+                for (AttrChunk chunk : attribute) {
+                    switch (chunk.getType()) {
+                        case ChunkType.CHUNK_AND:
+                        case ChunkType.CHUNK_OR:
+                            addNumericRange(ranges, range, numbers);
+                            range = new NumericRange();
+                            numbers = new ArrayList<Number>();
+                            break;
+                        case ChunkType.CHUNK_EXLO_NUMBER:
+                            range.setExtremeLow(new BigDecimal(chunk.getNumber().asString()));
+                            break;
+                        case ChunkType.CHUNK_EXHI_NUMBER:
+                            range.setExtremeHigh(new BigDecimal(chunk.getNumber().asString()));
+                            break;
+                        case ChunkType.CHUNK_NUMBER:
+                            numbers.add(new BigDecimal(chunk.getNumber().asString()));
+                            break;
+                    }
+                }
+                addNumericRange(ranges, range, numbers);
+            }
+        }
+        return ranges;
+    }
+
+    private void addNumericRange(List<NumericRange> ranges, NumericRange range, List<Number> numbers) {
+        if (!range.hasExtremeHigh() && !range.hasExtremeLow() && numbers.isEmpty()) {
+            return;
+        }
+
+        if (numbers.size() == 1) {
+            range.setRange(new NumberRange(numbers.get(0)));
+        }
+        else if (numbers.size() == 2) {
+            range.setRange(new NumberRange(numbers.get(0), numbers.get(1)));
+        }
+        else if (numbers.size() == 3) {
+            range.setRange(new NumberRange(numbers.get(0), numbers.get(2)));
+            range.setMiddle(numbers.get(1));
+        }
+        ranges.add(range);
+    }
+
 	
 	@Override
 	public ParsedAttribute parsedAttribute() {
