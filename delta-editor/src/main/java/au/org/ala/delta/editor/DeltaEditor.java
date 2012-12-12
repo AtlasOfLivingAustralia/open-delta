@@ -149,6 +149,10 @@ public class DeltaEditor extends InternalFrameApplication implements PreferenceC
             Map<String, Object> resourceMap =  (Map<String, Object>)method.invoke(resources);
             resourceMap.put("Application.lookAndFeel", EditorPreferences.getPreferredLookAndFeel());
 
+            Font font = EditorPreferences.getPreferredFont();
+            if (font != null) {
+                updateFont(font);
+            }
         }
         catch (Throwable t) {
             // Doesn't matter if we fail, going with the defaults is fine.
@@ -776,20 +780,25 @@ public class DeltaEditor extends InternalFrameApplication implements PreferenceC
 		Font f = UIManager.getFont("Label.font");
 		Font newFont = JFontChooser.showDialog(_desktop, "Please select a font", f);		
 		if (newFont != null) {
-			FontUIResource fontResource = new FontUIResource(newFont);
-			Enumeration<Object> keys = UIManager.getDefaults().keys();
-			while (keys.hasMoreElements()) {
-				Object key = keys.nextElement();
-				Object value = UIManager.get(key);				
-				if (value instanceof javax.swing.plaf.FontUIResource) {
-					UIManager.put(key, fontResource);
-				}
-			}	
+            updateFont(newFont);
 			SwingUtilities.updateComponentTreeUI(getMainFrame());
+            EditorPreferences.setPreferredFont(newFont);
 		}
 	}
 
-	@Action(enabledProperty = "tileEnabled")
+    private void updateFont(Font newFont) {
+        FontUIResource fontResource = new FontUIResource(newFont);
+        Enumeration<Object> keys = UIManager.getDefaults().keys();
+        while (keys.hasMoreElements()) {
+            Object key = keys.nextElement();
+            Object value = UIManager.get(key);
+            if (value instanceof FontUIResource) {
+                UIManager.put(key, fontResource);
+            }
+        }
+    }
+
+    @Action(enabledProperty = "tileEnabled")
 	public void tileFramesHorizontally() {
 		tileFramesInDesktopPane(true);
 	}

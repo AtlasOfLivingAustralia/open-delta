@@ -17,6 +17,7 @@ package au.org.ala.delta.editor;
 import au.org.ala.delta.editor.ui.EditorAdvanceMode;
 import org.apache.commons.lang.StringUtils;
 
+import java.awt.*;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.prefs.BackingStoreException;
@@ -48,6 +49,8 @@ public class EditorPreferences {
 
     public static String LOOK_AND_FEEL_KEY = "lookAndFeel";
     private static String DEFAULT_LOOK_AND_FEEL = "system";
+
+    public static String FONT_KEY = "font";
 
 	/**
 	 * @return An array of the most recently used filenames
@@ -192,6 +195,25 @@ public class EditorPreferences {
             return prefs.get(LOOK_AND_FEEL_KEY, DEFAULT_LOOK_AND_FEEL);
         }
         return DEFAULT_LOOK_AND_FEEL;
+    }
+
+    public static Font getPreferredFont() {
+
+        Preferences prefs = Preferences.userNodeForPackage(DeltaEditor.class);
+        if (prefs != null) {
+            String font = prefs.get(FONT_KEY, null);
+            if (font != null) {
+                return Font.decode(font);
+            }
+        }
+        return null;
+    }
+
+    public static void setPreferredFont(Font font) {
+        Preferences prefs = Preferences.userNodeForPackage(DeltaEditor.class);
+        if (prefs != null) {
+            prefs.put(FONT_KEY, font.getFontName()+"-"+font.getStyle()+"-"+font.getSize());
+        }
     }
 
     /**
