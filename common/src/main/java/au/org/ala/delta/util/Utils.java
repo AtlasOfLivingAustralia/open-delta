@@ -705,7 +705,7 @@ public class Utils {
             char ch = outputText.charAt(srcPos);
             // Always convert a tab character into a \tab control word
             if (ch == '\t') {
-                outputText.replace(srcPos, 1, "\\tab{}");
+                outputText.replace(srcPos, srcPos+1, "\\tab{}");
                 ch = '\\';
             }
             if (inRTF) {

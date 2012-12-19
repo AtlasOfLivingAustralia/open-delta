@@ -117,6 +117,10 @@ public class UtilsTest extends TestCase {
 		String noRtf = "<<Test Hypenated-String Word  #2>>";
 		despaced = Utils.despaceRtf(noRtf, false);
 		assertEquals(noRtf, despaced);
+
+        String rtfWithSlashT = "<Ceratocephale sp_B\t>";
+        despaced = Utils.despaceRtf(rtfWithSlashT, false);
+        assertEquals("<Ceratocephale sp_B\\tab{}>", despaced);
 	}
 	
 	public void testLowerBound1() {
