@@ -14,9 +14,23 @@
  ******************************************************************************/
 package au.org.ala.delta.intkey.ui;
 
-import java.awt.Component;
-import java.awt.Desktop;
-import java.awt.Window;
+import au.org.ala.delta.intkey.Intkey;
+import au.org.ala.delta.ui.help.HelpController;
+import au.org.ala.delta.ui.image.AudioPlayer;
+import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
+import au.org.ala.delta.util.Pair;
+import au.org.ala.delta.util.Utils;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONSerializer;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.SingleFrameApplication;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
@@ -31,27 +45,6 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
-
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONSerializer;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.SingleFrameApplication;
-
-import au.org.ala.delta.intkey.Intkey;
-import au.org.ala.delta.ui.help.HelpController;
-import au.org.ala.delta.ui.image.AudioPlayer;
-import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
-import au.org.ala.delta.util.Pair;
-import au.org.ala.delta.util.Utils;
 
 public class UIUtils {
 
@@ -289,6 +282,7 @@ public class UIUtils {
 
         Preferences prefs = Preferences.userNodeForPackage(Intkey.class);
         if (prefs != null) {
+            try {
             String mru = prefs.get(MRU_FILES_PREF_KEY, "");
             if (!StringUtils.isEmpty(mru)) {
                 String[] mruFiles = mru.split(MRU_FILES_SEPARATOR);
@@ -296,6 +290,10 @@ public class UIUtils {
                     String[] mruFileItems = mruFile.split(MRU_ITEM_SEPARATOR);
                     retList.add(new Pair<String, String>(mruFileItems[0], mruFileItems[1]));
                 }
+            }
+            }
+            catch (Exception e) {
+                // No nothing, this is a temporary fix.
             }
         }
 
