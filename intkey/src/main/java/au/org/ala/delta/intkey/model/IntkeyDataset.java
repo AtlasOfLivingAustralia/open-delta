@@ -39,6 +39,7 @@ import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.ImageSettings.FontInfo;
 import au.org.ala.delta.model.impl.ControllingInfo;
+import au.org.ala.delta.rtf.RTFUtils;
 
 /**
  * Intkey dataset
@@ -234,12 +235,28 @@ public class IntkeyDataset implements DeltaDataSet {
     public String getHeading() {
         return _heading;
     }
+    
+    /**
+     * The heading with any RTF formatting characters, and leading and trailing whitespace removed.
+     * @return
+     */
+    public String getHeadingWithoutFormatting() {
+        return RTFUtils.stripFormatting(_heading, true).trim();
+    }
 
     /**
      * @return Dataset subheading
      */
     public String getSubHeading() {
         return _subHeading;
+    }
+    
+    /**
+     * The subheading with any RTF formatting characters, and leading and trailing whitespace removed.
+     * @return
+     */
+    public String getSubheadingWithoutFormatting() {
+        return RTFUtils.stripFormatting(_subHeading, true).trim();
     }
 
     /**

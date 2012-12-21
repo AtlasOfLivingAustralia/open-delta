@@ -62,6 +62,7 @@ import au.org.ala.delta.model.ResourceSettings;
 import au.org.ala.delta.model.Specimen;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.ImageSettings.FontInfo;
+import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.util.Pair;
 import au.org.ala.delta.util.Utils;
@@ -598,8 +599,8 @@ public class IntkeyContext extends AbstractDeltaContext {
                 protected void done() {
                     try {
                         get();
-                        appendToLog(_dataset.getHeading());
-                        appendToLog(_dataset.getSubHeading());
+                        appendToLog(_dataset.getHeadingWithoutFormatting());
+                        appendToLog(_dataset.getSubheadingWithoutFormatting());
                         _appUI.handleNewDataset(_dataset);
                     } catch (Exception ex) {
                         Logger.error("Error reading dataset file", ex);
@@ -614,8 +615,8 @@ public class IntkeyContext extends AbstractDeltaContext {
         } else {
             try {
                 processStartupFile(datasetFileURL);
-                appendToLog(_dataset.getHeading());
-                appendToLog(_dataset.getSubHeading());
+                appendToLog(_dataset.getHeadingWithoutFormatting());
+                appendToLog(_dataset.getSubheadingWithoutFormatting());
                 _appUI.handleNewDataset(_dataset);
             } catch (Exception ex) {
                 Logger.error("Error reading dataset file", ex);

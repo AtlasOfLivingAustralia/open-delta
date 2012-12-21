@@ -2264,7 +2264,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
     public void handleNewDataset(IntkeyDataset dataset) {
         _lastOpenedDatasetDirectory = _context.getDatasetStartupFile().getParentFile();
 
-        getMainFrame().setTitle(MessageFormat.format(windowTitleWithDatasetTitle, dataset.getHeading()));
+        getMainFrame().setTitle(MessageFormat.format(windowTitleWithDatasetTitle, dataset.getHeadingWithoutFormatting()));
 
         // enable toolbar buttons
         IntkeyCharacterOrder characterOrder = _context.getCharacterOrder();
@@ -3455,7 +3455,7 @@ public class Intkey extends DeltaSingleFrameApplication implements IntkeyUI, Dir
      * will be given the option to do this.
      */
     private void saveCurrentlyOpenedDataset() {
-        String datasetTitle = _context.getDataset().getHeading().trim();
+        String datasetTitle = _context.getDataset().getHeadingWithoutFormatting();
 
         // if the dataset was downloaded, ask the user if they wish to save it
         StartupFileData startupFileData = _context.getStartupFileData();

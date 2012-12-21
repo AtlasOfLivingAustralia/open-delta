@@ -15,6 +15,7 @@
 package au.org.ala.delta.intkey.ui;
 
 import au.org.ala.delta.intkey.Intkey;
+import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.ui.help.HelpController;
 import au.org.ala.delta.ui.image.AudioPlayer;
 import au.org.ala.delta.ui.rtf.SimpleRtfEditorKit;
@@ -38,6 +39,7 @@ import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -283,17 +285,24 @@ public class UIUtils {
         Preferences prefs = Preferences.userNodeForPackage(Intkey.class);
         if (prefs != null) {
             try {
-            String mru = prefs.get(MRU_FILES_PREF_KEY, "");
-            if (!StringUtils.isEmpty(mru)) {
-                String[] mruFiles = mru.split(MRU_FILES_SEPARATOR);
-                for (String mruFile : mruFiles) {
-                    String[] mruFileItems = mruFile.split(MRU_ITEM_SEPARATOR);
-                    retList.add(new Pair<String, String>(mruFileItems[0], mruFileItems[1]));
+                String mru = prefs.get(MRU_FILES_PREF_KEY, "");
+                if (!StringUtils.isEmpty(mru)) {
+                    String[] mruFiles = mru.split(MRU_FILES_SEPARATOR);
+                    for (String mruFile : mruFiles) {
+                        String[] mruFileItems = mruFile.split(MRU_ITEM_SEPARATOR);
+                        retList.add(new Pair<String, String>(mruFileItems[0], mruFileItems[1]));
+                    }
                 }
-            }
-            }
-            catch (Exception e) {
-                // No nothing, this is a temporary fix.
+            } catch (Exception e) {
+                // An error occurred. Clear the most recently used files list and return an empty list.
+                
+                prefs.remove(MRU_FILES_PREF_KEY);
+                try {
+                    prefs.sync();
+                } catch (BackingStoreException bse) {
+                    throw new RuntimeException(bse);
+                }
+                return Collections.EMPTY_LIST;
             }
         }
 
@@ -341,7 +350,11 @@ public class UIUtils {
      * @param filename
      */
     public static void addFileToMRU(String filename, String title, List<Pair<String, String>> existingFiles) {
-
+        // Strip any RTF formatting, and characters used as separators in the MRU text from the title.
+        title = RTFUtils.stripFormatting(title);
+        title = title.replace(MRU_ITEM_SEPARATOR, " ");
+        title = title.replace(MRU_FILES_SEPARATOR, " ");
+        
         Queue<String> q = new LinkedList<String>();
 
         String newFilePathAndTitle;
