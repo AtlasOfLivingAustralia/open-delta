@@ -14,11 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.translation.key;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Iterator;
-import java.util.List;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.DeltaContext.HeadingType;
 import au.org.ala.delta.io.BinaryKeyFileEncoder;
@@ -34,6 +29,12 @@ import au.org.ala.delta.translation.FilteredDataSet;
 import au.org.ala.delta.translation.FilteredItem;
 import au.org.ala.delta.util.Pair;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.Iterator;
+import java.util.List;
+
 /**
  * Writes the key items file using the data in a supplied DeltaContext and
  * associated data set.
@@ -41,6 +42,7 @@ import au.org.ala.delta.util.Pair;
 public class KeyItemsFileWriter {
 
 	public static final int INAPPLICABLE_BIT = 20;
+    public static final int MAX_KEY_STATES = 20;
 	private WriteOnceKeyItemsFile _itemsFile;
 	private FilteredDataSet _dataSet;
 	private DeltaContext _context;
@@ -98,8 +100,8 @@ public class KeyItemsFileWriter {
 			IdentificationKeyCharacter keyChar = keyChars.next();
 			Attribute attribute = item.getAttribute(keyChar.getCharacter());
 			List<Integer> states = new ArrayList<Integer>();
-			
-			if (!attribute.isInapplicable()) {
+
+			if (!attribute.isInapplicable() && keyChar.getNumberOfStates() <= MAX_KEY_STATES) {
 				if (keyChar.getCharacterType().isMultistate()) {
 					states = keyChar.getPresentStates((MultiStateAttribute)attribute);
 				}
@@ -134,7 +136,21 @@ public class KeyItemsFileWriter {
 	}
 	
 	protected void writeCharacterMask() {
-		List<Boolean> includedCharacters = _encoder.encodeCharacterMasks(_dataSet, true);
+
+        Boolean[] init = new Boolean[_dataSet.getNumberOfCharacters()];
+        Arrays.fill(init, Boolean.FALSE);
+        List<Boolean> includedCharacters = new ArrayList<Boolean>(Arrays.asList(init));
+
+        Iterator<IdentificationKeyCharacter> keyChars = _dataSet.unfilteredIdentificationKeyCharacterIterator();
+        while (keyChars.hasNext()) {
+            IdentificationKeyCharacter character = keyChars.next();
+            if (!_context.isCharacterExcluded(character.getCharacterNumber()) &&
+                !character.getCharacter().getCharacterType().isText() &&
+                character.getNumberOfStates() > 1 && character.getNumberOfStates() <= MAX_KEY_STATES) {
+                includedCharacters.set(character.getCharacter().getCharacterId()-1, Boolean.TRUE);
+            }
+        }
+
 		_itemsFile.writeCharacterMask(includedCharacters);
 	}
 	
@@ -184,7 +200,6 @@ public class KeyItemsFileWriter {
 		while (items.hasNext()) {
 			FilteredItem item = items.next();
 			double abundancy = _context.getItemAbundancy(item.getItem().getItemNumber());
-			abundancy = Math.log(abundancy)/Math.log(2) +5;
 			abundances.add(new Float(abundancy));
 		}
 		_itemsFile.writeItemAbundances(abundances);	

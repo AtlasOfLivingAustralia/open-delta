@@ -14,13 +14,13 @@
  ******************************************************************************/
 package au.org.ala.delta.key;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.List;
-
 import au.org.ala.delta.io.BinFileMode;
 import au.org.ala.delta.io.BinaryKeyFile;
 import au.org.ala.delta.util.Pair;
+
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.List;
 
 /**
  * Knows the format of the keys items file.  This class is designed to 
@@ -51,7 +51,6 @@ public class WriteOnceKeyItemsFile extends BinaryKeyFile {
 	
 
 	public void writeItems(List<Pair<String, List<BitSet>>> items) {
-		checkEmpty(_header.getCharacterDependencyRecord());
 		int record = nextAvailableRecord();
 		for (Pair<String, List<BitSet>> item : items) {
 			String description = item.getFirst();
