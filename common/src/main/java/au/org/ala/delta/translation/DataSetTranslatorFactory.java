@@ -239,8 +239,11 @@ public class DataSetTranslatorFactory {
 		ItemListTypeSetter typeSetter = new TypeSetterFactory().createTypeSetter(context, null);
 		
 		FilteredDataSet dataSet = new FilteredDataSet(context, new DeltaFormatDataSetFilter(context));
-		return new KeyTranslator(context, dataSet,
-				formatterFactory.createItemFormatter(typeSetter), 
+        ItemFormatter formatter = formatterFactory.createItemFormatter(typeSetter);
+		// Omit the "variant" header in item descriptions.
+        formatter.setVariantDescription("");
+        return new KeyTranslator(context, dataSet,
+				formatter,
 				formatterFactory.createCharacterFormatter(),
 				formatterFactory);
 	}

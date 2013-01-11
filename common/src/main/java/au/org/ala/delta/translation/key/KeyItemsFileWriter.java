@@ -26,7 +26,6 @@ import au.org.ala.delta.model.NumericAttribute;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.translation.FilteredDataSet;
-import au.org.ala.delta.translation.FilteredItem;
 import au.org.ala.delta.util.Pair;
 
 import java.util.ArrayList;
@@ -196,10 +195,10 @@ public class KeyItemsFileWriter {
 	
 	protected void writeItemAbundances() {
 		List<Float> abundances = new ArrayList<Float>();
-		Iterator<FilteredItem> items = _dataSet.filteredItems();
+		Iterator<Item> items = _dataSet.unfilteredItems();
 		while (items.hasNext()) {
-			FilteredItem item = items.next();
-			double abundancy = _context.getItemAbundancy(item.getItem().getItemNumber());
+			Item item = items.next();
+			double abundancy = _context.getItemAbundancy(item.getItemNumber());
 			abundances.add(new Float(abundancy));
 		}
 		_itemsFile.writeItemAbundances(abundances);	
