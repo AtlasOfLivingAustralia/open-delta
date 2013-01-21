@@ -599,8 +599,15 @@ public class IntkeyContext extends AbstractDeltaContext {
                 protected void done() {
                     try {
                         get();
-                        appendToLog(_dataset.getHeadingWithoutFormatting());
-                        appendToLog(_dataset.getSubheadingWithoutFormatting());
+
+                        if (_dataset.getHeading() != null) {
+                            appendToLog(_dataset.getHeadingWithoutFormatting());
+                        }
+
+                        if (_dataset.getSubHeading() != null) {
+                            appendToLog(_dataset.getSubheadingWithoutFormatting());
+                        }
+
                         _appUI.handleNewDataset(_dataset);
                     } catch (Exception ex) {
                         Logger.error("Error reading dataset file", ex);
@@ -615,8 +622,15 @@ public class IntkeyContext extends AbstractDeltaContext {
         } else {
             try {
                 processStartupFile(datasetFileURL);
-                appendToLog(_dataset.getHeadingWithoutFormatting());
-                appendToLog(_dataset.getSubheadingWithoutFormatting());
+
+                if (_dataset.getHeading() != null) {
+                    appendToLog(_dataset.getHeadingWithoutFormatting());
+                }
+
+                if (_dataset.getSubHeading() != null) {
+                    appendToLog(_dataset.getSubheadingWithoutFormatting());
+                }
+
                 _appUI.handleNewDataset(_dataset);
             } catch (Exception ex) {
                 Logger.error("Error reading dataset file", ex);

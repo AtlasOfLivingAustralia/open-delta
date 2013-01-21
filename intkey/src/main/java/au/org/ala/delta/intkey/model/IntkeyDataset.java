@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
+
 import au.org.ala.delta.io.BinFile;
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.Character;
@@ -235,13 +237,19 @@ public class IntkeyDataset implements DeltaDataSet {
     public String getHeading() {
         return _heading;
     }
-    
+
     /**
-     * The heading with any RTF formatting characters, and leading and trailing whitespace removed.
+     * The heading with any RTF formatting characters, and leading and trailing
+     * whitespace removed.
+     * 
      * @return
      */
     public String getHeadingWithoutFormatting() {
-        return RTFUtils.stripFormatting(_heading, true).trim();
+        if (_heading == null) {
+            return StringUtils.EMPTY;
+        } else {
+            return RTFUtils.stripFormatting(_heading, true).trim();
+        }
     }
 
     /**
@@ -250,13 +258,19 @@ public class IntkeyDataset implements DeltaDataSet {
     public String getSubHeading() {
         return _subHeading;
     }
-    
+
     /**
-     * The subheading with any RTF formatting characters, and leading and trailing whitespace removed.
+     * The subheading with any RTF formatting characters, and leading and
+     * trailing whitespace removed.
+     * 
      * @return
      */
     public String getSubheadingWithoutFormatting() {
-        return RTFUtils.stripFormatting(_subHeading, true).trim();
+        if (_subHeading == null) {
+            return StringUtils.EMPTY;
+        } else {
+            return RTFUtils.stripFormatting(_subHeading, true).trim();
+        }
     }
 
     /**
@@ -748,6 +762,7 @@ public class IntkeyDataset implements DeltaDataSet {
 
     /**
      * Set if item (taxa) subheadings have been defined for the dataset
+     * 
      * @param itemSubheadingsPresent
      */
     void setItemSubheadingsPresent(boolean itemSubheadingsPresent) {
