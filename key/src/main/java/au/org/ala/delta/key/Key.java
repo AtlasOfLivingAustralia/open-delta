@@ -66,6 +66,7 @@ import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.impl.SimpleAttributeData;
+import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.translation.FilteredCharacter;
 import au.org.ala.delta.translation.FilteredDataSet;
 import au.org.ala.delta.translation.FilteredItem;
@@ -213,6 +214,10 @@ public class Key implements DirectiveParserObserver {
                     doCalculateKey(key, dataset, includedCharacters, includedItems, specimen, null, null);
                     _defaultOutputStream.println("Key generation completed");
 
+                    if (key.isKeyIncomplete()) {
+                        _defaultOutputStream.println("KEY INCOMPLETE. MORE INFORMATION NEEDED.");
+                    }
+
                     Map<Integer, TypeSettingMark> typesettingMarksMap = _context.getTypeSettingMarks();
                     boolean typsettingMarksSpecified = !(typesettingMarksMap == null || typesettingMarksMap.isEmpty());
 
@@ -228,8 +233,8 @@ public class Key implements DirectiveParserObserver {
         } catch (Exception ex) {
             ex.printStackTrace();
             _defaultOutputStream.println(MessageFormat.format("FATAL ERROR: {0}", ex.getMessage().toString()));
-            _defaultOutputStream.println("Execution terminated");
-            _defaultOutputStream.println("ABNORMAL TERMINATION");
+            _defaultOutputStream.println("Execution terminated.");
+            _defaultOutputStream.println("ABNORMAL TERMINATION.");
         }
     }
 
@@ -264,26 +269,7 @@ public class Key implements DirectiveParserObserver {
             // been reached, add a row for each remaining taxon
             // with the used characters
 
-            for (Item taxon : specimenAvailableTaxa) {
-                TabularKeyRow row = new TabularKeyRow();
-                row.setItem(taxon);
-
-                for (Character ch : specimen.getUsedCharacters()) {
-                    // Add row to key
-                    MultiStateAttribute mainCharacterValue = (MultiStateAttribute) specimen.getAttributeForCharacter(ch);
-                    row.addAttribute(mainCharacterValue, confirmatoryCharacterValues.get(ch), usedCharacterCosts.get(ch));
-
-                    // If character has not already been used in key, update its
-                    // cost using the REUSE setting to increase the
-                    // probability of reuse
-                    if (!key.isCharacterUsedInKey(ch)) {
-                        double newCost = _context.getCharacterCost(ch.getCharacterId()) / _context.getReuse();
-                        _context.setCharacterCost(ch.getCharacterId(), newCost);
-                    }
-                }
-
-                key.addRow(row);
-            }
+            addRowsToTabularKey(key, specimen, specimenAvailableTaxa, confirmatoryCharacterValues, usedCharacterCosts);
         } else {
             // These won't be in order but that doesn't matter - best orders
             // stuff itself
@@ -321,6 +307,25 @@ public class Key implements DirectiveParserObserver {
             } else {
                 List<Character> bestOrderCharacters = new ArrayList<Character>(bestMap.keySet());
                 if (bestOrderCharacters.isEmpty()) {
+
+                    if (specimen.getUsedCharacters().isEmpty()) {
+                        // No characters have been used therefore this is the
+                        // beginning of the investigation.
+                        // No suitable characters at the beginning of the
+                        // investigation is a fatal error
+                        throw new RuntimeException("No suitable characters. Execution terminated.");
+                    } else {
+                        // Key is incomplete - no characters left to distinguish
+                        // the remaining taxa,
+                        // so write out the characters which got us this far
+                        // through the investigation, and also
+                        // raise an error.
+                        addRowsToTabularKey(key, specimen, specimenAvailableTaxa, confirmatoryCharacterValues, usedCharacterCosts);
+
+                        // also mark the key as incomplete.
+                        key.setKeyIncomplete(true);
+                    }
+
                     return;
                 } else {
                     // KEY only uses multi state characters
@@ -368,6 +373,30 @@ public class Key implements DirectiveParserObserver {
                 confirmatoryCharacterValues.remove(bestCharacter);
                 usedCharacterCosts.remove(bestCharacter);
             }
+        }
+    }
+
+    private void addRowsToTabularKey(TabularKey key, Specimen specimen, Set<Item> specimenAvailableTaxa, Map<Character, List<MultiStateAttribute>> confirmatoryCharacterValues,
+            Map<Character, Double> usedCharacterCosts) {
+        for (Item taxon : specimenAvailableTaxa) {
+            TabularKeyRow row = new TabularKeyRow();
+            row.setItem(taxon);
+
+            for (Character ch : specimen.getUsedCharacters()) {
+                // Add row to key
+                MultiStateAttribute mainCharacterValue = (MultiStateAttribute) specimen.getAttributeForCharacter(ch);
+                row.addAttribute(mainCharacterValue, confirmatoryCharacterValues.get(ch), usedCharacterCosts.get(ch));
+
+                // If character has not already been used in key, update its
+                // cost using the REUSE setting to increase the
+                // probability of reuse
+                if (!key.isCharacterUsedInKey(ch)) {
+                    double newCost = _context.getCharacterCost(ch.getCharacterId()) / _context.getReuse();
+                    _context.setCharacterCost(ch.getCharacterId(), newCost);
+                }
+            }
+
+            key.addRow(row);
         }
     }
 
@@ -587,10 +616,13 @@ public class Key implements DirectiveParserObserver {
     }
 
     private void generateKeyHeader(PrintFile printFile, TabularKey key, List<Character> includedCharacters, List<Item> includedItems, boolean outputTabularKey, boolean outputBracketedKey) {
-        printFile.outputLine(_context.getHeading(HeadingType.HEADING));
-        printFile.outputLine(StringUtils.repeat("*", _context.getOutputFileSelector().getOutputWidth()));
-        printFile.writeBlankLines(1, 0);
 
+        printFile.outputLine(_context.getHeading(HeadingType.HEADING));
+        int outputWidth = _context.getOutputFileSelector().getOutputWidth();
+        // The default markrtf sets the print width to zero, so use the default
+        // here if the print width is zero.
+        printFile.outputLine(StringUtils.repeat("*", outputWidth > 0 ? outputWidth : KeyOutputFileManager.DEFAULT_PRINT_WIDTH));
+        printFile.writeBlankLines(1, 0);
         printFile.outputLine(generateCreditsString());
         printFile.writeBlankLines(1, 0);
 
@@ -1094,9 +1126,9 @@ public class Key implements DirectiveParserObserver {
         // @to - Next node.
         // @state - feature/state text.
         // @nrow - number of "destinations" for the current node.
-        CharacterFormatter typesetCharFormatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, false, false);
+        CharacterFormatter typesetCharFormatter = new CharacterFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, false, true);
         typesetCharFormatter.setRtfToHtml(outputHtml);
-        ItemFormatter typesetItemFormatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, false, false, false);
+        ItemFormatter typesetItemFormatter = new ItemFormatter(false, CommentStrippingMode.STRIP_ALL, AngleBracketHandlingMode.REMOVE, false, false, true);
         typesetItemFormatter.setRtfToHtml(outputHtml);
 
         // Need to count the number of destinations, as multiple taxa identified
@@ -1137,9 +1169,9 @@ public class Key implements DirectiveParserObserver {
                     attributesTextBuilder.append(") ");
                 }
 
-                attributesTextBuilder.append(_charFormatter.formatCharacterDescription(attr.getCharacter()));
+                attributesTextBuilder.append(typesetCharFormatter.formatCharacterDescription(attr.getCharacter()));
                 attributesTextBuilder.append(" ");
-                attributesTextBuilder.append(_charFormatter.formatState(attr.getCharacter(), attr.getPresentStates().iterator().next()));
+                attributesTextBuilder.append(typesetCharFormatter.formatState(attr.getCharacter(), attr.getPresentStates().iterator().next()));
 
                 // Don't put a semicolon/space after the last attribute
                 // description
@@ -1189,7 +1221,13 @@ public class Key implements DirectiveParserObserver {
             }
 
             String lineText = lineTextBuilder.toString();
-            lineText = lineText.replaceAll("@state", attributesTextBuilder.toString());
+
+            // Need to escape any backslashes in attributes text (from RTF
+            // formatting) otherwise they will be omitted when we do a
+            // String.replaceAll()
+            String attributesText = attributesTextBuilder.toString();
+            attributesText = Matcher.quoteReplacement(attributesText);
+            lineText = lineText.replaceAll("@state", attributesText);
             nodeTextBuilder.append(lineText);
         }
 

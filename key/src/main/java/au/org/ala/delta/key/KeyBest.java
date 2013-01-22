@@ -129,10 +129,6 @@ public class KeyBest {
             List<Attribute> charAttributes = dataset.getAllAttributesForCharacter(ch.getCharacterId());
 
             for (Attribute attr : charAttributes) {
-//                if (attr.isInapplicable()) {
-//                    System.out.println("Inapplicable! " + attr.toString());
-//                    
-//                }
                 Item taxon = attr.getItem();
 
                 // Skip any attributes that pertain to taxa that are not
@@ -184,12 +180,21 @@ public class KeyBest {
             for (int i = 0; i < totalNumStates; i++) {
                 int numTaxaInSubgroup = subgroupsNumTaxa[i];
 
-                if (numTaxaInSubgroup == numAvailableTaxa) {
-                    numSubgroupsSameSizeAsOriginalGroup++;
-                }
+                if (numTaxaInSubgroup == sumNumTaxaInSubgroups) {
+                    // character is unsuitable if it divides the characters
+                    // into a
+                    // single
+                    // subgroup
+                    unsuitableCharacters.add(ch);
+                    continue charLoop;
+                } else {
+                    if (numTaxaInSubgroup == numAvailableTaxa) {
+                        numSubgroupsSameSizeAsOriginalGroup++;
+                    }
 
-                if (subgroupsNumTaxa[i] > 0) {
-                    sup0 += (subgroupAbundances[i] * Best.log2(subgroupsNumTaxa[i]));
+                    if (subgroupsNumTaxa[i] > 0) {
+                        sup0 += (subgroupAbundances[i] * Best.log2(subgroupsNumTaxa[i]));
+                    }
                 }
             }
 
@@ -202,12 +207,6 @@ public class KeyBest {
                     continue charLoop;
                 }
 
-                // Why???
-//                if (varyWt == 0) {
-//                    continue;
-//                }
-
-                // TODO thing with preset characters here
                 if (numSubgroupsSameSizeAsOriginalGroup != 0 && !allowImproperSubgroups) {
                     unsuitableCharacters.add(ch);
                     continue charLoop;

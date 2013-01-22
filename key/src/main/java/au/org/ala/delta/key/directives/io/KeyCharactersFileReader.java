@@ -83,7 +83,9 @@ public class KeyCharactersFileReader {
             totalNumberOfCharacters += detailStringLength;
         }
 
-        String characterDetailsAsContiguousString = _keyCharsFile.readString(recordNumber + 1, totalNumberOfCharacters);
+        int recordsSpannedByCharacterDetailLengths = (int) Math.ceil((double) characterDetailLengths.size() / BinaryKeyFile.RECORD_LENGTH_INTEGERS);
+        
+        String characterDetailsAsContiguousString = _keyCharsFile.readString(recordNumber + recordsSpannedByCharacterDetailLengths, totalNumberOfCharacters);
 
         int offset = 0;
         for (int detailStringLength : characterDetailLengths) {

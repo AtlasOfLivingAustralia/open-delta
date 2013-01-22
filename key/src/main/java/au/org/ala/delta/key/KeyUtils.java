@@ -38,35 +38,39 @@ import au.org.ala.delta.util.Pair;
 public class KeyUtils {
 
     public static void loadDataset(KeyContext context) {
-        File charactersFile = context.getCharactersFile();
-        File itemsFile = context.getItemsFile();
+        try {
+            File charactersFile = context.getCharactersFile();
+            File itemsFile = context.getItemsFile();
 
-        BinaryKeyFile keyCharactersFile = new BinaryKeyFile(charactersFile.getAbsolutePath(), BinFileMode.FM_READONLY);
-        BinaryKeyFile keyItemsFile = new BinaryKeyFile(itemsFile.getAbsolutePath(), BinFileMode.FM_READONLY);
+            BinaryKeyFile keyCharactersFile = new BinaryKeyFile(charactersFile.getAbsolutePath(), BinFileMode.FM_READONLY);
+            BinaryKeyFile keyItemsFile = new BinaryKeyFile(itemsFile.getAbsolutePath(), BinFileMode.FM_READONLY);
 
-        KeyCharactersFileReader keyCharactersFileReader = new KeyCharactersFileReader(context, context.getDataSet(), keyCharactersFile);
-        keyCharactersFileReader.createCharacters();
+            KeyCharactersFileReader keyCharactersFileReader = new KeyCharactersFileReader(context, context.getDataSet(), keyCharactersFile);
+            keyCharactersFileReader.createCharacters();
 
-        KeyItemsFileReader keyItemsFileReader = new KeyItemsFileReader(context, context.getDataSet(), keyItemsFile);
-        keyItemsFileReader.readAll();
+            KeyItemsFileReader keyItemsFileReader = new KeyItemsFileReader(context, context.getDataSet(), keyItemsFile);
+            keyItemsFileReader.readAll();
 
-        // Calculate character costs and item abundance values
+            // Calculate character costs and item abundance values
 
-        DeltaDataSet dataset = context.getDataSet();
+            DeltaDataSet dataset = context.getDataSet();
 
-        for (int i = 0; i < dataset.getNumberOfCharacters(); i++) {
-            Character ch = dataset.getCharacter(i + 1);
-            double charCost = Math.pow(context.getRBase(), 5.0 - Math.min(10.0, ch.getReliability()));
-            context.setCharacterCost(ch.getCharacterId(), charCost);
-        }
+            for (int i = 0; i < dataset.getNumberOfCharacters(); i++) {
+                Character ch = dataset.getCharacter(i + 1);
+                double charCost = Math.pow(context.getRBase(), 5.0 - Math.min(10.0, ch.getReliability()));
+                context.setCharacterCost(ch.getCharacterId(), charCost);
+            }
 
-        for (int i = 0; i < dataset.getMaximumNumberOfItems(); i++) {
-            Item taxon = dataset.getItem(i + 1);
-            double itemAbundanceValue = Math.pow(context.getABase(), context.getItemAbundancy(i + 1) - 5.0);
-            context.setCalculatedItemAbundanceValue(taxon.getItemNumber(), itemAbundanceValue);
+            for (int i = 0; i < dataset.getMaximumNumberOfItems(); i++) {
+                Item taxon = dataset.getItem(i + 1);
+                double itemAbundanceValue = Math.pow(context.getABase(), context.getItemAbundancy(i + 1) - 5.0);
+                context.setCalculatedItemAbundanceValue(taxon.getItemNumber(), itemAbundanceValue);
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException("Error occurred while loading Key dataset.", ex);
         }
     }
-    
+
     public static BracketedKey convertTabularKeyToBracketedKey(TabularKey tabularKey) {
 
         // Store data in maps while processing. This will be converted into
@@ -84,15 +88,18 @@ public class KeyUtils {
 
                 TabularKeyRow previousRow = null;
 
-                // If the corresponding column in the previous row has the same
-                // characters, use the latest existing index for that set of
-                // characters.
+                // Can reuse the latest existing index for the set of characters
+                // in the row if:
+                // 1. The corresponding column in the previous row has the same
+                // characters
+                // 2. The current row and previous row have the exact same
+                // attributes for all columns other than the current column.
                 // Otherwise we need to create a new index
                 boolean newIndex = false;
                 if (i > 0) {
                     previousRow = tabularKey.getRowAt(i - 1);
                     if (previousRow.getNumberOfColumns() >= j + 1) {
-                        if (!rowsMatchCharactersAtColumn(row, previousRow, columnNumber)) {
+                        if (!rowsMatchCharactersAtColumn(row, previousRow, columnNumber) || !rowsMatchAttributesToColumn(row, previousRow, columnNumber - 1)) {
                             newIndex = true;
                         }
                     } else {
@@ -127,17 +134,21 @@ public class KeyUtils {
                     List<MultiStateCharacter> nextColumnChars = getCharactersFromAttributes(nextColumnAttrs);
 
                     // Get the index for the next column. If no index has been
-                    // recorded for the group of characters, or
-                    // the group of characters is different to the corresponding
-                    // column in the previous row, then we
-                    // need to create a new
+                    // recorded for the group of characters then we need to
+                    // create a new index.
+
+                    // We also need to create a new index if the current and
+                    // previous row have different characters in the next
+                    // column,
+                    // or if they have different ATTRIBUTES in any column up to
+                    // and including the current column.
                     int indexForNextColumn;
                     if (latestNodeForCharacterGroupMap.containsKey(nextColumnChars)) {
                         indexForNextColumn = latestNodeForCharacterGroupMap.get(nextColumnChars);
 
                         if (i > 0) {
                             if (previousRow.getNumberOfColumns() >= j + 2) {
-                                if (!rowsMatchCharactersAtColumn(row, previousRow, columnNumber + 1)) {
+                                if (!rowsMatchCharactersAtColumn(row, previousRow, columnNumber + 1) || !rowsMatchAttributesToColumn(row, previousRow, columnNumber)) {
                                     indexForNextColumn = nodeInfoMaps.size();
                                 }
                             } else {
@@ -207,7 +218,7 @@ public class KeyUtils {
 
         return bracketedKey;
     }
-    
+
     private static List<MultiStateCharacter> getCharactersFromAttributes(List<MultiStateAttribute> attrs) {
         List<MultiStateCharacter> chars = new ArrayList<MultiStateCharacter>();
         for (MultiStateAttribute attr : attrs) {
@@ -217,6 +228,8 @@ public class KeyUtils {
         return chars;
     }
 
+    // Returns true if the supplied rows have the same characters in the
+    // specified column
     private static boolean rowsMatchCharactersAtColumn(TabularKeyRow row1, TabularKeyRow row2, int columnIndex) {
         List<MultiStateAttribute> row1ColumnAttrs = row1.getAllAttributesForColumn(columnIndex);
         List<MultiStateCharacter> row1ColumnChars = getCharactersFromAttributes(row1ColumnAttrs);
@@ -226,63 +239,80 @@ public class KeyUtils {
 
         return row1ColumnChars.equals(row2ColumnChars);
     }
-    
+
+    // Returns true if the supplied rows have the same attributes in all columns
+    // up to and including the specified column
+    private static boolean rowsMatchAttributesToColumn(TabularKeyRow row1, TabularKeyRow row2, int columnIndex) {
+
+        // Note the columns are 1-indexed
+        for (int i = 1; i <= columnIndex; i++) {
+            List<MultiStateAttribute> row1ColumnAttrs = row1.getAllAttributesForColumn(i);
+            List<MultiStateAttribute> row2ColumnAttrs = row2.getAllAttributesForColumn(i);
+
+            if (!row1ColumnAttrs.equals(row2ColumnAttrs)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public static String formatPresetCharacters(KeyContext context) {
         StringBuilder builder = new StringBuilder();
-        
+
         LinkedHashMap<Pair<Integer, Integer>, Integer> presetCharactersMap = context.getPresetCharacters();
-        
-        for (Pair<Integer, Integer> columnGroupPair: presetCharactersMap.keySet()) {
+
+        for (Pair<Integer, Integer> columnGroupPair : presetCharactersMap.keySet()) {
             int columnNumber = columnGroupPair.getFirst();
             int groupNumber = columnGroupPair.getSecond();
             int characterNumber = presetCharactersMap.get(columnGroupPair);
-            
+
             builder.append(String.format("%s,%s:%s", characterNumber, columnNumber, groupNumber));
             builder.append(" ");
         }
-        
+
         return builder.toString().trim();
     }
-    
+
     public static String formatCharacterReliabilities(KeyContext context, String valueSeparator, String rangeSeparator) {
-        List<Character> charsList = context.getDataSet().getCharactersAsList(); 
+        List<Character> charsList = context.getDataSet().getCharactersAsList();
         List<Integer> charNumbersList = new ArrayList<Integer>();
         List<Double> charReliabiltiesList = new ArrayList<Double>();
-        
-        for (Character ch: charsList) {
+
+        for (Character ch : charsList) {
             charNumbersList.add(ch.getCharacterId());
-            charReliabiltiesList.add((double)ch.getReliability());
+            charReliabiltiesList.add((double) ch.getReliability());
         }
 
         return formatIndexValuePairs(charNumbersList, charReliabiltiesList, valueSeparator, rangeSeparator);
     }
-    
+
     public static String formatTaxonAbunances(KeyContext context, String valueSeparator, String rangeSeparator) {
         List<Item> taxaList = context.getDataSet().getItemsAsList();
         List<Integer> taxaNumbersList = new ArrayList<Integer>();
         List<Double> taxaAbundancesList = new ArrayList<Double>();
-        
-        for (Item taxon: taxaList) {
+
+        for (Item taxon : taxaList) {
             taxaNumbersList.add(taxon.getItemNumber());
             taxaAbundancesList.add(context.getItemAbundancy(taxon.getItemNumber()));
         }
 
         return formatIndexValuePairs(taxaNumbersList, taxaAbundancesList, valueSeparator, rangeSeparator);
     }
-    
+
     private static String formatIndexValuePairs(List<Integer> indicies, List<Double> values, String valueSeparator, String rangeSeparator) {
         DecimalFormat formatter = new DecimalFormat("#,##0.#");
-        
+
         StringBuilder builder = new StringBuilder();
-        
+
         int startRange = 0;
         int previousIndex = 0;
         double rangeValue = 0;
-        
-        for (int i=0; i < indicies.size(); i++) {
+
+        for (int i = 0; i < indicies.size(); i++) {
             int index = indicies.get(i);
             double value = values.get(i);
-            
+
             if (i == 0) {
                 startRange = index;
                 rangeValue = value;
@@ -290,39 +320,39 @@ public class KeyUtils {
                 if (previousIndex < index - 1 || value != rangeValue) {
                     builder.append(" ");
                     builder.append(startRange);
-                    
+
                     if (previousIndex != startRange) {
                         builder.append(rangeSeparator);
                         builder.append(previousIndex);
                     }
-                    
+
                     builder.append(valueSeparator);
                     builder.append(formatter.format(rangeValue));
-                    
+
                     startRange = index;
                     rangeValue = value;
                 }
-                
+
                 if (i == indicies.size() - 1) {
                     builder.append(" ");
                     builder.append(startRange);
-                    
+
                     if (index != startRange) {
                         builder.append(rangeSeparator);
                         builder.append(index);
                     }
-                    
+
                     builder.append(valueSeparator);
                     builder.append(formatter.format(rangeValue));
-                    
+
                     startRange = index;
                     rangeValue = value;
                 }
             }
-            
+
             previousIndex = index;
         }
-        
+
         return builder.toString().trim();
     }
 

@@ -76,7 +76,12 @@ public class KeyItemsFileReader {
         List<Integer> headingLengthInList = _keyItemsFile.readIntegerList(_header.getHeadingRecord(), 1);
         int headingLength = headingLengthInList.get(0);
         String heading = _keyItemsFile.readString(_header.getHeadingRecord() + 1, headingLength);
-        _context.setHeading(HeadingType.HEADING, heading);
+
+        // Only use the heading from the dataset if one has not already been
+        // provided in the key directives file.
+        if (StringUtils.isEmpty(_context.getHeading(HeadingType.HEADING))) {
+            _context.setHeading(HeadingType.HEADING, heading);
+        }
     }
 
     public void readItems() {
@@ -145,7 +150,12 @@ public class KeyItemsFileReader {
 
                 boolean[] attributeDataAsBooleans = Utils.byteArrayToBooleanArray(attributeDataAsBytes);
 
-                for (int j = 0; j < ch.getNumberOfStates(); j++) {
+                // Pull out which states are present from the attribute data.
+                // Attribute data is stored as 32 bit words, so 32 is the
+                // maximum number
+                // of available states, regardless of how many states the
+                // character actually has.
+                for (int j = 0; j < Math.min(ch.getNumberOfStates(), 32); j++) {
                     int stateNumber = j + 1;
                     if (attributeDataAsBooleans[j]) {
                         presentStatesAsStrings.add(Integer.toString(stateNumber));
@@ -367,6 +377,7 @@ public class KeyItemsFileReader {
             int itemNumber = i + 1;
             if (taxonMask.get(i) == 0) {
                 _context.excludeItem(itemNumber);
+                _context.addItemAbundancy(itemNumber, 0);
             }
         }
     }

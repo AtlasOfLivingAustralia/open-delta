@@ -30,6 +30,11 @@ public class TabularKey {
     private Set<au.org.ala.delta.model.Character> _usedCharacters;
     private Set<Item> _usedItems;
     
+    /**
+     * True if the key is incomplete - if there are insufficient characters to identify one or more taxa.
+     */
+    private boolean _keyIncomplete = false;
+    
     public TabularKey() {
         _rows = new ArrayList<TabularKeyRow>();
         _usedCharacters = new HashSet<au.org.ala.delta.model.Character>();
@@ -111,5 +116,13 @@ public class TabularKey {
         }
         
         return maxCost;
+    }
+    
+    public boolean isKeyIncomplete() {
+        return _keyIncomplete;
+    }
+
+    public void setKeyIncomplete(boolean keyIncomplete) {
+        this._keyIncomplete = keyIncomplete;
     }
 }
