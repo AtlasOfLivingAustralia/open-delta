@@ -66,7 +66,6 @@ import au.org.ala.delta.model.format.Formatter.AngleBracketHandlingMode;
 import au.org.ala.delta.model.format.Formatter.CommentStrippingMode;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.model.impl.SimpleAttributeData;
-import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.translation.FilteredCharacter;
 import au.org.ala.delta.translation.FilteredDataSet;
 import au.org.ala.delta.translation.FilteredItem;
@@ -76,7 +75,7 @@ import au.org.ala.delta.util.Utils;
 
 public class Key implements DirectiveParserObserver {
 
-    private static final int TABULATED_KEY_MAX_NAME_SIZE = 27;
+    private static final int TABULATED_KEY_NAME_CELL_WIDTH = 27;
 
     private KeyContext _context;
     private boolean _inputFilesRead = false;
@@ -760,6 +759,16 @@ public class Key implements DirectiveParserObserver {
             }
         }
 
+        // Highest number of item occurrences in the key
+        int maxItemOccurrences = Collections.max(itemOccurrences.values());
+
+        // Determine the maximum allowable length for a formatted taxon name in
+        // the tabulated key. This will be the length
+        // of the name cell, less the length of the largest number of item
+        // occurrences (these are printed right-justified) in the cell, with a
+        // space between the name and the item occurrence count.
+        int maxFormattedItemNameLength = TABULATED_KEY_NAME_CELL_WIDTH - Integer.toString(maxItemOccurrences).length() - 1;
+
         StringBuilder builder = new StringBuilder();
 
         // Second pass - output the key
@@ -824,15 +833,16 @@ public class Key implements DirectiveParserObserver {
             // the key, if it appears more than once
             builder.append("|");
             String formattedItemName = itemFormatter.formatItemDescription(it);
-            builder.append(StringUtils.substring(formattedItemName, 0, TABULATED_KEY_MAX_NAME_SIZE));
+            formattedItemName = StringUtils.substring(formattedItemName, 0, maxFormattedItemNameLength);
+            builder.append(formattedItemName);
 
             int numItemOccurrences = itemOccurrences.get(it);
 
             if (numItemOccurrences > 1) {
-                builder.append(StringUtils.repeat(" ", TABULATED_KEY_MAX_NAME_SIZE - formattedItemName.length() - Integer.toString(numItemOccurrences).length()));
+                builder.append(StringUtils.repeat(" ", TABULATED_KEY_NAME_CELL_WIDTH - formattedItemName.length() - Integer.toString(numItemOccurrences).length()));
                 builder.append(numItemOccurrences);
             } else {
-                builder.append(StringUtils.repeat(" ", TABULATED_KEY_MAX_NAME_SIZE - formattedItemName.length()));
+                builder.append(StringUtils.repeat(" ", TABULATED_KEY_NAME_CELL_WIDTH - formattedItemName.length()));
             }
 
             builder.append("|");
@@ -893,7 +903,7 @@ public class Key implements DirectiveParserObserver {
         pageWidth = pageWidth == 0 ? PrintFile.DEFAULT_PRINT_WIDTH : pageWidth;
 
         // add 2 dividers to width of name.
-        int endTaxonNamesColumn = TABULATED_KEY_MAX_NAME_SIZE + 2;
+        int endTaxonNamesColumn = TABULATED_KEY_NAME_CELL_WIDTH + 2;
 
         // add 1 divider for each attribute column cell.
         int maxAttrValuesPerPage = (pageWidth - (endTaxonNamesColumn)) / (cellWidth + 1);
