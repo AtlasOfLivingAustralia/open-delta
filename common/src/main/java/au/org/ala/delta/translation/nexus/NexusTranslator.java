@@ -14,13 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.translation.nexus;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.DeltaContext.HeadingType;
 import au.org.ala.delta.directives.OutputParameters.OutputParameter;
@@ -48,6 +41,13 @@ import au.org.ala.delta.translation.parameter.ParameterTranslator;
 import au.org.ala.delta.translation.parameter.Specifications;
 import au.org.ala.delta.translation.parameter.StateEncoder;
 import au.org.ala.delta.translation.parameter.Symbols;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Implements the translation into Nexus format as specified using the TRANSLATE
@@ -241,7 +241,11 @@ public class NexusTranslator extends ParameterBasedTranslator {
 		}
 		@Override
 		public void translateParameter(OutputParameter parameter) {
-			_outputFile.outputLine(comment("!"+_context.getHeading(HeadingType.HEADING)));
+            String heading = _context.getHeading(HeadingType.HEADING);
+            if (heading == null) {
+                heading = " ";
+            }
+			_outputFile.outputLine(comment("!"+heading ));
 		}
 	}
 

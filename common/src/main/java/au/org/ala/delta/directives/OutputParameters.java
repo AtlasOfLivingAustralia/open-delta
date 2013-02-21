@@ -91,8 +91,11 @@ public class OutputParameters extends AbstractCustomDirective {
 
 		@Override
 		public void parse() throws ParseException {
-			
-			readToNext(PARAMETER_SEPARATOR);
+
+            readNext();
+            if (!(_currentChar == PARAMETER_IDENTIFIER)) {
+			    readToNext(PARAMETER_SEPARATOR);
+            }
 			while (_currentInt > 0) {
 				OutputParameter outputParameter = readOutputParameter();
 				_outputParameters.add(outputParameter);	
@@ -101,7 +104,9 @@ public class OutputParameters extends AbstractCustomDirective {
 		
 		private OutputParameter readOutputParameter() throws ParseException {
 			// Consume the '\n'
-			readNext();
+			if (_currentChar == PARAMETER_SEPARATOR) {
+                readNext();
+            }
 			String line = readToNext(PARAMETER_SEPARATOR).trim();
 			String parameter = "";
 			int parameterIndex = line.indexOf(PARAMETER_IDENTIFIER);
