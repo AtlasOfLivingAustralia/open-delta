@@ -14,13 +14,10 @@
  ******************************************************************************/
 package au.org.ala.delta.ui;
 
-import java.awt.Component;
-
-import javax.swing.JOptionPane;
-import javax.swing.JTextArea;
-import javax.swing.UIManager;
-
 import org.apache.commons.lang.WordUtils;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Helper class for displaying multi-line messages using a JTextArea as the message component for
@@ -58,7 +55,13 @@ public class MessageDialogHelper {
 	public static int showConfirmDialog(Component parent, String title, String text, int numColumns) {
 		
 		JTextArea messageDisplay = createMessageDisplay(text, numColumns);
-		return JOptionPane.showConfirmDialog(parent, messageDisplay, title, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE) ;
+        JOptionPane pane = new JOptionPane(messageDisplay, JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_CANCEL_OPTION);
+		JDialog dialog = pane.createDialog(parent, title);
+        dialog.setMaximumSize(new Dimension(500, 300));
+
+        dialog.setVisible(true);
+        return ((Integer)pane.getValue());
+        //return JOptionPane.showConfirmDialog(parent, messageDisplay, title, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE) ;
 	}
 	
 	/**
