@@ -52,16 +52,9 @@ public class MessageDialogHelper {
 	 * @param numColumns the column position to wrap the text at.
 	 * @return the value returned from the JOptionPane showConfirmDialog method (i.e the user selection)
 	 */
-	public static int showConfirmDialog(Component parent, String title, String text, int numColumns) {
-		
+	public static int showConfirmDialog(Component parent, String title, String text, int numColumns) {		
 		JTextArea messageDisplay = createMessageDisplay(text, numColumns);
-        JOptionPane pane = new JOptionPane(messageDisplay, JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_CANCEL_OPTION);
-		JDialog dialog = pane.createDialog(parent, title);
-        dialog.setMaximumSize(new Dimension(500, 300));
-
-        dialog.setVisible(true);
-        return ((Integer)pane.getValue());
-        //return JOptionPane.showConfirmDialog(parent, messageDisplay, title, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE) ;
+        return JOptionPane.showConfirmDialog(parent, messageDisplay, title, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE) ;
 	}
 	
 	/**
@@ -86,6 +79,9 @@ public class MessageDialogHelper {
 		textArea.setRows(wrapped.split("\n").length-1);
 		
 		textArea.setText(text);
+		
+		// Need to set a preferred size so that under OpenJDK-6 on Linux the JOptionPanes get reasonable bounds 
+		textArea.setPreferredSize(new Dimension(0, 0));
 		
 		return textArea;
 		
