@@ -298,11 +298,14 @@ public class IntkeyItemsFileWriter {
 			int unfilteredCharNumber = character.getCharacterId();
 			int numStates = characterRange.getMaximumInteger()-characterRange.getMinimumInteger();
 			List<BitSet> attributes = new ArrayList<BitSet>();
-			for (int i=1; i<=_dataSet.getNumberOfFilteredItems(); i++) {
+			
+	        Iterator<FilteredItem> items = _dataSet.filteredItems();
+	        while (items.hasNext()) {
+	            FilteredItem item = items.next();
 				
 				// Turn into bitset.
 				BitSet bits = new BitSet();
-				IntegerAttribute attribute = (IntegerAttribute)_dataSet.getAttribute(i, unfilteredCharNumber);
+				IntegerAttribute attribute = (IntegerAttribute)_dataSet.getAttribute(item.getItem().getItemNumber(), unfilteredCharNumber);
 				if (isInapplicable(attribute)) {
 					bits.set(numStates+3);
 				}
@@ -450,15 +453,17 @@ public class IntkeyItemsFileWriter {
 		
 		List<FloatRange> values = new ArrayList<FloatRange>();
 		BitSet inapplicableBits = new BitSet();
-		for (int i=1; i<=_dataSet.getNumberOfFilteredItems(); i++) {
-			
-			NumericAttribute attribute = (NumericAttribute)_dataSet.getAttribute(i, unfilteredCharNumber);
+		
+		Iterator<FilteredItem> items = _dataSet.filteredItems();
+        while (items.hasNext()) {
+            FilteredItem item = items.next();
+			NumericAttribute attribute = (NumericAttribute)_dataSet.getAttribute(item.getItem().getItemNumber(), unfilteredCharNumber);
 			
 			if (attribute == null || attribute.isCodedUnknown() || attribute.isInapplicable() || attribute.isVariable()) {
 				FloatRange range = new FloatRange(Float.MAX_VALUE);
 				values.add(range);
 				if (isInapplicable(attribute)) {
-					inapplicableBits.set(i-1);
+				    inapplicableBits.set(item.getItemNumber() - 1);
 				}
 				continue;
 			}
@@ -468,7 +473,7 @@ public class IntkeyItemsFileWriter {
 				FloatRange range = new FloatRange(-Float.MAX_VALUE);
 				values.add(range);
 				if (isInapplicable(attribute)) {
-					inapplicableBits.set(i-1);
+				    inapplicableBits.set(item.getItemNumber() - 1);
 				}
 				continue;
 			}
