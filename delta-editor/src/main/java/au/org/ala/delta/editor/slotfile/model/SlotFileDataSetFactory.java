@@ -14,10 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile.model;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import au.org.ala.delta.editor.slotfile.DeltaVOP;
 import au.org.ala.delta.editor.slotfile.VOCharBaseDesc;
 import au.org.ala.delta.editor.slotfile.VOCharTextDesc;
@@ -30,11 +26,15 @@ import au.org.ala.delta.model.Character;
 import au.org.ala.delta.model.CharacterDependency;
 import au.org.ala.delta.model.CharacterFactory;
 import au.org.ala.delta.model.CharacterType;
-import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.DeltaDataSetFactory;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.MultiStateCharacter;
+import au.org.ala.delta.model.MutableDeltaDataSet;
 import au.org.ala.delta.model.VariantItem;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -183,6 +183,8 @@ public class SlotFileDataSetFactory implements DeltaDataSetFactory {
 		
 		controllingDesc.setControllingInfo(charId, stateIds, "");
 		charDesc.addDependentContAttr(controllingDesc.getUniId());
+        _vop.getDeltaMaster().insertContAttr(controllingDesc.getUniId(), 0);
+
 		CharacterDependency charDependency = new CharacterDependency(new VOControllingAdapter(getVOP(), controllingDesc));
 		
 		return charDependency;
