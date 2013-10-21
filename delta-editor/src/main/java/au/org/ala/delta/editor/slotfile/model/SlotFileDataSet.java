@@ -14,14 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.editor.slotfile.model;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.commons.io.FilenameUtils;
-
 import au.org.ala.delta.editor.slotfile.Attribute;
 import au.org.ala.delta.editor.slotfile.DeltaVOP;
 import au.org.ala.delta.editor.slotfile.TextType;
@@ -47,6 +39,13 @@ import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.OverlayType;
+import org.apache.commons.io.FilenameUtils;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Implementation of a DELTA DataSet that uses the SlotFile class to read data
@@ -527,15 +526,18 @@ public class SlotFileDataSet extends AbstractObservableDataSet {
             deleteControlling(attrId);
         }
 
-        int attrNo = getVOP().getDeltaMaster().attrNoFromUniId(attrId);
-        if (attrNo > 0) {
+        // Work around for ISSUE 243 - controlling character descriptors were not being assigned numbers in the
+        // delta master - which leaves existing data sets vulnerable to ISSUE 243 despite the root caused being
+        // addressed.
+        //int attrNo = getVOP().getDeltaMaster().attrNoFromUniId(attrId);
+        //if (attrNo > 0) {
             List<Integer> oldStateIds = controlling.readStateIds();
             Collections.sort(stateIds);
 
             if (!stateIds.equals(oldStateIds)) {
                 controlling.writeStateIds(stateIds);
             }
-        }
+        //}
     }
 
     private void removeDependency(VOControllingDesc controlling, int charId) {
