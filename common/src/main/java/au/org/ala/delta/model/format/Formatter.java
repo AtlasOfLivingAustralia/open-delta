@@ -14,16 +14,15 @@
  ******************************************************************************/
 package au.org.ala.delta.model.format;
 
-import java.io.StringReader;
-import java.text.ParseException;
-import java.util.regex.Pattern;
-
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
-
 import au.org.ala.delta.directives.AbstractStreamParser;
 import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.util.Utils;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
+
+import java.io.StringReader;
+import java.text.ParseException;
+import java.util.regex.Pattern;
 
 /**
  * Base class for DELTA formatters.
@@ -145,16 +144,24 @@ public class Formatter {
             text = Utils.capitaliseFirstWord(text);
         }
         
-        if (StringUtils.isNotBlank(_dashReplacement)) {
-        	text = text.replaceAll("([0-9] *)-( *[0-9])", "$1"+_dashReplacementForRegexp+"$2");
-        }
-        
+
         if (rtfToHtml) {
         	text = StringEscapeUtils.escapeHtml(text);
-        	text = RTFUtils.rtfToHtml(text);
+            text = replaceDash(text);
+            text = RTFUtils.rtfToHtml(text);
+        }
+        else {
+            text = replaceDash(text);
         }
 
         return text.trim();
+    }
+
+    private String replaceDash(String text) {
+        if (StringUtils.isNotBlank(_dashReplacement)) {
+            return text.replaceAll("([0-9] *)-( *[0-9])", "$1"+_dashReplacementForRegexp+"$2");
+        }
+        return text;
     }
 
     /**

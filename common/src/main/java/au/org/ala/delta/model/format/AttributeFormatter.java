@@ -14,17 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.model.format;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.Set;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.FloatRange;
-import org.apache.commons.lang.math.IntRange;
-
 import au.org.ala.delta.model.Attribute;
 import au.org.ala.delta.model.IntegerAttribute;
 import au.org.ala.delta.model.MultiStateAttribute;
@@ -36,6 +25,16 @@ import au.org.ala.delta.model.attribute.DefaultAttributeChunkFormatter;
 import au.org.ala.delta.translation.Words;
 import au.org.ala.delta.translation.Words.Word;
 import au.org.ala.delta.util.Utils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.FloatRange;
+import org.apache.commons.lang.math.IntRange;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.Set;
 
 /**
  * Formats an attribute.
@@ -83,9 +82,8 @@ public class AttributeFormatter extends Formatter {
      * Attribute formatting differs from Character and Item formatting in that
      * by default attribute comments are not removed.
      * 
-     * @param attribute
-     *            the attribute to format.
-     * @return the formatted attribute value.
+     * @param comment the comment to format.
+     * @return the formatted comment.
      */
     public String formatComment(String comment) {
     	 if (StringUtils.isEmpty(comment) || EMPTY_COMMENT_PATTERN.matcher(comment).matches()) {

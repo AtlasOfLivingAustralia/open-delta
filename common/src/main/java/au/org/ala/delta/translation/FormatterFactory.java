@@ -114,7 +114,10 @@ public class FormatterFactory {
 			formatter = new AttributeFormatter(false, true, mode, angleBracketMode, false, null);
 		}
 		else {
-			formatter = new TypeSettingAttributeFormatter("\\endash{}", mode, angleBracketMode);
+            TypeSettingMark mark = _context.getTypeSettingMark(MarkPosition.RANGE_SYMBOL);
+
+            String numericSeparator = mark != null ? mark.getMarkText() : "\\endash{}";
+			formatter = new TypeSettingAttributeFormatter(numericSeparator, mode, angleBracketMode);
 		}
 		setFormattingOptions(formatter);
 		return formatter;
