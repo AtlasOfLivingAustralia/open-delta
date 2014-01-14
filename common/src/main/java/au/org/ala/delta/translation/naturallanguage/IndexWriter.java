@@ -14,13 +14,13 @@
  ******************************************************************************/
 package au.org.ala.delta.translation.naturallanguage;
 
-import au.org.ala.delta.io.OutputFileSelector;
-import org.apache.commons.lang.StringUtils;
-
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.io.OutputFileSelector;
 import au.org.ala.delta.model.Item;
 import au.org.ala.delta.model.format.ItemFormatter;
 import au.org.ala.delta.translation.PrintFile;
+import au.org.ala.delta.util.FileUtils;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Writes the index file during a translate into natural language with
@@ -61,7 +61,16 @@ public class IndexWriter {
         if (StringUtils.isBlank(outputFile)) {
             outputFile = outputFileSelector.getPrintFileName();
         }
-		
+
+        // If the index file is not in the root folder
+        try {
+            outputFile = FileUtils.makeRelativeTo(_context.getOutputFileSelector().getIndexOutputFilePath(), outputFile);
+        }
+        catch (Exception e) {
+
+            // Not fatal, but shouldn't happen.
+            System.err.println("Error making output files relative to the index file.");
+        }
 		StringBuilder indexEntry = new StringBuilder();
 		indexEntry.append("&#149;&nbsp;<a href=\"");
 		indexEntry.append(outputFile);

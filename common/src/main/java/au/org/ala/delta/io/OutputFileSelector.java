@@ -389,6 +389,11 @@ public class OutputFileSelector extends OutputFileManager {
         _currentFiles.put(ConforOutputFileType.INDEX_FILE, indexFile);
     }
 
+    public String getIndexOutputFilePath() throws Exception {
+        OutputFile indexFile = _currentFiles.get(ConforOutputFileType.INDEX_FILE);
+        return indexFile != null ? new File(indexFile.getFileName()).getParentFile().getPath() : "";
+    }
+
     public PrintFile getIndexFile() {
         return _indexFile;
     }

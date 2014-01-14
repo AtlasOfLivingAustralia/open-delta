@@ -14,11 +14,11 @@
  ******************************************************************************/
 package au.org.ala.delta.util;
 
-import java.io.File;
-import java.io.FilenameFilter;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+
+import java.io.File;
+import java.io.FilenameFilter;
 
 public class FileUtils {
 
@@ -98,6 +98,26 @@ public class FileUtils {
 		return relativePath;
 
 	}
+
+    public static String makeRelativeTo(String path1, String path2) {
+
+        path1 = fakeMakeAbsolute(path1);
+
+        File path2File = new File(fakeMakeAbsolute(path2));
+
+        return makeRelativeTo(path1, path2File);
+    }
+
+    private static String fakeMakeAbsolute(String path) {
+        if (path.startsWith(".")) {
+            path = path.substring(1);
+        }
+        else {
+            path = File.separator+path;
+        }
+        return path;
+    }
+
 	
 	private static File parent(File start, File parent) {
         if (start.equals(parent) || start.getParentFile() == null) {
