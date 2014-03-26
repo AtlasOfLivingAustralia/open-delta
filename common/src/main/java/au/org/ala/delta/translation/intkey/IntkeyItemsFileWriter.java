@@ -14,19 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.translation.intkey;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.FloatRange;
-import org.apache.commons.lang.math.IntRange;
-import org.apache.commons.lang.math.Range;
-
 import au.org.ala.delta.DeltaContext;
 import au.org.ala.delta.intkey.WriteOnceIntkeyItemsFile;
 import au.org.ala.delta.io.BinaryKeyFileEncoder;
@@ -47,6 +34,18 @@ import au.org.ala.delta.translation.FilteredCharacter;
 import au.org.ala.delta.translation.FilteredDataSet;
 import au.org.ala.delta.translation.FilteredItem;
 import au.org.ala.delta.util.Pair;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.FloatRange;
+import org.apache.commons.lang.math.IntRange;
+import org.apache.commons.lang.math.Range;
+
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Writes the intkey items file using the data in a supplied DeltaContext and
@@ -621,8 +620,9 @@ public class IntkeyItemsFileWriter {
 		Set<Integer> values = new HashSet<Integer>(_dataSet.getNumberOfFilteredCharacters());
 		Iterator<FilteredCharacter> characters = _dataSet.filteredCharacters();
 		while (characters.hasNext()) {
-			if (_context.isUseControllingCharacterFirst(characters.next().getCharacterNumber())) {		
-				values.add(characters.next().getCharacterNumber());
+            FilteredCharacter character = characters.next();
+			if (_context.isUseControllingCharacterFirst(character.getCharacterNumber())) {
+				values.add(character.getCharacterNumber());
 			}
 		}
 		if (!values.isEmpty()) {
