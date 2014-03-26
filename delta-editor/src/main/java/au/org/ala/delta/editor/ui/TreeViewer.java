@@ -786,9 +786,13 @@ class CharacterTreeModel extends DefaultTreeModel implements SearchableModel<Cha
 
         _dataModel = dataModel;
         _dataModel.addDeltaDataSetObserver(new TreeModelCharacterListener());
+        buildVariableLengthCharacterList();
+    }
+
+    private void buildVariableLengthCharacterList() {
         _variableLengthCharacterIndicies = new HashSet<Integer>();
-        for (int i = 1; i <= dataModel.getNumberOfCharacters(); i++) {
-            Character character = dataModel.getCharacter(i);
+        for (int i = 1; i <= _dataModel.getNumberOfCharacters(); i++) {
+            Character character = _dataModel.getCharacter(i);
             if ((character instanceof TextCharacter) || (character instanceof NumericCharacter)) {
                 _variableLengthCharacterIndicies.add(i - 1);
             }
@@ -857,6 +861,7 @@ class CharacterTreeModel extends DefaultTreeModel implements SearchableModel<Cha
 
         @Override
         public void characterAdded(DeltaDataSetChangeEvent event) {
+            buildVariableLengthCharacterList();
             ContextRootNode root = (ContextRootNode) getRoot();
             int charNumber = event.getCharacter().getCharacterId();
             CharacterTreeNode node = root.add(charNumber);
@@ -896,6 +901,7 @@ class CharacterTreeModel extends DefaultTreeModel implements SearchableModel<Cha
 
         @Override
         public void characterDeleted(DeltaDataSetChangeEvent event) {
+            buildVariableLengthCharacterList();
             ContextRootNode root = (ContextRootNode) getRoot();
             int charNumber = (Integer) event.getExtraInformation();
             CharacterTreeNode node = root.removeCharacter(charNumber);
@@ -910,6 +916,7 @@ class CharacterTreeModel extends DefaultTreeModel implements SearchableModel<Cha
 
         @Override
         public void characterMoved(DeltaDataSetChangeEvent event) {
+            buildVariableLengthCharacterList();
             ContextRootNode root = (ContextRootNode) getRoot();
             int charNumber = event.getCharacter().getCharacterId();
             int oldNumber = (Integer) event.getExtraInformation();
