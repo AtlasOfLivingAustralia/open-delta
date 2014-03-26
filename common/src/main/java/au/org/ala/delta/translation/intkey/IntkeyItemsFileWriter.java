@@ -263,7 +263,10 @@ public class IntkeyItemsFileWriter {
 			BitSet bits = new BinaryKeyFileEncoder().encodeAttributeStates(states);
 			
 			if (isInapplicable(attribute)) {
-				bits.set(numStates);
+                if (attribute.isInherited()) {
+                    bits.clear();
+                }
+                bits.set(numStates);
 			}
 			attributes.add(bits);
 		}
@@ -307,12 +310,16 @@ public class IntkeyItemsFileWriter {
 				IntegerAttribute attribute = (IntegerAttribute)_dataSet.getAttribute(item.getItem().getItemNumber(), unfilteredCharNumber);
 				if (isInapplicable(attribute)) {
 					bits.set(numStates+3);
-				}
+                    if (attribute.isInherited()) {
+                        attributes.add(bits);
+                        continue;
+                    }
+                }
 				if (attribute.isUnknown()) {
 					attributes.add(bits);
 					continue;
 				}
-				
+
 				List<NumericRange> ranges = attribute.getNumericValue();
 				
 				for (NumericRange range : ranges) {
