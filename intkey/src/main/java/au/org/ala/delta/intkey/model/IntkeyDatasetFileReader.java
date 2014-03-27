@@ -37,6 +37,7 @@ import au.org.ala.delta.model.TextCharacter;
 import au.org.ala.delta.model.image.Image;
 import au.org.ala.delta.model.image.ImageOverlay;
 import au.org.ala.delta.model.image.ImageOverlayParser;
+import au.org.ala.delta.model.image.ImageSettings;
 import au.org.ala.delta.model.image.ImageSettings.FontInfo;
 import au.org.ala.delta.model.image.ImageType;
 import au.org.ala.delta.model.impl.CharacterData;
@@ -1167,6 +1168,7 @@ public final class IntkeyDatasetFileReader {
                 catch (Exception e) {
                     // A workaround for corrupt font info in some of the crustacea.net keys.
                     System.err.println("Error parsing font info: "+fontText);
+                    fontInfo = new ImageSettings().getDefaultFontInfo();
                 }
                 fonts.add(fontInfo);
             }
