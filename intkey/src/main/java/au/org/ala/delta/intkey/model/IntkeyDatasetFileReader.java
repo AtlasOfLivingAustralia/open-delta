@@ -14,20 +14,6 @@
  ******************************************************************************/
 package au.org.ala.delta.intkey.model;
 
-import java.io.File;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.FloatRange;
-import org.apache.commons.lang.math.IntRange;
-
 import au.org.ala.delta.directives.validation.DirectiveException;
 import au.org.ala.delta.io.BinFile;
 import au.org.ala.delta.io.BinFileEncoding;
@@ -60,6 +46,19 @@ import au.org.ala.delta.model.impl.ItemData;
 import au.org.ala.delta.model.impl.SimpleAttributeData;
 import au.org.ala.delta.util.Pair;
 import au.org.ala.delta.util.Utils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.FloatRange;
+import org.apache.commons.lang.math.IntRange;
+
+import java.io.File;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Utility class for reading intkey datasets
@@ -1161,7 +1160,14 @@ public final class IntkeyDatasetFileReader {
                 byte[] fontTextBytes = new byte[fontLength];
                 fontTextData.get(fontTextBytes);
                 String fontText = BinFileEncoding.decode(fontTextBytes);
-                FontInfo fontInfo = parseOverlayFontString(fontText);
+                FontInfo fontInfo = null;
+                try {
+                    fontInfo = parseOverlayFontString(fontText);
+                }
+                catch (Exception e) {
+                    // A workaround for corrupt font info in some of the crustacea.net keys.
+                    System.err.println("Error parsing font info: "+fontText);
+                }
                 fonts.add(fontInfo);
             }
 
@@ -1728,7 +1734,7 @@ public final class IntkeyDatasetFileReader {
      * 
      * @param bFile
      *            the binary (characters or taxa) file
-     * @param numInts
+     * @param numFloats
      *            the number of floating point values to read
      * @return the list of floating point values
      */
