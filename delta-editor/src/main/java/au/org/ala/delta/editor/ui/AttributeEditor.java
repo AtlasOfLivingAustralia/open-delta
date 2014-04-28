@@ -554,7 +554,7 @@ public class AttributeEditor extends JPanel implements ValidationListener, Prefe
 			JCheckBox checkBox = (JCheckBox)super.getTableCellEditorComponent(table, value, isSelected, row, column);
 			checkBox.setOpaque(false);
 			MultiStateAttribute attr = (MultiStateAttribute) _item.getAttribute(_character);
-			checkBox.setSelected(attr.isStatePresent(row+1));
+			checkBox.setSelected(attr.isStateCoded(row+1));
 			checkBox.setText((String)value);
 			return checkBox;
 		}
