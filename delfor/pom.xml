@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>au.org.ala.delta</groupId>
 	<artifactId>delfor</artifactId>
-	<version>1.01</version>
+	<version>1.02</version>
 	<name>DELFOR</name>
 	<description>DELFOR program</description>
 
