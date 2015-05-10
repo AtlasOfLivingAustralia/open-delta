@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>au.org.ala.delta</groupId>
 	<artifactId>open-delta</artifactId>
-	<version>1.02</version>
+	<version>1.0.3-SNAPSHOT</version>
 	<name>Open DELTA suite</name>
 	<packaging>pom</packaging>
 	<scm>
