@@ -16,7 +16,7 @@ import java.io.PrintStream;
 /**
  * Example class that gets callbacks during the Natural Language Translation process.
  */
-public class TranslationObserver extends OutputStream implements IterativeTranslator {
+public class TranslationObserver extends OutputStream implements IterativeTranslator, DirectiveParserObserver {
 
     private StringBuilder buffer = new StringBuilder();
     DeltaContext context;
@@ -42,6 +42,7 @@ public class TranslationObserver extends OutputStream implements IterativeTransl
         ConforDirectiveFileParser p = ConforDirectiveFileParser.createInstance();
         ConforDirectiveParserObserver observer = new ConforDirectiveParserObserver(context);
         p.registerObserver(observer);
+        p.registerObserver(this);
         try {
             p.parse(input, context);
         } catch (DirectiveException e) {
@@ -118,6 +119,29 @@ public class TranslationObserver extends OutputStream implements IterativeTransl
 
     @Override
     public void translateOutputParameter(OutputParameters.OutputParameter parameterName) {
+
+    }
+
+    @Override
+    public void preProcess(AbstractDirective<? extends AbstractDeltaContext> directive, String data) throws DirectiveException {
+
+    }
+
+    @Override
+    public void postProcess(AbstractDirective<? extends AbstractDeltaContext> directive) throws DirectiveException {
+        if (directive instanceof PrintFile) {
+            // Override the printfile!
+            context.setPrintStream(new PrintStream(this));
+        }
+    }
+
+    @Override
+    public void finishedProcessing() {
+
+    }
+
+    @Override
+    public void handleDirectiveProcessingException(AbstractDeltaContext context, AbstractDirective<? extends AbstractDeltaContext> directive, Exception ex) throws DirectiveException {
 
     }
 }
