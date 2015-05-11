@@ -28,6 +28,7 @@ import au.org.ala.delta.model.TypeSettingMark.CharacterNoteMarks;
 import au.org.ala.delta.model.TypeSettingMark.MarkPosition;
 import au.org.ala.delta.model.image.ImageInfo;
 import au.org.ala.delta.rtf.RTFUtils;
+import au.org.ala.delta.translation.IterativeTranslator;
 import au.org.ala.delta.translation.PrintFile;
 import au.org.ala.delta.util.Functor;
 
@@ -145,6 +146,9 @@ public class DeltaContext extends AbstractDeltaContext {
     private Map<String, String> _indexHeadings = new HashMap<String, String>();
     protected PrintStream _defaultOut;
     protected PrintStream _defaultErr;
+
+    /** Added to allow 3rd party code to receive callbacks during item / character processing */
+    private IterativeTranslator _translationObserver;
 
     public DeltaContext() {
         this(new DefaultDataSetFactory().createDataSet(""));
@@ -1103,5 +1107,13 @@ public class DeltaContext extends AbstractDeltaContext {
 
     public boolean getPrintAllCharacters() {
         return _printAllCharacters;
+    }
+
+    public void setTranslationObserver(IterativeTranslator observer) {
+        _translationObserver = observer;
+    }
+
+    public IterativeTranslator getTranslationObserver() {
+        return _translationObserver;
     }
 }

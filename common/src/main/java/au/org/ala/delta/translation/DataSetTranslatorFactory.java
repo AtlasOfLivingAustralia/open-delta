@@ -53,6 +53,7 @@ import au.org.ala.delta.translation.print.UncodedCharactersTypeSetter;
 import au.org.ala.delta.util.Pair;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -130,6 +131,17 @@ public class DataSetTranslatorFactory {
 			}
 			translators.add(translator);
 			translators.add(createPrintActions(context));
+		}
+
+		// Allow callbacks to the transation observer, if registed.
+		if (context.getTranslationObserver() != null) {
+			Iterator i = translators.iterator();
+			while (i.hasNext()) {
+				DataSetTranslator translator = (DataSetTranslator)i.next();
+				if (translator instanceof DelegatingDataSetTranslator) {
+					((DelegatingDataSetTranslator) translator).add(new Pair<IterativeTranslator, DataSetFilter>(context.getTranslationObserver(), new AllPassFilter()));
+				}
+			}
 		}
 		
 		return new CompositeDataSetTranslator(translators);
