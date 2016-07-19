@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=1.01
+VERSION=1.0.3-SNAPSHOT
 rm /tmp/Open\ DELTA.dmg
 cp Open\ DELTA.dmg /tmp
 hdiutil attach /tmp/Open\ DELTA.dmg
