@@ -55,11 +55,15 @@ public abstract class AbstractFormattingDirective extends AbstractCustomDirectiv
 		for (DirectiveArgument<?> arg : args.getDirectiveArguments()) {
 			
 			int id = ((Integer)arg.getId());
-			String markText = arg.getText();
-			
-			boolean allowWhiteSpace = hasDelimiter && (markText.startsWith(" ") || markText.startsWith("\r") || markText.startsWith("\n"));
-			TypeSettingMark mark = new TypeSettingMark(id, markText, allowWhiteSpace);
-			processMark(context, mark);
+			// The delimeter character is encoded with id = Integer.MIN_VALUE.
+			if (id != Integer.MIN_VALUE) {
+				String markText = arg.getText();
+
+				boolean allowWhiteSpace = hasDelimiter && (markText.startsWith(" ") || markText.startsWith("\r") || markText.startsWith("\n"));
+				TypeSettingMark mark = new TypeSettingMark(id, markText, allowWhiteSpace);
+				processMark(context, mark);
+			}
+
 		}
 		
 	}

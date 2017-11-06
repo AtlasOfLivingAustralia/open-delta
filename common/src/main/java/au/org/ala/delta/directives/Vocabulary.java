@@ -15,6 +15,7 @@
 package au.org.ala.delta.directives;
 
 import au.org.ala.delta.DeltaContext;
+import au.org.ala.delta.directives.validation.DirectiveError;
 import au.org.ala.delta.model.TypeSettingMark;
 import au.org.ala.delta.translation.Words;
 import au.org.ala.delta.translation.Words.Word;
@@ -27,7 +28,10 @@ public class Vocabulary extends AbstractFormattingDirective {
 
 	@Override
 	public void processMark(DeltaContext context, TypeSettingMark mark) {
-		Words.setWord(Word.values()[mark.getId()], mark.getMarkText());
+		int wordId = mark.getId()-1;
+		if (wordId >= 0 && wordId < Word.values().length) {
+			Words.setWord(Word.values()[wordId], mark.getMarkText());
+		}
 	}
 	
 	@Override
