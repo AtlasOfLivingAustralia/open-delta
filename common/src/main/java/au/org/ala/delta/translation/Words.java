@@ -20,12 +20,22 @@ public class Words {
 		OR, TO, AND, VARIABLE, UNKNOWN, NOT_APPLICABLE, VARIANT, NOT_CODED, NEVER, MINIMUM, 
 		MAXIMUM, UP_TO, OR_MORE, FULL_STOP, COMMA, ALTERNATE_COMMA, SEMICOLON, FULL_STOP_AGAIN, RANGE};
 	
-	
-	private static String[] _vwords = {
+
+	private static String[] _defaults = {
 			"or", "to", "and", "variable", "unknown", "not applicable", "(variant)", "not coded",
 			"never", "minimum", "maximum", "up to", "or more", ".", ",", ",", ";", ".", "-"};
-	
-	
+
+	private static String[] _vwords;
+
+	public static void initialise() {
+		_vwords = new String[_defaults.length];
+		System.arraycopy(_defaults, 0, _vwords, 0, _defaults.length);
+	}
+
+	static {
+		initialise();
+	}
+
 	public static String word(Word word) {
 		return _vwords[word.ordinal()];
 	}

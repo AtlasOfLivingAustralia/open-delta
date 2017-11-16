@@ -30,6 +30,7 @@ import au.org.ala.delta.model.image.ImageInfo;
 import au.org.ala.delta.rtf.RTFUtils;
 import au.org.ala.delta.translation.IterativeTranslator;
 import au.org.ala.delta.translation.PrintFile;
+import au.org.ala.delta.translation.Words;
 import au.org.ala.delta.util.Functor;
 
 import java.io.PrintStream;
@@ -184,6 +185,7 @@ public class DeltaContext extends AbstractDeltaContext {
                    return sdf.format(new Date());
                }
         });
+        Words.initialise();
 
         _dataSet = dataSet;
         _maxNumberOfItems = dataSet.getMaximumNumberOfItems();
