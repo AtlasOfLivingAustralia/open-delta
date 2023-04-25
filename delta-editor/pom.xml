@@ -1,5 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="https://maven.apache.org/POM/4.0.0" xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>au.org.ala.delta</groupId>
 	<artifactId>delta-editor</artifactId>
@@ -9,18 +9,18 @@
 		<repository>
 			<id>maven2-repository.dev.java.net</id>
 			<name>Java.net Repository for Maven</name>
-			<url>http://download.java.net/maven/2/</url>
+			<url>https://download.java.net/maven/2/</url>
 			<layout>default</layout>
 		</repository>
 		<repository>
 			<id>shell-sourceforge-jp</id>
 			<name>maven repository on sourceforge.jp shell server</name>
-			<url>http://jfontchooser.sourceforge.jp/repository/say/swing/jfontchooser</url>		
+			<url>https://jfontchooser.sourceforge.jp/repository/say/swing/jfontchooser</url>		
 		</repository>
 	</repositories>
 
 	<scm>
-		<connection>scm:svn:http://open-delta.googlecode.com/svn/trunk/</connection>
+		<connection>scm:svn:https://open-delta.googlecode.com/svn/trunk/</connection>
 		<developerConnection>scm:svn:https://open-delta.googlecode.com/svn/trunk/</developerConnection>
 	</scm>
 	<build>
@@ -75,8 +75,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.0.2</version>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.8</source>
+					<target>1.8</target>
 					<encoding>Cp1252</encoding>
 				</configuration>
 			</plugin>
