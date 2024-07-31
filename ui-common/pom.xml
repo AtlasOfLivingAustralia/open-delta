@@ -140,6 +140,10 @@
 		</pluginManagement>
 	</build>
 
+	<properties>
+        	<local.jnlp.path>/usr/share/icedtea-web/javaws.jar</local.jnlp.path>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>au.org.ala.delta</groupId>
@@ -162,7 +166,7 @@
 			<artifactId>jnlp</artifactId>
 			<version>1.6</version>
 			<scope>system</scope>
-			<systemPath>/usr/share/icedtea-web/javaws.jar</systemPath>
+			<systemPath>${local.jnlp.path}</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>commons-lang</groupId>
