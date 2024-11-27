@@ -10,4 +10,3 @@ It includes icons from the Silk Icons set.
 
 Version 1.0.2 now available!
 
-Downloads of Open DELTA are available from: http://downloads.ala.org.au/
