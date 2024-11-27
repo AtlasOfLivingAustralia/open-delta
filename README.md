@@ -8,5 +8,4 @@ This software is substantially derived from the DELTA software authored by M.J D
 
 It includes icons from the Silk Icons set.
 
-Version 1.0.2 now available!
 
